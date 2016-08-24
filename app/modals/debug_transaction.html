@@ -1,0 +1,70 @@
+﻿<div class="modal-content">
+
+    <div class="modal-header">
+        <button type="button" class="close" ng-click="transactionDebug.cancel()">×</button>
+        <h4 class="modal-title"><i class="fa fa-exchange"></i> <span translate>Debug Transaction</span></h4>
+    </div>
+
+    <div class="modal-body">
+        
+        <div class="callout callout-danger" ng-if="exception.error">
+            <h4 translate>Oops! We had a problem.</h4>
+            <p>{{exception.error.message}}</p>
+            <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+        </div>
+
+        <div ng-repeat="debug in debugList.data">
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group spacer-b10">
+                    <label class="control-label">Action</label>
+                    <div class="highlight-value">{{debug.action}}</div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group spacer-b10">
+                    <label class="control-label">Created</label>
+                    <div>{{debug.date_created | date:'short'}}</div>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label class="control-label">Gateway Response</label>
+                    <div><textarea class="form-control big" id="response" name="response" ng-model="debug.response" wrap="soft"></textarea></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row"></div>
+
+        <!-- Show pagination if there is at least one page -->
+        <div class="col-xs-12" ng-if="debugList.data.length > 0">
+            <ul class="pager">
+                <li class="previous" ng-click="transactionDebug.movePage('-')" ng-show="debugList.previous_page_offset !== null"><a><i class="fa fa-chevron-circle-left"></i> <span translate>Back</span></a></li>
+                <li class="next" ng-click="transactionDebug.movePage('+')" ng-show="debugList.next_page_offset !== null"><a><span translate>Next</span> <i class="fa fa-chevron-circle-right"></i></a></li>
+            </ul>
+            <p class="text-right" ng-if="debugList">Showing page {{debugList.current_page}} of {{debugList.total_pages}}</p>
+        </div>
+
+        <!-- Show a "not found" message if no app packages were found  -->
+        <div class="col-xs-12" ng-if="debugList.data.length == 0">
+            <p class="no-info" translate>No debug info found</p>
+        </div>
+
+        <div class="row"></div>
+
+    </div>
+
+    <div class="row"></div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="transactionDebug.cancel()">
+            <span translate>Close</span>
+        </button>
+    </div>
+</div>

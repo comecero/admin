@@ -1,0 +1,82 @@
+﻿<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" ng-click="shipItems.cancel()">×</button>
+        <h4 class="modal-title" id="myModalLabel"><i class="fa fa-truck"></i> <span translate>Ship Items</span></h4>
+    </div>
+    <div class="modal-body">
+        <div class="callout callout-danger" ng-if="modalError">
+            <h4 translate>Oops! We had a problem.</h4>
+            <p>{{modalError.message}}</p>
+            <br /><small>Error code: {{modalError.reference}}</small>
+        </div>
+        <form name="form" novalidate>
+
+            <div class="row" ng-repeat="shipment in shipItems.shipments" ng-if="!shipItems.isFulfilled(shipment)">
+                <ng-form name="items" novalidate>
+
+                    <div class="col-sm-12">
+                        <div class="form-group no-margin-hr" ng-class="{ 'has-error': items.quantity.$invalid && (items.quantity.$dirty || form.$submitted) }">
+                            <label class="control-label">{{shipment.name}}</label>
+
+                            <div class="input-group col-sm-3">
+                                <span style="min-width:42px" class="input-group-addon text-info pointer" ng-if="!shipment.quantity" ng-click="shipment.quantity = shipment.shippableQuantity" title="{{ 'Load quantity' | translate}}"><i class="fa fa-arrow-right fadeIn"></i></span>
+                                <span style="min-width:42px" class="input-group-addon pointer text-success" ng-if="shipment.quantity && shipment.quantity == shipment.shippableQuantity" ng-click="shipment.quantity = null" title="{{ 'Click to reset' | translate}}"><i class="fa fa-check fadeIn"></i></span>
+                                <span style="min-width:42px" class="input-group-addon pointer text-warning" ng-if="shipment.quantity && shipment.quantity < shipment.shippableQuantity" ng-click="shipment.quantity = null" title="{{ 'Partial shipment. Click to reset.' | translate}}"><i class="fa fa-check fadeIn"></i></span>
+                                <span style="min-width:42px" class="input-group-addon pointer text-danger" ng-if="shipment.quantity && shipment.quantity > shipment.shippableQuantity" ng-click="shipment.quantity = null" title="{{ 'You are attempting to ship more items than were ordered. Click to reset.' | translate}}"><i class="fa fa-times fadeIn"></i></span>
+                                <input type="tel" name="quantity" ng-model="shipment.quantity" ng-model-options="{ updateOn: 'blur' }" class="form-control" placeholder="{{ 'Enter quantity' | translate}}" is-valid-integer allow-empty-value="true">
+                            </div>
+                            <p class="help-block col-sm-3 fadeInDown" ng-show="items.quantity.$invalid && (items.quantity.$dirty || form.$submitted)" translate>Please enter a valid quantity</p>
+                        </div>
+                    </div>
+
+                </ng-form>
+            </div>
+
+            <div class="row">
+
+                <div class="col-sm-4">
+                    <div class="form-group no-margin-hr">
+                        <label class="control-label" translate>Courier</label>
+                        <select class="form-control" name="courier" ng-model="shipItems.courier" ng-options="courier.value as courier.name for courier in shipItems.couriers"></select>
+                    </div>
+                </div>
+
+                <div class="col-sm-4" ng-if="shipItems.courier != null && shipItems.courier != ''">
+                    <div class="form-group no-margin-hr">
+                        <label class="control-label" translate>Tracking Number</label>
+                        <input type="text" class="form-control" name="tracking_number" ng-model="shipItems.tracking_number" placeholder="{{ 'Optional' | translate}}">
+                    </div>
+                </div>
+
+                <div class="col-sm-4" ng-if="shipItems.courier == null || shipItems.courier == ''">
+                    <div class="form-group no-margin-hr" ng-class="{ 'has-error': form.tracking_url.$invalid && (form.tracking_url.$touched || form.$submitted) }">
+                        <label class="control-label" translate>Tracking URL</label>
+                        <input type="text" class="form-control" name="tracking_url" ng-model="shipItems.tracking_url" ng-model-options="{ updateOn: 'blur' }" placeholder="{{ 'Optional' | translate}}" is-valid-url allow-empty-value="true">
+                        <p class="help-block fadeInDown" ng-show="form.tracking_url.$invalid && (form.tracking_url.$dirty || form.$submitted)" translate>Please enter a valid URL or leave blank</p>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="form-group no-margin-hr">
+                        <label class="control-label" translate>Shipment Date</label>
+                        <select class="form-control" name="date_shipped" ng-model="shipItems.date_shipped" ng-options="(date | date:'fullDate') for date in shipItems.dates" placeholder="{{ 'Optional' | translate}}"></select>
+                    </div>
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <div class="row"></div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="shipItems.cancel()">
+            <span translate>Cancel</span>
+        </button>
+        <button type="button" class="btn btn-primary" ng-click="shipItems.ok(form)">
+            <span translate>Record Shipments</span>
+        </button>
+    </div>
+</div>

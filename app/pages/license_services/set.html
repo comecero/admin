@@ -1,0 +1,206 @@
+﻿<div ng-controller="LicenseServicesSetCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1 ng-if="update">{{license_service.name}}</h1>
+        <h1 ng-if="add" translate>Add License Service</h1>
+    </div>
+
+    <form name="form" novalidate>
+        <div class="panel panel-body light-shadow">
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="name" class="control-label" translate>Name</label>
+                    <input type="text" class="form-control" name="name" ng-model="license_service.name" required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a name</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="label" class="control-label" translate>Label</label>
+                    <input type="text" class="form-control" name="label" ng-model="license_service.label" required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a label</p>
+                    <div>
+                        <p class="help-text" translate>How do you refer to your license? (License Code, Registration Code, Unlock Code, etc.)</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="clear"></div>
+
+            <div class="col-xs-12" ng-show="update">
+                <div class="form-group">
+                    <label for="name" class="control-label" translate>License Service ID</label>
+                    <div>{{license_service.license_service_id}}</div>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="col-md-6 col-xs-12" ng-show="update">
+                <div class="form-group">
+                    <label class="control-label">Created</label>
+                    <div>{{license_service.date_created | date:'mediumDate'}} {{license_service.date_created | date:'shortTime'}}</div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" ng-show="update">
+                <div class="form-group">
+                    <label class="control-label">Updated</label>
+                    <div>{{license_service.date_modified | date:'mediumDate'}} {{license_service.date_modified | date:'shortTime'}}</div>
+                </div>
+            </div>
+
+            <div class="col-xs-12" show-errors>
+                <div class="form-group">
+                    <label class="radio-group-label required" translate>How will licenses be provided?</label>
+                    <div class="radio-group">
+                        <input type="radio" id="type-1" class="radio" name="type" ng-model="license_service.type" value="list">
+                        <label for="type-1" class="radio-label">A list will be uploaded</label>
+                        <input type="radio" id="type-2" class="radio" name="type" ng-model="license_service.type" value="remote_url">
+                        <label for="type-2" class="radio-label">From a remote URL as orders are processed</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group fadeIn animated" ng-show="license_service.type == 'list'">
+
+                <div class="col-xs-12" show-errors>
+                    <div class="form-group">
+                        <label class="radio-group-label required" translate>Issue licenses per quantity ordered?</label>
+                        <div class="radio-group inline">
+                            <input type="radio" id="per_quantity-1" class="radio" name="per_quantity" ng-model="license_service.configuration.per_quantity" ng-value="true" required>
+                            <label for="per_quantity-1" class="radio-label">Yes</label>
+                            <input type="radio" id="per_quantity-2" class="radio" name="per_quantity" ng-model="license_service.configuration.per_quantity" ng-value="false" required>
+                            <label for="per_quantity-2" class="radio-label">No</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12" show-errors>
+                    <div class="form-group">
+                        <label class="radio-group-label required" translate>Remove a license from the list after it has been issued?</label>
+                        <div class="radio-group inline">
+                            <input type="radio" id="remove_after_use-1" class="radio" name="remove_after_use" ng-model="license_service.configuration.remove_after_use" ng-value="true" required>
+                            <label for="remove_after_use-1" class="radio-label">Yes</label>
+                            <input type="radio" id="remove_after_use-2" class="radio" name="remove_after_use" ng-model="license_service.configuration.remove_after_use" ng-value="false" required>
+                            <label for="remove_after_use-2" class="radio-label">No</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12">
+                    <div class="form-group" show-errors>
+                        <label for="notify_at_count" class="control-label" ng-class="{ 'required': license_service.type == 'list' }" translate>Notify at Count</label>
+                        <input type="tel" class="form-control" name="notify_at_count" ng-model="license_service.configuration.notify_at_count" maxlength="4" is-valid-integer ng-required="license_service.type == 'list'">
+                        <div>
+                            <p class="help-text" translate>When the number of licenses reaches the supplied value, a notification will be sent by email.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12">
+                    <div class="form-group" show-errors>
+                        <label for="list" class="control-label" ng-class="{ 'required': license_service.type == 'list' }" translate>List of Licenses</label>
+                        <div>
+                            <textarea class="form-control big" id="list" name="list" ng-model="licenses.list" ng-required="license_service.type == 'list'"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="form-group fadeIn animated" ng-show="license_service.type == 'remote_url'">
+
+                <div class="col-xs-12">
+                    <div class="form-group" show-errors>
+                        <label for="url" class="control-label" ng-class="{ 'required': license_service.type == 'remote_url' }" translate>URL</label>
+                        <input type="text" class="form-control" name="url" ng-model="license_service.configuration.url" is-valid-url allow-empty-value="{{license_service.type == 'list'}}" ng-required="license_service.type == 'remote_url'">
+                        <p class="help-block hidden fadeInDown" translate>Please provide a valid URL</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xs-12">
+                    <div class="form-group" show-errors>
+                        <label for="http_authorization_username" class="control-label" translate>HTTP Authorization Username</label>
+                        <input type="text" class="form-control" name="http_authorization_username" ng-model="license_service.configuration.http_authorization_username">
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xs-12">
+                    <div class="form-group" show-errors>
+                        <label for="http_authorization_password" class="control-label" translate>HTTP Authorization Password</label>
+                        <input type="text" class="form-control" name="http_authorization_password" ng-model="license_service.configuration.http_authorization_password">
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xs-12">
+                    <div class="form-group" show-errors>
+                        <label for="custom_header_name" class="control-label" translate>Custom Header Name</label>
+                        <input type="text" class="form-control" name="custom_header_name" ng-model="license_service.configuration.custom_header_name">
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xs-12">
+                    <div class="form-group" show-errors>
+                        <label for="custom_header_value" class="control-label" translate>Custom Header Value</label>
+                        <input type="text" class="form-control" name="custom_header_value" ng-model="license_service.configuration.custom_header_value">
+                    </div>
+                </div>
+
+                <div class="col-xs-12" show-errors>
+                    <div class="form-group">
+                        <label class="radio-group-label required" translate>Payload Format</label>
+                        <div class="radio-group inline">
+                            <input type="radio" id="format-1" class="radio" name="format" ng-model="license_service.configuration.format" value="json" required>
+                            <label for="format-1" class="radio-label">JSON</label>
+                            <input type="radio" id="format-2" class="radio" name="format" ng-model="license_service.configuration.format" value="xml" required>
+                            <label for="format-2" class="radio-label">XML</label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="instructions" class="control-label" translate>Instructions provided to customers with the license</label>
+                    <div>
+                        <textarea class="form-control" id="instructions" name="instructions" ng-model="license_service.instructions"></textarea>
+                    </div>
+                </div>
+                <p class="maxlength-message" max-length="1000" item="form.instructions"></p>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="description" class="control-label" translate>Description (for your reference)</label>
+                    <div>
+                        <textarea class="form-control" id="description" name="description" ng-model="license_service.description"></textarea>
+                    </div>
+                </div>
+                <p class="maxlength-message" max-length="250" item="form.description"></p>
+            </div>
+
+            <div class="form-group">
+                <button ng-if="add" type="submit" class="btn btn-primary btn-right" ng-click="addLicenseService()" validate-on-submit translate>Add the License Service</button>
+                <button ng-if="update" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updateLicenseService()" validate-on-submit translate>Save Changes</button>
+                <button ng-if="update" type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="confirmCancel()" translate>Cancel</button>
+            </div>
+
+            <div class="row"></div>
+
+            <div ng-if="update" class="panel-footer submenu">
+                <span class="delete" ng-click="confirmDelete()" resource="license_services" method="delete" translate>Delete this license service</span>
+            </div>
+
+        </div>
+    </form>
+</div>

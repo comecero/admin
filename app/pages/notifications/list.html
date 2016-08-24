@@ -1,0 +1,17 @@
+﻿<div ng-controller="NotificationsListCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1 translate>Notifications</h1>
+    </div>
+
+    <div class="panel panel-body light-shadow">
+        <div object-list type="notification" url="{{resources.notificationListUrl}}" template-url="app/templates/notificationList.html" embedded="false" page="cursor" error="exception.error"></div>
+    </div>
+
+</div>

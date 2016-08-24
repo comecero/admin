@@ -1,0 +1,91 @@
+﻿<div ng-controller="TechnicalSettingsCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1>Technical Settings</h1>
+    </div>
+
+    <form name="form" novalidate>
+
+        <div class="panel panel-body light-shadow">
+
+            <div class="col-sm-12">
+                <div class="form-group" show-errors>
+                    <label for="timezone" class="control-label" translate>Timezone</label>
+                    <input type="text" class="form-control" name="timezone" ng-model="settings.timezone" uib-typeahead="timezone as timezone for timezone in timezones | filter:$viewValue | limitTo:20" typeahead-editable="false" typeahead-min-length="0" required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a timezone</p>
+                    <div>
+                        <p class="help-text" translate>The default timezone to be used in API responses when a timezone is not provided directly.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12">
+                <div class="form-group" show-errors>
+                    <label for="app_hosts" class="control-label" translate>App Hosts</label>
+                    <textarea class="form-control" id="app_hosts" name="app_hosts" ng-model="app_hosts" placeholder="{{ 'Enter one host per line' | translate}}" required></textarea>
+                    <p class="help-block hidden fadeInDown" translate>Please provide at least one valid app host</p>
+                    <div>
+                        <p class="help-text" translate>
+                            The locations of your hosted applications. Enter one host name per line. Must be in the format of: your-name-here.apps.comecero.com. Contact support to enable a fully custom host name such as store.your-domain.com<br /><br />
+                            A maximum of 3 host names can be provided. Before you remove a host name, ensure that your are not actively sending traffic to it. If you would like to configure an automatic redirect from an existing host to a new host, please contact support.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12">
+                <div class="form-group" show-errors>
+                    <label for="cors_allowed_origins" class="control-label" translate>CORS Allowed Origins</label>
+                    <textarea class="form-control" id="cors_allowed_origins" name="cors_allowed_origins" ng-model="cors_allowed_origins" placeholder="{{ 'Enter one origin per line' | translate}}"></textarea>
+                    <div>
+                        <p class="help-text" translate>
+                            A list of origins that are allowed to connect to the API using <a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing" target="_blank">Cross Origin Resource Sharing</a>. Enter one origin per line.
+                            You must supply the fully qualified origin, including the protocol, for example: https://my.domain.com. Do not include anything after the domain.<br /><br />
+                            Note that the origins do not need to be valid real-world addresses. For local development, for example, you might provide http://localhost. Live settings require SSL origins, but test settings allow non-SSL origins. <a href="https://docs.comecero.com/basic-concepts/#cors" target="_blank">Read more</a>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12">
+                <div class="form-group" show-errors>
+                    <label for="oauth_redirect_uris" class="control-label" translate>OAuth Redirect URIs</label>
+                    <textarea class="form-control" id="oauth_redirect_uris" name="oauth_redirect_uris" ng-model="oauth_redirect_uris" placeholder="{{ 'Enter one redirect URI per line' | translate}}"></textarea>
+                    <div>
+                        <p class="help-text" translate>
+                            Register valid OAuth redirect URIs for custom applications that you host on your own infrastructure. Enter one URI per line. You must supply the full redirect URI, including the protocol and path, for example:
+                            https://my.domain.com/redirect/here.php. <a href="https://docs.comecero.com/basic-concepts/#authentication" target="_blank">Read more about custom application and OAuth redirects</a>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12">
+                <div class="form-group" show-errors>
+                    <label for="signature_key" class="control-label" translate>Signature Key</label>
+                    <input type="text" class="form-control" name="signature_key" ng-model="settings.signature_key">
+                    <div>
+                        <p class="help-text" translate>
+                            Used to provide a HMAC SHA256 signature of the content body of HTTP requests for events and requests sent to you from Comecero, which confirms that the notification is genuine. If no signature key is provided, no signature will be added to requests.<br /><br />
+                            The value of the signature is sent in the following header: X-Comecero-Signature
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updateSettings()" validate-on-submit translate>Save Changes</button>
+                    <button type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="confirmCancel()" translate>Cancel</button>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>

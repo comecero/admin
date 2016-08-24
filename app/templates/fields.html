@@ -1,0 +1,104 @@
+﻿<!-- NOTE THAT INPUT text, tel, and password FIELD NAMES HAVE A -search SUFFIX BY DESIGN. CHECK THE DIRECTIVE FOR MORE INFO AND BAKGROUND -->
+<form name="form" novalidate>
+
+    <div ng-repeat="item in fieldlist">
+
+        <div class="section-header" ng-if="isNewSection(item, $index)">{{item.section}}</div>
+
+        <div ng-if="item.type == 'string' && !item.options" class="col-xs-12">
+            <div class="form-group">
+                <label class="control-label">{{item.label}}<span class="required" ng-show="item.required"></span></label>
+                <input type="text" class="form-control" name="{{item.name}}-search" ng-model="selections[item.name]">
+                <p class="help-block" ng-bind-html="item.description"></p>
+            </div>
+        </div>
+
+        <div ng-if="item.type == 'text' && !item.options" class="col-xs-12">
+            <div class="form-group">
+                <label class="control-label">{{item.label}}<span class="required" ng-show="item.required"></span></label>
+                <textarea class="form-control" name="{{item.name}}-search" ng-model="selections[item.name]"></textarea>
+                <p class="help-block" ng-bind-html="item.description"></p>
+            </div>
+        </div>
+
+        <div ng-if="item.type == 'integer' && !item.options" class="col-xs-12">
+            <div class="form-group">
+                <label class="control-label">{{item.label}}<span class="required" ng-show="item.required"></span></label>
+                <input type="tel" class="form-control" name="{{item.name}}-search" ng-model="selections[item.name]">
+                <p class="help-block" ng-bind-html="item.description"></p>
+            </div>
+        </div>
+
+        <div ng-if="item.type == 'decimal' && !item.options" class="col-xs-12">
+            <div class="form-group">
+                <label class="control-label">{{item.label}}<span class="required" ng-show="item.required"></span></label>
+                <input type="text" class="form-control" name="{{item.name}}-search" ng-model="selections[item.name]">
+                <p class="help-block" ng-bind-html="item.description"></p>
+            </div>
+        </div>
+
+        <div ng-if="item.type == 'color' && !item.options" class="has-feedback col-xs-12">
+            <div class="form-group">
+                <label class="control-label">{{item.label}}<span class="required" ng-show="item.required"></span></label>
+                <div class="input-group">
+                    <span style="min-width:40px" class="input-group-addon" ng-style="{'background-color': selections[item.name]}">&nbsp;</span>
+                    <input type="text" colorpicker colorpicker-position="right" class="form-control" name="{{item.name}}-search" ng-model="selections[item.name]">
+                </div>
+                <p class="help-block" ng-bind-html="item.description"></p>
+            </div>
+        </div>
+
+        <div ng-if="item.type == 'boolean' && !item.options" class="col-md-12">
+            <div class="form-group">
+                <label class="radio-group-label" ng-required="item.required">{{item.label}}</label>
+                <div class="radio-group inline">
+                    <input type="radio" id="{{ item.name + '-1'}}" class="radio" name="{{item.name}}" ng-model="selections[item.name]" ng-value="true" ng-checked="{{selections[item.name]}}" required>
+                    <label for="{{ item.name + '-1'}}" class="radio-label" translate>Yes</label>
+                    <input type="radio" id="{{ item.name + '-0'}}" class="radio" name="{{item.name}}" ng-model="selections[item.name]" ng-value="false" ng-checked="{{!selections[item.name]}}" required>
+                    <label for="{{ item.name + '-0'}}" class="radio-label" translate>No</label>
+                </div>
+                <p class="help-block" ng-bind-html="item.description"></p>
+            </div>
+        </div>
+
+        <div ng-if="item.type == 'image'" class="col-xs-12">
+            <div class="form-group">
+                <label class="control-label clear" translate>{{item.label}}</label>
+                <div ng-show="data.images[item.name].length == 0 || !data.images[item.name]">
+                    <a class="btn btn-info" images-select images="data.images[item.name]" limit="1" translate>Add image</a>
+                </div>
+                <div ng-show="data.images[item.name].length > 0">
+                    <image-group images="data.images[item.name]" limit="1"></image-group>
+                </div>
+                <p class="help-block" ng-bind-html="item.description"></p>
+            </div>
+        </div>
+
+        <div ng-if="item.options && item.type != 'array'" class="col-xs-12">
+            <div class="form-group">
+                <label class="radio-group-label" ng-required="item.required">{{item.label}}</label>
+                <select name="{{item.name}}" class="form-control" ng-model="selections[item.name]">
+                    <option ng-repeat="option in item.options" value="{{option.value}}">{{option.display}}</option>
+                </select>
+                <p class="help-block" ng-bind-html="item.description"></p>
+            </div>
+        </div>
+
+        <div ng-if="item.type == 'array'" class="col-xs-12">
+            <div class="form-group">
+                <label class="checkbox-group-label" ng-required="item.required">{{item.label}}</label>
+                <div class="checkbox-group inline">
+                    <div ng-repeat="option in item.options" class="spacer-b10">
+                        <input type="checkbox" id="{{ item.name + '-' + $index }}" class="checkbox" ng-click="pushToProperty(item.name, option.value)" ng-checked="isInProperty(item.name, option.value)">
+                        <label for="{{ item.name + '-' + $index }}" class="checkbox-label">{{option.display}}</label>
+                    </div>
+                </div>
+                <p class="help-block" ng-bind-html="item.description"></p>
+            </div>
+        </div>
+
+    </div>
+
+</form>
+
+

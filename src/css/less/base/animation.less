@@ -1,0 +1,35 @@
+﻿/* You can use animations from animate.css directly by applying the classes 'animate' and the animation you want to apply, but you'll get the default speed and it's verbose */
+/* This page allows you to define classes so that animations can be applied in a single class and the timing of the animation can be customized */
+
+.fadeInDown {
+    -webkit-animation: fadeInDown 0.4s;
+    animation: fadeInDown 0.4s;
+}
+
+.fadeInRight {
+    -webkit-animation: fadeInRight 0.4s;
+    animation: fadeInRight 0.4s;
+}
+
+.fadeInLeft {
+    -webkit-animation: fadeInLeft 0.4s;
+    animation: fadeInLeft 0.4s;
+}
+
+.fadeIn {
+    -webkit-animation: fadeIn 0.4s;
+    animation: fadeIn 0.4s;
+}
+
+/* This prevents animations from being applied to items that are being hidden, i.e. they are hidden immediately. */
+.ng-leave {
+    -webkit-animation: none !important;
+    animation: none !important;
+    opacity: 0 !important;
+    display: none !important;
+}
+
+.ng-hide {
+    opacity: 0 !important;
+    display: none !important;
+}

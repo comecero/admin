@@ -1,0 +1,219 @@
+﻿<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" ng-click="customerSelect.cancel()">×</button>
+        <h4 class="modal-title"><span translate>Select Customer</span></h4>
+    </div>
+    <div class="modal-body">
+
+        <div class="callout callout-danger" ng-if="modalError">
+            <h4 translate>Oops! We had a problem.</h4>
+            <p>{{modalError.message}}</p>
+            <span ng-show="modalError.reference">
+                <br /><small>Error code: {{modalError.reference}}</small>
+            </span>
+        </div>
+
+        <form name="modalform" novalidate>
+            <uib-tabset>
+                <uib-tab active="customerSelectTabs[0].active" resource="files" method="create">
+                    <tab-heading><i class="fa fa-plus-circle"></i> <small translate>New</small></tab-heading>
+
+                    <div class="col-xs-12 col-md-6">
+                        <div class="form-group" show-errors>
+                            <label for="name" class="control-label" translate>Name</label>
+                            <input type="text" class="form-control" name="name" ng-model="newCustomer.name">
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6">
+                        <div class="form-group" show-errors>
+                            <label for="company_name" class="control-label" translate>Company Name</label>
+                            <input type="text" class="form-control" name="company_name" ng-model="newCustomer.company_name">
+                        </div>
+                    </div>
+
+                    <div class="row"></div>
+
+                    <div class="col-xs-12 col-md-6">
+                        <div class="form-group" show-errors>
+                            <label for="email" class="control-label" translate>Email</label>
+                            <input type="text" class="form-control" name="email" ng-model="newCustomer.email" is-valid-email allow-empty-value="true">
+                            <p class="help-block hidden fadeInDown" translate>Please provide a valid email</p>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6">
+                        <div class="form-group" show-errors>
+                            <label for="phone" class="control-label" translate>Phone</label>
+                            <input type="text" class="form-control" name="phone" ng-model="newCustomer.phone">
+                        </div>
+                    </div>
+
+                    <div class="row"></div>
+
+                    <div class="col-xs-12">
+                        <div class="form-group" show-errors>
+                            <label for="company_name" class="control-label" translate>Customer ID</label>
+                            <input type="text" class="form-control" name="company_name" ng-model="newCustomer.customer_id">
+                            <div>
+                                <p class="help-text" translate>Leave blank and we'll create one automatically</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row"></div>
+
+                    <div class="col-xs-12 col-md-6">
+                        <span class="text-sm"><strong translate>Billing Address</strong></span>
+                        <div class="spacer-t10" address="newCustomer.billing_address" edit="true"></div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6">
+                        <span class="text-sm"><strong translate>Shipping Address</strong></span>
+                        <div class="spacer-t10" address="newCustomer.shipping_address" edit="true"></div>
+                    </div>
+
+                    <div class="row clear"></div>
+
+                    <div class="col-xs-12 col-md-6">
+                        <div class="form-group" show-errors>
+                            <label for="tax_number" class="control-label" translate>Tax Number</label>
+                            <input type="text" class="form-control" name="tax_number" ng-model="newCustomer.tax_number">
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6">
+                        <div class="form-group" show-errors>
+                            <label class="radio-group-label" translate>Tax Exempt</label>
+                            <div class="radio-group inline">
+                                <input type="radio" id="tax_exempt-1" class="radio" name="tax_exempt" ng-model="newCustomer.tax_exempt" ng-value="true" required>
+                                <label for="tax_exempt-1" class="radio-label">Yes</label>
+                                <input type="radio" id="tax_exempt-2" class="radio" name="tax_exempt" ng-model="newCustomer.tax_exempt" ng-value="false" required>
+                                <label for="tax_exempt-2" class="radio-label">No</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row"></div>
+
+                    <div class="form-group">
+                        <a class="btn btn-primary btn-right btn-margin-left" validate-on-submit isolate-validation="true" ng-click="customerSelect.create(modalform)">
+                            <span translate>Create Customer</span>
+                        </a>
+                    </div>
+
+                </uib-tab>
+
+                <uib-tab active="customerSelectTabs[1].active">
+                    <tab-heading><i class="fa fa-files-o"></i> <small translate>Existing Customers</small></tab-heading>
+                    <div class="col-xs-12 text-right spacer-20">
+                        <div class="form-inline">
+                            <div class="form-group has-feedback">
+                                <input type="text" class="form-control" ng-model="customerSelect.q" ng-change="customerSelect.search()" ng-model-options="{ updateOn: 'default blur', debounce: { default: 750, blur: 0 } }" select-on-click placeholder="{{ 'Search' | translate }}...">
+                                <span class="fa fa-search form-control-feedback"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="gridtable">
+                        <div class="gridtable-header hidden-xs hidden-sm">
+
+                            <div class="col-md-3"><label>Customer ID</label></div>
+                            <div class="col-md-3"><label>Name</label></div>
+                            <div class="col-md-2"><label>Email</label></div>
+                            <div class="col-md-2 btn-header">
+                                <div class="btn-group" uib-dropdown>
+                                    <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Has Payments</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                                    <ul class="dropdown-menu">
+                                        <li ng-click="customerSelect.setParam('has_payments', null)" ng-class="{ 'selected-li': customerSelect.params.has_payments == null }"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
+                                        <li ng-click="customerSelect.setParam('has_payments', true)" ng-class="{ 'selected-li': customerSelect.params.has_payments == true }"><a><i class="dropdown-icon fa fa-check-circle text-success"></i>&nbsp;&nbsp;<span translate>Yes</span></a></li>
+                                        <li ng-click="customerSelect.setParam('has_payments', false)" ng-class="{'selected-li': customerSelect.params.has_payments == false }"><a><i class="dropdown-icon fa fa-minus-circle text-warning"></i>&nbsp;&nbsp;<span translate>No</span></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-2 text-right"><label ng-click="customerSelect.sort('date_created', !customerSelect.params.desc)" class="pointer text-primary" translate>Created</label>&nbsp;<i class="icon fa fa-caret-down" ng-show="customerSelect.params.date_type == 'date_created' && customerSelect.params.desc == true"></i><i class="icon fa fa-caret-up" ng-show="customerSelect.params.date_type == 'date_created' && customerSelect.params.desc == false"></i></div>
+                        </div>
+
+                        <div class="col-xs-12 hidden-md hidden-lg padding-l0">
+                            <div class="btn-group" uib-dropdown>
+                                <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Sort</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                                <ul class="dropdown-menu">
+                                    <li class="dropdown-header">Created</li>
+                                    <li ng-click="customerSelect.sort('date_created', false)" ng-class="{'selected-li': customerSelect.params.date_type == 'date_created' && customerSelect.params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                                    <li ng-click="customerSelect.sort('date_created', true)" ng-class="{'selected-li': customerSelect.params.date_type == 'date_created' && customerSelect.params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                                </ul>
+                            </div>
+
+                            <div class="btn-group" uib-dropdown>
+                                <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Filter</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                                <ul class="dropdown-menu">
+                                    <li class="dropdown-header">Has Payments</li>
+                                    <li ng-click="customerSelect.setParam('has_payments', null)" ng-class="{ 'selected-li': customerSelect.params.has_payments == null }"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
+                                    <li ng-click="customerSelect.setParam('has_payments', true)" ng-class="{ 'selected-li': customerSelect.params.has_payments == true }"><a><i class="dropdown-icon fa fa-check-circle text-success"></i>&nbsp;&nbsp;<span translate>Yes</span></a></li>
+                                    <li ng-click="customerSelect.setParam('has_payments', false)" ng-class="{'selected-li': customerSelect.params.has_payments == false }"><a><i class="dropdown-icon fa fa-minus-circle text-warning"></i>&nbsp;&nbsp;<span translate>No</span></a></li>
+                                </ul>
+                            </div>
+
+                        </div>
+
+                        <div class="row spacer-b10 hidden-md hidden-lg"></div> <!--Needed to have the buttons clear-->
+
+                        <div class="gridtable-row pointer" ng-repeat="customer in customerList.data" ng-click="customerSelect.ok(customer)">
+
+                            <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Customer ID</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 text-sm value"><a ng-click="customerSelect.ok(customer)">{{customer.customer_id}}</a></div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Name</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value">{{customer.name}}</div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-2">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Email</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value"><a href="mailto:{{customer.email}}">{{customer.email}}</a></div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-2">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Status</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value">
+                                    <span ng-if="customer.has_payments == true"><i class="icon fa fa-check-circle text-success"></i> <span translate>Yes</span></span>
+                                    <span ng-if="customer.has_payments == false"><i class="icon fa fa-minus-circle text-warning"></i>&nbsp;<span translate>No</span></span>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-2">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Created</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value"><span>{{customer.date_created | date:'short'}}</span></div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Show pagination if there is at least one page -->
+                    <div class="col-xs-12" ng-if="customerList.data.length > 0">
+                        <ul class="pager">
+                            <li class="previous" ng-click="customerSelect.movePage('-')" ng-show="customerList.previous_page_offset !== null"><a><i class="fa fa-chevron-circle-left"></i> <span translate>Back</span></a></li>
+                            <li class="next" ng-click="customerSelect.movePage('+')" ng-show="customerList.next_page_offset !== null"><a><span translate>Next</span> <i class="fa fa-chevron-circle-right"></i></a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Show a "not found" message if no images were found  -->
+                    <div class="col-xs-12" ng-if="customerList.data.length == 0">
+                        <p class="no-info" translate>No customers found</p>
+                    </div>
+
+                </uib-tab>
+            </uib-tabset>
+        </form>
+    </div>
+
+    <div class="row"></div>
+
+    <div class="modal-footer">
+        <a class="btn btn-default" ng-click="customerSelect.cancel()">
+            <span translate>Cancel</span>
+        </a>
+    </div>
+</div>

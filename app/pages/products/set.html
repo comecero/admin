@@ -1,0 +1,260 @@
+﻿<div ng-controller="ProductsSetCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1 ng-if="add" translate>Add a Product</h1>
+        <h1 ng-if="update">{{product.name}}</h1>
+    </div>
+
+    <form name="form" novalidate>
+        <div class="panel panel-body light-shadow">
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="name" class="control-label" translate>Product Name</label>
+                    <input type="text" class="form-control" name="name" ng-model="product.name" required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a name</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" ng-if="add">
+                <div class="form-group">
+                    <label for="product_id" class="control-label" translate>Product ID</label>
+                    <div class="input-group has-feedback">
+                        <input type="text" class="form-control" name="product_id" ng-model="product.product_id" is-product-id-available>
+                        <span class="fa fa-check-circle form-control-feedback fadeIn hidden"></span>
+                    </div>
+                    <div ng-messages="form.product_id.$error">
+                        <p class="help-block fadeInDown" ng-message="unavailable" translate>The Product ID you entered is already in use.</p>
+                        <p class="help-block fadeInDown" ng-message="invalid_characters" translate>The Product ID cannot contain spaces or special characters.</p>
+                    </div>
+                    <div>
+                        <p class="help-text" translate>Leave blank and we'll create one automatically</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" ng-if="update">
+                <div class="form-group">
+                    <label class="control-label">Product ID</label>
+                    <div class="highlight-value">{{product.product_id}}</div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" ng-if="update">
+                <div class="form-group">
+                    <label class="control-label">Created</label>
+                    <div>{{product.date_created | date:'mediumDate'}} {{product.date_created | date:'shortTime'}}</div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" ng-if="update">
+                <div class="form-group">
+                    <label class="control-label">Updated</label>
+                    <div>{{product.date_modified | date:'mediumDate'}} {{product.date_modified | date:'shortTime'}}</div>
+                </div>
+            </div>
+
+            <div class="col-xs-12" ng-if="product.deleted">
+                <div class="form-group">
+                    <label class="control-label" translate>Deleted</label>
+                    <span>{{product.date_deleted | date:'mediumDate'}} {{product.date_deleted | date:'shortTime'}}</span>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="description" class="control-label" translate>Description</label>
+                    <div>
+                        <textarea class="form-control" id="description" name="description" ng-model="product.description"></textarea>
+                    </div>
+                </div>
+                <p class="maxlength-message" max-length="1000" item="form.description"></p>
+            </div>
+
+            <div prices="product.prices" currencies="currencies"></div>
+
+            <div class="col-xs-12" show-errors>
+                <div class="form-group">
+                    <label class="radio-group-label">Type of Product</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="type-1" class="radio" name="type" ng-model="product.type" value="digital" required>
+                        <label for="type-1" class="radio-label">Digital</label>
+                        <input type="radio" id="type-2" class="radio" name="type" ng-model="product.type" value="physical" required>
+                        <label for="type-2" class="radio-label">Physical</label>
+                        <input type="radio" id="type-3" class="radio" name="type" ng-model="product.type" value="service" required>
+                        <label for="type-3" class="radio-label">Service</label>
+                    </div>
+                    <p class="help-block hidden fadeInDown" style="max-width:300px" translate>Please provide a type</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" ng-show="product.type == 'physical'">
+                <div class="form-group" show-errors>
+                    <label for="weight_amount" class="control-label" translate>Weight</label>
+                    <input type="text" class="form-control" name="weight_amount" ng-model="product.weight.amount" is-valid-number allow-empty-value="true">
+                    <p class="help-block hidden fadeInDown" translate>Please provide a valid weight</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" ng-show="product.type == 'physical'">
+                <div class="form-group">
+                    <label for="weight_amount" class="control-label" translate>Unit</label>
+                    <select class="form-control" name="weight_unit" ng-model="product.weight.unit">
+                        <option value="oz">oz (ounce)</option>
+                        <option value="lb">lb (pound)</option>
+                        <option value="g">g (gram)</option>
+                        <option value="kg">kg (kilogram)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group" ng-show="product.type == 'digital' || product.type == 'service'">
+                    <label class="control-label clear" translate>File Download</label>
+                    <a class="btn btn-info" file-select file="data.file" ng-show="!data.file.file_id" translate>Add a file</a>
+                    <div ng-show="data.file.file_id">
+                        <ul class="list-group">
+                            <li class="list-group-item overflow-hidden">
+                                <i class="fa fa-minus-square pointer pull-right text-default" ng-show="showFile" ng-click="showFile = !showFile" style="margin-top:3px">&nbsp;</i>
+                                <i class="fa fa-plus-square pointer pull-right text-default " ng-show="!showFile" ng-click="showFile = !showFile" style="margin-top:3px">&nbsp;</i>
+                                <a href="/#/files/{{data.file.file_id}}/edit" target="_blank">{{data.file.name}}</a>
+                            </li>
+                            <li class="list-group-item overflow-hidden" ng-show="showFile">
+                                <p><span translate>Filename</span>: <strong>{{data.file.filename}}</strong></p>
+                                <p ng-if="data.file.version"><span translate>Version</span>: <strong>{data.{file.version}}</strong></p>
+                                <p><span translate>Size</span>: <strong>{{data.file.bytes | bytesToMB}}</strong></p>
+                                <p><span translate>Created</span>: <strong>{{data.file.date_created | date:'mediumDate'}} {{data.file.date_created | date:'shortTime'}}</strong></p>
+                                <p ng-if="data.file.description"><span translate>Description</span>: <em>{{data.file.description}}</em></p>
+                                <p class="text-right">
+                                    <a class="btn btn-danger btn-xs spacer-t10" ng-click="removeFile()" translate>Remove</a>
+                                    <a class="btn btn-primary btn-xs spacer-t10" file-select file="data.file" translate>Change</a>
+                                </p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group" ng-show="product.type == 'digital' || product.type == 'service'">
+                    <label class="control-label clear" translate>License Service</label>
+                    <a class="btn btn-info" license-service-select license-service="data.license_service" ng-show="!data.license_service.license_service_id" translate>Add a license service</a>
+                    <div ng-show="data.license_service.license_service_id">
+                        <ul class="list-group">
+                            <li class="list-group-item overflow-hidden">
+                                <i class="fa fa-minus-square pointer pull-right text-default" ng-show="showLicenseService" ng-click="showLicenseService = !showLicenseService" style="margin-top:3px">&nbsp;</i>
+                                <i class="fa fa-plus-square pointer pull-right text-default" ng-show="!showLicenseService" ng-click="showLicenseService = !showLicenseService" style="margin-top:3px">&nbsp;</i>
+                                <a href="/#/license_services/{{data.license_service.license_service_id}}/edit" target="_blank">{{data.license_service.name}}</a>
+                            </li>
+                            <li class="list-group-item overflow-hidden fadeIn animated" ng-if="showLicenseService">
+                                <p><span translate>Type</span>: <strong><span ng-if="data.license_service.type == 'remote_url'">Remote URL</span><span ng-if="data.license_service.type == 'list'">List</span></strong></p>
+                                <p><span translate>Created</span>: <strong>{{data.license_service.date_created | date:'mediumDate'}} {{data.license_service.date_created | date:'shortTime'}}</strong></p>
+                                <p ng-show="data.license_service.configuration.url"><span translate>URL</span>: <strong>{{data.license_service.configuration.url}}</strong></p>
+                                <p ng-if="data.license_service.description"><span translate>Description</span>: <em>{{data.license_service.description}}</em></p>
+                                <p class="text-right">
+                                    <a class="btn btn-danger btn-xs spacer-t10" ng-click="removeLicenseService()" translate>Remove</a>
+                                    <a class="btn btn-primary btn-xs spacer-t10" license-service-select license-service="data.license_service" translate>Change</a>
+                                </p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label class="control-label clear" translate>Images</label>
+                    <div ng-show="data.images.length == 0 || !data.images">
+                        <a class="btn btn-info" images-select images="data.images" translate>Add images</a>
+                    </div>
+                    <div ng-show="data.images.length > 0">
+                        <image-group images="data.images"></image-group>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label class="control-label clear" translate>Subscription Plan</label>
+                    <div ng-show="!data.subscription_plan.subscription_plan_id">
+                        <a class="btn btn-info" subscription-plan-select subscription-plan="data.subscription_plan" translate>Add a subscription plan</a>
+                    </div>
+                    <div ng-show="data.subscription_plan.subscription_plan_id">
+                        <ul class="list-group">
+                            <li class="list-group-item overflow-hidden" ng-click="showSubscriptionPlan = !showSubscriptionPlan">
+                                <i class="fa fa-minus-square pointer pull-right text-default" ng-show="showSubscriptionPlan" style="margin-top:3px"></i>
+                                <i class="fa fa-plus-square pointer pull-right text-default" ng-show="!showSubscriptionPlan" style="margin-top:3px"></i>
+                                <a href="/#/subscription_plans/{{data.subscription_plan.subscription_plan_id}}/edit" target="_blank">{{data.subscription_plan.name}}</a>
+                            </li>
+                            <li class="list-group-item overflow-hidden fadeIn animated" ng-show="showSubscriptionPlan">
+                                <p ng-if="data.subscription_plan.version"><span translate>Version</span>: <strong>{data.{subscription_plan.version}}</strong></p>
+                                <p><span translate>Billing Period</span>: <strong>{{data.subscription_plan.billing_interval}} {{data.subscription_plan.billing_interval_unit}}(s)</strong></p>
+                                <p><span translate>Trial Period</span>: <strong ng-if="data.subscription_plan.trial_interval">{{data.subscription_plan.trial_interval}} {{data.subscription_plan.trial_interval_unit}}(s)</strong><strong ng-if="!data.subscription_plan.trial_interval" translate>None</strong></p>
+                                <p><span translate>Total Billings</span>: <strong ng-if="data.subscription_plan.end_at_billing_count">{{data.subscription_plan.end_at_billing_count}}</strong><strong ng-if="!data.subscription_plan.end_at_billing_count" translate>Unlimited</strong></p>
+                                <p><span translate>Fulfill on Renewal</span>: <strong ng-if="data.subscription_plan.fulfill_on_renewal" translate>Yes</strong><strong ng-if="!data.subscription_plan.fulfill_on_renewal" translate>No</strong></p>
+                                <p><span translate>Created</span>: <strong>{{data.subscription_plan.date_created | date:'mediumDate'}} {{data.subscription_plan.date_created | date:'shortTime'}}</strong></p>
+                                <p ng-if="data.subscription_plan.description"><span translate>Description</span>: <em>{{data.subscription_plan.description}}</em></p>
+                                <p class="text-right">
+                                    <a class="btn btn-danger btn-xs spacer-t10" ng-click="removeSubscriptionPlan()" translate>Remove</a>
+                                    <a class="btn btn-primary btn-xs spacer-t10" subscription-plan-select subscription-plan="data.subscription_plan" translate>Change</a>
+                                </p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="video_url" class="control-label" translate>Video URL</label>
+                    <input type="text" class="form-control" name="video_url" ng-model="product.video_url" is-valid-url allow-empty-value="true">
+                    <p class="help-block hidden fadeInDown" translate>Please provide a valid URL</p>
+                </div>
+            </div>
+
+            <div class="col-xs-12" show-errors>
+                <div class="form-group">
+                    <label class="radio-group-label" translate>Set as Hidden?</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="hidden-1" class="radio" name="hidden" ng-model="product.hidden" ng-value="true" required>
+                        <label for="hidden-1" class="radio-label">Yes</label>
+                        <input type="radio" id="hidden-2" class="radio" name="hidden" ng-model="product.hidden" ng-value="false" required>
+                        <label for="hidden-2" class="radio-label">No</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12" show-errors>
+                <div class="form-group">
+                    <label class="radio-group-label" translate>Set as Active?</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="active-1" class="radio" name="active" ng-model="product.active" ng-value="true" required>
+                        <label for="active-1" class="radio-label">Yes</label>
+                        <input type="radio" id="active-2" class="radio" name="active" ng-model="product.active" ng-value="false" required>
+                        <label for="active-2" class="radio-label">No</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <button ng-if="add" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="addProduct()" validate-on-submit translate>Add the Product</button>
+                <button ng-if="update" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updateProduct()" validate-on-submit translate>Save Changes</button>
+                <button ng-if="update" type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="confirmCancel()" translate>Cancel</button>
+            </div>
+
+            <div class="row"></div>
+
+            <div ng-if="update" class="panel-footer submenu" resource="products" method="delete">
+                <span class="delete" ng-click="confirmDelete()" ng-if="!product.deleted" translate>Delete this product</span>
+                <span class="undelete" ng-click="undelete()" ng-if="product.deleted" resource="products" method="update" translate>Undelete this product</span>
+            </div>
+
+        </div>
+    </form>
+</div>

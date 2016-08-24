@@ -1,0 +1,139 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/admin.css" rel="stylesheet" />
+    <link href="../css/themes.css" rel="stylesheet" />
+
+    <style type="text/css">
+        .gridtable:after,
+        .gridtable:before,
+        .gridtable-header:after,
+        .gridtable-header:before,
+        .gridtable-row:after,
+        .gridtable-row:before {
+            content: " ";
+            display: table;
+            clear: both;
+        }
+
+        .gridtable label {
+            margin-bottom: 0;
+        }
+
+        .gridtable-header {
+            border-bottom: 2px solid #e2e2e2;
+            padding-bottom: 5px;
+        }
+
+            .gridtable-header > div {
+                padding-top: 10px;
+            }
+
+            .gridtable-header .button {
+                padding-top: 5px;
+            }
+
+        .gridtable-row:hover {
+            background-color: #f5f5f5;
+        }
+
+        .gridtable-row > div {
+            padding: 15px 0 15px 0;
+            border-bottom: 1px solid #f4f4f4;
+        }
+
+        .gridtable-header > .btn-header {
+            padding-top: 5px;
+        }
+
+            .gridtable-header > .btn-header button {
+                font-weight: bold;
+            }
+
+        @media (max-width: 991px) {
+            .gridtable-row {
+                border: 1px solid #f4f4f4;
+                border-radius: 2px;
+                padding: 15px 5px 15px 5px;
+                margin-left: 0;
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+
+                .gridtable-row > div {
+                    padding: 5px 0 5px 0;
+                    border-bottom: none;
+                }
+        }
+
+        @media (min-width: 992px) {
+            .text-right-md {
+                text-align: right;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .text-right-lg {
+                text-align: right;
+            }
+        }
+    </style>
+
+
+
+
+
+
+
+
+</head>
+<body>
+
+    <div class="hidden-sm hidden-md hidden-lg">XS</div>
+    <div class="hidden-xs hidden-md hidden-lg">SM</div>
+    <div class="hidden-sm hidden-xs hidden-lg">MD</div>
+    <div class="hidden-sm hidden-md hidden-xs">LG</div>
+
+    <div class="gridtable">
+
+        <div class="gridtable-header hidden-xs hidden-sm">
+
+            <div class="col-md-3"><label translate>Quantity</label></div>
+            <div class="col-md-3"><label translate>This</label></div>
+            <div class="col-md-3"><label translate>That</label></div>
+            <div class="col-md-3"><label translate>StillAnother</label></div>
+
+        </div>
+
+        <div class="gridtable-row">
+
+            <div class="col-xs-12 col-sm-6 col-md-3">
+                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label translate>QuantityStuff</label></div>
+                <div class="col-xs-7 col-sm-12 col-md-12 value">Q Value</div>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-md-3">
+                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label translate>This</label></div>
+                <div class="col-xs-7 col-sm-12 col-md-12 value">T More</div>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-md-3">
+                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label translate>Stuff</label></div>
+                <div class="col-xs-7 col-sm-12 col-md-12 value">T Look</div>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-md-3">
+                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label translate>Another</label></div>
+                <div class="col-xs-7 col-sm-12 col-md-12 value">A Here</div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+</body>
+</html>

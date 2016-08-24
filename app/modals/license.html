@@ -1,0 +1,47 @@
+﻿<div class="modal-content">
+    <form name="form" novalidate>
+        <div class="modal-header">
+            <button type="button" class="close" ng-click="licenseDetails.close()">×</button>
+            <h4 class="modal-title"><i class="fa fa-license"></i> <span translate>License Details</span></h4>
+        </div>
+        <div class="modal-body">
+            <div class="callout callout-danger" ng-if="modalError">
+                <h4 translate>Oops! We had a problem.</h4>
+                <p>{{modalError.message}}</p>
+                <br /><small>Error code: {{modalError.reference}}</small>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group">
+                    <label for="name" class="control-label" translate>License ID</label>
+                    <div>{{license.license_id}}</div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group">
+                    <label for="name" class="control-label" translate>License Service</label>
+                    <div><a ng-href="/#/license_services/{{license.license_service.license_service_id}}/edit" target="_blank">{{license.license_service.name}}</a></div>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label for="expires_in_clicks" class="control-label" translate>License</label>
+                    <textarea class="form-control" select-on-click>{{license.text}}</textarea>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a number less than 100.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row"></div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" ng-click="licenseDetails.close()">
+                <span translate>Cancel</span>
+            </button>
+        </div>
+
+    </form>
+</div>

@@ -1,0 +1,90 @@
+﻿<form name="formAddress" novalidate>
+    <div class="panel" style="min-height:160px;">
+        <div class="panel-heading">
+            <span class="panel-title">{{panelTitle}}</span>
+            <div class="panel-heading-controls" ng-if="allowEdit">
+                <a class="btn btn-sm btn-info" ng-show="!edit" ng-click="openEdit()" translate>Edit</a>
+                <a class="btn btn-sm btn-default" ng-show="edit" ng-click="closeEdit()" translate>Cancel</a>
+                <a class="btn btn-sm btn-primary" ng-show="edit" ng-click="update(formAddress)" translate>Save</a>
+            </div>
+        </div>
+        <div class="panel-body">
+
+            <div ng-if="!edit">
+                <span ng-if="item.name">{{item.name}}<br /></span>
+                <span ng-if="item.address_1">{{item.address_1}}<br /></span>
+                <span ng-if="item.address_2">{{item.address_2}}<br /></span>
+                <span ng-if="item.city">{{item.city}}&nbsp;</span><span ng-if="item.state_prov">{{item.state_prov}}&nbsp;</span><span ng-if="item.postal_code">{{item.postal_code}}</span>
+                <span ng-if="item.city || item.state_prov || item.postal_code"><br /></span>
+                <span ng-if="item.country">{{item.country | countryCodeToName}}<br /></span>
+                <div ng-if="item.email" class="spacer-t10"><a href="mailto:{{item.email}}">{{item.email}}</a></div>
+            </div>
+
+            <div ng-if="edit">
+                <div class="row form-group" ng-if="showItem('name')">
+                    <label class="col-md-4 control-label" translate>Name</label>
+                    <div class="col-md-8" ng-class="{ 'has-error': formAddress.name.$invalid && (formAddress.name.$touched || submitted) }">
+                        <input type="text" ng-model="item.name" ng-model-options="{ updateOn: 'blur' }" name="name" class="form-control" allow-empty="{{ allowEmpty('name') }}">
+                        <p class="help-block fadeInDown" ng-show="formAddress.name.$invalid && (formAddress.name.$dirty || submitted)" translate>Please provide a name</p>
+                    </div>
+                </div>
+
+                <div class="row form-group" ng-if="showItem('address_1')">
+                    <label class="col-md-4 control-label" translate>Address</label>
+                    <div class="col-md-8" ng-class="{ 'has-error': formAddress.address_1.$invalid && (formAddress.address_1.$touched || submitted) }">
+                        <input type="text" ng-model="item.address_1" ng-model-options="{ updateOn: 'blur' }" name="address_1" class="form-control" allow-empty="{{ allowEmpty('address_1') }}">
+                        <p class="help-block fadeInDown" ng-show="formAddress.address_1.$invalid && (formAddress.address_1.$dirty || submitted)" translate>Please provide an address</p>
+                    </div>
+                </div>
+
+                <div class="row form-group" ng-if="showItem('address_2')">
+                    <label class="col-md-4 control-label" translate>Address</label>
+                    <div class="col-md-8">
+                        <input type="text" ng-model="item.address_2" ng-model-options="{ updateOn: 'blur' }" name="address_2" class="form-control">
+                    </div>
+                </div>
+
+                <div class="row form-group" ng-if="showItem('city')">
+                    <label class="col-md-4 control-label" translate>City</label>
+                    <div class="col-md-8" ng-class="{ 'has-error': formAddress.city.$invalid && (formAddress.city.$touched || submitted) }">
+                        <input type="text" ng-model="item.city" ng-model-options="{ updateOn: 'blur' }" name="city" class="form-control" allow-empty="{{ allowEmpty('city') }}">
+                        <p class="help-block fadeInDown" ng-show="formAddress.city.$invalid && (formAddress.city.$dirty || submitted)" translate>Please provide a city</p>
+                    </div>
+                </div>
+
+                <div class="row form-group" ng-if="showItem('state_prov')">
+                    <label class="col-md-4 control-label" translate>State / Province</label>
+                    <div class="col-md-8" ng-class="{ 'has-error': formAddress.state_prov.$invalid && (formAddress.state_prov.$touched || submitted) }">
+                        <input type="text" ng-model="item.state_prov" ng-model-options="{ updateOn: 'blur' }" name="state_prov" class="form-control" allow-empty="{{ allowEmpty('state_prov') }}">
+                        <p class="help-block fadeInDown" ng-show="formAddress.state_prov.$invalid && (formAddress.state_prov.$dirty || submitted)" translate>Please provide a state / province</p>
+                    </div>
+                </div>
+
+                <div class="row form-group" ng-if="showItem('postal_code')">
+                    <label class="col-md-4 control-label" translate>Postal Code</label>
+                    <div class="col-md-8" ng-class="{ 'has-error': formAddress.postal_code.$invalid && (formAddress.postal_code.$touched || submitted) }">
+                        <input type="text" ng-model="item.postal_code" ng-model-options="{ updateOn: 'blur' }" name="postal_code" class="form-control" allow-empty="{{ allowEmpty('postal_code') }}">
+                        <p class="help-block fadeInDown" ng-show="formAddress.postal_code.$invalid && (formAddress.postal_code.$dirty || submitted)" translate>Please provide a postal / zip code</p>
+                    </div>
+                </div>
+
+                <div class="row form-group" ng-if="showItem('country')">
+                    <label class="col-md-4 control-label" translate>Country</label>
+                    <div class="col-md-8" ng-class="{ 'has-error': formAddress.country.$invalid && (formAddress.country.$touched || submitted) }">
+                        <select class="form-control" ng-model="item.country" ng-model-options="{ updateOn: 'blur' }" ng-options="country.code as country.name for country in countries" allow-empty="{{ allowEmpty('country') }}"></select>
+                        <p class="help-block fadeInDown" ng-show="formAddress.country.$invalid && (formAddress.country.$dirty || submitted)" translate>Please provide a country</p>
+                    </div>
+                </div>
+
+                <div class="row form-group" ng-if="showItem('email')">
+                    <label class="col-md-4 control-label" translate>Email</label>
+                    <div class="col-md-8" ng-class="{ 'has-error': formAddress.email.$invalid && (formAddress.email.$touched || submitted) }">
+                        <input type="text" ng-model="item.email" ng-model-options="{ updateOn: 'blur' }" name="email" class="form-control" is-valid-email allow-empty-value="{{ allowEmpty('email')}}">
+                        <p class="help-block fadeInDown" ng-show="formAddress.email.$invalid && (formAddress.email.$dirty || submitted)" translate>Please provide a valid email</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</form>

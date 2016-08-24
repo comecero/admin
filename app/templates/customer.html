@@ -1,0 +1,111 @@
+﻿<ng-form name="customerform" novalidate>
+
+    <div class="panel">
+        <div class="panel-heading">
+            <span class="panel-title" translate>Customer</span>
+            <div class="panel-heading-controls">
+                <a class="btn btn-sm btn-info" ng-show="!edit" ng-click="edit = true" translate>Edit</a>
+                <a class="btn btn-sm btn-default" ng-show="edit" ng-click="cancel()" translate>Cancel</a>
+                <button class="btn btn-sm btn-primary" ng-show="edit" ng-click="save(customerform)" isolate-validation="true" validate-on-submit translate>Save</button>
+            </div>
+        </div>
+        <div class="panel-body">
+
+            <div class="col-xs-12 spacer-b20" ng-show="!edit">
+                <span ng-if="customer.name" class="text-bg">{{customer.name}}<br></span>
+                <span ng-if="customer.email"><a href="mailto:{{customer.email}}">{{customer.email}}</a><br></span>
+                <span ng-if="customer.company_name">{{customer.company_name}}<br></span>
+                <span ng-if="customer.phone"><span translate>Phone</span>: {{customer.phone}}<br></span>
+                <span ng-if="customer.tax_number"><span translate>Tax Number</span>: {{customer.tax_number}}<br></span>
+                <span>ID: <a href="/#/customers/{{customer.customer_id}}">{{customer.customer_id}}</a><br></span>
+                <span ng-if="customer.tax_exempt"><i class="fa fa-check-circle text-success"></i>&nbsp;<span translate>Tax Exempt</span><br></span>
+            </div>
+
+            <div ng-show="edit">
+
+                <div class="col-xs-12 col-md-6">
+                    <div class="form-group" show-errors>
+                        <label for="name" class="control-label" translate>Name</label>
+                        <input type="text" class="form-control" name="name" ng-model="customer.name">
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-md-6">
+                    <div class="form-group" show-errors>
+                        <label for="company_name" class="control-label" translate>Company Name</label>
+                        <input type="text" class="form-control" name="company_name" ng-model="customer.company_name">
+                    </div>
+                </div>
+
+                <div class="row"></div>
+
+                <div class="col-xs-12 col-md-6">
+                    <div class="form-group" show-errors>
+                        <label for="email" class="control-label" translate>Email</label>
+                        <input type="text" class="form-control" name="email" ng-model="customer.email" is-valid-email allow-empty-value="true">
+                        <p class="help-block hidden fadeInDown" translate>Please provide a valid email</p>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-md-6">
+                    <div class="form-group" show-errors>
+                        <label for="phone" class="control-label" translate>Phone</label>
+                        <input type="text" class="form-control" name="phone" ng-model="customer.phone">
+                    </div>
+                </div>
+
+                <div class="row"></div>
+
+                <div class="col-xs-12" ng-if="!customer.customer_id">
+                    <div class="form-group" show-errors>
+                        <label for="company_name" class="control-label" translate>Customer ID</label>
+                        <input type="text" class="form-control" name="company_name" ng-model="customer.customer_id">
+                        <div>
+                            <p class="help-text" translate>Leave blank and we'll create one automatically</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row"></div>
+
+            <div class="col-xs-12 col-md-6 spacer-t10">
+                <span class="text-sm"><strong translate>Billing Address</strong></span>
+                <hr class="spacer-t5 spacer-b5" />
+                <div class="spacer-t10" address="customer.billing_address" edit="edit"></div>
+            </div>
+
+            <div class="col-xs-12 col-md-6 spacer-t10">
+                <span class="text-sm"><strong translate>Shipping Address</strong></span>
+                <hr class="spacer-t5 spacer-b5" />
+                <div class="spacer-t10" address="customer.shipping_address" edit="edit"></div>
+            </div>
+
+            <div ng-show="edit">
+
+                <div class="col-xs-12 col-md-6">
+                    <div class="form-group" show-errors>
+                        <label for="tax_number" class="control-label" translate>Tax Number</label>
+                        <input type="text" class="form-control" name="tax_number" ng-model="customer.tax_number">
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-md-6">
+                    <div class="form-group" show-errors>
+                        <label class="radio-group-label" translate>Tax Exempt</label>
+                        <div class="radio-group inline">
+                            <input type="radio" id="tax_exempt-1" class="radio" name="tax_exempt" ng-model="customer.tax_exempt" ng-value="true" required>
+                            <label for="tax_exempt-1" class="radio-label">Yes</label>
+                            <input type="radio" id="tax_exempt-0" class="radio" name="tax_exempt" ng-model="customer.tax_exempt" ng-value="false" required>
+                            <label for="tax_exempt-0" class="radio-label">No</label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</ng-form>

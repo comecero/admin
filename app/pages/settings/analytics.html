@@ -1,0 +1,98 @@
+﻿<div ng-controller="AnalyticsSettingsCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1>Analytics Settings</h1>
+    </div>
+
+    <form name="form" novalidate>
+        <div class="panel panel-body light-shadow">
+
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="google_tracking_id" class="control-label" translate>Google Analytics Tracking ID</label>
+                    <input type="text" class="form-control" name="google_tracking_id" ng-model="settings.google_tracking_id" maxlength="15">
+                    <div>
+                        <p class="help-text" translate>
+                            Provided by Google Analytics. The format will be similar to: UA-000000-01.<br /><br />
+                            <a href="https://support.google.com/analytics/answer/1032385?hl=en" target="_blank">Get help</a> finding your Tracking ID.
+                            <a href="https://docs.comecero.com/more-info/#settings_analytics-google_tracking_id" target="_blank">Read more</a> about the data we send when you provide your Google Analytics Tracking ID.
+                            <b>We highly recommend you provide different Google Analytics Tracking IDs</b> for your live and test settings to avoid loading test and live data into the same Google Analytics account.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label class="radio-group-label" translate>Send Events and Conversions</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="send_events-1" class="radio" name="send_events" ng-model="settings.send_events" ng-value="true" required>
+                        <label for="send_events-1" class="radio-label">Yes</label>
+                        <input type="radio" id="send_events-2" class="radio" name="send_events" ng-model="settings.send_events" ng-value="false" required>
+                        <label for="send_events-2" class="radio-label">No</label>
+                    </div>
+                    <div>
+                        <p class="help-text" translate>Indicates if we should send events such as cart conversions, payment completions, declines, subscription renewals, etc. to your Google Analytics account. <a href="https://docs.comecero.com/more-info/#settings_analytics-send_events" target="_blank">Read more</a>.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label class="radio-group-label" translate>Send Transactions</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="send_transactions-1" class="radio" name="send_transactions" ng-model="settings.send_transactions" ng-value="true" required>
+                        <label for="send_transactions-1" class="radio-label">Yes</label>
+                        <input type="radio" id="send_transactions-2" class="radio" name="send_transactions" ng-model="settings.send_transactions" ng-value="false" required>
+                        <label for="send_transactions-2" class="radio-label">No</label>
+                    </div>
+                    <div>
+                        <p class="help-text" translate>Indicates if we should send full financial details of payments and refunds to your Google Analytics account. <a href="https://docs.comecero.com/more-info/#settings_analytics-send_transactions" target="_blank">Read more</a>.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="pageview_tracking" class="control-label" translate>Custom Pageview Tracking Code</label>
+                    <textarea class="form-control no-wrap" id="pageview_tracking" name="pageview_tracking" ng-model="settings.pageview_tracking" placeholder="{{ 'Enter JavaScript' | translate}}"></textarea>
+                    <p class="help-block hidden fadeInDown" translate>Please provide at least one valid app host</p>
+                    <div>
+                        <p class="help-text" translate>
+                            Note that if you provide your Google Analytics Tracking ID, we will automatically inject Google's pageview tracking code for you, so there's no need to provide that code here. This allows you to add additional code or allows you to provide your own Google Analytics pageview tracking code if you have not provided your Google Analytics Tracking ID. <a href="https://docs.comecero.com/more-info/#settings_analytics-pageview_tracking" target="_blank">Read more</a>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="conversion_tracking" class="control-label" translate>Custom Conversion Tracking Code</label>
+                    <textarea class="form-control no-wrap" id="conversion_tracking" name="conversion_tracking" ng-model="settings.conversion_tracking" placeholder="{{ 'Enter JavaScript' | translate}}"></textarea>
+                    <p class="help-block hidden fadeInDown" translate>Please provide at least one valid app host</p>
+                    <div>
+                        <p class="help-text" translate>
+                            Note that if you provide your Google Analytics Tracking ID and have enabled Send Events, we will automatically send conversion events to your account. This allows you to add additional code that runs on cart conversions. Provides access through JavaScript variables to the following resources: order, customer, payment. <a href="https://docs.comecero.com/more-info/#settings_analytics-conversion_tracking" target="_blank">Read more</a>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updateSettings(form)" validate-on-submit translate>Save Changes</button>
+                    <button type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="confirmCancel()" translate>Cancel</button>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>

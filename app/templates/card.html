@@ -1,0 +1,169 @@
+﻿<form name="formCard" novalidate>
+
+    <div class="panel">
+        <div class="panel-heading">
+            <span class="panel-title">{{panelTitle}}</span>
+            <div class="panel-heading-controls" ng-if="allowEdit">
+                <a class="btn btn-sm btn-info" ng-show="!edit" ng-click="openEdit()" translate>Edit</a>
+                <a class="btn btn-sm btn-default" ng-show="edit" ng-click="closeEdit()" translate>Cancel</a>
+                <a class="btn btn-sm btn-primary" ng-show="edit" ng-click="update(formCard)" translate>Save</a>
+            </div>
+        </div>
+        <div class="panel-body">
+
+            <div ng-if="!edit">
+
+                <div ng-if="options.compressedView">
+                    {{item.data.type}}<br>
+                    {{item.data.mask}}, exp {{item.data.exp_month}}/{{item.data.exp_year}}<br>
+                </div>
+
+                <div ng-if="!options.compressedView">
+                    <div class="row form-group">
+                        <label class="col-md-4 control-label" translate>Label</label>
+                        <div class="col-md-8">
+                            {{item.data.label}}
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label class="col-md-4 control-label" translate>Type</label>
+                        <div class="col-md-8">
+                            {{item.data.type}}
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label class="col-md-4 control-label" translate>Number</label>
+                        <div class="col-md-8">
+                            {{item.data.mask}}
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label class="col-md-4 control-label" translate>Expiration</label>
+                        <div class="col-md-8">
+                            {{item.data.exp_month}}/{{item.data.exp_year}}
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label class="col-md-4 control-label" translate>Cardholder Name</label>
+                        <div class="col-md-8">
+                            {{item.data.cardholder_name}}
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label class="col-xs-12 control-label" translate>Billing Address</label>
+                        <div class="col-xs-12">
+                            <span ng-if="item.data.billing_address.address_1">{{item.data.billing_address.address_1}}<br /></span>
+                            <span ng-if="item.data.billing_address.address_2">{{item.data.billing_address.address_2}}<br /></span>
+                            <span ng-if="item.data.billing_address.city">{{item.data.billing_address.city}}&nbsp;</span><span ng-if="item.data.billing_address.state_prov">{{item.data.billing_address.state_prov}}&nbsp;</span><span ng-if="item.data.billing_address.postal_code">{{item.data.billing_address.postal_code}}</span>
+                            <span ng-if="item.data.billing_address.city || item.data.billing_address.state_prov || item.data.billing_address.postal_code"><br /></span>
+                            <span ng-if="item.data.billing_address.country">{{item.data.billing_address.country | countryCodeToName}}<br /></span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div ng-if="edit">
+                <div class="row form-group" ng-if="showItem('label')">
+                    <label class="col-md-4 control-label" translate>Label</label>
+                    <div class="col-md-8" ng-class="{ 'has-error': formCard.label.$invalid && (formCard.label.$touched || submitted) }">
+                        <input type="text" ng-model="item.data.label" ng-model-options="{ updateOn: 'blur' }" name="label" class="form-control" allow-empty="{{ allowEmpty('label') }}">
+                        <p class="help-block fadeInDown" ng-show="formCard.label.$invalid && (formCard.label.$dirty || submitted)" translate>Please provide a label</p>
+                    </div>
+                </div>
+
+                <div class="row form-group" ng-if="showItem('mask')">
+                    <label class="col-md-4 control-label" translate>Number</label>
+                    <div class="col-md-8">
+                        {{item.data.mask}}
+                    </div>
+                </div>
+
+                <div class="row form-group" ng-if="showItem('exp_month') || showItem('exp_month')">
+                    <label class="col-md-4 control-label" translate>Expiration</label>
+                    <div class="col-md-4" ng-class="{ 'has-error': formCard.exp_month.$invalid && (formCard.exp_month.$touched || submitted) }">
+                        <input type="tel" ng-model="item.data.exp_month" ng-model-options="{ updateOn: 'blur' }" name="exp_month" class="form-control" is-valid-integer allow-empty-value="{{ allowEmpty('exp_month') }}" placeholder="MM">
+                        <p class="help-block fadeInDown" ng-show="formCard.exp_month.$invalid && (formCard.exp_month.$dirty || submitted)" translate>Please provide a month</p>
+                    </div>
+                    <div class="hidden-lg hidden-md spacer-t10"></div>
+                    <div class="col-md-4" ng-class="{ 'has-error': formCard.exp_year.$invalid && (formCard.exp_year.$touched || submitted) }">
+                        <input type="tel" ng-model="item.data.exp_year" ng-model-options="{ updateOn: 'blur' }" name="exp_year" class="form-control" is-valid-integer allow-empty-value="{{ allowEmpty('exp_year') }}" placeholder="YY">
+                        <p class="help-block fadeInDown" ng-show="formCard.exp_year.$invalid && (formCard.exp_year.$dirty || submitted)" translate>Please provide a year</p>
+                    </div>
+                </div>
+
+                <div class="row form-group" ng-if="showItem('is_default')">
+                    <label class="col-md-4 control-label" translate>Default Card?</label>
+                    <div class="col-md-8">
+                        <div class="checkbox-group inline">
+                            <input type="checkbox" id="is_default" class="checkbox" name="is_default" ng-model="item.is_default" ng-checked="item.is_default">
+                            <label for="is_default" class="checkbox-label"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row form-group" ng-if="showItem('cardholder_name')">
+                    <label class="col-md-4 control-label" translate>Cardholder Name</label>
+                    <div class="col-md-8" ng-class="{ 'has-error': formCard.cardholder_name.$invalid && (formCard.cardholder_name.$touched || submitted) }">
+                        <input type="text" ng-model="item.data.cardholder_name" ng-model-options="{ updateOn: 'blur' }" name="cardholder_name" class="form-control" allow-empty="{{ allowEmpty('cardholder_name') }}">
+                        <p class="help-block fadeInDown" ng-show="formCard.cardholder_name.$invalid && (formCard.cardholder_name.$dirty || submitted)" translate>Please provide a name</p>
+                    </div>
+                </div>
+
+                <div class="row form-group" ng-if="showItem('billing_address.address_1')">
+                    <label class="col-md-4 control-label" translate>Address</label>
+                    <div class="col-md-8" ng-class="{ 'has-error': formCard.address_1.$invalid && (formCard.address_1.$touched || submitted) }">
+                        <input type="text" ng-model="item.data.billing_address.address_1" ng-model-options="{ updateOn: 'blur' }" name="address_1" class="form-control" allow-empty="{{ allowEmpty('billing_address.address_1') }}">
+                        <p class="help-block fadeInDown" ng-show="formCard.address_1.$invalid && (formCard.address_1.$dirty || submitted)" translate>Please provide an address</p>
+                    </div>
+                </div>
+
+                <div class="row form-group" ng-if="showItem('billing_address.address_2')">
+                    <label class="col-md-4 control-label" translate>Address</label>
+                    <div class="col-md-8">
+                        <input type="text" ng-model="item.data.billing_address.address_2" ng-model-options="{ updateOn: 'blur' }" name="address_2" class="form-control">
+                    </div>
+                </div>
+
+                <div class="row form-group" ng-if="showItem('billing_address.city')">
+                    <label class="col-md-4 control-label" translate>City</label>
+                    <div class="col-md-8" ng-class="{ 'has-error': formCard.city.$invalid && (formCard.city.$touched || submitted) }">
+                        <input type="text" ng-model="item.data.billing_address.city" ng-model-options="{ updateOn: 'blur' }" name="city" class="form-control" allow-empty="{{ allowEmpty('billing_address.city') }}">
+                        <p class="help-block fadeInDown" ng-show="formCard.city.$invalid && (formCard.city.$dirty || submitted)" translate>Please provide a city</p>
+                    </div>
+                </div>
+
+                <div class="row form-group" ng-if="showItem('billing_address.state_prov')">
+                    <label class="col-md-4 control-label" translate>State / Province</label>
+                    <div class="col-md-8" ng-class="{ 'has-error': formCard.state_prov.$invalid && (formCard.state_prov.$touched || submitted) }">
+                        <input type="text" ng-model="item.data.billing_address.state_prov" ng-model-options="{ updateOn: 'blur' }" name="state_prov" class="form-control" allow-empty="{{ allowEmpty('billing_address.state_prov') }}">
+                        <p class="help-block fadeInDown" ng-show="formCard.state_prov.$invalid && (formCard.state_prov.$dirty || submitted)" translate>Please provide a state / province</p>
+                    </div>
+                </div>
+
+                <div class="row form-group" ng-if="showItem('billing_address.postal_code')">
+                    <label class="col-md-4 control-label" translate>Postal Code</label>
+                    <div class="col-md-8" ng-class="{ 'has-error': formCard.postal_code.$invalid && (formCard.postal_code.$touched || submitted) }">
+                        <input type="text" ng-model="item.data.billing_address.postal_code" ng-model-options="{ updateOn: 'blur' }" name="postal_code" class="form-control" allow-empty="{{ allowEmpty('billing_address.postal_code') }}">
+                        <p class="help-block fadeInDown" ng-show="formCard.postal_code.$invalid && (formCard.postal_code.$dirty || submitted)" translate>Please provide a postal / zip code</p>
+                    </div>
+                </div>
+
+                <div class="row form-group" ng-if="showItem('billing_address.country')">
+                    <label class="col-md-4 control-label" translate>Country</label>
+                    <div class="col-md-8" ng-class="{ 'has-error': formCard.country.$invalid && (formCard.country.$touched || submitted) }">
+                        <select class="form-control" ng-model="item.data.billing_address.country" ng-model-options="{ updateOn: 'blur' }" ng-options="country.code as country.name for country in countries" allow-empty="{{ allowEmpty('billing_address.country') }}"></select>
+                        <p class="help-block fadeInDown" ng-show="formCard.country.$invalid && (formCard.country.$dirty || submitted)" translate>Please provide a country</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</form>

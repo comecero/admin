@@ -1,0 +1,96 @@
+﻿<div ng-controller="CartsViewCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1 translate>Cart Details</h1>
+    </div>
+
+    <div class="panel light-shadow">
+        <div class="panel-heading">
+            <span class="panel-title text-bg text-bold">{{cart.cart_id}}</span>
+            <div class="panel-heading-controls">
+                <span class="badge badge-warning" ng-if="cart.payment_status == 'unpaid'"><i class="fa fa-minus-circle"></i>&nbsp;<span translate>Unpaid</span></span>
+                <span class="badge badge-success" ng-if="cart.payment_status == 'completed'"><i class="fa fa-check-circle"></i>&nbsp;<span translate>Completed</span></span>
+                <span class="badge badge-pa-purple" ng-if="cart.payment_status == 'pending'"><i class="fa fa-clock-o"></i>&nbsp;&nbsp;<span translate>Pending</span></span>
+                <span class="badge badge-warning" ng-if="cart.payment_status == 'refunded'"><i class="fa fa-undo"></i>&nbsp;&nbsp;<span translate>Refunded</span></span>
+                <span class="badge badge-danger" ng-if="cart.payment_status == 'failed'"><i class="fa fa-times-circle"></i>&nbsp;&nbsp;<span translate>Failed</span></span>
+                <span class="badge badge-danger" ng-if="cart.payment_status == 'cancelled'"><i class="fa fa-ban"></i>&nbsp;&nbsp;<span translate>Cancelled</span></span>
+            </div>
+        </div>
+
+        <div class="panel-body">
+
+            <div customer-edit="cart.customer" cart="cart" error="exception.error"></div>
+
+            <div class="panel no-heading">
+                <div class="panel-body panel-embed">
+
+                    <div class="col-xs-12 col-md-6">
+                        <div><span translate>Customer IP Address:</span> <strong>{{cart.customer_ip_address}}</strong></div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 spacer-b15">
+                        <div><span translate>IP Country:</span> <strong>{{cart.customer_ip_country | countryCodeToName}}</strong></div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="panel no-heading">
+                <div class="panel-body panel-embed">
+
+                    <div class="col-xs-12 col-md-6">
+                        <div><span translate>Created:</span> <strong>{{cart.date_created | date:'short'}}</strong></div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 spacer-b15">
+                        <div><span translate>Updated:</span> <strong>{{cart.date_modified | date:'short'}}</strong></div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <span class="panel-title" translate>Items</span>
+                    <div class="panel-heading-controls">
+                        <span class="badge badge-warning" ng-if="cart.fulfilled == false"><i class="fa fa-truck"></i>&nbsp;<span translate>Unfulfilled</span></span>
+                        <span class="badge badge-success" ng-if="cart.fulfilled == true"><i class="fa fa-truck"></i>&nbsp;<span translate>Fulfilled</span></span>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <ledger-sale sale="cart"></ledger-sale>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <span class="panel-title" translate>Payments</span>
+                    <div class="panel-heading-controls">
+                        <span class="badge badge-danger">{{count.payments}}</span>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div object-list type="payment" url="{{resources.paymentListUrl}}" template-url="app/templates/paymentList.html" embedded="true" page="offset" limit="5" search="false" error="exception.error" count="count.payments" refresh="functions.refresh"></div>
+                </div>
+            </div>
+
+            <div meta-to-html="{{cart.meta}}"></div>
+
+            <div class="col-xs-12">
+                <span class="btn btn-danger btn spacer-t5" void payment="successful_payment" error="exception.error" ng-if="!cart.hideCapture" translate>Cancel Payment</span>
+                <span class="btn btn-success btn spacer-t5" capture payment="successful_payment" items="cart.items" shipping-item="cart.shipping_item" error="exception.error" ng-show="!cart.hideCapture" translate>Capture Payment</span>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+

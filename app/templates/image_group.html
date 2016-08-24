@@ -1,0 +1,48 @@
+﻿<ul class="list-group">
+    <li class="list-group-item overflow-hidden">
+        <i class="fa fa-minus-square pointer pull-right text-default" ng-show="showImages" ng-click="showImages = !showImages" style="margin-top:3px"></i>
+        <i class="fa fa-plus-square pointer pull-right text-default" ng-show="!showImages" ng-click="showImages = !showImages" style="margin-top:3px"></i>
+        <span translate translate-n="images.length" translate-plural="{{images.length}} images">{{images.length}} image</span>
+    </li>
+    <li class="list-group-item overflow-hidden fadeIn animated" ng-show="showImages">
+        <div class="row hidden-sm hidden-xs">
+            <div class="col-md-2">Preview</div>
+            <div class="col-md-3">Filename</div>
+            <div class="col-md-7">URLs</div>
+        </div>
+        <div class="row spacer-b30" ng-repeat="image in images">
+            <div class="col-md-2"><img ng-src="{{image.link_square}}" class="img-thumbnail" height="75" width="75" /></div>
+            <div class="col-md-3 hidden-sm hidden-xs"><a href="/#/images/{{image.image_id}}" target="_blank">{{image.filename | truncate: 15}}</a></div>
+            <div class="col-md-7">
+                <div class="input-group input-group-sm spacer-t10">
+                    <span class="input-group-addon">Large</span>
+                    <input type="text" class="form-control" value="{{image.link_large}}" select-on-click>
+                </div>
+                <div ng-if="showMoreSizes(image.image_id)">
+                    <div class="input-group input-group-sm spacer-t10">
+                        <span class="input-group-addon">Medium</span>
+                        <input type="text" class="form-control" value="{{image.link_medium}}" select-on-click>
+                    </div>
+                    <div class="input-group input-group-sm spacer-t10">
+                        <span class="input-group-addon">Small</span>
+                        <input type="text" class="form-control" value="{{image.link_small}}" select-on-click>
+                    </div>
+                    <div class="input-group input-group-sm spacer-t10">
+                        <span class="input-group-addon">Square</span>
+                        <input type="text" class="form-control" value="{{image.link_square}}" select-on-click>
+                    </div>
+                    <div class="input-group input-group-sm spacer-t10">
+                        <span class="input-group-addon">Full</span>
+                        <input type="text" class="form-control" value="{{image.link}}" select-on-click>
+                    </div>
+                </div>
+                <a class="btn btn-info btn-xs spacer-t10" ng-click="toggleMoreSizes(image.image_id)" ng-if="!showMoreSizes(image.image_id)" translate>Show more sizes</a>
+                <a class="btn btn-info btn-xs spacer-t10" ng-click="toggleMoreSizes(image.image_id)" ng-if="showMoreSizes(image.image_id)" translate>Show less sizes</a>
+            </div>
+        </div>
+        <p class="text-right">
+            <a class="btn btn-primary btn-xs btn-danger spacer-t10" ng-click="removeAll()" translate>Remove All</a>
+            <a class="btn btn-primary btn-xs spacer-t10" images-select images="images" limit="{{limit}}" translate>Change</a>
+        </p>
+    </li>
+</ul>

@@ -1,0 +1,248 @@
+﻿<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" ng-click="subscriptionPlanSelect.cancel()">×</button>
+        <h4 class="modal-title"><span translate>Select Subscription Plan</span></h4>
+    </div>
+    <div class="modal-body">
+
+        <div class="callout callout-danger" ng-if="modalError">
+            <h4 translate>Oops! We had a problem.</h4>
+            <p>{{modalError.message}}</p>
+            <span ng-show="modalError.reference">
+                <br /><small>Error code: {{modalError.reference}}</small>
+            </span>
+        </div>
+
+        <form name="modalform" novalidate>
+            <uib-tabset>
+                <uib-tab active="subscriptionPlanSelectTabs[0].active" resource="files" method="create">
+                    <tab-heading><i class="fa fa-plus-circle"></i> <small translate>New</small></tab-heading>
+
+                    <div class="col-xs-12">
+                        <div class="form-group" show-errors>
+                            <label for="name" class="control-label" translate>Subscription Plan Name</label>
+                            <input type="text" class="form-control" name="name" ng-model="subscription_plan.name" required>
+                            <p class="help-block hidden fadeInDown" translate>Please provide a name</p>
+                        </div>
+                    </div>
+
+                    <div class="row"></div>
+
+                    <div class="col-md-6 col-xs-12">
+                        <div class="form-group" show-errors>
+                            <label for="billing_interval" class="control-label" translate>Billing Period</label>
+                            <input type="tel" class="form-control" name="billing_interval" ng-model="subscription_plan.billing_interval" is-valid-integer required>
+                            <p class="help-block hidden fadeInDown" translate>Please provide a billing interval</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-xs-12">
+                        <div class="form-group" show-errors>
+                            <label for="billing_interval_unit" class="control-label" translate>Interval</label>
+                            <select class="form-control" name="billing_interval_unit" ng-model="subscription_plan.billing_interval_unit" required>
+                                <option value="day">Day(s)</option>
+                                <option value="month">Month(s)</option>
+                                <option value="year">Year(s)</option>
+                                <option value="hour" ng-show="settings.test">Hour(s)</option>
+                            </select>
+                            <p class="help-block hidden fadeInDown" translate>Please select an option</p>
+                        </div>
+                    </div>
+
+                    <div class="row"></div>
+
+                    <div class="col-md-6 col-xs-12">
+                        <div class="form-group" show-errors>
+                            <label for="trial_interval" class="control-label" translate>Trial Period</label>
+                            <input type="tel" class="form-control" name="trial_interval" ng-model="subscription_plan.trial_interval" is-valid-integer allow-empty-value="true">
+                            <p class="help-block hidden fadeInDown" translate>Please provide a valid number or leave blank</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-xs-12">
+                        <div class="form-group" show-errors>
+                            <label for="trial_interval_unit" class="control-label" ng-class="{ 'required': subscription_plan.trial_interval != null }" translate>Interval</label>
+                            <select class="form-control" name="trial_interval_unit" ng-model="subscription_plan.trial_interval_unit" ng-required="subscription_plan.trial_interval != null">
+                                <option value="">No Trial</option>
+                                <option value="day">Day(s)</option>
+                                <option value="month">Month(s)</option>
+                                <option value="year">Year(s)</option>
+                                <option value="hour" ng-show="settings.test">Hour(s)</option>
+                            </select>
+                            <p class="help-block hidden fadeInDown" translate>Please select an option</p>
+                        </div>
+                    </div>
+
+                    <div class="row"></div>
+
+                    <div class="col-md-6 col-xs-12">
+                        <div class="form-group" show-errors>
+                            <label for="end_at_billing_count" class="control-label" translate>Total Billings</label>
+                            <input type="text" class="form-control" name="end_at_billing_count" ng-model="subscription_plan.end_at_billing_count" is-valid-integer allow-empty-value="true">
+                            <p class="help-block hidden fadeInDown" translate>Please provide a valid number</p>
+                            <div>
+                                <p class="help-text" translate>If you would like to have the subscription automatically stop after a specified number of billings</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row"></div>
+
+                    <div class="col-md-6 col-xs-12" show-errors>
+                        <div class="form-group">
+                            <label class="radio-group-label" translate>Fulfill on Renewal?</label>
+                            <div class="radio-group inline">
+                                <input type="radio" id="fulfill_on_renewal-1" class="radio" name="fulfill_on_renewal" ng-model="subscription_plan.fulfill_on_renewal" ng-value="true" required>
+                                <label for="fulfill_on_renewal-1" class="radio-label">Yes</label>
+                                <input type="radio" id="fulfill_on_renewal-2" class="radio" name="fulfill_on_renewal" ng-model="subscription_plan.fulfill_on_renewal" ng-value="false" required>
+                                <label for="fulfill_on_renewal-2" class="radio-label">No</label>
+                            </div>
+                            <div>
+                                <p class="help-text" translate>For digital products, indicates if new license codes / downloads should be sent upon successful renewal.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-xs-12" show-errors>
+                        <div class="form-group">
+                            <label class="radio-group-label" translate>Receipt on Renewal?</label>
+                            <div class="radio-group inline">
+                                <input type="radio" id="order_confirmation_on_renewal-1" class="radio" name="order_confirmation_on_renewal" ng-model="subscription_plan.order_confirmation_on_renewal" ng-value="true" required>
+                                <label for="order_confirmation_on_renewal-1" class="radio-label">Yes</label>
+                                <input type="radio" id="order_confirmation_on_renewal-2" class="radio" name="order_confirmation_on_renewal" ng-model="subscription_plan.order_confirmation_on_renewal" ng-value="false" required>
+                                <label for="order_confirmation_on_renewal-2" class="radio-label">No</label>
+                            </div>
+                            <div>
+                                <p class="help-text" translate>Indicates if a receipt / order confirmation should be sent to the customer by email upon successful renewal.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label for="description" class="control-label" translate>Description</label>
+                            <textarea class="form-control" name="description" ng-model="subscription_plan.description" placeholder="{{ 'Optional' | translate}}"></textarea>
+                        </div>
+                        <p class="maxlength-message" max-length="250" item="modalform.description"></p>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-right btn-margin-left" validate-on-submit isolate-validation="true" ng-click="subscriptionPlanSelect.create(modalform)">
+                            <span translate>Create Plan</span>
+                        </button>
+                    </div>
+
+                </uib-tab>
+
+                <uib-tab active="subscriptionPlanSelectTabs[1].active">
+                    <tab-heading><i class="fa fa-files-o"></i> <small translate>Existing Plans</small></tab-heading>
+                    <div class="col-xs-12 text-right spacer-20">
+                        <div class="form-inline">
+                            <div class="form-group has-feedback">
+                                <input type="text" class="form-control" ng-model="subscriptionPlanSelect.q" ng-change="subscriptionPlanSelect.search()" ng-model-options="{ updateOn: 'default blur', debounce: { default: 750, blur: 0 } }" select-on-click placeholder="{{ 'Search' | translate }}...">
+                                <span class="fa fa-search form-control-feedback"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="gridtable">
+
+                        <div class="gridtable-header hidden-xs hidden-sm">
+
+                            <div class="col-md-4"><label ng-click="subscriptionPlanSelect.sort('name', !subscriptionPlanSelect.params.desc)" class="pointer text-primary">Name</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="subscriptionPlanSelect.params.sort_by == 'name' && subscriptionPlanSelect.params.desc == true"></i><i class="icon fa fa-caret-up" ng-if="subscriptionPlanSelect.params.sort_by == 'name' && subscriptionPlanSelect.params.desc == false"></i></div>
+                            <div class="col-md-2"><label>Billing Interval</label></div>
+                            <div class="col-md-2"><label>Trial Interval</label></div>
+                            <div class="col-md-2"><label>Total Billings</label></div>
+                            <div class="col-md-2 text-right">
+                                <label ng-click="subscriptionPlanSelect.sort('date_created', !subscriptionPlanSelect.params.desc)" class="pointer text-primary">Created</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="subscriptionPlanSelect.params.sort_by == 'date_created' && subscriptionPlanSelect.params.desc == true"></i><i class="icon fa fa-caret-up" ng-if="subscriptionPlanSelect.params.sort_by == 'date_created' && subscriptionPlanSelect.params.desc == false"></i>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12 hidden-md hidden-lg padding-l0">
+                            <div class="btn-group" uib-dropdown>
+                                <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Sort</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                                <ul class="dropdown-menu">
+                                    <li class="dropdown-header">Name</li>
+                                    <li ng-click="subscriptionPlanSelect.sort('name', false)" ng-class="{'selected-li': subscriptionPlanSelect.params.sort_by == 'name' && subscriptionPlanSelect.params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                                    <li ng-click="subscriptionPlanSelect.sort('name', true)" ng-class="{'selected-li': subscriptionPlanSelect.params.sort_by == 'name' && subscriptionPlanSelect.params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                                    <li class="divider"></li>
+                                    <li class="dropdown-header">Date Created</li>
+                                    <li ng-click="subscriptionPlanSelect.sort('date_created', false)" ng-class="{'selected-li': subscriptionPlanSelect.params.sort_by == 'date_created' && subscriptionPlanSelect.params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                                    <li ng-click="subscriptionPlanSelect.sort('date_created', true)" ng-class="{'selected-li': subscriptionPlanSelect.params.sort_by == 'date_created' && subscriptionPlanSelect.params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                                    <li class="divider"></li>
+                                    <li class="dropdown-header">Date Updated</li>
+                                    <li ng-click="subscriptionPlanSelect.sort('date_modified', false)" ng-class="{'selected-li': subscriptionPlanSelect.params.sort_by == 'date_modified' && subscriptionPlanSelect.params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                                    <li ng-click="subscriptionPlanSelect.sort('date_modified', true)" ng-class="{'selected-li': subscriptionPlanSelect.params.sort_by == 'date_modified' && subscriptionPlanSelect.params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="row spacer-b10 hidden-md hidden-lg"></div> <!--Needed to have the buttons clear-->
+
+                        <div class="gridtable-row pointer" ng-repeat="subscription_plan in subscriptionPlanList.data" ng-click="subscriptionPlanSelect.ok(subscription_plan)">
+
+                            <div class="col-xs-12 col-sm-6 col-md-4">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Name</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value"><span><a>{{subscription_plan.name}}</a></span></div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-2">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Billing Interval</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value">
+                                    <span ng-if="subscription_plan.billing_interval_unit == 'day'" translate translate-n="subscription_plan.billing_interval" translate-plural="{{subscription_plan.billing_interval}} days">{{subscription_plan.billing_interval}} day</span>
+                                    <span ng-if="subscription_plan.billing_interval_unit == 'month'" translate translate-n="subscription_plan.billing_interval" translate-plural="{{subscription_plan.billing_interval}} months">{{subscription_plan.billing_interval}} month</span>
+                                    <span ng-if="subscription_plan.billing_interval_unit == 'year'" translate translate-n="subscription_plan.billing_interval" translate-plural="{{subscription_plan.billing_interval}} years">{{subscription_plan.billing_interval}} year</span>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-2">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Trial Interval</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value">
+                                    <span ng-if="subscription_plan.trial_interval_unit == 'day'" translate translate-n="subscription_plan.trial_interval" translate-plural="{{subscription_plan.trial_interval}} days">{{subscription_plan.trial_interval}} day</span>
+                                    <span ng-if="subscription_plan.trial_interval_unit == 'month'" translate translate-n="subscription_plan.trial_interval" translate-plural="{{subscription_plan.trial_interval}} months">{{subscription_plan.trial_interval}} month</span>
+                                    <span ng-if="subscription_plan.trial_interval_unit == 'year'" translate translate-n="subscription_plan.trial_interval" translate-plural="{{subscription_plan.trial_interval}} years">{{subscription_plan.trial_interval}} year</span>
+                                    <span ng-if="!subscription_plan.trial_interval_unit" translate>No Trial</span>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-2">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Total Billings</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value"><span ng-if="subscription_plan.end_at_billing_count">{{subscription_plan.end_at_billing_count}}</span><span ng-if="!subscription_plan.end_at_billing_count" translate>Unlimited</span></div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-2">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Created</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value"><span>{{subscription_plan.date_created | date:'shortDate'}}</span></div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Show pagination if there is at least one page -->
+                    <div class="col-xs-12" ng-if="subscriptionPlanList.data.length > 0">
+                        <ul class="pager">
+                            <li class="previous" ng-click="subscriptionPlanSelect.movePage('-')" ng-show="subscriptionPlanList.previous_page_offset !== null"><a><i class="fa fa-chevron-circle-left"></i> <span translate>Back</span></a></li>
+                            <li class="next" ng-click="subscriptionPlanSelect.movePage('+')" ng-show="subscriptionPlanList.next_page_offset !== null"><a><span translate>Next</span> <i class="fa fa-chevron-circle-right"></i></a></li>
+                        </ul>
+                        <p class="text-right" ng-if="subscriptionPlanList">Showing page {{subscriptionPlanList.current_page}} of {{subscriptionPlanList.total_pages}}</p>
+                    </div>
+
+                    <!-- Show a "not found" message if no images were found  -->
+                    <div class="col-xs-12" ng-if="subscriptionPlanList.data.length == 0">
+                        <p class="no-info" translate>No subscription plans found</p>
+                    </div>
+
+                </uib-tab>
+            </uib-tabset>
+        </form>
+    </div>
+
+    <div class="row"></div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="subscriptionPlanSelect.cancel()">
+            <span translate>Cancel</span>
+        </button>
+    </div>
+</div>

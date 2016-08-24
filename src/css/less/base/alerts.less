@@ -1,0 +1,56 @@
+/*
+ * Component: alert
+ * ----------------
+ */
+
+.alert {
+  .border-radius(3px);
+  h4 {
+    font-weight: 600;
+  }
+  .icon {
+    margin-right: 10px;
+  }
+  .close {
+    color: #000;
+    .opacity(.2);
+    &:hover {
+      .opacity(.5);
+    }
+  }
+  a {
+    color: #fff;
+    text-decoration: underline;
+  }
+    a:hover, a:active, a:focus {
+    color: #fff;
+    text-decoration: underline;
+  }
+}
+
+//Alert Variants
+.alert-success {
+  &:extend(.bg-green);
+  border-color: darken(@green, 5%);
+  background-color: @green;
+  color: lighten(@green, 80%);
+  color: #fff;
+}
+.alert-danger,
+.alert-error {
+  &:extend(.bg-red);
+  border-color: darken(@red, 5%);
+  color: #a94442;
+}
+.alert-warning {
+  &:extend(.bg-yellow);
+  border-color: darken(@yellow, 5%);
+  background-color: @yellow;
+  color: #fff;
+}
+.alert-info {
+  &:extend(.bg-aqua);
+  border-color: darken(@aqua, 5%);
+  background-color: @aqua;
+  color: #fff;
+}

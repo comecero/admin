@@ -1,0 +1,111 @@
+﻿<div ng-controller="CustomersViewCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1>Customer Details</h1>
+    </div>
+
+    <div class="panel light-shadow">
+        <div class="panel-heading">
+            <span class="panel-title text-bg text-bold">{{customer.customer_id}}</span>
+        </div>
+        <div class="panel-body">
+
+            <div class="panel no-heading">
+                <div class="panel-body panel-embed text-sm">
+                    <div class="col-xs-12 col-md-6">
+                        <div><span translate>Created:</span> <strong>{{customer.date_created | date:'short'}}</strong></div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 spacer-b10">
+                        <div><span translate>Updated:</span> <strong>{{customer.date_modified | date:'short'}}</strong></div>
+                    </div>
+                </div>
+            </div>
+
+            <div customer-edit="customer" error="exception.error"></div>
+
+            <div class="row"></div>
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <span class="panel-title" translate>Payment Methods</span>
+                </div>
+                <div class="panel-body panel-embed">
+                    <div class="col-md-6 col-xs-12" ng-repeat="payment_method in payment_methods.data">
+                        <object-edit object="payment_method" error="exception.error" property="" allow-edit="{{hasPermission('payment_methods', 'update')}}" panel-title="{{'Credit Card' | translate}}" require="exp_month,exp_year" hide="" success-callback="refreshCards()" template-url="app/templates/card.html" update-url="{{payment_method.url}}"></object-edit>
+                    </div>
+                    <div class="col-sm-12" ng-if="payment_methods.data == 0">
+                        <p class="no-info" translate>No payment methods on file</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <span class="panel-title" translate>Orders</span>
+                    <div class="panel-heading-controls">
+                        <span class="badge badge-danger">{{count.orders}}</span>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div object-list type="order" url="{{resources.orderListUrl}}" template-url="app/templates/orderList.html" embedded="true" page="offset" limit="5" search="false" error="exception.error" count="count.orders"></div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <span class="panel-title" translate>Payments</span>
+                    <div class="panel-heading-controls">
+                        <span class="badge badge-danger">{{count.payments}}</span>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div object-list type="payment" url="{{resources.paymentListUrl}}" template-url="app/templates/paymentList.html" embedded="true" page="offset" limit="5" search="false" error="exception.error" count="count.payments"></div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <span class="panel-title" translate>Refunds</span>
+                    <div class="panel-heading-controls">
+                        <span class="badge badge-danger">{{count.refunds}}</span>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div object-list type="refund" url="{{resources.refundListUrl}}" template-url="app/templates/refundList.html" embedded="true" page="offset" limit="5" search="false" error="exception.error" count="count.refunds"></div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <span class="panel-title" translate>Invoices</span>
+                    <div class="panel-heading-controls">
+                        <span class="badge badge-danger">{{count.invoices}}</span>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div object-list type="invoice" url="{{resources.invoiceListUrl}}" template-url="app/templates/invoiceList.html" embedded="true" page="offset" limit="5" search="false" error="exception.error" count="count.invoices"></div>
+                </div>
+            </div>
+
+            <div class="panel" ng-show="count.subscriptions > 0">
+                <div class="panel-heading">
+                    <span class="panel-title" translate>Subscriptions</span>
+                    <div class="panel-heading-controls">
+                        <span class="badge badge-danger">{{count.subscriptions}}</span>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div object-list type="subscription" url="{{resources.subscriptionListUrl}}" template-url="app/templates/subscriptionList.html" embedded="true" page="offset" limit="5" search="false" error="exception.error" count="count.subscriptions"></div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>

@@ -1,0 +1,51 @@
+﻿.skin-comecero {
+  //Navbar
+  .main-header {
+    .navbar {
+      .navbar-variant(@white; #8b8a8a; #686868; #f7f6f6);
+      .sidebar-toggle {
+        color: #8b8a8a;
+        &:hover {
+          background-color: darken(@white, 5%);
+            color: #8b8a8a;
+        }
+      }
+      @media (max-width: @screen-header-collapse) {
+        .dropdown-menu {
+          li {
+            &.divider {
+              background-color: #f4f4f4;
+            }
+            a {
+              &:hover {
+                background: darken(@white, 5%);
+              }
+            }
+          }
+        }
+      }
+    }
+    //Logo
+    .logo {
+      .logo-variant(@white);
+      color: @comecero-blue;
+      text-align: left;
+    }
+
+    li.user-header {
+      background-color: @white;
+    }
+  }
+
+  //Content Header
+  .content-header {
+    background: transparent;
+  }
+
+  //Create the sidebar skin
+  .skin-sidebar(@comecero-blue; lighten(@comecero-blue, 5%); #a8bccf; #a8bccf; darken(@comecero-blue, 5%); #ffffff; lighten(@comecero-blue, 10%); #ffffff; #ecf0f1);
+}
+
+.skin-blue.layout-top-nav .main-header > .logo {
+  .logo-variant(@comecero-blue);
+}

@@ -1,0 +1,143 @@
+﻿<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" ng-click="appPackageSelect.cancel()">×</button>
+        <h4 class="modal-title"><span translate>Select an App Package</span></h4>
+    </div>
+    <div class="modal-body">
+        <div class="callout callout-danger" ng-if="modalError">
+            <h4 translate>Oops! We had a problem.</h4>
+            <p>{{modalError.message}}</p>
+            <span ng-show="modalError.reference">
+                <br /><small>Error code: {{modalError.reference}}</small>
+            </span>
+        </div>
+
+        <uib-tabset>
+            <uib-tab active="appPackageSelectTabs[0].active" resource="app_packages" method="create">
+                <tab-heading><i class="fa fa-cloud-upload"></i> <small translate>New</small></tab-heading>
+                <form class="form-group dropzone" dropzone dropzone-url="/app_packages" dropzone-max-files="1" dropzone-max-size="10000000" dropzone-filetypes="zip" dropzone-template-id="dz-app-package">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group no-margin-hr">
+                                <label class="control-label" translate>Name</label>
+                                <input type="text" name="name" class="form-control" placeholder="{{ 'Optional' | translate}}">
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-group no-margin-hr">
+                                <label class="control-label" translate>Version</label>
+                                <input type="text" name="version" class="form-control" placeholder="{{ 'Optional' | translate}}">
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-group no-margin-hr">
+                                <label class="control-label" translate>Description</label>
+                                <textarea name="description" class="form-control" rows="2" placeholder="{{ 'Optional' | translate}}"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </uib-tab>
+            <uib-tab active="appPackageSelectTabs[1].active">
+                <tab-heading><i class="fa fa-files-o"></i> <small translate>Existing App Packages</small></tab-heading>
+                <div class="col-sm-12 text-right spacer-20">
+                    <form class="form-inline">
+                        <div class="form-group has-feedback">
+                            <input type="text" class="form-control" ng-model="appPackageSelect.q" ng-change="appPackageSelect.search()" ng-model-options="{ updateOn: 'default blur', debounce: { default: 750, blur: 0 } }" select-on-click placeholder="{{ 'Search' | translate }}...">
+                            <span class="fa fa-search form-control-feedback"></span>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="gridtable">
+
+                    <div class="gridtable-header hidden-xs hidden-sm">
+
+                        <div class="col-md-3"><label ng-click="appPackageSelect.sort('name', !appPackageSelect.params.desc)" class="pointer text-primary">Name</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="appPackageSelect.params.sort_by == 'name' && appPackageSelect.params.desc == true"></i><i class="icon fa fa-caret-up" ng-if="appPackageSelect.params.sort_by == 'name' && appPackageSelect.params.desc == false"></i></div>
+                        <div class="col-md-2"><label>Version</label></div>
+                        <div class="col-md-3"><label ng-click="appPackageSelect.sort('filename', !appPackageSelect.params.desc)" class="pointer text-primary">Filename</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="appPackageSelect.params.sort_by == 'filename' && appPackageSelect.params.desc == true"></i><i class="icon fa fa-caret-up" ng-if="appPackageSelect.params.sort_by == 'filename' && appPackageSelect.params.desc == false"></i></div>
+                        <div class="col-md-2"><label>Size</label></div>
+                        <div class="col-md-2 text-right"><label ng-click="appPackageSelect.sort('date_created', !appPackageSelect.params.desc)" class="pointer text-primary" translate>Created</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="appPackageSelect.params.sort_by == 'date_created' && appPackageSelect.params.desc == true"></i><i class="icon fa fa-caret-up" ng-if="appPackageSelect.params.sort_by == 'date_created' && appPackageSelect.params.desc == false"></i></div>
+
+                    </div>
+
+                    <div class="col-xs-12 hidden-md hidden-lg padding-l0">
+                        <div class="btn-group" uib-dropdown>
+                            <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Sort</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                            <ul class="dropdown-menu">
+                                <li class="dropdown-header">Name</li>
+                                <li ng-click="appPackageSelect.sort('name', false)" ng-class="{'selected-li': appPackageSelect.params.sort_by == 'name' && appPackageSelect.params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                                <li ng-click="appPackageSelect.sort('name', true)" ng-class="{'selected-li': appPackageSelect.params.sort_by == 'name' && appPackageSelect.params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                                <li class="divider"></li>
+                                <li class="dropdown-header">Filename</li>
+                                <li ng-click="appPackageSelect.sort('filename', false)" ng-class="{'selected-li': appPackageSelect.params.sort_by == 'filename' && appPackageSelect.params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                                <li ng-click="appPackageSelect.sort('filename', true)" ng-class="{'selected-li': appPackageSelect.params.sort_by == 'filename' && appPackageSelect.params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                                <li class="divider"></li>
+                                <li class="dropdown-header">Date Created</li>
+                                <li ng-click="appPackageSelect.sort('date_created', false)" ng-class="{'selected-li': appPackageSelect.params.sort_by == 'date_created' && appPackageSelect.params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                                <li ng-click="appPackageSelect.sort('date_created', true)" ng-class="{'selected-li': appPackageSelect.params.sort_by == 'date_created' && appPackageSelect.params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                                <li class="divider"></li>
+                                <li class="dropdown-header">Date Updated</li>
+                                <li ng-click="appPackageSelect.sort('date_modified', false)" ng-class="{'selected-li': appPackageSelect.params.sort_by == 'date_modified' && appPackageSelect.params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                                <li ng-click="appPackageSelect.sort('date_modified', true)" ng-class="{'selected-li': appPackageSelect.params.sort_by == 'date_modified' && appPackageSelect.params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="row spacer-b10 hidden-md hidden-lg"></div> <!--Needed to have the buttons clear-->
+
+                    <div class="gridtable-row pointer" ng-repeat="app_package in appPackageList.data" ng-click="appPackageSelect.ok(app_package)">
+
+                        <div class="col-xs-12 col-sm-6 col-md-3">
+                            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Name</label></div>
+                            <div class="col-xs-7 col-sm-12 col-md-12 value"><a>{{app_package.name}}</a></div>
+                        </div>
+
+                        <div class="col-xs-12 col-sm-6 col-md-2">
+                            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Version</label></div>
+                            <div class="col-xs-7 col-sm-12 col-md-12 value"><span>{{app_package.version}}</span></div>
+                        </div>
+
+                        <div class="col-xs-12 col-sm-6 col-md-3">
+                            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Filename</label></div>
+                            <div class="col-xs-7 col-sm-12 col-md-12 value"><span>{{app_package.filename}}</span></div>
+                        </div>
+
+                        <div class="col-xs-12 col-sm-6 col-md-2">
+                            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Size</label></div>
+                            <div class="col-xs-7 col-sm-12 col-md-12 value"><span>{{app_package.bytes | bytesToMB}}</span></div>
+                        </div>
+
+                        <div class="col-xs-12 col-sm-6 col-md-2">
+                            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Created</label></div>
+                            <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value"><span>{{app_package.date_created | date:'shortDate'}}</span></div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Show pagination if there is at least one page -->
+                <div class="col-sm-12" ng-if="appPackageList.data.length > 0">
+                    <ul class="pager">
+                        <li class="previous" ng-click="appPackageSelect.movePage('-')" ng-show="appPackageList.previous_page_offset !== null"><a><i class="fa fa-chevron-circle-left"></i> <span translate>Back</span></a></li>
+                        <li class="next" ng-click="appPackageSelect.movePage('+')" ng-show="appPackageList.next_page_offset !== null"><a><span translate>Next</span> <i class="fa fa-chevron-circle-right"></i></a></li>
+                    </ul>
+                    <p class="text-right" ng-if="appPackageList">Showing page {{appPackageList.current_page}} of {{appPackageList.total_pages}}</p>
+                </div>
+
+                <!-- Show a "not found" message if no app packages were found  -->
+                <div class="col-sm-12" ng-if="appPackageList.data.length == 0">
+                    <p class="no-info" translate>No app packages found</p>
+                </div>
+
+            </uib-tab>
+        </uib-tabset>
+    </div>
+
+    <div class="modal-footer clearfix">
+        <button type="button" class="btn btn-default" ng-click="appPackageSelect.cancel()">
+            <span translate>Cancel</span>
+        </button>
+    </div>
+</div>

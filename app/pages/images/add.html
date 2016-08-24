@@ -1,0 +1,32 @@
+﻿<section class="content container" class="content container">
+
+    <div ng-controller="ImagesAddCtrl">
+
+        <div class="callout callout-danger" ng-if="exception.error">
+            <h4 translate>Oops! We had a problem.</h4>
+            <p>{{exception.error.message}}</p>
+            <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+        </div>
+
+        <div class="page-header">
+            <h1>Add Images</h1>
+        </div>
+
+        <div class="panel panel-body light-shadow">
+            <div class="row">
+                <button id="top" href="/#/products/add" class="btn btn-danger btn-right spacer-r10" ng-click="cancel()" ng-if="state.uploadSending"><i class="icon fa fa-times-circle"></i>&nbsp;<span translate>Cancel Upload</span></button>
+            </div>
+            <div class="row">
+                <form class="form-group dropzone" dropzone dropzone-url="/images" dropzone-max-files="10" dropzone-max-size="10000000" dropzone-auto-upload="true" dropzone-filetypes="jpg,jpeg,png,gif" dropzone-image-url-name="link_square" dropzone-template-id="dz-images" dropzone-show-delete="{{ showDelete }}"></form>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="form-group" ng-show="state.uploadComplete">
+                <a href="/#/images/" class="btn btn-primary btn-right btn-margin-left" translate>Done</a>
+            </div>
+
+        </div>
+    </div>
+
+</section>

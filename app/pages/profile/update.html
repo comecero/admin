@@ -1,0 +1,66 @@
+﻿<div ng-controller="ProfileUpdateCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1 translate>Update Profile</h1>
+    </div>
+
+    <form name="form" novalidate>
+        <div class="panel panel-body light-shadow">
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="name" class="control-label" translate>Username</label>
+                    <div class="highlight-value">{{user.user_id}}</div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="name" class="control-label" translate>Name</label>
+                    <input type="text" class="form-control" name="name" ng-model="user.name" required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a name</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="email" class="control-label" translate>Email</label>
+                    <input type="text" class="form-control" name="email" ng-model="user.email" is-valid-email required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a valid email address</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="password" class="control-label" translate>Password</label>
+                    <input type="password" class="form-control" name="password" ng-model="user.password" placeholder="">
+                    <div>
+                        <p class="help-text" translate>Leave blank if you don't want to change your password</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group" ng-class="{ 'has-error': form.password2.$invalid && form.password2.$dirty  }">
+                    <label for="password2" class="control-label" ng-class="{ 'required': user.password != null }" translate>Confirm Password</label>
+                    <input type="password" class="form-control" name="password2" ng-model="user.password2" ng-required="user.password != null && user.password != ''" placeholder="">
+                    <p class="help-block fadeInDown" ng-show="form.password2.$error.match" translate>Your password does not match</p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updateProfile(form)" translate>Save Changes</button>
+                    <button type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="confirmCancel()" translate>Cancel</button>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>

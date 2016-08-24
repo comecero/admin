@@ -1,0 +1,87 @@
+﻿<div class="modal-content">
+    <form name="form" novalidate>
+        <div class="modal-header">
+            <button type="button" class="close" ng-click="downloadDetails.close()">×</button>
+            <h4 class="modal-title"><i class="fa fa-download"></i> <span translate>Download Details</span></h4>
+        </div>
+        <div class="modal-body">
+            <div class="callout callout-danger" ng-if="modalError">
+                <h4 translate>Oops! We had a problem.</h4>
+                <p>{{modalError.message}}</p>
+                <br /><small>Error code: {{modalError.reference}}</small>
+            </div>
+
+            <div class="alert alert-warning" ng-if="download.expired">
+                <p><i class="fa fa-warning">&nbsp;</i><span translate>This download is expired</span></p>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group">
+                    <label for="name" class="control-label" translate>Download ID</label>
+                    <div>{{download.download_id}}</div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group">
+                    <label for="name" class="control-label" translate>File</label>
+                    <div><a ng-href="/#/files/{{download.file.file_id}}/edit" target="_blank">{{download.file.name}}</a> ({{download.file.bytes | bytesToMB}})</div>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label for="link" class="control-label" translate>Link</label>
+                    <input type="text" class="form-control" name="link" ng-model="download.link" select-on-click>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a number less than 100.</p>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group" show-errors="mild">
+                    <label class="control-label">Expiration Date</label>
+                    <div class="input-group dp">
+                        <input type="text" name="expires" class="form-control" uib-datepicker-popup="yyyy-MM-dd" ng-model="data.expires" is-open="datepicker.status.expires.opened" datepicker-options="datepicker.options" close-text="Close" required />
+                        <span class="input-group-addon pointer" ng-click="datepicker.open($event, 'expires')"><i class="fa fa-calendar"></i></span>
+                        <p class="help-block hidden fadeInDown" translate>Please select a date</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="expires_in_clicks" class="control-label" translate>Expires in Clicks</label>
+                    <input type="tel" class="form-control" name="expires_in_clicks" ng-model="download.expires_in_clicks" required is-valid-integer lessThanOrEqual="100">
+                    <p class="help-block hidden fadeInDown" translate>Please provide a number less than 100.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group">
+                    <label for="name" class="control-label" translate>Clicks</label>
+                    <div>{{download.clicks}}</div>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="col-md-6 col-xs-12">
+                <a class="btn btn-success btn-xs" ng-click="downloadDetails.reset()" ng-if="download.expired" translate>Reset Download</a>
+                <a class="btn btn-danger btn-xs" ng-click="downloadDetails.kill()" ng-if="!download.expired" translate>Deactivate Download</a>
+            </div>
+
+        </div>
+
+        <div class="row"></div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" ng-click="downloadDetails.close()">
+                <span translate>Cancel</span>
+            </button>
+            <button type="button" class="btn btn-primary" ng-click="downloadDetails.ok(form)">
+                <span translate>Save Changes</span>
+            </button>
+        </div>
+
+    </form>
+</div>

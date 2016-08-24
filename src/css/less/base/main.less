@@ -1,0 +1,702 @@
+﻿body {
+    color: @text-color;
+}
+
+.content-wrapper {
+    background-color: #f6f6f6;
+}
+
+/* Help text, used below form inputs */
+p.help-text {
+    font-size: 13px;
+    font-style: italic;
+    margin-top: 5px;
+    color: #898888;
+}
+
+/* Main font */
+body {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+/* Main header */
+.main-header {
+    box-shadow: 0 2px 2px rgba(0,0,0,0.05),0 1px 0 rgba(0,0,0,0.05);
+}
+
+    .main-header li {
+        border-left: 1px solid #f4f4f4;
+    }
+
+/* Footer style */
+.main-footer {
+    background: #fff;
+    padding: 13px;
+    color: #8b8a8a;
+    font-size: 12px;
+    border-top: 1px solid #d2d6de;
+    box-shadow: 0 -2px 2px rgba(0,0,0,0.05),0 1px 0 rgba(0,0,0,0.05);
+}
+
+/* Page header */
+.page-header {
+    position: relative;
+    padding: 0;
+    border-bottom: none;
+}
+
+    .page-header:after {
+        clear: both;
+    }
+
+    .page-header:before, .page-header:after {
+        content: " ";
+        display: table;
+    }
+
+    .page-header h1 {
+        margin: 0;
+        font-size: 24px;
+        float: left;
+        padding-top: 4px;
+    }
+
+/* Modal Content */
+ .modal-content {
+  box-shadow: none;
+}
+
+/* Define the width of the content area, primarily to minimize on wide screens and maximize on small screens */
+@media (min-width: 768px) {
+    .container {
+        width: 95%;
+    }
+}
+
+@media (min-width: 992px) {
+    .container {
+        width: 95%;
+    }
+}
+
+@media (min-width: 1200px) {
+    .container {
+        width: 960px;
+    }
+}
+
+/* List items */
+li a {
+    cursor: pointer;
+}
+
+/* Text for deletions */
+.delete {
+    color: #d60404;
+    cursor: pointer;
+}
+
+/* Required for Angular Bootstrap UI */
+.nav, .pagination, .carousel, .panel-title a {
+    cursor: pointer;
+}
+
+/* This fixes an issue where bootstrap causes the page to shift when a modal is open. https://github.com/twbs/bootstrap/issues/9855 look for the solution posted by yshing on May 1. */
+.modal{
+overflow-y: auto;
+}
+
+.modal-open{
+overflow:auto;
+overflow-x:hidden;
+}
+/* End modal shift bug fix */
+
+/* Lists where no data is available */
+p.no-info {
+    color: #bab9b9;
+    font-size: 18px;
+    text-align: center;
+    margin: 30px 0 30px 0;
+}
+
+/* Classes to give sizes to icons */
+.fa-2 {
+    font-size: 2em !important;
+}
+
+.fa-3 {
+    font-size: 4em !important;
+}
+
+.fa-4 {
+    font-size: 7em !important;
+}
+
+.fa-5 {
+    font-size: 12em !important;
+}
+
+.fa-6 {
+    font-size: 20em !important;
+}
+
+/* Custom CSS for dropzone - we don't use their default styling */
+.dz-default {
+    text-align: center;
+    cursor: pointer;
+}
+
+/* Make things look clickable */
+.pointer {
+    cursor: pointer;
+}
+
+/* Backgrounds */
+.bg-success {
+    background-color: @green;
+    color: @white;
+}
+
+.bg-warning {
+    background-color: @yellow;
+    color: @white;
+}
+
+.bg-danger {
+    background-color: @red;
+    color: @white;
+}
+
+.bg-info {
+    background-color: @aqua;
+    color: @white;
+}
+
+.bg-purple {
+    background-color: @purple;
+    color: @white;
+}
+
+.bg-black {
+    background-color: @black;
+    color: @white;
+}
+
+
+/* Tabs */
+.tab-content {
+    padding-top:15px;
+}
+
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+    background: #3498db;
+    border-bottom: 2px solid #1a7ab9;
+    color: #fff;
+}
+
+.nav-tabs > li > a {
+    background-color: #f3f3f3;
+    background-color: rgba(0, 0, 0, 0.05);
+    border: 0;
+    border-bottom: 2px solid #e4e4e4;
+    color: #777;
+    margin: 0 6px -1px 0;
+    padding: 8px 20px;
+}
+
+/* Small padding */
+.padding-sm {
+    padding: 10px 15px !important;
+}
+
+/* Used in permissions block */
+.border-b {
+    border-bottom: 1px solid #f4f4f4;
+}
+
+/* Fields section headers */
+.section-header {
+    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: 600;
+    color: #258cd1 !important;
+    padding: 10px 18px 0 8px;
+    margin-bottom: 15px;
+    margin-top: 0;
+}
+
+
+/* Form error text */
+.help-block {
+    font-style: italic;
+    font-size: 90%;
+    margin-bottom: 0;
+    z-index: 3;
+}
+
+.has-error .help-block {
+    background: #f2dede;
+    border-color: #ebccd1;
+    color: #b94a48;
+    background-size: 20px 20px;
+}
+
+.has-error .help-block {
+    display: block;
+    border: 1px solid;
+    padding: 5px 10px;
+    border-radius: 2px;
+    margin-top: 2px;
+    position: relative;
+}
+
+    .has-error .help-block:before,
+    .has-error .help-block:after {
+        content: "";
+        position: absolute;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+    }
+
+    .has-error .help-block:before {
+        border-bottom: solid;
+        border-width: 7px;
+        left: 16px;
+        top: -7px;
+    }
+
+    .has-error .help-block:after {
+        border-bottom: 6px solid;
+        left: 17px;
+        top: -6px;
+    }
+
+.has-error .help-block {
+    background: #f2dede;
+    border-color: #ebccd1;
+    color: #b94a48;
+    background-size: 20px 20px;
+}
+
+    .has-error .help-block:before {
+        border-bottom-color: #dda7b0;
+    }
+
+    .has-error .help-block:after {
+        border-bottom-color: #f3e2e2;
+    }
+
+.strikethrough {
+    text-decoration: line-through;
+}
+
+/* Badges */
+.badge {
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 18px;
+  padding: 0 8px;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+.badge.pull-right {
+  margin: 0;
+}
+.badge {
+  background: #b0b0b0;
+  border: 1px solid #b0b0b0;
+}
+.badge[href]:hover,
+.badge[href]:focus {
+  background-color: #979797;
+  border-color: #979797;
+}
+.badge.badge-success {
+  background: #5ebd5e;
+  border: 1px solid #5ebd5e;
+}
+.badge.badge-success[href]:hover,
+.badge.badge-success[href]:focus {
+  background-color: #43a543;
+  border-color: #43a543;
+}
+.badge.badge-warning {
+  background: #f4b04f;
+  border: 1px solid #f4b04f;
+}
+.badge.badge-warning[href]:hover,
+.badge.badge-warning[href]:focus {
+  background-color: #f19a1f;
+  border-color: #f19a1f;
+}
+.badge.badge-danger {
+  background: #e66454;
+  border: 1px solid #e66454;
+}
+.badge.badge-danger[href]:hover,
+.badge.badge-danger[href]:focus {
+  background-color: #df3c28;
+  border-color: #df3c28;
+}
+.badge.badge-info {
+  background: #5bc0de;
+  border: 1px solid #5bc0de;
+}
+.badge.badge-info[href]:hover,
+.badge.badge-info[href]:focus {
+  background-color: #31b0d5;
+  border-color: #31b0d5;
+}
+
+/* Error codes in error messages */
+.error-code {
+    font-size: 11px;
+}
+
+/* A custom "grid table" that turns tabular data into content blocks for small devices */
+.gridtable:after,
+.gridtable:before,
+.gridtable-header:after,
+.gridtable-header:before,
+.gridtable-row:after,
+.gridtable-row:before {
+    content: " ";
+    display: table;
+    clear: both;
+}
+
+.gridtable label {
+    margin-bottom: 0;
+}
+
+.gridtable-header {
+    border-bottom: 2px solid #e2e2e2;
+    padding-bottom: 5px;
+}
+
+    .gridtable-header > div {
+        padding-top: 10px;
+    }
+
+    .gridtable-header .button {
+        padding-top: 1px;
+    }
+
+.gridtable-row:not(.no-hover):hover {
+    background-color: #f5f5f5;
+}
+
+.gridtable-row {
+    border-bottom: 1px solid #f4f4f4;
+}
+
+    .gridtable-row > div {
+        padding: 20px 0 20px 0;
+    }
+
+    .gridtable-row .form-group {
+        margin-bottom: 0;
+    }
+
+    .gridtable-row .tight {
+        padding: 10px 0 10px 0;
+    }
+
+    .gridtable-row .value {
+        overflow: hidden;
+    }
+
+.gridtable-header > .btn-header {
+    padding-top: 5px;
+}
+
+    .gridtable-header > .btn-header button {
+        font-weight: bold;
+    }
+
+@media (max-width: 991px) {
+    .gridtable-row:not(.wide-md) {
+        border: 1px solid #f4f4f4;
+        border-radius: 2px;
+        padding: 15px 5px 15px 5px;
+        margin-left: 0;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .gridtable-row > div:not(.wide-md) {
+        padding: 5px 0 5px 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .gridtable-row {
+        border: 1px solid #f4f4f4;
+        border-radius: 2px;
+        padding: 15px 5px 15px 5px;
+        margin-left: 0;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+        .gridtable-row > div {
+            padding: 5px 0 5px 0;
+        }
+}
+
+@media (max-width: 767px) {
+    .text-right-xs {
+        text-align: right !important;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .text-right-sm {
+        text-align: right !important;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+    .text-right-md {
+        text-align: right !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .text-right-lg {
+        text-align: right !important;
+    }
+}
+
+@media (max-width: 767px) {
+    .text-center-xs {
+        text-align: center !important;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .text-center-sm {
+        text-align: center !important;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+    .text-center-md {
+        text-align: center !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .text-center-lg {
+        text-align: center !important;
+    }
+}
+
+/* Spacers */
+.spacer-t5 {
+    margin-top: 5px;
+}
+
+.spacer-b5 {
+    margin-bottom: 5px;
+}
+
+.spacer-r5 {
+    margin-right: 5px;
+}
+
+.spacer-l5 {
+    margin-left: 5px;
+}
+
+.spacer-5 {
+    margin: 5px;
+}
+
+.spacer-t10 {
+    margin-top: 10px;
+}
+
+.spacer-b10 {
+    margin-bottom: 10px;
+}
+
+.spacer-r10 {
+    margin-right: 10px;
+}
+
+.spacer-l10 {
+    margin-left: 10px;
+}
+
+.spacer-10 {
+    margin: 10px;
+}
+
+.spacer-b15 {
+    margin-bottom: 15px;
+}
+
+.spacer-r15 {
+    margin-right: 15px;
+}
+
+.spacer-l15 {
+    margin-left: 15px;
+}
+
+.spacer-15 {
+    margin: 15px;
+}
+
+.spacer-t20 {
+    margin-top: 20px;
+}
+
+.spacer-b20 {
+    margin-bottom: 20px;
+}
+
+.spacer-r20 {
+    margin-right: 20px;
+}
+
+.spacer-l20 {
+    margin-left: 20px;
+}
+
+.spacer-20 {
+    margin: 20px;
+}
+
+.spacer-t30 {
+    margin-top: 30px;
+}
+
+.spacer-b30 {
+    margin-bottom: 30px;
+}
+
+.spacer-r30 {
+    margin-right: 30px;
+}
+
+.spacer-l30 {
+    margin-left: 30px;
+}
+
+.spacer-30 {
+    margin: 30px;
+}
+
+.spacer-t40 {
+    margin-top: 40px;
+}
+
+.spacer-b40 {
+    margin-bottom: 40px;
+}
+
+.spacer-r40 {
+    margin-right: 40px;
+}
+
+.spacer-l40 {
+    margin-left: 40px;
+}
+
+.spacer-40 {
+    margin: 40px;
+}
+
+.spacer-t100 {
+    margin-top: 100px;
+}
+
+.spacer-b100 {
+    margin-bottom: 100px;
+}
+
+.spacer-r100 {
+    margin-right: 100px;
+}
+
+.spacer-l100 {
+    margin-left: 100px;
+}
+
+.spacer-100 {
+    margin: 100px;
+}
+
+.padding-l0 {
+    padding-left: 0 !important;
+}
+
+.padding-r0 {
+    padding-right: 0 !important;
+}
+
+.padding-l5 {
+    padding-left: 5px !important;
+}
+
+.padding-r5 {
+    padding-right: 5px !important;
+}
+
+.padding-l7 {
+    padding-left: 7px !important;
+}
+
+.padding-r7 {
+    padding-right: 7px !important;
+}
+
+.padding-l15 {
+    padding-left: 15px !important;
+}
+
+.padding-r15 {
+    padding-right: 15px !important;
+}
+
+.padding-l20 {
+    padding-left: 20px !important;
+}
+
+.padding-r20 {
+    padding-right: 20px !important;
+}
+
+textarea.no-wrap {
+    white-space: pre;
+    word-wrap: normal;
+    overflow-x: scroll;
+}
+
+/* Notification preview iFrame */
+.notification-preview {
+    width: 100%;
+    height: 800px;
+    border: 0;
+}
+
+/* Table */
+table.data {
+    td, th {
+    border: 1px solid #f4f4f4;
+    padding: 10px 5px 10px 5px;
+    font-size: 12px;
+    min-width: 90px;
+    }
+    th {
+        font-weight: bold;
+    }
+}
+

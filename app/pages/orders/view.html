@@ -1,0 +1,118 @@
+﻿<div ng-controller="OrdersViewCtrl" class="content container">
+
+    <form name="form" novalidate>
+
+        <div class="callout callout-danger" ng-if="exception.error">
+            <h4 translate>Oops! We had a problem.</h4>
+            <p>{{exception.error.message}}</p>
+            <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+        </div>
+
+        <div class="page-header">
+            <h1 translate>Order Details</h1>
+        </div>
+
+        <div class="panel light-shadow">
+            <div class="panel-heading">
+                <span class="panel-title text-bg text-bold">{{order.order_id}}</span>
+                <div class="panel-heading-controls">
+                    <span class="badge badge-success" ng-if="order.payment.status == 'completed'"><i class="fa fa-check-circle"></i>&nbsp;<span translate>Completed</span></span>
+                    <span class="badge badge-pa-purple" ng-if="order.payment.status == 'pending'"><i class="fa fa-clock-o"></i>&nbsp;&nbsp;<span translate>Pending</span></span>
+                    <span class="badge badge-warning" ng-if="order.payment.status == 'refunded'"><i class="fa fa-undo"></i>&nbsp;&nbsp;<span translate>Refunded</span></span>
+                    <span class="badge badge-danger" ng-if="order.payment.status == 'failed'"><i class="fa fa-times-circle"></i>&nbsp;&nbsp;<span translate>Failed</span></span>
+                    <span class="badge badge-danger" ng-if="order.payment.status == 'cancelled'"><i class="fa fa-ban"></i>&nbsp;&nbsp;<span translate>Cancelled</span></span>
+                </div>
+            </div>
+            <div class="panel-body">
+
+                <div customer-edit="order.customer" error="exception.error"></div>
+
+                <div class="panel no-heading">
+                    <div class="panel-body panel-embed text-sm">
+                        <div class="col-xs-12 col-md-6">
+                            <div><span translate>Created:</span> <strong>{{order.date_created | date:'short'}}</strong></div>
+                        </div>
+
+                        <div class="col-xs-12 col-md-6 spacer-b10">
+                            <div><span translate>Updated:</span> <strong>{{order.date_modified | date:'short'}}</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-heading">
+                        <span class="panel-title" translate>Items</span>
+                        <div class="panel-heading-controls">
+                            <span class="badge badge-warning" ng-if="order.fulfilled == false"><i class="fa fa-truck"></i>&nbsp;<span translate>Unfulfilled</span></span>
+                            <span class="badge badge-success" ng-if="order.fulfilled == true"><i class="fa fa-truck"></i>&nbsp;<span translate>Fulfilled</span></span>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <ledger-sale sale="order"></ledger-sale>
+                    </div>
+                </div>
+
+                <div class="panel" ng-show="count.shipments > 0 || order.fulfilled == false">
+                    <div class="panel-heading">
+                        <span class="panel-title" translate>Shipments</span>
+                        <div class="panel-heading-controls">
+                            <span class="btn btn-sm btn-success btn btn-success spacer-t5" ship order="order" resource="shipments" method="create" translate>Ship Items</span>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div object-list type="shipment" url="{{resources.shipmentListUrl}}" template-url="app/templates/shipmentList.html" embedded="true" page="offset" limit="5" search="false" error="exception.error" count="count.shipments"></div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-heading">
+                        <span class="panel-title" translate>Payment</span>
+                        <div class="panel-heading-controls">
+                            <span class="btn btn-sm btn-success btn btn-danger spacer-t5" refund payment="order.payment" gateway-account-id="order.payment.gateway.account_id" items="order.items" shipping-item="order.shipping_item" resource="refunds" method="create" translate>Process Refund</span>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <payment-method payment-method-data="order.payment.payment_method" transaction-id="{{order.payment.payment_id}}" transaction-type="payment"></payment-method>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-heading">
+                        <span class="panel-title" translate>Refunds</span>
+                        <div class="panel-heading-controls">
+                            <span class="badge badge-danger">{{count.refunds}}</span>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div object-list type="refund" url="{{resources.refundListUrl}}" template-url="app/templates/refundList.html" embedded="true" page="offset" limit="5" search="false" error="exception.error" count="count.refunds" refresh-on-change="order.payment.refunds.data"></div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-heading">
+                        <span class="panel-title" translate>Notifications</span>
+                        <div class="panel-heading-controls">
+                            <span class="badge badge-danger">{{count.notifications}}</span>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div object-list type="notification" url="{{resources.notificationListUrl}}" template-url="app/templates/notificationList.html" embedded="true" page="offset" limit="5" search="false" error="exception.error" count="count.notifications" refresh-on-change="order.shipments.data"></div>
+                    </div>
+                </div>
+
+                <div meta-to-html="{{order.meta}}"></div>
+
+                <span class="btn btn-info btn spacer-t5" ng-click="downloadPdf()"><i class="fa fa-download"></i> <span translate>Download Receipt PDF</span></span>
+
+                <div class="col-xs-12">
+                    <span class="btn btn-danger btn spacer-t5" void payment="order.payment" error="exception.error" ng-if="!order.hideCapture" translate>Cancel Payment</span>
+                    <span class="btn btn-success btn spacer-t5" capture payment="order.payment" items="order.items" shipping-item="order.shipping_item" error="exception.error" ng-if="!order.hideCapture" translate>Capture Payment</span>
+                </div>
+
+            </div>
+        </div>
+
+    </form>
+</div>
+
+

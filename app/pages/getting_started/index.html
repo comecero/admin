@@ -1,0 +1,109 @@
+﻿<div ng-controller="GettingStartedViewCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1>Getting Started</h1>
+    </div>
+
+        <div class="col-md-6 col-xs-12">
+            <div class="panel panel-profile panel-success">
+                <div class="panel-heading">
+                    <div class="widget-profile-header">
+                        <a href="/#/products/add?on_complete=/"><i class="fa fa-tags fa-3"></i>&nbsp;</a><br />
+                        <a href="/#/products/add?on_complete=/"><span translate>Add a Product</span></a>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="widget-profile-text" style="padding: 0;">
+                        <span translate>Adding a product takes less than a minute</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xs-12">
+            <div class="panel panel-profile panel-info">
+                <div class="panel-heading">
+                    <div class="widget-profile-header">
+                        <a ng-href="{{cartUrl}}"><i class="fa fa-shopping-cart fa-3"></i>&nbsp;</a><br />
+                        <a ng-href="{{cartUrl}}"><span translate>View Store</span></a>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="widget-profile-text" style="padding: 0;">
+                        <span translate>Test drive your e-commerce experience</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xs-12">
+            <div class="panel panel-profile panel-purple">
+                    <div class="panel-heading">
+                        <div class="widget-profile-header">
+                            <a href="/#/settings"><i class="fa fa-sliders fa-3"></i>&nbsp;</a><br />
+                            <a href="/#/settings"><span translate>Configure Preferences</span></a>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="widget-profile-text" style="padding: 0;">
+                            <span translate>Customize features to meet your needs</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <div class="col-md-6 col-xs-12">
+            <div class="panel panel-profile panel-warning">
+                <div class="panel-heading">
+                    <div class="widget-profile-header">
+                        <a href="/#/account/edit"><i class="fa fa-user fa-3"></i>&nbsp;</a><br />
+                        <a href="/#/account/edit"><span translate>Update your Profile</span></a>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="widget-profile-text" style="padding: 0;">
+                        <span translate>Tell us a bit more about you</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xs-12">
+                <div class="panel panel-profile panel-black">
+                    <div class="panel-heading">
+                        <div class="widget-profile-header">
+                            <a href="https://docs.comecero.com" target="_blank"><i class="fa fa-code fa-3"></i>&nbsp;</a><br />
+                            <a href="https://docs.comecero.com" target="_blank"><span translate>Start Developing</span></a>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="widget-profile-text" style="padding: 0;">
+                            <span translate>Use our API for a custom solution</span>
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+        <div class="col-md-6 col-xs-12">
+            <div class="panel panel-profile panel-danger">
+                <div class="panel-heading">
+                    <div class="widget-profile-header">
+                        <a href="mailto:developers@comecero.com"><i class="fa fa-comments fa-3"></i>&nbsp;</a><br />
+                        <a href="mailto:developers@comecero.com"><span translate>Contact Us</span></a>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="widget-profile-text" style="padding: 0;">
+                        <span translate>Need some help? We're here for you.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+</div>

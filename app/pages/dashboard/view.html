@@ -1,0 +1,304 @@
+﻿<div ng-controller="DashboardViewCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1>Dashboard</h1>
+    </div>
+
+    <div class="col-sm-12 padding-l7 padding-r7">
+        <div class="stat-panel">
+            <div class="stat-row">
+                <div class="stat-cell bg-success padding-sm">
+                    <div class="text-xs spacer-b10" translate>Sales</div>
+                    <div class="stats-sparklines" id="sales" style="width: 100%" sparkline="sales"></div>
+                </div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-counters bordered no-border-t text-center">
+                    <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
+                        <span class="text-bg"><strong>{{sales_month | currency: ""}}</strong></span><br>
+                        <span class="text-xs text-muted text-uppercase" translate>30 days</span>
+                    </div>
+                    <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
+                        <span class="text-bg"><strong>{{sales_yesterday | currency: ""}}</strong></span><br>
+                        <span class="text-xs text-muted text-uppercase" translate>Yesterday</span>
+                    </div>
+                    <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
+                        <span class="text-bg"><strong>{{sales_today | currency: ""}}</strong></span><br>
+                        <span class="text-xs text-muted text-uppercase" translate>Today</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-12 padding-l7 padding-r7">
+        <div class="stat-panel">
+            <div class="stat-row">
+                <div class="stat-cell bg-purple padding-sm">
+                    <div class="text-xs spacer-b10" translate>Cart Conversion Rate</div>
+                    <div class="stats-sparklines" id="cart-conversion-rate" style="width: 100%" sparkline="cart_conversion_rates"></div>
+                </div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-counters bordered no-border-t text-center">
+                    <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
+                        <span class="text-bg"><strong>{{cart_conversion_rates_month}}%</strong></span><br>
+                        <span class="text-xs text-muted text-uppercase" translate>30 days</span>
+                    </div>
+                    <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
+                        <span class="text-bg"><strong>{{cart_conversion_rates_yesterday}}%</strong></span><br>
+                        <span class="text-xs text-muted text-uppercase" translate>Yesterday</span>
+                    </div>
+                    <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
+                        <span class="text-bg"><strong>{{cart_conversion_rates_today}}%</strong></span><br>
+                        <span class="text-xs text-muted text-uppercase" translate>Today</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 padding-l7 padding-r7">
+        <div class="stat-panel">
+            <div class="stat-row">
+                <div class="stat-cell bg-purple padding-sm">
+                    <div class="text-xs spacer-b10" translate>Cart Visitors</div>
+                    <div class="stats-sparklines" id="cart-visitors" style="width: 100%" sparkline="cart_visitors"></div>
+                </div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-counters bordered no-border-t text-center">
+                    <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
+                        <span class="text-bg"><strong>{{cart_visitors_month}}</strong></span><br>
+                        <span class="text-xs text-muted text-uppercase" translate>30 days</span>
+                    </div>
+                    <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
+                        <span class="text-bg"><strong>{{cart_visitors_yesterday}}</strong></span><br>
+                        <span class="text-xs text-muted text-uppercase" translate>Yesterday</span>
+                    </div>
+                    <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
+                        <span class="text-bg"><strong>{{cart_visitors_today}}</strong></span><br>
+                        <span class="text-xs text-muted text-uppercase" translate>Today</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 padding-l7 padding-r7">
+        <div class="stat-panel">
+            <div class="stat-row">
+                <div class="stat-cell bg-purple padding-sm">
+                    <div class="text-xs spacer-b10" translate>Cart Conversions</div>
+                    <div class="stats-sparklines" id="cart-conversion-rate" style="width: 100%" sparkline="cart_conversions"></div>
+                </div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-counters bordered no-border-t text-center">
+                    <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
+                        <span class="text-bg"><strong>{{cart_conversions_month}}</strong></span><br>
+                        <span class="text-xs text-muted text-uppercase" translate>30 days</span>
+                    </div>
+                    <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
+                        <span class="text-bg"><strong>{{cart_conversions_yesterday}}</strong></span><br>
+                        <span class="text-xs text-muted text-uppercase" translate>Yesterday</span>
+                    </div>
+                    <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
+                        <span class="text-bg"><strong>{{cart_conversions_today}}</strong></span><br>
+                        <span class="text-xs text-muted text-uppercase" translate>Today</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-12 padding-l7 padding-r7">
+        <div class="stat-panel">
+            <div class="stat-row">
+                <div class="stat-cell bg-warning padding-sm">
+                    <div class="text-xs spacer-b10" translate>Subscriptions</div>
+                    <div class="stats-sparklines" id="total_subscriptions" style="width: 100%" sparkline="total_subscriptions"></div>
+                </div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-counters bordered no-border-t text-center">
+                    <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
+                        <span class="text-bg"><strong>{{total_subscriptions_month | currency: ""}}</strong></span><br>
+                        <span class="text-xs text-muted text-uppercase" translate>30 days</span>
+                    </div>
+                    <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
+                        <span class="text-bg"><strong>{{total_subscriptions_yesterday | currency: ""}}</strong></span><br>
+                        <span class="text-xs text-muted text-uppercase" translate>Yesterday</span>
+                    </div>
+                    <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
+                        <span class="text-bg"><strong>{{total_subscriptions_today | currency: ""}}</strong></span><br>
+                        <span class="text-xs text-muted text-uppercase" translate>Today</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 padding-l7 padding-r7">
+        <div class="stat-panel">
+            <div class="stat-row">
+                <div class="stat-cell bg-warning padding-sm">
+                    <div class="text-xs spacer-b10" translate>New Subscriptions</div>
+                    <div class="stats-sparklines" id="new_subscriptions" style="width: 100%" sparkline="new_subscriptions"></div>
+                </div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-counters bordered no-border-t text-center">
+                    <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
+                        <span class="text-bg"><strong>{{new_subscriptions_month | currency: ""}}</strong></span><br>
+                        <span class="text-xs text-muted text-uppercase" translate>30 days</span>
+                    </div>
+                    <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
+                        <span class="text-bg"><strong>{{new_subscriptions_yesterday | currency: ""}}</strong></span><br>
+                        <span class="text-xs text-muted text-uppercase" translate>Yesterday</span>
+                    </div>
+                    <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
+                        <span class="text-bg"><strong>{{new_subscriptions_today | currency: ""}}</strong></span><br>
+                        <span class="text-xs text-muted text-uppercase" translate>Today</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 padding-l7 padding-r7">
+        <div class="stat-panel">
+            <div class="stat-row">
+                <div class="stat-cell bg-warning padding-sm">
+                    <div class="text-xs spacer-b10" translate>Subscription Renewals</div>
+                    <div class="stats-sparklines" id="subscription_renewals" style="width: 100%" sparkline="subscription_renewals"></div>
+                </div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-counters bordered no-border-t text-center">
+                    <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
+                        <span class="text-bg"><strong>{{subscription_renewals_month | currency: ""}}</strong></span><br>
+                        <span class="text-xs text-muted text-uppercase" translate>30 days</span>
+                    </div>
+                    <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
+                        <span class="text-bg"><strong>{{subscription_renewals_yesterday | currency: ""}}</strong></span><br>
+                        <span class="text-xs text-muted text-uppercase" translate>Yesterday</span>
+                    </div>
+                    <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
+                        <span class="text-bg"><strong>{{subscription_renewals_today | currency: ""}}</strong></span><br>
+                        <span class="text-xs text-muted text-uppercase" translate>Today</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-4 padding-l7 padding-r7">
+        <div class="stat-panel text-center">
+            <div class="stat-row">
+                <div class="stat-cell bg-dark-gray padding-sm text-sm">
+                    <i class="fa fa-map-marker"></i>&nbsp;&nbsp;<span translate>Locations</span>
+                </div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-cell bordered no-border-t no-padding-hr">
+                    <div class="pie-chart">
+                        <canvas id="customer_locations" width="135" height="135" donut="customer_locations"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-4 padding-l7 padding-r7">
+        <div class="stat-panel text-center">
+            <div class="stat-row">
+                <div class="stat-cell bg-dark-gray padding-sm text-sm">
+                    <i class="fa fa-globe"></i>&nbsp;&nbsp;<span translate>Languages</span>
+                </div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-cell bordered no-border-t no-padding-hr">
+                    <div class="pie-chart">
+                        <canvas id="customer_languages" width="135" height="135" donut="customer_languages"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-4 padding-l7 padding-r7">
+        <div class="stat-panel text-center">
+            <div class="stat-row">
+                <div class="stat-cell bg-dark-gray padding-sm text-sm">
+                    <i class="fa fa-refresh"></i>&nbsp;&nbsp;<span translate>New vs. Returning</span>
+                </div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-cell bordered no-border-t no-padding-hr">
+                    <div class="pie-chart">
+                        <canvas id="customer_new_vs_returning" width="135" height="135" donut="customer_new_vs_returning"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-4 padding-l7 padding-r7">
+        <div class="stat-panel text-center">
+            <div class="stat-row">
+                <div class="stat-cell bg-dark-gray padding-sm text-sm">
+                    <i class="fa fa-laptop"></i>&nbsp;&nbsp;<span translate>Operating Systems</span>
+                </div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-cell bordered no-border-t no-padding-hr">
+                    <div class="pie-chart">
+                        <canvas id="customer_operating_systems" width="135" height="135" donut="customer_operating_systems"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-4 padding-l7 padding-r7">
+        <div class="stat-panel text-center">
+            <div class="stat-row">
+                <div class="stat-cell bg-dark-gray padding-sm text-sm">
+                    <i class="fa fa-tablet"></i>&nbsp;&nbsp;<span translate>Devices</span>
+                </div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-cell bordered no-border-t no-padding-hr">
+                    <div class="pie-chart">
+                        <canvas id="devices" width="135" height="135" donut="customer_devices"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-4 padding-l7 padding-r7">
+        <div class="stat-panel text-center">
+            <div class="stat-row">
+                <div class="stat-cell bg-dark-gray padding-sm text-sm">
+                    <i class="fa fa-desktop"></i>&nbsp;&nbsp;<span translate>Browsers</span>
+                </div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-cell bordered no-border-t no-padding-hr">
+                    <div class="pie-chart">
+                        <canvas id="customer_browsers" width="135" height="135" donut="customer_browsers"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,53 @@
+﻿<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" ng-click="subscription_cancel.cancel()">×</button>
+        <h4 class="modal-title"><i class="fa fa-ban"></i> <span translate>Cancel Subscription</span></h4>
+    </div>
+    <form name="form">
+        <div class="modal-body">
+            <div class="callout callout-danger" ng-if="modalError">
+                <h4 translate>Oops! We had a problem.</h4>
+                <p>{{modalError.message}}</p>
+                <span ng-show="modalError.reference">
+                    <br /><small>Error code: {{modalError.reference}}</small>
+                </span>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="cancellation_reason" class="control-label" translate>Reason</label>
+                    <div ng-show="cancellation_reasons.length > 0">
+                        <select class="form-control" ng-model="subscription_cancel.request.cancellation_reason" name="cancellation_reason" ng-options="cancellation_reason for cancellation_reason in cancellation_reasons" required></select>
+                    </div>
+                    <input ng-show="cancellation_reasons.length == 0" type="text" class="form-control" name="cancellation_reason" ng-model="subscription_cancel.request.cancellation_reason" placeholder="{{ 'Optional' | translate}}">
+                    <p class="help-block hidden fadeInDown" translate>Please provide a reason</p>
+                </div>
+            </div>
+
+
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label class="radio-group-label" translate>When?</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="cancel_at_current_period_end-1" class="radio" name="cancel_at_current_period_end" ng-model="subscription_cancel.request.cancel_at_current_period_end" ng-value="false" required>
+                        <label for="cancel_at_current_period_end-1" class="radio-label">Now</label>
+                        <input type="radio" id="cancel_at_current_period_end-2" class="radio" name="cancel_at_current_period_end" ng-model="subscription_cancel.request.cancel_at_current_period_end" ng-value="true" required>
+                        <label for="cancel_at_current_period_end-2" class="radio-label" translate>At the end of the current subscription period</label>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </form>
+
+    <div class="row"></div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="subscription_cancel.cancel()">
+            <span translate>Cancel</span>
+        </button>
+        <button type="button" class="btn btn-primary" ng-click="subscription_cancel.ok()">
+            <span translate>Cancel Subscription</span>
+        </button>
+    </div>
+</div>

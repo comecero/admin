@@ -1,0 +1,115 @@
+﻿<div ng-controller="CustomersListCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1>Customers</h1>
+    </div>
+
+    <div class="panel panel-body light-shadow">
+        <div class="col-sm-12 text-right spacer-b40">
+            <form class="form-inline">
+                <div class="form-group has-feedback">
+                    <input type="text" class="form-control" ng-model="params.q" ng-change="search()" ng-model-options="{ updateOn: 'default blur', debounce: { default: 750, blur: 0 } }" select-on-click placeholder="{{ 'Search' | translate }}...">
+                    <span class="fa fa-search form-control-feedback"></span>
+                </div>
+            </form>
+        </div>
+
+        <div class="gridtable">
+
+            <div class="gridtable-header hidden-xs hidden-sm">
+
+                <div class="col-md-3"><label>Customer ID</label></div>
+                <div class="col-md-3"><label>Name</label></div>
+                <div class="col-md-2"><label>Email</label></div>
+                <div class="col-md-2 btn-header">
+                    <div class="btn-group" uib-dropdown>
+                        <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Has Payments</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                        <ul class="dropdown-menu">
+                            <li ng-click="setParam('has_payments', null)" ng-class="{ 'selected-li': params.has_payments == null }"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
+                            <li ng-click="setParam('has_payments', true)" ng-class="{ 'selected-li': params.has_payments == true }"><a><i class="dropdown-icon fa fa-check-circle text-success"></i>&nbsp;&nbsp;<span translate>Yes</span></a></li>
+                            <li ng-click="setParam('has_payments', false)" ng-class="{'selected-li': params.has_payments == false }"><a><i class="dropdown-icon fa fa-minus-circle text-warning"></i>&nbsp;&nbsp;<span translate>No</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-2 text-right"><label ng-click="sort('date_created', !params.desc)" class="pointer text-primary" translate>Created</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="params.date_type == 'date_created' && params.desc == true"></i><i class="icon fa fa-caret-up" ng-if="params.date_type == 'date_created' && params.desc == false"></i></div>
+            </div>
+
+            <div class="col-xs-12 hidden-md hidden-lg padding-l0">
+
+                <div class="btn-group" uib-dropdown>
+                    <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Sort</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown-header">Created</li>
+                        <li ng-click="sort('date_created', false)" ng-class="{'selected-li': params.date_type == 'date_created' && params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                        <li ng-click="sort('date_created', true)" ng-class="{'selected-li': params.date_type == 'date_created' && params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                    </ul>
+                </div>
+
+                <div class="btn-group" uib-dropdown>
+                    <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Filter</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown-header">Has Payments</li>
+                        <li ng-click="setParam('has_payments', null)" ng-class="{ 'selected-li': params.has_payments == null }"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
+                        <li ng-click="setParam('has_payments', true)" ng-class="{ 'selected-li': params.has_payments == true }"><a><i class="dropdown-icon fa fa-check-circle text-success"></i>&nbsp;&nbsp;<span translate>Yes</span></a></li>
+                        <li ng-click="setParam('has_payments', false)" ng-class="{'selected-li': params.has_payments == false }"><a><i class="dropdown-icon fa fa-minus-circle text-warning"></i>&nbsp;&nbsp;<span translate>No</span></a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="row spacer-b10 hidden-md hidden-lg"></div> <!--Needed to have the buttons clear-->
+
+            <div class="gridtable-row" ng-repeat="customer in customers.customerList.data">
+
+                <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Customer ID</label></div>
+                    <div class="col-xs-7 col-sm-12 col-md-12 text-sm value"><a href="#/customers/{{customer.customer_id}}">{{customer.customer_id}}</a></div>
+                </div>
+
+                <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Name</label></div>
+                    <div class="col-xs-7 col-sm-12 col-md-12 value">{{customer.name}}</div>
+                </div>
+
+                <div class="col-xs-12 col-sm-6 col-md-2">
+                    <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Email</label></div>
+                    <div class="col-xs-7 col-sm-12 col-md-12 value"><a href="mailto:{{customer.email}}">{{customer.email}}</a></div>
+                </div>
+
+                <div class="col-xs-12 col-sm-6 col-md-2">
+                    <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Status</label></div>
+                    <div class="col-xs-7 col-sm-12 col-md-12 value">
+                        <span ng-if="customer.has_payments == true"><i class="icon fa fa-check-circle text-success"></i> <span translate>Yes</span></span>
+                        <span ng-if="customer.has_payments == false"><i class="icon fa fa-minus-circle text-warning"></i>&nbsp;<span translate>No</span></span>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-sm-6 col-md-2">
+                    <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Created</label></div>
+                    <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value"><span>{{customer.date_created | date:'short'}}</span></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Show pagination if there is at least one page -->
+        <div class="col-sm-12" ng-if="customers.customerList.data.length > 0">
+            <ul class="pager">
+                <li class="previous" ng-click="movePage('-')" ng-show="nav.before_item"><a><i class="fa fa-chevron-circle-left"></i> <span translate>Back</span></a></li>
+                <li class="next" ng-click="movePage('+')" ng-show="nav.after_item"><a><span translate>Next</span> <i class="fa fa-chevron-circle-right"></i></a></li>
+            </ul>
+        </div>
+
+        <!-- Show a "not found" message if no customers were found  -->
+        <div class="col-sm-12" ng-if="customers.customerList.data.length == 0">
+            <p class="no-info" translate>No customers found</p>
+        </div>
+    </div>
+
+</div>

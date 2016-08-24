@@ -1,0 +1,87 @@
+﻿<div ng-controller="ImagesViewCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1>{{image.filename}}</h1>
+    </div>
+
+    <div class="panel panel-body light-shadow">
+
+        <div class="col-md-6 col-xs-12">
+            <div class="form-group">
+                <label for="name" class="control-label" translate>Filename</label>
+                <div>{{image.filename}}</div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xs-12">
+            <div class="form-group">
+                <label for="name" class="control-label" translate>Image ID</label>
+                <div>{{image.image_id}}</div>
+            </div>
+        </div>
+
+        <div class="row"></div>
+
+        <div class="alert alert-warning" ng-show="settings.test">
+            <i class="icon fa fa-warning"></i><span translate>The URLs provided below are subject to change. It is generally a bad practice to hard-code image URLs into applications. Image URLs provided in API responses will always be valid.</span>
+        </div>
+
+
+        <div class="col-xs-12" ng-if="update">
+            <div class="form-group">
+                <label class="control-label">Created</label>
+                <div>{{product.date_created | date:'mediumDate'}} {{product.date_created | date:'shortTime'}}</div>
+            </div>
+        </div>
+
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label for="name" class="control-label" translate>Large</label>
+                <input type="text" class="form-control" value="{{image.link_large}}" select-on-click>
+            </div>
+        </div>
+
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label for="name" class="control-label" translate>Medium</label>
+                <input type="text" class="form-control" value="{{image.link_medium}}" select-on-click>
+            </div>
+        </div>
+
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label for="name" class="control-label" translate>Small</label>
+                <input type="text" class="form-control" value="{{image.link_small}}" select-on-click>
+            </div>
+        </div>
+
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label for="name" class="control-label" translate>Square</label>
+                <input type="text" class="form-control" value="{{image.link_square}}" select-on-click>
+            </div>
+        </div>
+
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label for="name" class="control-label" translate>Full</label>
+                <input type="text" class="form-control" value="{{image.link}}" select-on-click>
+            </div>
+        </div>
+
+        <div class="text-center spacer-b20">
+            <a href="{{image.link_large}}" target="_blank"><img ng-src="{{image.link_medium}}" style="max-height:300px" /></a>
+        </div>
+
+        <div class="panel-footer submenu" resource="images" method="delete">
+            <span class="delete" ng-click="confirmDelete()" translate>Delete this image</span>
+        </div>
+
+    </div>
+</div>

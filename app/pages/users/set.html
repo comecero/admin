@@ -1,0 +1,108 @@
+﻿<div ng-controller="UsersSetCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1 ng-if="add" translate>Add a User</h1>
+        <h1 ng-if="update">{{usr.name}}</h1>
+    </div>
+
+    <form name="form" novalidate>
+        <div class="panel panel-body light-shadow">
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="name" class="control-label" translate>Name</label>
+                    <input type="text" class="form-control" name="name" ng-model="usr.name" required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a name</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" ng-show="add">
+                <div class="form-group" show-errors>
+                    <label for="user_id" class="control-label" translate>Username</label>
+                    <input type="text" class="form-control" name="user_id" ng-model="usr.user_id" required minlength="5">
+                    <p class="help-block hidden fadeInDown" translate>The username must be at least 5 characters</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" ng-if="update">
+                <div class="form-group">
+                    <label class="control-label">Username</label>
+                    <div class="highlight-value">{{usr.user_id}}</div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" ng-if="update">
+                <div class="form-group">
+                    <label class="control-label">Created</label>
+                    <div>{{usr.date_created | date:'mediumDate'}} {{usr.date_created | date:'shortTime'}}</div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" ng-if="update">
+                <div class="form-group">
+                    <label class="control-label">Updated</label>
+                    <div>{{usr.date_modified | date:'mediumDate'}} {{usr.date_modified | date:'shortTime'}}</div>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label class="control-label" translate>Last Signin</label>
+                    <span ng-if="!usr.date_last_login" translate>Never</span>
+                    <span ng-if="usr.date_last_login">{{usr.date_last_login | date:'mediumDate'}} {{usr.date_last_login | date:'shortTime'}}</span>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="email" class="control-label" translate>Email</label>
+                    <input type="text" class="form-control" name="email" ng-model="usr.email" is-valid-email required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a valid email</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" ng-if="update">
+                <div class="form-group" show-errors>
+                    <label for="password" class="control-label" translate>Password</label>
+                    <input type="password" class="form-control" name="password" ng-model="data.password">
+                    <p class="help-text" translate>Leave blank if you don't want to change the password</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" ng-if="add">
+                <div class="form-group" show-errors>
+                    <label for="password" class="control-label" translate>Password</label>
+                    <input type="password" class="form-control" name="password" ng-model="data.password" required minlength="8">
+                    <p class="help-block hidden fadeInDown" translate>The password must be at least 8 characters</p>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <label class="control-label" translate>Select Permissions</label>
+            </div>
+
+            <div class="col-xs-12">
+                <permissions effective="usr.effective_permissions" auth-type="secret" result="usr.permissions"></permissions>
+            </div>
+
+            <div class="form-group">
+                <button ng-if="add" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="addUser()" validate-on-submit translate>Add the User</button>
+                <button ng-if="update" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updateUser()" validate-on-submit translate>Save Changes</button>
+                <button ng-if="update" type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="confirmCancel()" translate>Cancel</button>
+            </div>
+
+            <div class="row"></div>
+
+            <div ng-if="update" class="panel-footer submenu" resource="users" method="delete">
+                <span class="delete" ng-click="confirmDelete()" translate>Delete this user</span>
+            </div>
+
+        </div>
+    </form>
+</div>

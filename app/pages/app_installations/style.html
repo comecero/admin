@@ -1,0 +1,38 @@
+﻿<div ng-controller="AppInstallationsStyleCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1>Style Settings:</span> {{app_installation.name}}</h1>
+    </div>
+
+    <form name="form" novalidate>
+        <div class="panel panel-body light-shadow">
+
+            <fields fieldlist="app_installation.style_fields" selections="selections"></fields>
+
+            <div class="col-xs-12" ng-show="app_installation.allow_custom_css">
+                <div class="form-group" show-errors>
+                    <label for="css" class="control-label" translate>Custom CSS</label>
+                    <textarea class="form-control no-wrap" id="css" name="css" ng-model="app_installation.custom_css" placeholder="{{ 'Enter CSS' | translate}}"></textarea>
+                    <p class="help-text" translate>
+                        Custom CSS that you would like to load when your app runs.
+                    </p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updateAppInstallation()" translate>Save and Close</button>
+                    <button type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updateAppInstallation(true)" translate>Apply</button>
+                    <button type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="confirmCancel()" translate>Cancel</button>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>

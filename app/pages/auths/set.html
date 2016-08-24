@@ -1,0 +1,153 @@
+﻿<div ng-controller="AuthsSetCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1 ng-if="add" translate>Add a Token</h1>
+        <h1 ng-if="update">Token: {{auth.token}}</h1>
+    </div>
+
+    <form name="form" novalidate>
+        <div class="panel panel-body light-shadow">
+
+            <div class="col-xs-12" show-errors ng-if="add && !showToken">
+                <div class="form-group">
+                    <label class="radio-group-label" translate>Token Type</label>
+                    <div class="radio-group">
+                        <input type="radio" id="type-1" class="radio" name="type" ng-model="data.type" value="secret" ng-checked="data.type == 'secret'" required>
+                        <label for="type-1" class="radio-label">Secret</label>
+                        <div>
+                            <p class="help-text" translate>Secret tokens are used in secure environments where confidentiality can be maintained, for example, for communication between your back-end servers and the API.</p>
+                        </div>
+                        <input type="radio" id="type-2" class="radio" name="type" ng-model="data.type" value="limited" ng-checked="data.type == 'limited'" required>
+                        <label for="type-2" class="radio-label">Limited</label>
+                        <div>
+                            <p class="help-text" translate>Limited tokens are for use by shoppers and customers in client-side applications. Limited tokens generated here <strong>should be used for testing purposes only</strong>. Except for testing, limited tokens should never be hard-coded in an application.</p>
+                        </div>
+                    </div>
+                    <a href="https://docs.comecero.com/basic-concepts/#authentication" target="_blank">Read more</a> about token types and API authentication.
+                </div>
+            </div>
+
+            <div ng-if="!showToken && data.type == 'limited'">
+
+                <div class="col-xs-12" show-errors>
+                    <div class="form-group">
+                        <label class="radio-group-label" translate>Live or Test?</label>
+                        <div class="radio-group inline">
+                            <input type="radio" id="test-1" class="radio" name="test" ng-model="data.test" ng-value="false" ng-checked="data.test == false" required>
+                            <label for="test-1" class="radio-label">Live</label>
+                            <input type="radio" id="test-2" class="radio" name="test" ng-model="data.test" ng-value="true" ng-checked="data.test == true" required>
+                            <label for="test-2" class="radio-label">Test</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button ng-if="add" type="submit" class="btn btn-primary btn-right" ng-click="addLimitedAuth(data.test)" translate>Create Limited Token</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div ng-if="!showToken && data.type == 'secret'">
+                <div class="col-md-12" ng-if="update">
+                    <div class="form-group">
+                        <label class="control-label">Token</label>
+                        <div class="highlight-value">{{auth.token}}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xs-12" ng-if="update">
+                    <div class="form-group">
+                        <label class="control-label">Created</label>
+                        <div>{{auth.date_created | date:'mediumDate'}} {{auth.date_created | date:'shortTime'}}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xs-12" ng-if="update">
+                    <div class="form-group">
+                        <label class="control-label">Updated</label>
+                        <div>{{auth.date_modified | date:'mediumDate'}} {{auth.date_modified | date:'shortTime'}}</div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12" ng-if="update">
+                    <div class="form-group">
+                        <label class="control-label">Last Used</label>
+                        <div ng-show="auth.date_last_used != null">{{auth.date_last_used | date:'mediumDate'}} {{auth.date_last_used | date:'shortTime'}} <span translate>(approximate)</span></div>
+                        <div ng-show="auth.date_last_used == null" translate>Never</div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label">Expires</label>
+                        <input type="text" class="form-control" name="expires" ng-model="auth.expires" placeholder="{{ 'Optional' | translate}}">
+                        <div>
+                            <p class="help-text" translate>Supply an expiration date if you would like the token to be automatically deleted at a future date. Enter as YYYY-MM-DD (for example: 2018-12-31)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12">
+                    <div class="form-group" show-errors>
+                        <label for="comments" class="control-label" translate>Comments</label>
+                        <div>
+                            <textarea class="form-control" id="comments" name="comments" ng-model="auth.comments"></textarea>
+                        </div>
+                    </div>
+                    <p class="maxlength-message" max-length="250" item="form.comments"></p>
+                </div>
+
+                <div class="col-xs-12">
+                    <label class="control-label" translate>Select Permissions</label>
+                </div>
+
+                <div class="col-xs-12">
+                    <permissions effective="auth.effective_permissions" auth-type="secret" result="auth.permissions"></permissions>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button ng-if="add" type="submit" class="btn btn-primary btn-right" ng-click="addAuth()" ng-disabled="form.$pending" translate>Create Secret Token</button>
+                        <button ng-if="update" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updateAuth()" translate>Save Changes</button>
+                        <button ng-if="update" type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="confirmCancel()" translate>Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div ng-if="showToken">
+                <div class="alert alert-info" ng-if="data.type == 'secret'">
+                    <strong translate>Save the token now!</strong>
+                    <p class="text-sm" translate>We only store a one way hash of the token so it will not be shown again. You can generate new tokens at any time.</p>
+                </div>
+
+                <div class="alert alert-warning" ng-if="data.type == 'limited'">
+                    <strong translate><i class="fa fa-warning"></i>&nbsp;<span translate>Please note!</span></strong>
+                    <p class="text-sm" translate>Tokens generated here should be used for testing purposes only! Limited tokens are used in client-side environments and the application should generate a unique Limited token for each user at run time. If you hard code a Limited token into a client-side application for any reason other than testing, your application will not work correctly and your customers will unknowingly share sessions.</p>
+                </div>
+
+                <h4 translate>New Token:</h4>
+                <div class="well">
+                    <input type="text" class="form-control" value="{{auth.token}}" select-on-click>
+                </div>
+
+            </div>
+
+            <div class="row"></div>
+
+            <div ng-if="update" class="panel-footer submenu" resource="auths" method="delete">
+                <span class="delete" ng-click="confirmDelete()" translate>Delete this token</span>
+            </div>
+
+        </div>
+    </form>
+</div>

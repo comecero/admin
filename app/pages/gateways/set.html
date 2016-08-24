@@ -1,0 +1,147 @@
+﻿<div ng-controller="GatewaysSetCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1 ng-if="add" translate>Add a Gateway</h1>
+        <h1 ng-if="update">{{gateway.name}}</h1>
+    </div>
+    <form name="form" novalidate>
+        <div class="panel panel-body light-shadow">
+
+            <div class="col-md-6 col-xs-12" ng-show="add">
+                <div class="form-group" show-errors>
+                    <label for="provider_id" class="control-label" translate>Provider</label>
+                    <select class="form-control text-capitalize" name="provider_id" ng-model="gateway.provider_id" ng-options="gateway_config.provider_id as gateway_config.name for gateway_config in gateway_configs" ng-change="loadGatewayConfig(gateway.provider_id)" required></select>
+                    <p class="help-block hidden fadeInDown" translate>Please select a provider</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" ng-show="update">
+                <div class="form-group">
+                    <label for="provider_id" class="control-label" translate>Provider</label>
+                    <div class="text-capitalize highlight-value">{{gateway.name}}</div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" ng-show="add && gateway_config.payment_method_types.length > 1">
+                <div class="form-group" show-errors>
+                    <label for="payment_method_type" class="control-label" translate>Payment Method</label>
+                    <select class="form-control text-capitalize" name="payment_method_type" ng-model="gateway.payment_method_type" ng-options="payment_method_type as (payment_method_type | removeUnderscore ) for payment_method_type in gateway_config.payment_method_types" required></select>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a payment method</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" ng-show="add && gateway_config.payment_method_types.length == 1">
+                <div class="form-group">
+                    <label for="payment_method_type" class="control-label" translate>Payment Method</label>
+                    <div class="text-capitalize">{{gateway_config.payment_method_types[0] | removeUnderscore }}</div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" ng-show="update">
+                <div class="form-group">
+                    <label for="payment_method_type" class="control-label" translate>Payment Method</label>
+                    <div class="text-capitalize">{{gateway.payment_method_type | removeUnderscore }}</div>
+                </div>
+            </div>
+
+            <div class="col-xs-12" ng-show="supportsCreditCard(gateway.provider_id)">
+                <div class="form-group spacer-b10" show-errors>
+                    <label for="card_type" class="control-label required" translate>Card Types</label>
+                    <input type="text" class="form-control" name="card_type" ng-model="typeahead.card_type" uib-typeahead="card_type as card_type for card_type in card_types | filter:$viewValue | limitTo:12" typeahead-input-formatter="$model.name" typeahead-on-select="onCardTypeSelect($item, $model, $label)" typeahead-editable="false">
+                    <p class="help-block fadeInDown" ng-show="(form.card_type.$touched || form.$submitted) && gateway.selectedCardTypes.length == 0" translate>Please add a valid card type</p>
+                    <div>
+                        <p class="help-text" translate>You can add as many card types that this gateway supports.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12" ng-show="gateway.payment_method_type == 'credit_card'">
+                <div class="form-group">
+                    <span ng-repeat="card_type in models.selectedCardTypes">
+                        <span href="#" class="label label-success label-lg">{{card_type}}<i class="fa fa-times-circle pointer spacer-l20" ng-click="removeCardType(card_type)"></i></span>
+                    </span>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group spacer-b10" show-errors>
+                    <label for="currency" class="control-label required" translate>Currencies</label>
+                    <input type="text" class="form-control" name="currency" ng-model="typeahead.currency" uib-typeahead="currency as currency.name + ' (' + currency.code + ')' for currency in currencies | filter:$viewValue | limitTo:12" typeahead-input-formatter="$model.name" typeahead-on-select="onCurrencySelect($item, $model, $label)" typeahead-editable="false" ng-required="models.selectedCurrencies.length == 0" conditional>
+                    <p class="help-block fadeInDown" ng-show="(form.currency.$touched || form.$submitted) && gateway.selectedCurrencies.length == 0" translate>Please add a valid currency</p>
+                    <div>
+                        <p class="help-text" translate>You can add as many currencies this gateway supports.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <span ng-repeat="currency in models.selectedCurrencies">
+                        <span href="#" class="label label-success label-lg" title="{{currency.name}} ({{currency.code}})">{{currency.code}}<i class="fa fa-times-circle pointer spacer-l20" ng-click="removeCurrency(currency)"></i></span>
+                    </span>
+                </div>
+            </div>
+
+            <div class="col-xs-12" ng-show="update == true && gateway.fields != null">
+                <button class="btn btn-sm btn-warning" ng-click="showFields = !showFields" ng-show="!showFields" translate>Show Gateway Credentials</button>
+                <button class="btn btn-sm btn-info" ng-click="showFields = !showFields" ng-show="showFields" translate>Hide Gateway Credentials</button>
+                <div>
+                    <p class="help-text" translate>This will show sensitive data</p>
+                </div>
+            </div>
+
+            <div ng-show="(gateway.provider_id && gateway.fields && showFields) || (add)">
+
+                <div class="row"></div>
+
+                <div class="alert alert-info" ng-show="fields.length > 0">
+                    <strong translate>A note on security</strong>
+                    <p class="text-sm" translate>Your credentials are stored using PCI-grade security standards and are encrypted using strong keys that are stored on hardened, isolated and dedicated systems. Administrative, support and other internal personnel and users do not have access to read or update your credentials.</p>
+                </div>
+
+                <fields fieldlist="fields" selections="gateway.fields"></fields>
+
+            </div>
+
+            <div class="col-xs-12" show-errors>
+                <div class="form-group">
+                    <label class="radio-group-label" translate>Set as Active?</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="active-1" class="radio" name="active" ng-model="gateway.active" ng-value="true" required>
+                        <label for="active-1" class="radio-label">Yes</label>
+                        <input type="radio" id="active-2" class="radio" name="active" ng-model="gateway.active" ng-value="false" required>
+                        <label for="active-2" class="radio-label">No</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="comments" class="control-label" translate>Comments</label>
+                    <div>
+                        <textarea class="form-control" id="comments" name="comments" ng-model="gateway.comments"></textarea>
+                    </div>
+                </div>
+                <p class="maxlength-message" max-length="250" item="form.comments"></p>
+            </div>
+
+            <div class="form-group">
+                <button ng-if="add" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="addGateway()" validate-on-submit translate>Add the Gateway</button>
+                <button ng-if="update" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updateGateway()" validate-on-submit translate>Save Changes</button>
+                <button ng-if="update" type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="confirmCancel()" translate>Cancel</button>
+            </div>
+
+            <div class="row"></div>
+
+            <div ng-if="update" class="panel-footer submenu" resource="products" method="delete">
+                <span class="delete" ng-click="confirmDelete()" translate>Delete this gateway</span>
+            </div>
+
+        </div>
+    </form>
+</div>

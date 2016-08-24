@@ -1,0 +1,102 @@
+﻿<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" ng-click="confirm.cancel()">×</button>
+        <h4 class="modal-title"><i class="fa fa-warning"></i> <span translate>Please confirm</span></h4>
+    </div>
+    <div class="modal-body">
+        <p ng-if="confirm.id == 'delete'" translate>Are you sure you want to delete this?</p>
+        <p ng-if="confirm.id == 'changes_lost'" translate>Your changes will be lost. Are you sure?</p>
+        <p ng-if="confirm.id == 'payment_capture'" translate>Are you sure you want to capture this payment?</p>
+        <p ng-if="confirm.id == 'upload_cancel'" translate>Are you sure you want to cancel this upload?</p>
+        <p ng-if="confirm.id == 'partial_capture_warning'" translate>Are you sure you want to capture a partial amount? You can only do one capture for a payment and any uncaptured amount will be refunded.</p>
+        <p ng-if="confirm.id == 'process_refund'" translate>Are you sure you want to process this refund?</p>
+        <p ng-if="confirm.id == 'process_chargeback'" translate>Are you sure you want to record this chargeback? Note that when you record a chargeback, no money is sent to the customer.</p>
+        <p ng-if="confirm.id == 'void_payment'" translate>Are you sure you want to cancel this payment? This cannot be undone.</p>
+        <p ng-if="confirm.id == 'cancel_subscription'" translate>Are you sure you want to cancel this subscription?</p>
+        <p ng-if="confirm.id == 'app_uninstall'" translate>Are you sure you want to uninstall this app? Any app related settings you have configured will be lost.</p>
+        <p ng-if="confirm.id == 'set_default_app_version'"><span translate>Are you sure you want to set this as the default app version? You should make certain you have tested this version before setting it as default.</span> <a href="#" target="_blank" translate>More Info</a>.</p>
+    </div>
+
+    <div class="row"></div>
+
+    <div class="modal-footer">
+
+        <button type="button" ng-if="confirm.id == 'delete'" class="btn btn-primary" ng-click="confirm.cancel()">
+            <span translate>Cancel</span>
+        </button>
+        <button type="button" ng-if="confirm.id == 'delete'" id="modal-confirm-accept" class="btn btn-default" ng-click="confirm.ok()">
+            <span translate>Delete</span>
+        </button>
+
+        <button type="button" ng-if="confirm.id == 'changes_lost'" class="btn btn-primary" ng-click="confirm.cancel()">
+            <span translate>Stay on Page</span>
+        </button>
+        <button type="button" ng-if="confirm.id == 'changes_lost'" id="modal-confirm-accept" class="btn btn-default" ng-click="confirm.ok()">
+            <span translate>Discard Changes</span>
+        </button>
+
+        <button type="button" ng-if="confirm.id == 'payment_capture'" class="btn btn-default" ng-click="confirm.cancel()">
+            <span translate>Cancel</span>
+        </button>
+        <button type="button" ng-if="confirm.id == 'payment_capture'" id="modal-confirm-accept" class="btn btn-primary" ng-click="confirm.ok()">
+            <span translate>Capture Payment</span>
+        </button>
+
+        <button type="button" ng-if="confirm.id == 'upload_cancel'" class="btn btn-primary" ng-click="confirm.cancel()">
+            <span translate>Continue Upload</span>
+        </button>
+        <button type="button" ng-if="confirm.id == 'upload_cancel'" id="modal-confirm-accept" class="btn btn-default" ng-click="confirm.ok()">
+            <span translate>Stop Upload</span>
+        </button>
+
+        <button type="button" ng-if="confirm.id == 'partial_capture_warning'" class="btn btn-primary" ng-click="confirm.cancel()">
+            <span translate>Cancel</span>
+        </button>
+        <button type="button" ng-if="confirm.id == 'partial_capture_warning'" id="modal-confirm-accept" class="btn btn-default" ng-click="confirm.ok()">
+            <span translate>Capture Partial Payment</span>
+        </button>
+
+        <button type="button" ng-if="confirm.id == 'process_refund'" class="btn btn-primary" ng-click="confirm.cancel()">
+            <span translate>Cancel</span>
+        </button>
+        <button type="button" ng-if="confirm.id == 'process_refund'" id="modal-confirm-accept" class="btn btn-default" ng-click="confirm.ok()">
+            <span translate>Process Refund</span>
+        </button>
+
+        <button type="button" ng-if="confirm.id == 'process_chargeback'" class="btn btn-primary" ng-click="confirm.cancel()">
+            <span translate>Cancel</span>
+        </button>
+        <button type="button" ng-if="confirm.id == 'process_chargeback'" id="modal-confirm-accept" class="btn btn-default" ng-click="confirm.ok()">
+            <span translate>Record Chargeback</span>
+        </button>
+
+        <button type="button" ng-if="confirm.id == 'void_payment'" class="btn btn-primary" ng-click="confirm.cancel()">
+            <span translate>Cancel</span>
+        </button>
+        <button type="button" ng-if="confirm.id == 'void_payment'" id="modal-confirm-accept" class="btn btn-default" ng-click="confirm.ok()">
+            <span translate>Cancel Payment</span>
+        </button>
+
+        <button type="button" ng-if="confirm.id == 'cancel_subscription'" class="btn btn-primary" ng-click="confirm.cancel()">
+            <span translate>Cancel</span>
+        </button>
+        <button type="button" ng-if="confirm.id == 'cancel_subscription'" id="modal-confirm-accept" class="btn btn-default" ng-click="confirm.ok()">
+            <span translate>Cancel Subscription</span>
+        </button>
+
+        <button type="button" ng-if="confirm.id == 'app_uninstall'" class="btn btn-primary" ng-click="confirm.cancel()">
+            <span translate>Cancel</span>
+        </button>
+        <button type="button" ng-if="confirm.id == 'app_uninstall'" id="modal-confirm-accept" class="btn btn-default" ng-click="confirm.ok()">
+            <span translate>Uninstall</span>
+        </button>
+
+        <button type="button" ng-if="confirm.id == 'set_default_app_version'" class="btn btn-primary" ng-click="confirm.cancel()">
+            <span translate>Cancel</span>
+        </button>
+        <button type="button" ng-if="confirm.id == 'set_default_app_version'" id="modal-confirm-accept" class="btn btn-default" ng-click="confirm.ok()">
+            <span translate>Set Default</span>
+        </button>
+
+    </div>
+</div>

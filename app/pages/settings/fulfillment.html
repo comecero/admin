@@ -1,0 +1,86 @@
+﻿<div ng-controller="FulfillmentSettingsCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1>Fulfillment Settings</h1>
+    </div>
+
+    <form name="form" novalidate>
+        <div class="panel panel-body light-shadow">
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label class="radio-group-label" translate>Automatically Fulfill Items</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="auto_fulfill_items-1" class="radio" name="auto_fulfill_items" ng-model="settings.auto_fulfill_items" ng-value="true" required>
+                        <label for="auto_fulfill_items-1" class="radio-label">Yes</label>
+                        <input type="radio" id="auto_fulfill_items-2" class="radio" name="auto_fulfill_items" ng-model="settings.auto_fulfill_items" ng-value="false" required>
+                        <label for="auto_fulfill_items-2" class="radio-label">No</label>
+                    </div>
+                    <div>
+                        <p class="help-text" translate>Indicates if you want physical products to be automatically marked as fulfilled without user intervention.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label for="auto_fulfill_delay" class="control-label" translate>Automatic Fulfillment Delay</label>
+                    <input type="tel" class="form-control" name="auto_fulfill_delay" ng-model="settings.auto_fulfill_delay" required is-valid-integer greater-than-or-equal="0" less-than-or-equal="168">
+                    <p class="help-block hidden fadeInDown" translate>Please provide a value between 0 - 168</p>
+                    <div>
+                        <p class="help-text" translate>
+                            If you enable Automatically Fulfill Items, you can provide a delay (in hours) between the time an order is created and the items are automatically marked fulfilled. <a href="https://docs.comecero.com/more-info/#settings_fulfillment-auto_fulfill_delay" target="_blank">Why would I want to do that?</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label class="radio-group-label" translate>Automatically Capture Payments</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="auto_capture-1" class="radio" name="auto_capture" ng-model="settings.auto_capture" ng-value="true" required>
+                        <label for="auto_capture-1" class="radio-label">Yes</label>
+                        <input type="radio" id="auto_capture-2" class="radio" name="auto_capture" ng-model="settings.auto_capture" ng-value="false" required>
+                        <label for="auto_capture-2" class="radio-label">No</label>
+                    </div>
+                    <div>
+                        <p class="help-text" translate>
+                            If enabled, payments will be captured regardless of the fulfillment status of the items in the order. If disabled, payments will only be captured when all items are fulfilled or a manual capture request is made.<br /><br />
+                            This can be overridden on a per-transaction basis with the "capture" property in the API.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label for="auto_capture_delay" class="control-label" translate>Automatic Capture Delay</label>
+                    <input type="tel" class="form-control" name="auto_capture_delay" ng-model="settings.auto_capture_delay" required is-valid-integer greater-than-or-equal="0" less-than-or-equal="168">
+                    <p class="help-block hidden fadeInDown" translate>Please provide a value between 0 - 168</p>
+                    <div>
+                        <p class="help-text" translate>
+                            If you enable Automatically Capture Payments, you can provide a delay (in hours) between the time a payment is authorized and captured.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updateSettings(form)" validate-on-submit translate>Save Changes</button>
+                    <button type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="confirmCancel()" translate>Cancel</button>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>

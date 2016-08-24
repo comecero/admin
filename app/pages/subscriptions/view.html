@@ -1,0 +1,190 @@
+﻿<div ng-controller="SubscriptionsViewCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1 translate>Subscription Details</h1>
+    </div>
+
+    <div class="panel light-shadow">
+        <div class="panel-heading">
+            <span class="panel-title text-bg text-bold">{{model.subscription.subscription_id}}</span>
+            <div class="panel-heading-controls">
+                <span class="badge badge-success" ng-if="model.subscription.status == 'active'"><i class="fa fa-refresh"></i>&nbsp;<span translate>Active</span></span>
+                <span class="badge badge-pa-purple" ng-if="model.subscription.status == 'trial'"><i class="fa fa-history fa-flip-horizontal"></i>&nbsp;&nbsp;<span translate>Trial</span></span>
+                <span class="badge badge-warning" ng-if="model.subscription.status == 'completed'"><i class="fa fa-flag-checkered"></i>&nbsp;&nbsp;<span translate>Completed</span></span>
+                <span class="badge badge-danger" ng-if="model.subscription.status == 'cancelled'"><i class="fa fa-ban"></i>&nbsp;&nbsp;<span translate>Cancelled</span></span>
+            </div>
+        </div>
+        <div class="panel-body">
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <span class="panel-title">Subscription Details</span>
+                    <div class="panel-heading-controls">
+                        <span class="btn btn-danger btn btn-sm spacer-t5" cancel-subscription subscription="model.subscription" resource="subscriptions" method="update" translate>Cancel Subscription</span>
+                    </div>
+                </div>
+                <div class="panel-body" ng-if="model.subscription.cancel_at_current_period_end" style="padding-bottom:0px;">
+                    <div class="alert alert-warning spacer-b5 text-center">
+                        <div translate>This subscription is scheduled to be cancelled on <strong>{{model.subscription.date_current_period_end | date:'shortDate'}}.</strong>
+                        </div>
+                        <div class="spacer-t10"><button class="btn btn-danger" ng-click="uncancel()" translate>Remove Cancellation</button></div>
+                    </div>
+                </div>
+
+                <div class="panel-body panel-tight">
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Subscription ID</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section"><div>{{model.subscription.subscription_id}}</div></div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label translate>Status</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section text-capitalize">{{model.subscription.status}}</div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Plan Name</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section"><div><a href="/#/subscription_plans/{{model.subscription.subscription_plan.subscription_plan_id}}/edit">{{model.subscription.subscription_plan.name}}</a></div></div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label translate>In Grace Period?</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section">
+                            <span ng-if="model.subscription.in_grace_period" class="text-danger" translate>Yes</span>
+                            <span ng-if="!model.subscription.in_grace_period" translate>No</span>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label translate>Billing Interval</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section">
+                            <span ng-if="model.subscription.billing_interval_unit == 'hour'" translate translate-n="model.subscription.billing_interval" translate-plural="{{model.subscription.billing_interval}} hours">{{model.subscription.billing_interval}} hour</span>
+                            <span ng-if="model.subscription.billing_interval_unit == 'day'" translate translate-n="model.subscription.billing_interval" translate-plural="{{model.subscription.billing_interval}} days">{{model.subscription.billing_interval}} day</span>
+                            <span ng-if="model.subscription.billing_interval_unit == 'month'" translate translate-n="model.subscription.billing_interval" translate-plural="{{model.subscription.billing_interval}} months">{{model.subscription.billing_interval}} month</span>
+                            <span ng-if="model.subscription.billing_interval_unit == 'year'" translate translate-n="model.subscription.billing_interval" translate-plural="{{model.subscription.billing_interval}} years">{{model.subscription.billing_interval}} year</span>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label translate>Trial Interval</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section">
+                            <span ng-if="model.subscription.trial_interval_unit == 'hour'" translate translate-n="model.subscription.trial_interval" translate-plural="{{model.subscription.trial_interval}} hours">{{model.subscription.trial_interval}} hour</span>
+                            <span ng-if="model.subscription.trial_interval_unit == 'day'" translate translate-n="model.subscription.trial_interval" translate-plural="{{model.subscription.trial_interval}} days">{{model.subscription.trial_interval}} day</span>
+                            <span ng-if="model.subscription.trial_interval_unit == 'month'" translate translate-n="model.subscription.trial_interval" translate-plural="{{model.subscription.trial_interval}} months">{{model.subscription.trial_interval}} month</span>
+                            <span ng-if="model.subscription.trial_interval_unit == 'year'" translate translate-n="model.subscription.trial_interval" translate-plural="{{model.subscription.trial_interval}} years">{{model.subscription.trial_interval}} year</span>
+                            <span ng-if="!model.subscription.trial_interval_unit" translate>No Trial</span>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row" ng-if="model.subscription.date_current_period_start">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label translate>Period Start</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section"><div>{{model.subscription.date_current_period_start | date:'short'}}</div></div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row" ng-if="model.subscription.date_current_period_end">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label translate>Period End</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section text-capitalize">{{model.subscription.date_current_period_end | date:'short'}}</div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label translate>Created</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section">{{model.subscription.date_created | date:'short'}}</div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label translate>Modified</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section">{{model.subscription.date_modified | date:'short'}}</div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row" ng-if="model.subscription.date_cancelled">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label translate>Cancelled</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section"><div>{{model.subscription.date_cancelled | date:'short'}}</div></div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row" ng-if="model.subscription.cancellation_reason">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label translate>Cancel Reason</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section text-capitalize-first"><div>{{model.subscription.cancellation_reason | removeUnderscore}}</div></div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Price</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section"><div>{{model.subscription.item.reference_price | currency: ""}} {{model.subscription.item.reference_currency}}</div></div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label translate>Quantity</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section text-capitalize">{{model.subscription.item.quantity}}</div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row" ng-if="model.subscription.item.product_id">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Product</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section"><div><a href="/#/products/{{model.subscription.product.product_id}}/edit">{{model.subscription.item.product.name}}</a></div></div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row" ng-if="!model.subscription.item.product_id">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Item</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section"><div>{{model.subscription.item.name}}</a></div></div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Payment Currency</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section"><div>{{model.subscription.currency}}</div></div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="panel" resource="customers" method="read">
+                <div class="panel-heading">
+                    <span class="panel-title">Customer</span>
+                </div>
+
+                <div class="panel-body panel-tight">
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Customer ID</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section"><div><a href="/#/customers/{{model.subscription.customer.customer_id}}">{{model.subscription.customer.customer_id}}</a></div></div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Name</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section text-capitalize">{{model.subscription.customer.name}}</div>
+                    </div>
+
+                    <div class="col-xs-12 col col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Email</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section"><a href="mailto:{{model.subscription.customer.email}}">{{model.subscription.customer.email}}</a></div>
+                    </div>
+
+                    <div class="col-xs-12 col col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Payment Method</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section text-capitalize">{{model.subscription.payment_method | removeUnderscore }}</div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="panel" resource="invoices" method="read">
+                <div class="panel-heading">
+                    <span class="panel-title" translate>Billing History</span>
+                    <div class="panel-heading-controls">
+                        <span class="badge badge-danger">{{count.invoices}}</span>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div object-list type="invoice" url="{{resources.invoiceListUrl}}" template-url="app/templates/invoiceList.html" embedded="true" page="offset" limit="10" search="true" error="exception.error" count="count.invoices"></div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+

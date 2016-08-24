@@ -1,0 +1,295 @@
+﻿<div ng-controller="PaymentSettingsCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1>Payment Settings</h1>
+    </div>
+
+    <form name="form" novalidate>
+        <div class="panel panel-body light-shadow">
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label for="merchant_descriptor_name" class="control-label" translate>Merchant Descriptor Name</label>
+                    <input type="text" class="form-control" name="merchant_descriptor_name" ng-model="settings.merchant_descriptor_name" maxlength="18" required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a descriptor</p>
+                    <div>
+                        <p class="help-text" translate>The name that should be printed on customer credit card statements. Maximum 18 characters, letters, numbers, dashes and spaces only.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label for="merchant_descriptor_contact" class="control-label" translate>Merchant Descriptor Contact</label>
+                    <input type="text" class="form-control" name="merchant_descriptor_contact" ng-model="settings.merchant_descriptor_contact" maxlength="11">
+                    <p class="help-block hidden fadeInDown" translate>Please provide a contact</p>
+                    <div>
+                        <p class="help-text" translate>A phone number or website address to provide on credit card billing statements. Maximum 11 characters, letters, numbers dashes and periods only. Not supported by all gateways.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="col-sm-12">
+                <div class="form-group" show-errors>
+                    <label class="radio-group-label" translate>Use Product Name as Descriptor</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="product_as_merchant_descriptor_name-1" class="radio" name="product_as_merchant_descriptor_name" ng-model="settings.product_as_merchant_descriptor_name" ng-value="true" required>
+                        <label for="product_as_merchant_descriptor_name-1" class="radio-label">Yes</label>
+                        <input type="radio" id="product_as_merchant_descriptor_name-2" class="radio" name="product_as_merchant_descriptor_name" ng-model="settings.product_as_merchant_descriptor_name" ng-value="false" required>
+                        <label for="product_as_merchant_descriptor_name-2" class="radio-label">No</label>
+                    </div>
+                    <div>
+                        <p class="help-text" translate>Indicates if the product name should be used instead of the Merchant Descriptor Name in cases where a payment contains a product.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label class="radio-group-label" translate>Allow Saved Credit Cards</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="allow_save_cards-1" class="radio" name="allow_save_cards" ng-model="settings.allow_save_cards" ng-value="true" ng-disabled="!settings.allow_save_cards && !helperService.isAdmin()" required>
+                        <label for="allow_save_cards-1" class="radio-label">Yes</label>
+                        <input type="radio" id="allow_save_cards-2" class="radio" name="allow_save_cards" ng-model="settings.allow_save_cards" ng-value="false" required>
+                        <label for="allow_save_cards-2" class="radio-label">No</label>
+                    </div>
+                    <div>
+                        <p class="help-text" translate>
+                            Indicates if cusotmers are able to save credit card payment methods. Not available for all accounts, contact support if you are unable to enable this feature but would like to.<br /><br />
+                            Note that regardless of the setting above, for orders and payments associated with subscriptions, the customer card is always saved to the customer profile for use in future payments.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label class="radio-group-label" translate>Save Credit Cards by Default</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="save_cards_by_default-1" class="radio" name="save_cards_by_default" ng-model="settings.save_cards_by_default" ng-value="true"  ng-disabled="!settings.allow_save_cards" required>
+                        <label for="save_cards_by_default-1" class="radio-label">Yes</label>
+                        <input type="radio" id="save_cards_by_default-2" class="radio" name="save_cards_by_default" ng-model="settings.save_cards_by_default" ng-value="false" required>
+                        <label for="save_cards_by_default-2" class="radio-label">No</label>
+                    </div>
+                    <div>
+                        <p class="help-text" translate>
+                            Indicates if customer credit cards should be saved to the customer profile by default. Cannot be enabled if allowing saved credit cards is disabled.<br /><br />
+                            Note that regardless of the setting above, for orders and payments associated with subscriptions, the customer card is always saved to the customer profile for use in future payments.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label class="radio-group-label" translate>Ignore Bad CVV Values</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="ignore_bad_cvv-1" class="radio" name="ignore_bad_cvv" ng-model="settings.ignore_bad_cvv" ng-value="true" required>
+                        <label for="ignore_bad_cvv-1" class="radio-label">Yes</label>
+                        <input type="radio" id="ignore_bad_cvv-2" class="radio" name="ignore_bad_cvv" ng-model="settings.ignore_bad_cvv" ng-value="false" required>
+                        <label for="ignore_bad_cvv-2" class="radio-label">No</label>
+                    </div>
+                    <div>
+                        <p class="help-text" translate>
+                            Indicates if you want to allow payments to successfully process in cases where the card's CVV / security card does not match the bank's records. Enabling this setting may result in an increase in chargebacks.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label class="radio-group-label" translate>Ignore Bad AVS Values</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="ignore_bad_avs-1" class="radio" name="ignore_bad_avs" ng-model="settings.ignore_bad_avs" ng-value="true" required>
+                        <label for="ignore_bad_avs-1" class="radio-label">Yes</label>
+                        <input type="radio" id="ignore_bad_avs-2" class="radio" name="ignore_bad_avs" ng-model="settings.ignore_bad_avs" ng-value="false" required>
+                        <label for="ignore_bad_avs-2" class="radio-label">No</label>
+                    </div>
+                    <div>
+                        <p class="help-text" translate>
+                            Indicates if you want to allow payments to successfully process in cases where the card's AVS / address does not match the bank's records. Enabling this setting may result in an increase in chargebacks.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label for="duplicate_payment_timeout" class="control-label" translate>Duplicate Payment Timeout</label>
+                    <input type="tel" class="form-control" name="duplicate_payment_timeout" ng-model="settings.duplicate_payment_timeout" maxlength="3" required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a value</p>
+                    <div>
+                        <p class="help-text" translate>
+                            The number of seconds during which a duplicate payment will not be allowed. Serves as a safety mechanism that prevents a duplicate payment from being re-processed within a short period of time.<br /><br />
+                            To be considered duplicate, a payment request must be exactly the same as a previous payment within this window: exact amount, customer details and payment method, etc. Set to 0 to disable this feature.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label for="default_payment_currency" class="control-label" translate>Default Payment Currency</label>
+                    <input type="text" class="form-control" name="default_payment_currency" ng-model="typeahead.default_payment_currency" uib-typeahead="currency as currency.name + ' (' + currency.code + ')' for currency in currencies | filter:$viewValue | limitTo:12" typeahead-input-formatter="$model.name" typeahead-on-select="onCurrencySelect($item, $model, $label, 'default_payment_currency')" typeahead-editable="false" required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a valid currency</p>
+                    <div>
+                        <p class="help-text" translate>
+                            A customer's currency is typically selected automatically based on geo-location data. This setting indicates the currency that should be used in the case where a customer's local currency is not supported by your account or the customer's location could not be determined.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="checkbox-group-label" translate>Required Customer Fields</label>
+                    <div class="checkbox-group inline">
+                        <div class="row"></div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-name" class="checkbox" name="field-name" ng-model="required_fields.name" ng-change="toggleCustomerRequiredField('name')">
+                            <label for="field-name" class="checkbox-label">Name</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-company_name" class="checkbox" name="field-company_name" ng-model="required_fields.company_name" ng-change="toggleCustomerRequiredField('company_name')">
+                            <label for="field-company_name" class="checkbox-label">Company Name</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-phone" class="checkbox" name="field-phone" ng-model="required_fields.phone" ng-change="toggleCustomerRequiredField('phone')">
+                            <label for="field-phone" class="checkbox-label">Phone</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-postal_code" class="checkbox" name="field-postal_code" ng-model="required_fields.postal_code" ng-change="toggleCustomerRequiredField('postal_code')">
+                            <label for="field-postal_code" class="checkbox-label">Postal / Zip Code</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-country" class="checkbox" name="field-country" ng-model="required_fields.country" ng-change="toggleCustomerRequiredField('country')">
+                            <label for="field-country" class="checkbox-label">Country</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-full_address" class="checkbox" name="field-full_address" ng-model="required_fields.full_address" ng-change="toggleCustomerRequiredField('full_address')">
+                            <label for="field-full_address" class="checkbox-label">Full Address</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-email" class="checkbox" name="field-email" checked disabled>
+                            <label for="field-email" class="checkbox-label">Email</label>
+                        </div>
+
+                        <div class="row"></div>
+
+                        <div>
+                            <p class="help-text" translate>
+                                Allows you to mark customer fields that are required to be provided before a payment can be processed for a cart or invoice.<br /><br />
+                                Note that regardless of the settings above, for carts and invoices that contain physical products, the customer name and address will always be required. If you enable sales tax or VAT rules, the customer country (and postal / zip code depending on the country) will always be required.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="checkbox-group-label" translate>Customer Optional Fields</label>
+                    <div class="checkbox-group inline">
+                        <div class="row"></div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-optional-name" class="checkbox" name="field-optional-name" ng-model="optional_fields.name" ng-change="toggleCustomerOptionalField('name')">
+                            <label for="field-optional-name" class="checkbox-label">Name</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-optional-company_name" class="checkbox" name="field-optional-company_name" ng-model="optional_fields.company_name" ng-change="toggleCustomerOptionalField('company_name')">
+                            <label for="field-optional-company_name" class="checkbox-label">Company Name</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-optional-phone" class="checkbox" name="field-optional-phone" ng-model="optional_fields.phone" ng-change="toggleCustomerOptionalField('phone')">
+                            <label for="field-optional-phone" class="checkbox-label">Phone</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-optional-postal_code" class="checkbox" name="field-optional-postal_code" ng-model="optional_fields.postal_code" ng-change="toggleCustomerOptionalField('postal_code')">
+                            <label for="field-optional-postal_code" class="checkbox-label">Postal / Zip Code</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-optional-country" class="checkbox" name="field-optional-country" ng-model="optional_fields.country" ng-change="toggleCustomerOptionalField('country')">
+                            <label for="field-optional-country" class="checkbox-label">Country</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-optional-full_address" class="checkbox" name="field-optional-full_address" ng-model="optional_fields.full_address" ng-change="toggleCustomerOptionalField('full_address')">
+                            <label for="field-optional-full_address" class="checkbox-label">Full Address</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-optional-credentials" class="checkbox" name="field-optional-credentials" ng-model="optional_fields.credentials" ng-change="toggleCustomerOptionalField('credentials')">
+                            <label for="field-optional-credentials" class="checkbox-label">Credentials</label>
+                        </div>
+
+                        <div class="row"></div>
+
+                        <div>
+                            <p class="help-text" translate>
+                                Allows you to mark customer fields that are not required but should be presented to a customer to provide in a cart or invoice. This allows you to request data from a customer without requiring them to provide it to complete a payment.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12">
+                <div class="form-group" show-errors>
+                    <label for="refund_reasons" class="control-label" translate>Refund Reasons</label>
+                    <textarea class="form-control" id="refund_reasons" name="refund_reasons" ng-model="refund_reasons" placeholder="{{ 'Enter one reason per line' | translate}}"></textarea>
+                    <div>
+                        <p class="help-text" translate>
+                            Allows you to restrict the reasons supplied when processing a refund to a pre-determined list. Enter one reason per line.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12">
+                <div class="form-group" show-errors>
+                    <label for="chargeback_reasons" class="control-label" translate>Chargeback Reasons</label>
+                    <textarea class="form-control" id="chargeback_reasons" name="chargeback_reasons" ng-model="chargeback_reasons" placeholder="{{ 'Enter one reason per line' | translate}}"></textarea>
+                    <div>
+                        <p class="help-text" translate>
+                            Allows you to restrict the reasons supplied when processing a chargeback to a pre-determined list. Enter one reason per line.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12">
+                <div class="form-group" show-errors>
+                    <label for="blocked_countries" class="control-label" translate>Blocked Countries</label>
+                    <textarea class="form-control" id="blocked_countries" name="blocked_countries" ng-model="blocked_countries" placeholder="{{ 'Enter one country code per line' | translate}}"></textarea>
+                    <div>
+                        <p class="help-text" translate>Allows you to prevent payments from the supplied countries to be blocked. Customer location is determined through a combinnation of geo-IP detection plus direct customer data input. Please provide the <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">ISO 3166-1 two-letter country code</a> of the countries you wish to block.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updateSettings(form)" validate-on-submit translate>Save Changes</button>
+                    <button type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="confirmCancel()" translate>Cancel</button>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>

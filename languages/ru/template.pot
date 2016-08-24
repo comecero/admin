@@ -1,0 +1,323 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../products/list.html
+msgid "Actions"
+msgstr ""
+
+#: ../products/list.html
+#: ../products/view.html
+msgid "Active"
+msgstr ""
+
+#: ../products/add.html
+#: ../products/list.html
+msgid "Add a Product"
+msgstr ""
+
+#: ../products/list.html
+msgid "Add a Product Now"
+msgstr ""
+
+#: ../products/add.html
+#: ../products/edit.html
+msgid "Add a price in another currency"
+msgstr ""
+
+#: ../products/add.html
+msgid "Add the Product"
+msgstr ""
+
+#: ../products/list.html
+msgid "Adding a product is easy. Get started now."
+msgstr ""
+
+#: ../modals/confirm.html
+msgid "Are you sure you want to delete this product?"
+msgstr ""
+
+#: ../orders/list.html
+#: ../products/list.html
+msgid "Back"
+msgstr ""
+
+#: ../products/view.html
+msgid "Basic Info"
+msgstr ""
+
+#: ../orders/view.html
+msgid "Billing Info"
+msgstr ""
+
+#: ../modals/confirm.html
+#: ../products/edit.html
+msgid "Cancel"
+msgstr ""
+
+#: ../orders/list.html
+msgid "Complete"
+msgstr ""
+
+#: ../orders/view.html
+msgid "Credit Card"
+msgstr ""
+
+#: ../products/add.html
+#: ../products/edit.html
+msgid "Currency"
+msgstr ""
+
+#: ../orders/list.html
+msgid "Date"
+msgstr ""
+
+#: ../products/view.html
+msgid "Date Created"
+msgstr ""
+
+#: ../modals/confirm.html
+msgid "Delete"
+msgstr ""
+
+#: ../products/edit.html
+msgid "Delete this product"
+msgstr ""
+
+#: ../products/list.html
+#: ../products/view.html
+msgid "Deleted"
+msgstr ""
+
+#: ../products/add.html
+#: ../products/edit.html
+#: ../products/view.html
+msgid "Description"
+msgstr ""
+
+#: ../modals/confirm.html
+msgid "Discard Changes"
+msgstr ""
+
+#: ../products/view.html
+msgid "Edit This Product"
+msgstr ""
+
+#: ../orders/list.html
+#: ../products/list.html
+msgid "ID"
+msgstr ""
+
+#: ../products/list.html
+#: ../products/view.html
+msgid "Inactive"
+msgstr ""
+
+#: ../orders/list.html
+msgid "Incomplete"
+msgstr ""
+
+#: ../products/view.html
+msgid "Last Modified"
+msgstr ""
+
+#: ../products/add.html
+msgid "Leave blank and we'll create one for you."
+msgstr ""
+
+#: ../products/add.html
+#: ../products/edit.html
+msgid "Make Active?"
+msgstr ""
+
+#: ../products/list.html
+msgid "Make Inactive"
+msgstr ""
+
+#: ../products/list.html
+msgid "Make active"
+msgstr ""
+
+#: ../orders/list.html
+#: ../products/list.html
+msgid "Next"
+msgstr ""
+
+#: ../products/add.html
+#: ../products/edit.html
+msgid "No"
+msgstr ""
+
+#: ../orders/list.html
+msgid "No orders found"
+msgstr ""
+
+#: ../products/list.html
+msgid "No products found"
+msgstr ""
+
+#: ../products/add.html
+#: ../products/edit.html
+msgid "Optional"
+msgstr ""
+
+#: ../orders/list.html
+msgid "Orders"
+msgstr ""
+
+#: ../products/view.html
+msgid "Other Details"
+msgstr ""
+
+#: ../orders/view.html
+msgid "Payment Currency"
+msgstr ""
+
+#: ../orders/view.html
+msgid "Payment Info"
+msgstr ""
+
+#: ../orders/view.html
+msgid "Phone"
+msgstr ""
+
+#: ../modals/confirm.html
+msgid "Please confirm"
+msgstr ""
+
+#: ../products/edit.html
+msgid "Please enter a valid price"
+msgstr ""
+
+#: ../products/add.html
+#: ../products/edit.html
+msgid "Please provide a name"
+msgstr ""
+
+#: ../products/add.html
+msgid "Please provide a valid price"
+msgstr ""
+
+#: ../products/add.html
+msgid "Please select a currency"
+msgstr ""
+
+#: ../orders/view.html
+#: ../products/add.html
+#: ../products/edit.html
+#: ../products/list.html
+msgid "Price"
+msgstr ""
+
+#: ../products/view.html
+msgid "Pricing"
+msgstr ""
+
+#: ../products/view.html
+msgid "Product ID"
+msgstr ""
+
+#: ../orders/view.html
+#: ../products/add.html
+#: ../products/edit.html
+#: ../products/list.html
+msgid "Product Name"
+msgstr ""
+
+#: ../products/list.html
+msgid "Products"
+msgstr ""
+
+#: ../orders/view.html
+msgid "Quantity"
+msgstr ""
+
+#: ../products/edit.html
+msgid "Save Changes"
+msgstr ""
+
+#: ../orders/list.html
+#: ../products/list.html
+msgid "Search"
+msgstr ""
+
+#: ../orders/view.html
+msgid "Settlement Currency"
+msgstr ""
+
+#: ../orders/view.html
+msgid "Shipping Info"
+msgstr ""
+
+#: ../orders/list.html
+#: ../products/list.html
+#: ../products/view.html
+msgid "Status"
+msgstr ""
+
+#: ../modals/confirm.html
+msgid "Stay on Page"
+msgstr ""
+
+#: ../orders/view.html
+msgid "Subtotal"
+msgstr ""
+
+#: ../orders/list.html
+msgid "Take a look at how easy it is to start selling!"
+msgstr ""
+
+#: ../orders/view.html
+msgid "Tax"
+msgstr ""
+
+#: ../products/add.html
+msgid "The Product ID cannot contain spaces or special characters."
+msgstr ""
+
+#: ../products/add.html
+msgid "The Product ID you entered is already in use."
+msgstr ""
+
+#: ../orders/list.html
+#: ../orders/view.html
+msgid "Total"
+msgstr ""
+
+#: ../index.html
+msgid "We were unable to update the product '{{growl.name}}'. Please try your request again."
+msgstr ""
+
+#: ../products/add.html
+#: ../products/edit.html
+msgid "Yes"
+msgstr ""
+
+#: ../orders/list.html
+msgid "You don't have any orders"
+msgstr ""
+
+#: ../products/list.html
+msgid "You don't have any products"
+msgstr ""
+
+#: ../index.html
+msgid "You have successfully activated {{growl.count}} item"
+msgid_plural "You have successfully activated {{growl.count}} items"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../index.html
+msgid "You have successfully deleted the product."
+msgstr ""
+
+#: ../index.html
+msgid "You have successfully inactivated {{growl.count}} item"
+msgid_plural "You have successfully inactivated {{growl.count}} items"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../modals/confirm.html
+msgid "Your changes will be lost. Are you sure?"
+msgstr ""

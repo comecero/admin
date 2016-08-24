@@ -1,0 +1,392 @@
+/*
+ * Component: Form
+ * ---------------
+ */
+.form-control {
+  .border-radius(@input-radius);
+  box-shadow: none;
+  border-color: @gray;
+  &:focus {
+    border-color: @light-blue;
+    box-shadow: none;
+  }
+  &::-moz-placeholder,
+  &:-ms-input-placeholder,
+  &::-webkit-input-placeholder {
+    color: #bbb;
+    opacity: 1;
+  }
+
+  &:not(select) {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+}
+
+.form-group {
+  &.has-success {
+    label {
+      color: @green;
+    }
+    .form-control {
+      border-color: @green;
+      box-shadow: none;
+    }
+  }
+
+  &.has-warning {
+    label {
+      color: @yellow;
+    }
+    .form-control {
+      border-color: @yellow;
+      box-shadow: none;
+    }
+  }
+
+  &.has-error {
+    label {
+      color: @red;
+    }
+    .form-control {
+      border-color: @red;
+      box-shadow: none;
+    }
+  }
+}
+
+/* Input group */
+.input-group {
+  .input-group-addon {
+    .border-radius(@input-radius);
+    border-color: @gray;
+    background-color: #fff;
+    border-radius: 0;
+  }
+}
+
+.input-group {
+    width: 100%;
+}
+
+/* button groups */
+.btn-group-vertical {
+  .btn {
+    &.btn-flat:first-of-type, &.btn-flat:last-of-type {
+      .border-radius(0);
+    }
+  }
+}
+
+.icheck > label {
+  padding-left: 0;
+}
+
+/* support Font Awesome icons in form-control */
+.form-control-feedback.fa {
+    line-height: 42px;
+}
+
+.form-control-feedback {
+    z-index: 2;
+}
+
+/* Form groups */
+.form-group {
+    margin-bottom: 30px;
+}
+
+/* Don't apply to radio and checkbox labels as the required is applied to the group label */
+.form-group .required:not(.radio-label):not(.checkbox-label):after {
+    color: #e32;
+    content: " *";
+}
+
+/* Labels */
+label {
+    font-size: 14px;
+}
+
+label.clear {
+    clear: both;
+    display: block;
+}
+
+/* Large label */
+.label-lg {
+    display: inline-block;
+    font-size: 12px;
+    padding: 7px 10px 7px 10px;
+    min-width: 75px;
+    margin: 10px 4px 4px 0;
+}
+
+.highlight-value {
+    color: #3498db;
+    font-size: 22px;
+    line-height: 2;
+}
+
+/* Change the color of the icon */
+.form-control-feedback {
+    color: #969494;
+}
+
+.input-lg + .form-control-feedback.fa,
+.input-group-lg + .form-control-feedback.fa,
+.form-group-lg .form-control + .form-control-feedback.fa {
+  line-height: @input-height-large;
+}
+.input-sm + .form-control-feedback.fa,
+.input-group-sm + .form-control-feedback.fa,
+.form-group-sm .form-control + .form-control-feedback.fa {
+  line-height: @input-height-small;
+}
+
+textarea.form-control {
+    height: 100px;
+}
+
+/* Large text areas */
+textarea.big {
+    height: 300px;
+}
+
+input.form-control {
+    height: 42px;
+    font-size: 16px;
+}
+
+select.form-control {
+    height: 42px;
+    font-size: 16px;
+}
+
+.maxlength-message {
+    margin: -30px 0 20px 0;
+    font-size: 12px;
+    text-align: right;
+}
+
+/* Checkbx and radio styles */
+.radio-group-label, .checkbox-group-label {
+    clear: both;
+    margin-bottom: 10px;
+}
+
+.checkbox, .radio {
+    opacity: 0;
+    position: absolute;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.radio-group label, .checkbox-group label {
+    margin-right: 15px;
+    cursor: pointer;
+    display: block;
+    font-weight: normal;
+}
+
+.radio-group.inline label, .checkbox-group.inline label {
+    display: inline;
+}
+
+/* Remove inline display on small screens */
+@media (max-width: 480px) {
+    .radio-group.inline label, .checkbox-group.inline label {
+        display: block;
+    }
+}
+
+.checkbox-label.inline, .radio-label.inline {
+    position: relative;
+    display: inline;
+}
+
+.checkbox + .checkbox-label:before, .radio + .radio-label:before {
+    content: '';
+    background: #fff;
+    border: 2px solid #b9b8b8;
+    display: inline-block;
+    vertical-align: middle;
+    width: 20px;
+    height: 20px;
+    padding: 2px;
+    margin-right: 5px;
+    text-align: center;
+}
+
+.checkbox[disabled] + .checkbox-label:before, .radio[disabled] + .radio-label:before {
+    border: 2px solid #f1f0f0;
+    cursor: not-allowed;
+}
+
+.checkbox:checked + .checkbox-label:before {
+    background: #3498db;
+    box-shadow: inset 0px 0px 0px 4px #fff;
+}
+
+.radio + label:before {
+    border-radius: 50%;
+}
+
+.radio:checked + label:before {
+    background: #3498db;
+    box-shadow: inset 0px 0px 0px 4px #fff;
+}
+
+.radio-group-label, .checkbox-group-label {
+    clear: both;
+    display: block;
+}
+
+    .radio-group-label label {
+    }
+
+.checkbox:focus + .checkbox-label, .radio:focus + label {
+    outline: none; /* focus style */
+}
+
+/* Switch */
+.switch {
+    position: relative;
+    display: inline-block;
+    vertical-align: top;
+    width: 68px;
+    height: 24px;
+    padding: 3px;
+    background-color: white;
+    border-radius: 18px;
+    box-shadow: inset 0 -1px white, inset 0 1px 1px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    background-image: -webkit-linear-gradient(top, #eeeeee, white 25px);
+    background-image: -moz-linear-gradient(top, #eeeeee, white 25px);
+    background-image: -o-linear-gradient(top, #eeeeee, white 25px);
+    background-image: linear-gradient(to bottom, #eeeeee, white 25px);
+}
+
+.switch-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+}
+
+.switch-label {
+    position: relative;
+    display: block;
+    height: inherit;
+    font-size: 10px;
+    text-transform: uppercase;
+    background: #eceeef;
+    border-radius: inherit;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12), inset 0 0 2px rgba(0, 0, 0, 0.15);
+    -webkit-transition: 0.15s ease-out;
+    -moz-transition: 0.15s ease-out;
+    -o-transition: 0.15s ease-out;
+    transition: 0.15s ease-out;
+    -webkit-transition-property: opacity background;
+    -moz-transition-property: opacity background;
+    -o-transition-property: opacity background;
+    transition-property: opacity background;
+}
+
+    .switch-label:before, .switch-label:after {
+        position: absolute;
+        top: 50%;
+        margin-top: -.5em;
+        line-height: 1;
+        -webkit-transition: inherit;
+        -moz-transition: inherit;
+        -o-transition: inherit;
+        transition: inherit;
+    }
+
+    .switch-label:before {
+        content: attr(data-off);
+        right: 11px;
+        color: #aaa;
+        text-shadow: 0 1px rgba(255, 255, 255, 0.5);
+    }
+
+    .switch-label:after {
+        content: attr(data-on);
+        left: 11px;
+        color: white;
+        text-shadow: 0 1px rgba(0, 0, 0, 0.2);
+        opacity: 0;
+    }
+
+.switch-input:checked ~ .switch-label {
+    background: #47a8d8;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15), inset 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+    .switch-input:checked ~ .switch-label:before {
+        opacity: 0;
+    }
+
+    .switch-input:checked ~ .switch-label:after {
+        opacity: 1;
+    }
+
+.switch-handle {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 21px;
+    height: 21px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
+    background-image: -webkit-linear-gradient(top, white 40%, #f0f0f0);
+    background-image: -moz-linear-gradient(top, white 40%, #f0f0f0);
+    background-image: -o-linear-gradient(top, white 40%, #f0f0f0);
+    background-image: linear-gradient(to bottom, white 40%, #f0f0f0);
+    -webkit-transition: left 0.15s ease-out;
+    -moz-transition: left 0.15s ease-out;
+    -o-transition: left 0.15s ease-out;
+    transition: left 0.15s ease-out;
+}
+
+    .switch-handle:before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin: -6px 0 0 -6px;
+        width: 12px;
+        height: 12px;
+        background: #f9f9f9;
+        border-radius: 6px;
+        box-shadow: inset 0 1px rgba(0, 0, 0, 0.02);
+        background-image: -webkit-linear-gradient(top, #eeeeee, white);
+        background-image: -moz-linear-gradient(top, #eeeeee, white);
+        background-image: -o-linear-gradient(top, #eeeeee, white);
+        background-image: linear-gradient(to bottom, #eeeeee, white);
+    }
+
+.switch-input:checked ~ .switch-handle {
+    left: 43px;
+    box-shadow: -1px 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+.switch-test > .switch-input ~ .switch-label {
+    background: #4fb845;
+}
+
+    .switch-test > .switch-input ~ .switch-label:before {
+        color: white;
+    }
+
+.switch-test > .switch-input:checked ~ .switch-label {
+    background: #f6c175;
+}
+
+.switch-test {
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+}

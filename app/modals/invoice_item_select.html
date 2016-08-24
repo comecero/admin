@@ -1,0 +1,212 @@
+﻿<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" ng-click="itemSelect.cancel()">×</button>
+        <h4 class="modal-title"><span translate>Select Item</span></h4>
+    </div>
+    <div class="modal-body">
+
+        <div class="callout callout-danger" ng-if="modalError">
+            <h4 translate>Oops! We had a problem.</h4>
+            <p>{{modalError.message}}</p>
+            <span ng-show="modalError.reference">
+                <br /><small>Error code: {{modalError.reference}}</small>
+            </span>
+        </div>
+
+        <form name="modalform" novalidate>
+            <uib-tabset>
+                <uib-tab active="customerSelectTabs[0].active" resource="files" method="create">
+                    <tab-heading><i class="fa fa-plus-circle"></i> <small translate>New</small></tab-heading>
+
+                    <div class="col-xs-12 col-md-6">
+                        <div class="form-group" show-errors>
+                            <label for="name" class="control-label" translate>Name</label>
+                            <input type="text" class="form-control" name="name" ng-model="newItem.name" required>
+                            <p class="help-block hidden fadeInDown" translate>Please provide a name</p>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6">
+                        <div class="form-group" show-errors>
+                            <label for="item_id" class="control-label" translate>Item ID</label>
+                            <input type="text" class="form-control" name="item_id" ng-model="newItem.item_id">
+                            <div>
+                                <p class="help-text" translate>Leave blank and we'll create one automatically</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row"></div>
+
+                    <div class="col-xs-12 col-md-6">
+                        <div class="form-group" show-errors>
+                            <label for="reference_price" class="control-label" translate>Price</label>
+                            <input type="text" class="form-control" ng-model-options="{ updateOn: 'blur' }" name="reference_price" ng-model="newItem.reference_price" is-valid-price clean-price required>
+                            <p class="help-block hidden fadeInDown" translate>Please provide a valid price</p>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6">
+                        <div class="form-group" show-errors>
+                            <label for="reference_currency" class="control-label" translate>Currency</label>
+                            <select class="form-control" name="currency" ng-model="newItem.reference_currency" ng-options="currency.code as currency.code + ' - ' + currency.name for currency in currencies" required></select>
+                            <p class="help-block hidden fadeInDown" translate>Please select a currency</p>
+                        </div>
+                    </div>
+
+                    <div class="row"></div>
+
+                    <div class="col-xs-12">
+                        <div class="form-group" show-errors>
+                            <label for="type" class="control-label" translate>Type</label>
+                            <select class="form-control" name="type" ng-model="newItem.type" required>
+                                <option value="physical">Physical product</option>
+                                <option value="digital">Digital product</option>
+                                <option value="service">Service</option>
+                            </select>
+                            <p class="help-block hidden fadeInDown" translate>Please select a type</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-right btn-margin-left" validate-on-submit isolate-validation="true" ng-click="itemSelect.create(modalform)">
+                            <span translate>Add Item</span>
+                        </button>
+                    </div>
+
+                </uib-tab>
+
+                <uib-tab active="customerSelectTabs[1].active">
+                    <tab-heading><i class="fa fa-files-o"></i> <small translate>Existing Products</small></tab-heading>
+                    <div class="col-xs-12 text-right spacer-20">
+                        <div class="form-inline">
+                            <div class="form-group has-feedback">
+                                <input type="text" class="form-control" ng-model="itemSelect.q" ng-change="itemSelect.search()" ng-model-options="{ updateOn: 'default blur', debounce: { default: 750, blur: 0 } }" select-on-click placeholder="{{ 'Search' | translate }}...">
+                                <span class="fa fa-search form-control-feedback"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="gridtable">
+
+                        <div class="gridtable-header hidden-xs hidden-sm">
+
+                            <div class="col-md-4"><label ng-click="itemSelect.sort('name', !itemSelect.params.desc)" class="pointer text-primary">Name</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="itemSelect.params.sort_by == 'name' && itemSelect.params.desc == true"></i><i class="icon fa fa-caret-up" ng-if="itemSelect.params.sort_by == 'name' && itemSelect.params.desc == false"></i></div>
+                            <div class="col-md-2"><label>ID</label></div>
+                            <div class="col-md-2 btn-header">
+                                <div class="btn-group" uib-dropdown>
+                                    <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Status</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                                    <ul class="dropdown-menu">
+                                        <li ng-click="itemSelect.setParam('active', null)" ng-class="{ 'selected-li': itemSelect.params.active == null }"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
+                                        <li ng-click="itemSelect.setParam('active', true)" ng-class="{ 'selected-li': itemSelect.params.active == true }"><a><i class="dropdown-icon fa fa-check-circle text-success"></i>&nbsp;&nbsp;<span translate>Active</span></a></li>
+                                        <li ng-click="itemSelect.setParam('active', false)" ng-class="{'selected-li': itemSelect.params.active == false }"><a><i class="dropdown-icon fa fa-minus-circle text-warning"></i>&nbsp;&nbsp;<span translate>Inactive</span></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-2"><label ng-click="itemSelect.sort('date_created', !itemSelect.params.desc)" class="pointer text-primary" translate>Created</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="itemSelect.params.sort_by == 'date_created' && itemSelect.params.desc == true"></i><i class="icon fa fa-caret-up" ng-if="itemSelect.params.sort_by == 'date_created' && itemSelect.params.desc == false"></i></div>
+                            <div class="col-md-2 text-right"><label>Price</label></div>
+
+                        </div>
+
+                        <div class="col-xs-12 hidden-md hidden-lg padding-l0">
+
+                            <div class="btn-group" uib-dropdown>
+                                <button type="button" class="btn btn-default btn-header dropdown-toggle" ng-if="productsChecked" uib-dropdown-toggle>&nbsp;<i class="fa fa-caret-down"></i>&nbsp;</button>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li ng-click="itemSelect.setActive(true)"><a><i class="icon fa fa-check-circle text-success"></i>&nbsp;<span translate>Make active</span></a></li>
+                                    <li ng-click="itemSelect.setActive(false)"><a><i class="icon fa fa-minus-circle text-warning"></i>&nbsp;<span translate>Make inactive</span></a></li>
+                                </ul>
+                            </div>
+
+                            <div class="btn-group" uib-dropdown>
+                                <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Filter</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                                <ul class="dropdown-menu">
+                                    <li class="dropdown-header">Status</li>
+                                    <li ng-click="itemSelect.setParam('active', null)" ng-class="{ 'selected-li': itemSelect.params.active == null }"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
+                                    <li ng-click="itemSelect.setParam('active', true)" ng-class="{ 'selected-li': itemSelect.params.active == true }"><a><i class="dropdown-icon fa fa-check-circle text-success"></i>&nbsp;&nbsp;<span translate>Active</span></a></li>
+                                    <li ng-click="itemSelect.setParam('active', false)" ng-class="{'selected-li': itemSelect.params.active == false }"><a><i class="dropdown-icon fa fa-minus-circle text-warning"></i>&nbsp;&nbsp;<span translate>Inactive</span></a></li>
+                                </ul>
+                            </div>
+
+                            <div class="btn-group" uib-dropdown>
+                                <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Sort</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                                <ul class="dropdown-menu">
+                                    <li class="dropdown-header">Name</li>
+                                    <li ng-click="itemSelect.sort('name', false)" ng-class="{'selected-li':itemSelect. params.sort_by == 'name' && itemSelect.params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                                    <li ng-click="itemSelect.sort('name', true)" ng-class="{'selected-li': itemSelect.params.sort_by == 'name' && itemSelect.params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                                    <li class="divider"></li>
+                                    <li class="dropdown-header">Date Created</li>
+                                    <li ng-click="itemSelect.sort('date_created', false)" ng-class="{'selected-li': itemSelect.params.sort_by == 'date_created' && itemSelect.params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                                    <li ng-click="itemSelect.sort('date_created', true)" ng-class="{'selected-li': itemSelect.params.sort_by == 'date_created' && itemSelect.params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                                    <li class="divider"></li>
+                                    <li class="dropdown-header">Date Updated</li>
+                                    <li ng-click="itemSelect.sort('date_modified', false)" ng-class="{'selected-li': itemSelect.params.sort_by == 'date_modified' && itemSelect.params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                                    <li ng-click="itemSelect.sort('date_modified', true)" ng-class="{'selected-li': itemSelect.params.sort_by == 'date_modified' && itemSelect.params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="row spacer-b10 hidden-md hidden-lg"></div> <!--Needed to have the buttons clear-->
+
+                        <div class="gridtable-row pointer" ng-repeat="product in productList.data" ng-click="itemSelect.ok(product)">
+
+                            <div class="col-xs-12 col-sm-6 col-md-4">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Name</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value"><a>{{product.name}}</a></div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-2">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Product ID</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value"><span>{{product.product_id}}</span></div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-2">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Status</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value">
+                                    <span ng-if="product.active == true"><i class="icon fa fa-check-circle text-success"></i> <span translate>Active</span></span>
+                                    <span ng-if="product.active == false && product.deleted == false"><i class="icon fa fa-minus-circle text-warning"></i>&nbsp;<span translate>Inactive</span></span>
+                                    <span ng-if="product.deleted == true"><i class="icon fa fa-times-circle text-danger"></i> <span translate>Deleted</span></span>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-2">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Created</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value"><span>{{product.date_created | date:'shortDate'}}</span></div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-2">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Price</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value"><span>{{product.formatted.price}} {{product.currency}}</span></div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Show pagination if there is at least one page -->
+                    <div class="col-sm-12" ng-if="productList.data.length > 0">
+                        <ul class="pager">
+                            <li class="previous" ng-click="movePage('-')" ng-show="productList.previous_page_offset !== null"><a><i class="fa fa-chevron-circle-left"></i> <span translate>Back</span></a></li>
+                            <li class="next" ng-click="movePage('+')" ng-show="productList.next_page_offset !== null"><a><span translate>Next</span> <i class="fa fa-chevron-circle-right"></i></a></li>
+                        </ul>
+                        <p class="text-right">Showing page {{productList.current_page}} of {{productList.total_pages}}</p>
+                    </div>
+
+                    <!-- Show a "not found" message if no products were found  -->
+                    <div class="col-sm-12" ng-if="productList.data.length == 0">
+                        <p class="no-info" translate>No products found</p>
+                    </div>
+
+                </uib-tab>
+            </uib-tabset>
+        </form>
+    </div>
+
+    <div class="row"></div>
+
+    <div class="modal-footer">
+        <a type="button" class="btn btn-default" ng-click="itemSelect.cancel()">
+            <span translate>Cancel</span>
+        </a>
+    </div>
+</div>

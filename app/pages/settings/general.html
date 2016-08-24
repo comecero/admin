@@ -1,0 +1,87 @@
+﻿<div ng-controller="GeneralSettingsCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1>General Settings</h1>
+    </div>
+
+    <form name="form" novalidate>
+
+        <div class="panel panel-body light-shadow">
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="reporting_currency_primary" class="control-label" translate>Primary Reporting Currency</label>
+                    <input type="text" class="form-control" name="reporting_currency_primary" ng-model="typeahead.reporting_currency_primary" uib-typeahead="currency as currency.name + ' (' + currency.code + ')' for currency in currencies | filter:$viewValue | limitTo:12" typeahead-input-formatter="$model.name" typeahead-on-select="onCurrencySelect($item, $model, $label, 'primary')" typeahead-editable="false" required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a valid currency</p>
+                    <div>
+                        <p class="help-text" translate>The primary currency for financial reports. Allows for harmonized reports in a single currency based on exchange rates at the time of each transaction regardless of the transaction currency. Cannot be changed after you start processing transactions.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="reporting_currency_secondary" class="control-label" translate>Secondary Reporting Currency</label>
+                    <input type="text" class="form-control" name="reporting_currency_secondary" ng-model="typeahead.reporting_currency_secondary" uib-typeahead="currency as currency.name + ' (' + currency.code + ')' for currency in currencies | filter:$viewValue | limitTo:12" typeahead-input-formatter="$model.name" typeahead-on-select="onCurrencySelect($item, $model, $label, 'secondary')" typeahead-editable="false" required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a valid currency</p>
+                    <div>
+                        <p class="help-text" translate>A secondary currency for financial reports. Cannot be changed after you start processing transactions.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label for="merchant_descriptor_contact" class="control-label" translate>Default App for Cart Links</label>
+                    <input type="text" class="form-control" name="merchant_descriptor_contact" ng-model="settings.cart_app_id">
+                    <p class="help-block hidden fadeInDown" translate>Please provide a contact</p>
+                    <div>
+                        <p class="help-text" translate>When you send a customer a link to a shopping cart, this defines the app the customer will be sent to. You can find the App ID under Apps, click on the arrow next to Launch, and go to Settings.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label for="merchant_descriptor_contact" class="control-label" translate>Default App for Invoice Links</label>
+                    <input type="text" class="form-control" name="merchant_descriptor_contact" ng-model="settings.invoice_app_id">
+                    <p class="help-block hidden fadeInDown" translate>Please provide a contact</p>
+                    <div>
+                        <p class="help-text" translate>When you send a customer a link to make an invoice payment, this defines the app the customer will be sent to. You can find the App ID under Apps, click on the arrow next to Launch, and go to Settings.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="col-sm-12">
+                <div class="form-group" show-errors>
+                    <label for="notification_from_addresses" class="control-label" translate>Notification From Email Addresses</label>
+                    <textarea class="form-control" id="notification_from_addresses" name="notification_from_addresses" ng-model="notification_from_addresses" placeholder="{{ 'Enter one email address per line' | translate}}"></textarea>
+                    <div>
+                        <p class="help-text" translate>
+                            Allows you to specify the 'from' email addresses you want to use in notifications to customers (such as order confirmation emails). A maximum of two email addresses can be supplied. The email addresses must be verified before you apply them
+                            to notification subscriptions. You will receive an email from Amazon Web Services (our email service provider) for each supplied address asking you to click on a link to grant permission for us to send from that email address on your behalf.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updateSettings()" validate-on-submit translate>Save Changes</button>
+                    <button type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="confirmCancel()" translate>Cancel</button>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>

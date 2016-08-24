@@ -1,0 +1,55 @@
+﻿<div ng-if="!edit">
+    <span ng-if="address.name">{{address.name}}<br /></span>
+    <span ng-if="address.address_1">{{address.address_1}}<br /></span>
+    <span ng-if="address.address_2">{{address.address_2}}<br /></span>
+    <span ng-if="address.city">{{address.city}}&nbsp;</span><span ng-if="address.state_prov">{{address.state_prov}}&nbsp;</span><span ng-if="address.postal_code">{{address.postal_code}}</span>
+    <span ng-if="address.city || address.state_prov || address.postal_code"><br /></span>
+    <span ng-if="address.country">{{address.country | countryCodeToName}}<br /></span>
+    <div ng-if="address.email" class="spacer-t10"><a href="mailto:{{address.email}}">{{address.email}}</a></div>
+</div>
+
+<div ng-if="edit">
+
+    <div class="row form-group">
+        <div class="col-xs-12">
+            <input type="text" ng-model="address.name" name="name" class="form-control" placeholder="{{ 'Name' | translate}}">
+        </div>
+    </div>
+
+    <div class="row form-group">
+        <div class="col-xs-12">
+            <input type="text" ng-model="address.address_1" name="address_1" class="form-control" placeholder="{{ 'Address' | translate}}">
+        </div>
+    </div>
+
+    <div class="row form-group">
+        <div class="col-xs-12">
+            <input type="text" ng-model="address.address_2" name="address_2" class="form-control" placeholder="{{ 'Address 2' | translate}}">
+        </div>
+    </div>
+
+    <div class="row form-group">
+        <div class="col-xs-12">
+            <input type="text" ng-model="address.city" name="city" class="form-control" placeholder="{{ 'City' | translate}}">
+        </div>
+    </div>
+
+    <div class="row form-group">
+        <div class="col-xs-12">
+            <input type="text" ng-model="address.state_prov" name="state_prov" class="form-control" placeholder="{{ 'State / Province' | translate}}">
+        </div>
+    </div>
+
+    <div class="row form-group">
+        <div class="col-xs-12">
+            <input type="text" ng-model="address.postal_code" name="postal_code" class="form-control" placeholder="{{ 'Postal Code' | translate}}">
+        </div>
+    </div>
+
+    <div class="row form-group">
+        <div class="col-xs-12">
+            <select class="form-control" ng-model="address.country" ng-options="country.code as country.name for country in countries"></select>
+        </div>
+    </div>
+
+</div>

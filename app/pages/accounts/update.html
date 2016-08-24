@@ -1,0 +1,163 @@
+﻿<div ng-controller="AccountsUpdateCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1 translate>Account Info</h1>
+    </div>
+
+    <form name="form" novalidate>
+
+        <div class="alert alert-warning text-center" ng-show="settings.test">
+            <i class="icon fa fa-warning"></i><span translate>It is not possible to edit your account information while in test mode.</span>
+        </div>
+
+        <div class="panel panel-body light-shadow">
+
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label class="control-label">Account ID</label>
+                    <div class="highlight-value">{{account.account_id}}</div>
+                </div>
+            </div>
+
+            <div ng-if="!settings.test">
+
+                <div class="col-xs-12">
+                    <div class="form-group" show-errors>
+                        <label for="signature_key" class="control-label" translate>Company Name</label>
+                        <input type="text" class="form-control" name="signature_key" ng-model="account.company_name" required>
+                        <p class="help-block hidden fadeInDown" translate>Please provide a company name</p>
+                    </div>
+                </div>
+
+                <div class="col-xs-12">
+                    <div class="form-group" show-errors>
+                        <label for="company_name" class="control-label" translate>Contact Name</label>
+                        <input type="text" class="form-control" name="company_name" ng-model="account.name" required>
+                        <p class="help-block hidden fadeInDown" translate>Please provide a contact name</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xs-12">
+                    <div class="form-group" show-errors>
+                        <label for="email" class="control-label" translate>Contact Email</label>
+                        <input type="text" class="form-control" name="email" ng-model="account.email" is-valid-email required>
+                        <p class="help-block hidden fadeInDown" translate>Please provide a contact email</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xs-12">
+                    <div class="form-group" show-errors>
+                        <label for="phone" class="control-label" translate>Phone</label>
+                        <input type="text" class="form-control" name="phone" ng-model="account.phone" required>
+                        <p class="help-block hidden fadeInDown" translate>Please provide a phone number</p>
+                    </div>
+                </div>
+
+                <div class="col-xs-12">
+                    <div class="form-group spacer-b10" show-errors>
+                        <label for="address_1" class="control-label" translate>Address</label>
+                        <input type="text" class="form-control" name="address_1" ng-model="account.address_1" required>
+                        <p class="help-block hidden fadeInDown" translate>Please provide an address</p>
+                    </div>
+                </div>
+
+                <div class="col-xs-12">
+                    <div class="form-group" show-errors>
+                        <input type="text" class="form-control" name="address_2" ng-model="account.address_2">
+                    </div>
+                </div>
+
+                <div class="col-xs-12">
+                    <div class="form-group" show-errors>
+                        <label for="city" class="control-label" translate>City</label>
+                        <input type="text" class="form-control" name="city" ng-model="account.city" required>
+                        <p class="help-block hidden fadeInDown" translate>Please provide a city</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xs-12" ng-if="account.country == 'US'">
+                    <div class="form-group" show-errors>
+                        <label for="state_prov" class="control-label" translate>State</label>
+                        <input type="text" class="form-control" name="state_prov" ng-model="typeahead.state_prov" uib-typeahead="state as state.name for state in us_states | filter:$viewValue | limitTo:8" typeahead-input-formatter="$model.name" typeahead-on-select="onStateSelect($item, $model, $label)" typeahead-editable="false" required>
+                        <p class="help-block hidden fadeInDown" translate>Please provide a valid state</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xs-12" ng-if="account.country == 'CA'">
+                    <div class="form-group" show-errors>
+                        <label for="state_prov" class="control-label" translate>Province</label>
+                        <input type="text" class="form-control" name="state_prov" ng-model="typeahead.state_prov" uib-typeahead="state as state.name for state in ca_provinces | filter:$viewValue | limitTo:8" typeahead-input-formatter="$model.name" typeahead-on-select="onStateSelect($item, $model, $label)" typeahead-editable="false" required>
+                        <p class="help-block hidden fadeInDown" translate>Please provide a valid state</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xs-12" ng-if="account.country == 'AU'">
+                    <div class="form-group" show-errors>
+                        <label for="state_prov" class="control-label" translate>State</label>
+                        <input type="text" class="form-control" name="state_prov" ng-model="typeahead.state_prov" uib-typeahead="state as state.name for state in ca_provinces | filter:$viewValue | limitTo:8" typeahead-input-formatter="$model.name" typeahead-on-select="onStateSelect($item, $model, $label)" typeahead-editable="false" required>
+                        <p class="help-block hidden fadeInDown" translate>Please provide a valid state</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xs-12">
+                    <div class="form-group" show-errors>
+                        <label for="postal_code" class="control-label" translate><span ng-if="account.country != 'US' && account.country != 'AU' && account.country != 'GB'" translate>Postal Code</span><span ng-if="account.country == 'US'">Zip Code</span><span ng-if="account.country == 'AU' || account.country == 'GB'">Postcode</span></label>
+                        <input type="text" class="form-control" name="postal_code" ng-model="account.postal_code" required>
+                        <p class="help-block hidden fadeInDown" translate>Please provide a valid postal or zip code</p>
+                    </div>
+                </div>
+
+                <div class="row"></div>
+
+                <div class="col-xs-12">
+                    <div class="form-group" show-errors>
+                        <label for="country" class="control-label" translate>Country</label>
+                        <input type="text" class="form-control" name="country" ng-model="typeahead.country" uib-typeahead="country as country.name for country in countries | filter:$viewValue | limitTo:12" typeahead-input-formatter="$model.name" typeahead-on-select="onCountrySelect($item, $model, $label)" typeahead-editable="false" required>
+                        <p class="help-block hidden fadeInDown" translate>Please select a country from the list</p>
+                    </div>
+                </div>
+
+                <div class="col-xs-12">
+                    <div class="form-group" show-errors>
+                        <label for="website" class="control-label" translate>Website</label>
+                        <input type="text" class="form-control" name="website" ng-model="account.website" is-valid-url required>
+                        <p class="help-block hidden fadeInDown" translate>Please provide a valid website</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xs-12">
+                    <div class="form-group" show-errors>
+                        <label for="support_email" class="control-label" translate>Customer Service Email</label>
+                        <input type="text" class="form-control" name="support_email" ng-model="account.support_email" is-valid-email required>
+                        <p class="help-block hidden fadeInDown" translate>Please provide a valid email address</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xs-12">
+                    <div class="form-group" show-errors>
+                        <label for="support_website" class="control-label" translate>Customer Service Website</label>
+                        <input type="text" class="form-control" name="support_website" ng-model="account.support_website" is-valid-url allow-empty-value="true">
+                        <p class="help-block hidden fadeInDown" translate>This web address is not valid</p>
+                    </div>
+                </div>
+
+                <div class="form-group" resource="accounts" method="update">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updateAccount()" validate-on-submit translate>Save Changes</button>
+                        <button type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="confirmCancel()" translate>Cancel</button>
+                    </div>
+                </div>
+
+                <span class="btn btn-info btn spacer-t5" ng-click="downloadContractPdf()" ng-show="account.live"><i class="fa fa-download"></i> <span translate>Download Account Contract</span></span>
+
+            </div>
+
+        </div>
+    </form>
+</div>

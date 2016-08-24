@@ -1,0 +1,348 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Comecero Admin</title>
+
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval' https://www.google-analytics.com https://ajax.googleapis.com https://cdnjs.cloudflare.com; connect-src 'self' https://api.comecero.com https://api-staging.comecero.com;"> 
+
+    <!-- Favicons -->
+    <link rel="icon" href="images/favicon.png">
+
+    <!-- Apple -->
+    <link rel="apple-touch-icon" href="/images/touch-icon-iphone.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/images/touch-icon-ipad.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/images/touch-icon-iphone-retina.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/images/touch-icon-ipad-retina.png">
+    <link rel="apple-touch-startup-image" href="/images/iphone-low-res.png" media="(device-width: 320px)" />
+    <link rel="apple-touch-startup-image" href="/images/iphone-retina.png" media="(device-width: 320px) and (-webkit-device-pixel-ratio: 2)" />
+    <link rel="apple-touch-startup-image" href="/images/ipad-landscape.png" media="(device-width: 768px) and (orientation: landscape)" />
+    <link rel="apple-touch-startup-image" href="/images/ipad-portrait.png" media="(device-width:: 768px) and (orientation: portrait)" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <!-- Styles from CDNs -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+    <!-- Local styles -->
+    <link rel="stylesheet" href="dist/css/libraries.css" />
+    <link rel="stylesheet" href="dist/css/base.css">
+
+    <!-- Frameworks from CDNs -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-route.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-sanitize.min.js"></script>
+
+    <!-- Angular App -->
+    <script src="dist/js/app.js"></script>
+
+    <!-- Angular Shared -->
+    <script src="dist/js/app-shared.js"></script>
+  
+    <!-- Angular Pages -->
+    <script src="dist/js/pages.js"></script>
+
+    <!-- Libraries and internal functions -->
+    <script src="dist/js/libraries.js"></script>
+    <script src="dist/js/internal.js"></script>
+
+</head>
+
+<body class="hold-transition skin-comecero sidebar-mini" ng-app="admin" ng-csp>
+    <div class="wrapper" id="main-wrapper">
+        <!-- Main Header -->
+        <header class="main-header">
+            <!-- Logo -->
+
+            <a href="/#/" class="logo hidden-sm hidden-md hidden-lg" style="background-color: #2c3e50; text-align:center">
+                <span class="logo-mini"><img src="images/icon_light.png" style="height:46px; margin-left:3px" /></span>
+                <span class="logo-lg"><img src="images/logo.png" style="width:100px" /></span>
+            </a>
+
+            <a href="/#/" class="logo hidden-xs">
+                <span class="logo-mini"><img src="images/icon_light.png" style="height:46px; margin-left:3px" /></span>
+                <span class="logo-lg"><img src="images/logo_dark.png" style="width:100px" /></span>
+            </a>
+
+            <!-- Header Navbar -->
+            <nav class="navbar navbar-static-top" role="navigation">
+                <!-- Sidebar toggle button-->
+                <span class="sidebar-toggle hidden-lg" data-toggle="offcanvas" role="button">
+                    <span class="sr-only">Toggle navigation</span>
+                </span>
+
+                <!-- Navbar Right Menu -->
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
+                        <li style="height:50px">
+                            <label class="switch switch-test needsclick">
+                                <!-- Turn FastClick off on this element as it seems to cause problems with not allowing the switch to change -->
+                                <input type="checkbox" class="switch-input needsclick" ng-model="settings.test">
+                                <span class="switch-label needsclick" data-on="TEST" data-off="LIVE"></span>
+                                <span class="switch-handle needsclick"></span>
+                            </label>
+                        </li>
+                        <!-- Language Menu -->
+                        <li class="dropdown" uib-dropdown>
+                            <a class="dropdown-toggle user-menu" uib-dropdown-toggle>
+                                <i class="fa fa-globe"></i><span class="hidden-xs">&nbsp;Language</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-toggle" ng-controller="LangCtrl">
+                                <li><a href="" ng-click="switchLanguage('en')">English</a></li>
+                                <li><a href="">French</a></li>
+                                <li><a href="">German</a></li>
+                                <li><a href="">Dutch</a></li>
+                                <li><a href="">Spanish</a></li>
+                                <li><a href="" ng-click="switchLanguage('ru')">Russian</a></li>
+                                <li><a href="">Chinese</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown" uib-dropdown>
+                            <a class="dropdown-toggle user-menu" uib-dropdown-toggle>
+                                <span><i class="fa fa-user"></i> <span class="hidden-xs">{{user.user_id}}</span></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/#/account/edit"><i class="dropdown-icon fa fa-list-alt"></i>&nbsp;&nbsp;<span translate>Account ID</span> {{account.account_id}}</a></li>
+                                <li><a href="/#/profile"><i class="dropdown-icon fa fa-cog"></i>&nbsp;&nbsp;<span translate>Settings</span></a></li>
+                                <li class="divider"></li>
+                                <li><a ng-click="logout()"><i class="dropdown-icon fa fa-power-off"></i>&nbsp;&nbsp;<span translate>Sign Out</span></a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <!-- Left side column. contains the logo and sidebar -->
+        <aside class="main-sidebar">
+            <!-- sidebar: style can be found in sidebar.less -->
+            <section class="sidebar">
+                <!-- Sidebar user panel (optional) -->
+                <!-- search form (Optional) -->
+                <!--<form action="#" method="get" class="sidebar-form">
+                <div class="input-group">
+                <input type="text" name="q" class="form-control" placeholder="Search...">
+                <span class="input-group-btn">
+                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
+                </span>
+                </div>
+                </form>-->
+                <!-- /.search form -->
+                <!-- Sidebar Menu -->
+                <ul class="sidebar-menu">
+                    <!-- Optionally, you can add icons to the links -->
+                    <li><a href="/#/"><i class="menu-icon fa fa-list-ol"></i><span class="mm-text">Getting Started</span></a></li>
+                    <li><a href="/#/dashboard"><i class="menu-icon fa fa-dashboard"></i><span class="mm-text">Dashboard</span></a></li>
+                    <li class="treeview">
+                        <a><i class="menu-icon fa fa-shopping-cart"></i><span class="mm-text">Store</span> <i class="fa fa-angle-right pull-right"></i></a>
+                        <ul class="treeview-menu">
+                            <li><a href="/#/products">Products</a></li>
+                            <li><a href="/#/subscription_plans">Subscription Plans</a></li>
+                            <li><a href="/#/images">Images</a></li>
+                            <li><a href="/#/files">Files</a></li>
+                            <li><a href="/#/license_services">License Services</a></li>
+                        </ul>
+                    </li>
+                    <li class="treeview">
+                        <a><i class="menu-icon fa fa-line-chart"></i><span class="mm-text">Sales</span><i class="fa fa-angle-right pull-right"></i></a>
+                        <ul class="treeview-menu">
+                            <li><a href="/#/orders">Orders</a></li>
+                            <li><a href="/#/payments">Payments</a></li>
+                            <li><a href="/#/refunds">Refunds</a></li>
+                            <li><a href="/#/subscriptions">Subscriptions</a></li>
+                            <li><a href="/#/carts">Carts</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="/#/customers"><i class="menu-icon fa fa-male"></i><span class="mm-text">Customers</span></a></li>
+                    <li><a href="/#/invoices"><i class="menu-icon fa fa-file-text-o"></i><span class="mm-text">Invoices</span></a></li>
+                    <li><a href="/#/app_installations"><i class="menu-icon fa fa-cogs"></i><span class="mm-text">Apps</span></a></li>
+                    <li class="treeview">
+                        <a><i class="menu-icon fa fa-bar-chart"></i><span class="mm-text">Reports</span> <i class="fa fa-angle-right pull-right"></i></a>
+                        <ul class="treeview-menu">
+                            <li><a href="/#/reports/sales">Sales</a></li>
+                            <li><a href="/#/reports/items">By Product</a></li>
+                        </ul>
+                    </li>
+                    <li class="treeview">
+                        <a><i class="menu-icon fa fa-money"></i><span class="mm-text">Financial</span> <i class="fa fa-angle-right pull-right"></i></a>
+                        <ul class="treeview-menu">
+                            <li><a href="/#/reports/fees">Fees</a></li>
+                            <li><a href="/#/reports/commissions">Commissions</a></li>
+                        </ul>
+                    </li>
+                    <li class="treeview">
+                        <a><i class="menu-icon fa fa-sliders"></i><span class="mm-text">Settings</span> <i class="fa fa-angle-right pull-right"></i></a>
+                        <ul class="treeview-menu">
+                            <li><a href="/#/settings/general">General</a></li>
+                            <li><a href="/#/settings/payment">Payments</a></li>
+                            <li><a href="/#/settings/pricing">Pricing</a></li>
+                            <li><a href="/#/settings/fulfillment">Fulfillment</a></li>
+                            <li><a href="/#/settings/subscriptions">Subscriptions</a></li>
+                            <li><a href="/#/settings/tax">Tax</a></li>
+                            <li><a href="/#/settings/technical">Technical</a></li>
+                            <li><a href="/#/settings/shipping">Shipping</a></li>
+                            <li><a href="/#/settings/analytics">Analytics</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="/#/gateways"><i class="menu-icon fa fa-bank"></i><span class="mm-text">Gateways</span></a></li>
+                    <li class="treeview">
+                        <a><i class="menu-icon fa fa-user"></i><span class="mm-text">Administration</span> <i class="fa fa-angle-right pull-right"></i></a>
+                        <ul class="treeview-menu">
+                            <li><a href="/#/profile">Your Profile</a></li>
+                            <li><a href="/#/users">Users</a></li>
+                            <li><a href="/#/roles">Roles</a></li>
+                            <li><a href="/#/account/edit">Account Info</a></li>
+                        </ul>
+                    </li>
+                    <li class="treeview">
+                        <a><i class="menu-icon fa fa-code"></i><span class="mm-text">Developer</span> <i class="fa fa-angle-right pull-right"></i></a>
+                        <ul class="treeview-menu">
+                            <li><a href="https://docs.comecero.com/" target="_blank"><span class="mm-text">Documentation</span></a></li>
+                            <li><a href="https://explorer.comecero.com/" target="_blank"><span class="mm-text">API Explorer</span></a></li>
+                            <li><a href="/#/auths"><span class="mm-text">API Tokens</span></a></li>
+                            <li><a href="/#/apps"><span class="mm-text">Custom Apps</span></a></li>
+                            <li><a href="/#/"><span class="mm-text">Event Subscriptions</span></a></li>
+                            <li><a href="/#/"><span class="mm-text">License Requests</span></a></li>
+                            <li><a href="/#/notifications"><span class="mm-text">Notifications</span></a></li>
+                        </ul>
+                    </li>
+                    <li class="highlight" ng-show="account.live == false"><a ng-href="https://{{account.alias}}.auth.comecero.com/plan/select"><i class="menu-icon fa fa-rocket"></i><span class="mm-text">Activate Your Account</span></a></li>
+                </ul><!-- /.sidebar-menu -->
+                <!--<div style="">
+                    <a class="btn btn-success" style="color:#fff; margin-left:15px; margin-top:20px;"><i class="fa fa-rocket"></i> Activate Your Account</a>
+                </div>-->
+            </section>
+            <!-- /.sidebar -->
+        </aside>
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+
+            <ng-view autoscroll="true"></ng-view>
+
+        </div><!-- /.content-wrapper -->
+        <!-- Main Footer -->
+        <footer class="main-footer">
+            <!-- To the right -->
+            <div class="pull-right">
+                <span class="hidden-xs">Brought to you by <a href="https://comecero.com" target="_blank">Comecero</a>.</span> <a href="https://docs.comecero.com" target="_blank">Documentation</a> | <a href="/#/">Support</a>
+            </div>
+            &nbsp;
+        </footer>
+        <!-- Add the sidebar's background. This div must be placed immediately after the control sidebar -->
+        <div class="control-sidebar-bg"></div>
+    </div><!-- ./wrapper -->
+
+    <!--Growl-->
+    <div class="growls" ng-controller="GrowlsCtrl">
+        <div class="alert alert-{{growl.type}} growl fadeInRight" ng-repeat="growl in growls">
+            <button type="button" class="close" ng-click="clearGrowl(growl.id)">×</button>
+            <i class="icon fa fa-check-circle" ng-if="growl.type == 'success'"></i>
+            <i class="icon fa fa-info-circle" ng-if="growl.type == 'info'"></i>
+            <i class="icon fa fa-warning" ng-if="growl.type == 'warning'"></i>
+            <i class="icon fa fa-times-circle" ng-if="growl.type == 'danger'"></i>
+            &nbsp;
+            <!-- Specific -->
+            <span ng-if="growl.id == 'shipment_success'" translate translate-n="growl.count" translate-plural="You have successfully shipped {{growl.count}} items">You have successfully shipped {{growl.count}} item</span>
+            <span ng-if="growl.id == 'shipment_failure'" translate>We were unable to record the shipment: {{growl.description}}.</span>
+
+            <span ng-if="growl.id == 'payment_capture_scheduled'" translate>All items in the order are now fulfilled and the payment will be automatically captured in a few moments.</span>
+            <span ng-if="growl.id == 'payment_capture_success'" translate>You have successfully captured the payment.</span>
+
+            <span ng-if="growl.id == 'refund_success'" translate>You have successfully <a href="{{growl.url}}">processed a refund</a> in the amount of {{growl.amount}}.</span>
+            <span ng-if="growl.id == 'chargeback_success'" translate>You have successfully <a href="{{growl.url}}">recorded a chargeback</a> in the amount of {{growl.amount}}.</span>
+
+            <span ng-if="growl.id == 'void_success'" translate>You have successfully cancelled the payment.</span>
+
+            <span ng-if="growl.id == 'subscription_cancel_success'" translate>You have successfully cancelled the subscription.</span>
+
+            <span ng-if="growl.id == 'switch_test_failure'" translate>We were unable to switch you to test mode.</span>
+
+            <span ng-if="growl.id == 'cart_url_failure'" translate>We were unable to generate a cart URL for you. Please reload the page to try again.</span>
+            <span ng-if="growl.id == 'launch_url_failure'" translate>We were unable to generate launch urls for you. Please reload the page to try again.</span>
+
+            <span ng-if="growl.id == 'uninstall_success'" translate>You have successfully uninstalled {{growl.name}}.</span>
+            <span ng-if="growl.id == 'set_default_app_version'" translate>You have successfully set the default version for {{growl.name}}.</span>
+            <span ng-if="growl.id == 'invoice_published'" translate>You have successfully published the invoice.</span>
+            <span ng-if="growl.id == 'invoice_sent'" translate>The invoice has been sent to the customer.</span>
+            <span ng-if="growl.id == 'download_reset'" translate>The download has been reset and is now functional.</span>
+            <span ng-if="growl.id == 'download_kill'" translate>The download has been inactivated.</span>
+            <span ng-if="growl.id == 'notification_resend'" translate>The notification has been sent to {{growl.email}}.</span>
+
+            <!-- Generic -->
+            <span ng-if="growl.id == 'edit_success_no_link'" translate>Your changes have been saved.</span>
+            <span ng-if="growl.id == 'add_success'" translate>You have successfully created <a href="{{growl.url}}">{{growl.name}}</a>.</span>
+            <span ng-if="growl.id == 'edit_success'" translate>Your changes to <a href="{{growl.url}}">{{growl.name}}</a> have been saved.</span>
+            <span ng-if="growl.id == 'delete_success'" translate>You have successfully deleted {{growl.name}}.</span>
+            <span ng-if="growl.id == 'delete_success_with_undelete'" translate>You have successfully deleted <a href="{{growl.url}}">{{growl.name}}</a>.</span>
+            <span ng-if="growl.id == 'undelete_success'" translate>You have successfully restored <a href="{{growl.url}}">{{growl.name}}</a>.</span>
+
+            <span ng-if="growl.id == 'active_change_failure'" translate>We were unable to update {{growl.name}}. Please try your request again.</span>
+            <span ng-if="growl.id == 'activate_success'" translate translate-n="growl.count" translate-plural="You have successfully activated {{growl.count}} items">You have successfully activated {{growl.count}} item</span>
+            <span ng-if="growl.id == 'inactivate_success'" translate translate-n="growl.count" translate-plural="You have successfully inactivated {{growl.count}} items">You have successfully inactivated {{growl.count}} item</span>
+
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div login></div>
+
+    <!-- Dropzone file upload template -->
+    <div id="dz-file" class="dz-default col-xs-12" style="display:none;">
+        <p><i class="fa fa-cloud-upload fa-4 text-center spacer-t30" style="color:#39b3d7;"></i></p>
+        <p translate>Drop or click to upload</p>
+        <p class="spacer-t30"><small translate>Maximum files: <span class="dropzone-max-files"></span></small></p>
+        <p><small translate>Maximum file size: <span class="dropzone-max-size"></span></small></p>
+    </div>
+
+    <!-- Dropzone app package upload template -->
+    <div id="dz-app-package" class="dz-default" style="display:none;">
+        <p><i class="fa fa-cloud-upload fa-4 text-center spacer-t30" style="color:#39b3d7;"></i></p>
+        <p translate>Drop or click to upload</p>
+        <p class="spacer-t30"><small translate>Maximum files: <span class="dropzone-max-files"></span></small></p>
+        <p><small translate>Maximum file size: <span class="dropzone-max-size"></span></small></p>
+        <p><small translate>Valid file types: <span class="dropzone-filetypes"></span></small></p>
+    </div>
+
+    <!-- Dropzone images upload template -->
+    <div id="dz-images" class="dz-default dz-default-template" style="display:none;">
+        <p><i class="fa fa-cloud-upload fa-4 text-center spacer-t30" style="color:#39b3d7;"></i></p>
+        <p translate>Drop or click to upload</p>
+        <p class="spacer-t30"><small translate>Maximum images: <span class="dropzone-max-files"></span></small></p>
+        <p><small translate>Maximum image size: <span class="dropzone-max-size"></span></small></p>
+        <p><small translate>Valid file types: <span class="dropzone-filetypes"></span></small></p>
+    </div>
+
+    <div id="dz-preview" style="display:none;">
+        <div class="well well-lg text-center">
+
+            <div class="row hidden" id="dz-file-upload-error">
+                <div class="alert alert-danger">
+                    <span id="dz-file-upload-error-message"></span>
+                </div>
+            </div>
+
+            <h1 data-dz-name></h1>
+            <p data-dz-size></p>
+
+            <div class="row progress progress-striped active" id="dz-file-upload-progress"><div class="progress-bar progress-bar-info" id="dz-file-upload-progress-bar" data-dz-uploadprogress></div></div>
+
+            <div class="row">
+                <img src="images/clear.png" id="dz-image-preview" class="img-thumbnail fadeIn hidden" style="height:75px;" />
+            </div>
+
+            <div class="row">
+                <button class="btn btn-info pull-right btn-right btn-margin-left spacer-t30" id="dz-file-upload-button"><i class="fa fa-arrow-circle-up"></i> <span translate>Upload</span></button>
+                <button class="btn btn-danger pull-right btn-right btn-margin-left spacer-t30" id="dz-file-remove-button" data-dz-remove><i class="fa fa-times-circle"></i> <span translate>Remove</span></button>
+                <button class="btn btn-danger pull-right btn-right btn-margin-left spacer-t30 hidden" id="dz-file-delete-button"><i class="fa fa-times-circle"></i> <span translate>Delete</span></button>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

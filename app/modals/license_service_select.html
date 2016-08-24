@@ -1,0 +1,294 @@
+﻿<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" ng-click="licenseServiceSelect.cancel()">×</button>
+        <h4 class="modal-title"><span translate>Select License Service</span></h4>
+    </div>
+    <div class="modal-body">
+        <div class="callout callout-danger" ng-if="modalError">
+            <h4 translate>Oops! We had a problem.</h4>
+            <p>{{modalError.message}}</p>
+            <span ng-show="modalError.reference">
+                <br /><small>Error code: {{modalError.reference}}</small>
+            </span>
+        </div>
+        <form name="modalform" novalidate>
+            <uib-tabset>
+                <uib-tab active="licenseServiceSelectTabs[0].active" resource="license_services" method="create">
+                    <tab-heading><i class="fa fa-plus-circle"></i> <small translate>New</small></tab-heading>
+
+                    <div class="col-md-6 col-xs-12">
+                        <div class="form-group" show-errors>
+                            <label for="name" class="control-label" translate>Name</label>
+                            <input type="text" class="form-control" name="name" ng-model="license_service.name" required>
+                            <p class="help-block hidden fadeInDown" translate>Please provide a name</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-xs-12">
+                        <div class="form-group" show-errors>
+                            <label for="label" class="control-label" translate>Label</label>
+                            <input type="text" class="form-control" name="label" ng-model="license_service.label" required>
+                            <p class="help-block hidden fadeInDown" translate>Please provide a label</p>
+                            <div>
+                                <p class="help-text" translate>How do you refer to your license? (License Code, Registration Code, Unlock Code, etc.)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clear"></div>
+                                    
+                    <div class="col-xs-12" show-errors>
+                        <div class="form-group">
+                            <label class="radio-group-label required" translate>How will licenses be provided?</label>
+                            <div class="radio-group">
+                                <input type="radio" id="license_service-type-1" class="radio" name="license_service-type" ng-model="license_service.type" value="list">
+                                <label for="license_service-type-1" class="radio-label">A list will be uploaded</label>
+                                <input type="radio" id="license_service-type-2" class="radio" name="license_service-type" ng-model="license_service.type" value="remote_url">
+                                <label for="license_service-type-2" class="radio-label">From a remote URL as orders are processed</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group fadeIn animated" ng-show="license_service.type == 'list'">
+
+                        <div class="col-xs-12" show-errors>
+                            <div class="form-group">
+                                <label class="radio-group-label required" translate>Issue licenses per quantity ordered?</label>
+                                <div class="radio-group inline">
+                                    <input type="radio" id="per_quantity-1" class="radio" name="per_quantity" ng-model="license_service.configuration.per_quantity" ng-value="true" required>
+                                    <label for="per_quantity-1" class="radio-label">Yes</label>
+                                    <input type="radio" id="per_quantity-2" class="radio" name="per_quantity" ng-model="license_service.configuration.per_quantity" ng-value="false" required>
+                                    <label for="per_quantity-2" class="radio-label">No</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12" show-errors>
+                            <div class="form-group">
+                                <label class="radio-group-label required" translate>Remove a license from the list after it has been issued?</label>
+                                <div class="radio-group inline">
+                                    <input type="radio" id="remove_after_use-1" class="radio" name="remove_after_use" ng-model="license_service.configuration.remove_after_use" ng-value="true" required>
+                                    <label for="remove_after_use-1" class="radio-label">Yes</label>
+                                    <input type="radio" id="remove_after_use-2" class="radio" name="remove_after_use" ng-model="license_service.configuration.remove_after_use" ng-value="false" required>
+                                    <label for="remove_after_use-2" class="radio-label">No</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12">
+                            <div class="form-group" show-errors>
+                                <label for="notify_at_count" class="control-label" ng-class="{ 'required': license_service.type == 'list' }" translate>Notify at Count</label>
+                                <input type="tel" class="form-control" name="notify_at_count" ng-model="license_service.configuration.notify_at_count" maxlength="4" is-valid-integer ng-required="license_service.type == 'list'">
+                                <div>
+                                    <p class="help-text" translate>When the number of licenses reaches the supplied value, a notification will be sent by email.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12">
+                            <div class="form-group" show-errors>
+                                <label for="list" class="control-label" ng-class="{ 'required': license_service.type == 'list' }" translate>List of Licenses</label>
+                                <div>
+                                    <textarea class="form-control big" id="list" name="list" ng-model="licenses.list" ng-required="license_service.type == 'list'"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group fadeIn animated" ng-show="license_service.type == 'remote_url'">
+
+                        <div class="col-xs-12">
+                            <div class="form-group" show-errors>
+                                <label for="url" class="control-label" ng-class="{ 'required': license_service.type == 'remote_url' }" translate>URL</label>
+                                <input type="text" class="form-control" name="url" ng-model="license_service.configuration.url" is-valid-url allow-empty-value="{{license_service.type == 'list'}}" ng-required="license_service.type == 'remote_url'">
+                                <p class="help-block hidden fadeInDown" translate>Please provide a valid URL</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group" show-errors>
+                                <label for="http_authorization_username" class="control-label" translate>HTTP Authorization Username</label>
+                                <input type="text" class="form-control" name="http_authorization_username" ng-model="license_service.configuration.http_authorization_username">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group" show-errors>
+                                <label for="http_authorization_password" class="control-label" translate>HTTP Authorization Password</label>
+                                <input type="text" class="form-control" name="http_authorization_password" ng-model="license_service.configuration.http_authorization_password">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group" show-errors>
+                                <label for="custom_header_name" class="control-label" translate>Custom Header Name</label>
+                                <input type="text" class="form-control" name="custom_header_name" ng-model="license_service.configuration.custom_header_name">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group" show-errors>
+                                <label for="custom_header_value" class="control-label" translate>Custom Header Value</label>
+                                <input type="text" class="form-control" name="custom_header_value" ng-model="license_service.configuration.custom_header_value">
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12" show-errors>
+                            <div class="form-group">
+                                <label class="radio-group-label required" translate>Payload Format</label>
+                                <div class="radio-group inline">
+                                    <input type="radio" id="format-1" class="radio" name="format" ng-model="license_service.configuration.format" value="json" required>
+                                    <label for="format-1" class="radio-label">JSON</label>
+                                    <input type="radio" id="format-2" class="radio" name="format" ng-model="license_service.configuration.format" value="xml" required>
+                                    <label for="format-2" class="radio-label">XML</label>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-xs-12">
+                        <div class="form-group" show-errors>
+                            <label for="instructions" class="control-label" translate>Instructions provided to customers with the license</label>
+                            <div>
+                                <textarea class="form-control" id="instructions" name="instructions" ng-model="license_service.instructions"></textarea>
+                            </div>
+                        </div>
+                        <p class="maxlength-message" max-length="1000" item="modalform.instructions"></p>
+                    </div>
+
+                    <div class="col-xs-12">
+                        <div class="form-group" show-errors>
+                            <label for="description" class="control-label" translate>Description (for your reference)</label>
+                            <div>
+                                <textarea class="form-control" id="description" name="description" ng-model="license_service.description"></textarea>
+                            </div>
+                        </div>
+                        <p class="maxlength-message" max-length="250" item="modalform.description"></p>
+                    </div>
+
+                    <div class="row"></div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-right" ng-click="licenseServiceSelect.create(modalform)" validate-on-submit isolate-validation="true" translate>Add the License Service</button>
+                    </div>
+
+                </uib-tab>
+                <uib-tab active="licenseServiceSelectTabs[1].active">
+                    <tab-heading><i class="fa fa-files-o"></i> <small translate>Existing Services</small></tab-heading>
+                    <div class="col-sm-12 text-right spacer-20">
+                        <div class="form-inline">
+                            <div class="form-group has-feedback">
+                                <input type="text" class="form-control" ng-model="licenseServiceSelect.q" ng-change="licenseServiceSelect.search()" ng-model-options="{ updateOn: 'default blur', debounce: { default: 750, blur: 0 } }" select-on-click placeholder="{{ 'Search' | translate }}...">
+                                <span class="fa fa-search form-control-feedback"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="gridtable">
+
+                        <div class="gridtable-header hidden-xs hidden-sm">
+
+                            <div class="col-md-3"><label ng-click="licenseServiceSelect.sort('name', !licenseServiceSelect.params.desc)" class="pointer text-primary">Name</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="licenseServiceSelect.params.sort_by == 'name' && licenseServiceSelect.params.desc == true"></i><i class="icon fa fa-caret-up" ng-if="licenseServiceSelect.params.sort_by == 'name' && licenseServiceSelect.params.desc == false"></i></div>
+                            <div class="col-md-3 btn-header">
+                                <div class="btn-group" uib-dropdown>
+                                    <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Type</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                                    <ul class="dropdown-menu">
+                                        <li ng-click="licenseServiceSelect.setParam('type', null)" ng-class="{'selected-li': licenseServiceSelect.params.type == null}"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
+                                        <li ng-click="licenseServiceSelect.setParam('type', 'list')" ng-class="{'selected-li': licenseServiceSelect.params.type == 'list'}"><a><i class="dropdown-icon fa fa-file-text-o text-primary"></i>&nbsp;&nbsp;<span translate>List</span></a></li>
+                                        <li ng-click="licenseServiceSelect.setParam('type', 'remote_url')" ng-class="{'selected-li': licenseServiceSelect.params.type == 'remote_url'}"><a><i class="dropdown-icon fa fa-link text-pa-purple"></i>&nbsp;&nbsp;<span translate>Remote URL</span></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-3"><label>License Count</label></div>
+                            <div class="col-md-3 text-right"><label ng-click="licenseServiceSelect.sort('date_created', !licenseServiceSelect.params.desc)" class="pointer text-primary" translate>Created</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="licenseServiceSelect.params.sort_by == 'date_created' && licenseServiceSelect.params.desc == true"></i><i class="icon fa fa-caret-up" ng-if="licenseServiceSelect.params.sort_by == 'date_created' && licenseServiceSelect.params.desc == false"></i></div>
+
+                        </div>
+
+                        <div class="col-xs-12 hidden-md hidden-lg padding-l0">
+
+                            <div class="btn-group" uib-dropdown>
+                                <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Filter</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                                <ul class="dropdown-menu">
+                                    <li class="dropdown-header">Type</li>
+                                    <li ng-click="licenseServiceSelect.setParam('type', null)" ng-class="{'selected-li': licenseServiceSelect.params.type == null}"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
+                                    <li ng-click="licenseServiceSelect.setParam('type', 'list')" ng-class="{'selected-li': licenseServiceSelect.params.type == 'list'}"><a><i class="dropdown-icon fa fa-file-text-o text-primary"></i>&nbsp;&nbsp;<span translate>List</span></a></li>
+                                    <li ng-click="licenseServiceSelect.setParam('type', 'remote_url')" ng-class="{'selected-li': licenseServiceSelect.params.type == 'remote_url'}"><a><i class="dropdown-icon fa fa-external-link text-pa-purple"></i>&nbsp;&nbsp;<span translate>Remote URL</span></a></li>
+                                </ul>
+                            </div>
+
+                            <div class="btn-group" uib-dropdown>
+                                <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Sort</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                                <ul class="dropdown-menu">
+                                    <li class="dropdown-header">Name</li>
+                                    <li ng-click="licenseServiceSelect.sort('name', false)" ng-class="{'selected-li': licenseServiceSelect.params.sort_by == 'name' && licenseServiceSelect.params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                                    <li ng-click="licenseServiceSelect.sort('name', true)" ng-class="{'selected-li': licenseServiceSelect.params.sort_by == 'name' && licenseServiceSelect.params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                                    <li class="divider"></li>
+                                    <li class="dropdown-header">Date Created</li>
+                                    <li ng-click="licenseServiceSelect.sort('date_created', false)" ng-class="{'selected-li': licenseServiceSelect.params.sort_by == 'date_created' && licenseServiceSelect.params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                                    <li ng-click="licenseServiceSelect.sort('date_created', true)" ng-class="{'selected-li': licenseServiceSelect.params.sort_by == 'date_created' && licenseServiceSelect.params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                                    <li class="divider"></li>
+                                    <li class="dropdown-header">Date Updated</li>
+                                    <li ng-click="licenseServiceSelect.sort('date_modified', false)" ng-class="{'selected-li': licenseServiceSelect.params.sort_by == 'date_modified' && licenseServiceSelect.params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                                    <li ng-click="licenseServiceSelect.sort('date_modified', true)" ng-class="{'selected-li': licenseServiceSelect.params.sort_by == 'date_modified' && licenseServiceSelect.params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                                </ul>
+                            </div>
+
+                        </div>
+
+                        <div class="row spacer-b10 hidden-md hidden-lg"></div> <!--Needed to have the buttons clear-->
+
+                        <div class="gridtable-row pointer" ng-repeat="license_service in licenseServiceList.data" ng-click="licenseServiceSelect.ok(license_service)">
+
+                            <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Name</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value"><a>{{license_service.name}}</a></div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Type</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value"><span ng-if="license_service.type == 'remote_url'">Remote URL</span><span ng-if="license_service.type == 'list'">List</span></div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>License Count</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value"><span title="Low number of licenses" ng-if="license_service.configuration.license_count <= license_service.configuration.notify_at_count"><i class="icon fa fa-warning text-warning"></i>&nbsp;</span>{{license_service.configuration.license_count}}<span ng-if="license_service.type == 'remote_url'">N/A</span></div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Created</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value"><span>{{license_service.date_created | date:'shortDate'}}</span></div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Show pagination if there is at least one page -->
+                    <div class="col-sm-12" ng-if="licenseServiceList.data.length > 0">
+                        <ul class="pager">
+                            <li class="previous" ng-click="licenseServiceSelect.movePage('-')" ng-show="licenseServiceList.previous_page_offset !== null"><a><i class="fa fa-chevron-circle-left"></i> <span translate>Back</span></a></li>
+                            <li class="next" ng-click="licenseServiceSelect.movePage('+')" ng-show="licenseServiceList.next_page_offset !== null"><a><span translate>Next</span> <i class="fa fa-chevron-circle-right"></i></a></li>
+                        </ul>
+                        <p class="text-right" ng-if="licenseServiceList">Showing page {{licenseServiceList.current_page}} of {{licenseServiceList.total_pages}}</p>
+                    </div>
+
+                    <!-- Show a "not found" message if no license_services were found  -->
+                    <div class="col-sm-12" ng-if="licenseServiceList.data.length == 0">
+                        <p class="no-info" translate>No license services found</p>
+                    </div>
+
+                </uib-tab>
+            </uib-tabset>
+        </form>
+    </div>
+
+    <div class="row"></div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="licenseServiceSelect.cancel()">
+            <span translate>Cancel</span>
+        </button>
+    </div>
+</div>

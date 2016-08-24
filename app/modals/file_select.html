@@ -1,0 +1,152 @@
+﻿<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" ng-click="fileSelect.cancel()">×</button>
+        <h4 class="modal-title"><span translate>Select a File</span></h4>
+    </div>
+    <div class="modal-body">
+        <div class="callout callout-danger" ng-if="modalError">
+            <h4 translate>Oops! We had a problem.</h4>
+            <p>{{modalError.message}}</p>
+            <span ng-show="modalError.reference">
+                <br /><small>Error code: {{modalError.reference}}</small>
+            </span>
+        </div>
+        <uib-tabset>
+            <uib-tab active="fileSelectTabs[0].active" resource="files" method="create">
+                <tab-heading><i class="fa fa-cloud-upload"></i> <small translate>New</small></tab-heading>
+                <form class="form-group dropzone" dropzone dropzone-url="/files" dropzone-max-files="1" dropzone-max-size="75000000" dropzone-template-id="dz-file">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group no-margin-hr">
+                                <label class="control-label" translate>Name</label>
+                                <input type="text" name="name" class="form-control" placeholder="{{ 'Optional' | translate}}">
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group no-margin-hr">
+                                <label class="control-label" translate>Version</label>
+                                <input type="text" name="version" class="form-control" placeholder="{{ 'Optional' | translate}}">
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group no-margin-hr">
+                                <label class="control-label" translate>How many days till a link expires?</label>
+                                <input type="text" name="expires_in_days" class="form-control" value="7">
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group no-margin-hr">
+                                <label class="control-label" translate>How many clicks till a link expires?</label>
+                                <input type="text" name="expires_in_clicks" class="form-control" value="10">
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-group no-margin-hr">
+                                <label class="control-label" translate>Description</label>
+                                <textarea name="description" class="form-control" rows="2" placeholder="{{ 'Optional' | translate}}"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </uib-tab>
+            <uib-tab active="fileSelectTabs[1].active">
+                <tab-heading><i class="fa fa-files-o"></i> <small translate>Existing Files</small></tab-heading>
+                <div class="col-sm-12 text-right spacer-20">
+                    <form class="form-inline">
+                        <div class="form-group has-feedback">
+                            <input type="text" class="form-control" ng-model="fileSelect.q" ng-change="fileSelect.search()" ng-model-options="{ updateOn: 'default blur', debounce: { default: 750, blur: 0 } }" select-on-click placeholder="{{ 'Search' | translate }}...">
+                            <span class="fa fa-search form-control-feedback"></span>
+                        </div>
+                    </form>
+                </div>
+   
+                    <div class="gridtable">
+
+                        <div class="gridtable-header hidden-xs hidden-sm">
+
+                            <div class="col-md-3"><label ng-click="fileSelect.sort('name', !fileSelect.params.desc)" class="pointer text-primary">Name</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="fileSelect.params.sort_by == 'name' && fileSelect.params.desc == true"></i><i class="icon fa fa-caret-up" ng-if="fileSelect.params.sort_by == 'name' && fileSelect.params.desc == false"></i></div>
+                            <div class="col-md-2"><label>Version</label></div>
+                            <div class="col-md-3"><label ng-click="fileSelect.sort('filename', !fileSelect.params.desc)" class="pointer text-primary">Filename</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="fileSelect.params.sort_by == 'filename' && fileSelect.params.desc == true"></i><i class="icon fa fa-caret-up" ng-if="fileSelect.params.sort_by == 'filename' && fileSelect.params.desc == false"></i></div>
+                            <div class="col-md-2"><label>Size</label></div>
+                            <div class="col-md-2 text-right"><label ng-click="fileSelect.sort('date_created', !fileSelect.params.desc)" class="pointer text-primary" translate>Created</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="fileSelect.params.sort_by == 'date_created' && fileSelect.params.desc == true"></i><i class="icon fa fa-caret-up" ng-if="fileSelect.params.sort_by == 'date_created' && fileSelect.params.desc == false"></i></div>
+
+                        </div>
+
+                        <div class="col-xs-12 hidden-md hidden-lg padding-l0">
+                            <div class="btn-group" uib-dropdown>
+                                <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Sort</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                                <ul class="dropdown-menu">
+                                    <li class="dropdown-header">Name</li>
+                                    <li ng-click="fileSelect.sort('name', false)" ng-class="{'selected-li': fileSelect.params.sort_by == 'name' && fileSelect.params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                                    <li ng-click="fileSelect.sort('name', true)" ng-class="{'selected-li': fileSelect.params.sort_by == 'name' && fileSelect.params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                                    <li class="divider"></li>
+                                    <li class="dropdown-header">Filename</li>
+                                    <li ng-click="fileSelect.sort('filename', false)" ng-class="{'selected-li': fileSelect.params.sort_by == 'filename' && fileSelect.params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                                    <li ng-click="fileSelect.sort('filename', true)" ng-class="{'selected-li': fileSelect.params.sort_by == 'filename' && fileSelect.params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                                    <li class="divider"></li>
+                                    <li class="dropdown-header">Date Created</li>
+                                    <li ng-click="fileSelect.sort('date_created', false)" ng-class="{'selected-li': fileSelect.params.sort_by == 'date_created' && fileSelect.params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                                    <li ng-click="fileSelect.sort('date_created', true)" ng-class="{'selected-li': fileSelect.params.sort_by == 'date_created' && fileSelect.params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                                    <li class="divider"></li>
+                                    <li class="dropdown-header">Date Updated</li>
+                                    <li ng-click="fileSelect.sort('date_modified', false)" ng-class="{'selected-li': fileSelect.params.sort_by == 'date_modified' && fileSelect.params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                                    <li ng-click="fileSelect.sort('date_modified', true)" ng-class="{'selected-li': fileSelect.params.sort_by == 'date_modified' && fileSelect.params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="row spacer-b10 hidden-md hidden-lg"></div> <!--Needed to have the buttons clear-->
+
+                        <div class="gridtable-row pointer" ng-repeat="file in fileList.data" ng-click="fileSelect.ok(file)">
+
+                            <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Name</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value"><a>{{file.name}}</a></div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-2">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Version</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value"><span>{{file.version}}</span></div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Filename</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value"><span>{{file.filename}}</span></div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-2">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Size</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value"><span>{{file.bytes | bytesToMB}}</span></div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-2">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Created</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value"><span>{{file.date_created | date:'shortDate'}}</span></div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Show pagination if there is at least one page -->
+                    <div class="col-sm-12" ng-if="fileList.data.length > 0">
+                        <ul class="pager">
+                            <li class="previous" ng-click="fileSelect.movePage('-')" ng-show="fileList.previous_page_offset !== null"><a><i class="fa fa-chevron-circle-left"></i> <span translate>Back</span></a></li>
+                            <li class="next" ng-click="fileSelect.movePage('+')" ng-show="fileList.next_page_offset !== null"><a><span translate>Next</span> <i class="fa fa-chevron-circle-right"></i></a></li>
+                        </ul>
+                        <p class="text-right" ng-if="fileList">Showing page {{fileList.current_page}} of {{fileList.total_pages}}</p>
+                    </div>
+
+                    <!-- Show a "not found" message if no files were found  -->
+                    <div class="col-sm-12" ng-if="fileList.data.length == 0">
+                        <p class="no-info" translate>No files found</p>
+                    </div>
+                </div>
+    </div>
+
+    <div class="modal-footer clearfix">
+        <button type="button" class="btn btn-default" ng-click="fileSelect.cancel()">
+            <span translate>Cancel</span>
+        </button>
+    </div>
+</div>

@@ -1,0 +1,359 @@
+﻿<div ng-controller="AppsSetCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1 ng-if="add" translate>Create an App</h1>
+        <h1 ng-if="update">{{app.name}}</h1>
+    </div>
+
+    <form name="form" novalidate>
+        <div class="panel panel-body light-shadow">
+
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="name" class="control-label" translate>App Name</label>
+                    <input type="text" class="form-control" name="name" ng-model="app.name" required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a name</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" ng-if="update">
+                <div class="form-group">
+                    <label class="control-label">App ID</label>
+                    <div>{{app.app_id}}</div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" ng-if="update && app.client_secret">
+                <div class="form-group">
+                    <label class="control-label">Client Secret</label>
+                    <div>{{app.client_secret}}</div>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="col-md-6 col-xs-12" ng-if="update">
+                <div class="form-group">
+                    <label class="control-label">Created</label>
+                    <div>{{app.date_created | date:'mediumDate'}} {{app.date_created | date:'shortTime'}}</div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" ng-if="update">
+                <div class="form-group">
+                    <label class="control-label">Updated</label>
+                    <div>{{app.date_modified | date:'mediumDate'}} {{app.date_modified | date:'shortTime'}}</div>
+                </div>
+            </div>
+
+            <div class="col-xs-12" ng-if="app.deleted">
+                <div class="form-group">
+                    <label class="control-label" translate>Deleted</label>
+                    <span>{{app.date_deleted | date:'mediumDate'}} {{app.date_deleted | date:'shortTime'}}</span>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label class="radio-group-label" translate>Make Public?</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="ispublic-1" class="radio" name="ispublic" ng-model="app.is_public" ng-value="true" required>
+                        <label for="ispublic-1" class="radio-label">Yes</label>
+                        <input type="radio" id="ispublic-2" class="radio" name="ispublic" ng-model="app.is_public" ng-value="false" required>
+                        <label for="ispublic-2" class="radio-label">No</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="short_description" class="control-label" translate>Short Description</label>
+                    <input type="text" class="form-control" name="short_description" ng-model="app.short_description" required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a short description</p>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="description" class="control-label" ng-class="{ 'required': app.is_public }" translate>Full Description</label>
+                    <textarea class="form-control" name="description" ng-model="app.description" ng-required="app.is_public" placeholder="{{ app.is_public == false && 'Optional' || null }}"></textarea>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a full description</p>
+                </div>
+                <p class="maxlength-message" max-length="1000" item="form.description"></p>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="info_url" class="control-label" ng-class="{ 'required': app.is_public }" translate>Support / Info URL</label>
+                    <input type="text" class="form-control" name="info_url" ng-model="app.info_url" ng-required="app.is_public" placeholder="{{ app.is_public == false && 'Optional' || null }}">
+                    <p class="help-block hidden fadeInDown" translate>Please provide a valid URL.</p>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label class="control-label clear" translate>Images</label>
+                    <div ng-show="images.length == 0 || !images">
+                        <a class="btn btn-info" images-select images="images" translate>Add images</a>
+                    </div>
+                    <div ng-show="images.length > 0">
+                        <image-group images="images"></image-group>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12" show-errors>
+                <div class="form-group">
+                    <label class="radio-group-label" translate>Environment</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="client_side-1" class="radio" name="client_side" ng-model="app.client_side" ng-value="true" ng-click="setConditionals()" required>
+                        <label for="client_side-1" class="radio-label">Client-side</label>
+                        <input type="radio" id="client_side-2" class="radio" name="client_side" ng-model="app.client_side" ng-value="false" ng-click="setConditionals()" required>
+                        <label for="client_side-2" class="radio-label">Server-side</label>
+                    </div>
+                    <p class="help-block hidden fadeInDown" style="max-width:300px" translate>Please select an environment</p>
+                </div>
+            </div>
+
+            <div class="col-xs-12" ng-show="app.client_side" show-errors>
+                <div class="form-group">
+                    <label class="radio-group-label" ng-class="{ 'required': app.client_side }" translate>Type of App</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="type-1" class="radio" name="type" ng-model="app.type" value="storefront" ng-click="setConditionals()" ng-required="app.client_side">
+                        <label for="type-1" class="radio-label">Storefront</label>
+                        <input type="radio" id="type-2" class="radio" name="type" ng-model="app.type" value="admin" ng-click="setConditionals()" ng-required="app.client_side">
+                        <label for="type-2" class="radio-label">Admin</label>
+                    </div>
+                    <p class="help-block hidden fadeInDown" style="max-width:300px" translate>Please indicate the type of app</p>
+                </div>
+            </div>
+
+            <div class="col-xs-12" ng-show="app.client_side" show-errors>
+                <div class="form-group">
+                    <label class="radio-group-label" translate>Platform Hosted?</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="platform_hosted-1" class="radio" name="platform_hosted" ng-model="app.platform_hosted" ng-value="true" required>
+                        <label for="platform_hosted-1" class="radio-label">Yes</label>
+                        <input type="radio" id="platform_hosted-2" class="radio" name="platform_hosted" ng-model="app.platform_hosted" ng-value="false" required ng-disabled="app.type == 'storefront'">
+                        <label for="platform_hosted-2" class="radio-label">No</label>
+                    </div>
+                    <p class="help-block hidden fadeInDown" style="max-width:300px" translate>Please indicate if the app is platform hosted</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" ng-show="app.platform_hosted && app.client_side">
+                <div class="form-group" show-errors>
+                    <label for="version" class="control-label" ng-class="{ 'required': app.platform_hosted && app.client_side }" translate>Version</label>
+                    <input type="text" class="form-control" name="version" ng-model="app.version" ng-required="app.platform_hosted">
+                    <p class="help-block hidden fadeInDown" translate>Please provide a version</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" ng-show="app.platform_hosted && app.client_side" show-errors>
+                <div class="form-group">
+                    <label class="radio-group-label" translate>Allow Source Download?</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="allow_source_download-1" class="radio" name="allow_source_download" ng-model="app.allow_source_download" ng-value="true">
+                        <label for="allow_source_download-1" class="radio-label">Yes</label>
+                        <input type="radio" id="allow_source_download-2" class="radio" name="allow_source_download" ng-model="app.allow_source_download" ng-value="false">
+                        <label for="allow_source_download-2" class="radio-label">No</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12" ng-show="app.type != 'storefront'">
+                <div class="form-group" show-errors>
+                    <label for="redirect_uris" class="control-label" ng-class="{ 'required': app.type != 'storefront' }" translate>Redirect URIs</label>
+                    <textarea class="form-control" name="redirect_uris" ng-model="redirect_uris" placeholder="{{ 'Enter one URI per line' | translate}}" ng-required="app.type != 'storefront'"></textarea>
+                    <p class="help-block hidden fadeInDown" translate>Please provide at least one redirect URI</p>
+                </div>
+                <p class="maxlength-message" max-length="1000" item="form.redirect_uris"></p>
+            </div>
+
+            <div class="col-xs-12 form-group" ng-show="app.platform_hosted && app.client_side">
+                <label class="control-label" translate>App Package</label>
+                <div ng-show="!app_package.app_package_id" ng-class="{ 'has-error': form.app_package_id.$invalid && (form.$submitted) }">
+                    <a class="btn btn-info" app-package-select app-package="app_package" translate>Add an app package</a>
+                    <input type="hidden" name="app_package_id" ng-model="app_package_id" ng-required="app.platform_hosted">
+                    <p class="help-block fadeInDown" ng-show="form.app_package_id.$invalid && (form.$submitted)" translate>Please provide an app package</p>
+                </div>
+                <div ng-show="app_package.app_package_id">
+                    <ul class="list-group">
+                        <li class="list-group-item overflow-hidden">
+                            <i class="fa fa-minus-square pointer pull-right text-default" ng-show="showAppPackage" ng-click="showAppPackage = !showAppPackage" style="margin-top:3px">&nbsp;</i>
+                            <i class="fa fa-plus-square pointer pull-right text-default " ng-show="!showAppPackage" ng-click="showAppPackage = !showAppPackage" style="margin-top:3px">&nbsp;</i>
+                            <a href="/#/app_packages/{{app_package.app_package_id}}/edit" target="_blank">{{app_package.name}}</a>
+                        </li>
+                        <li class="list-group-item overflow-hidden fadeIn animated" ng-show="showAppPackage">
+                            <p><span translate>Filename</span>: <strong>{{app_package.filename}}</strong></p>
+                            <p ng-if="app_package.version"><span translate>Version</span>: <strong>{{app_package.version}}</strong></p>
+                            <p><span translate>Size</span>: <strong>{{app_package.bytes | bytesToMB}}</strong></p>
+                            <p><span translate>Created</span>: <strong>{{app_package.date_created | date:'mediumDate'}} {{app_package.date_created | date:'shortTime'}}</strong></p>
+                            <p ng-if="app_package.description"><span translate>Description</span>: <em>{{app_package.description}}</em></p>
+                            <p class="text-right">
+                                <a class="btn btn-danger btn-xs spacer-t10" ng-click="removeAppPackage()" translate>Remove</a>
+                                <a class="btn btn-primary btn-xs spacer-t10" app-package-select app-package="app_package" translate>Change</a>
+                            </p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-xs-12 form-group" ng-show="app.allow_source_download && app.platform_hosted && app.client_side">
+                <label class="control-label" translate>Source App Package</label>
+                <div ng-show="!source_app_package.app_package_id">
+                    <a class="btn btn-info" app-package-select app-package="source_app_package" translate>Add an app package</a>
+                </div>
+                <div ng-show="source_app_package.app_package_id">
+                    <ul class="list-group">
+                        <li class="list-group-item overflow-hidden">
+                            <i class="fa fa-minus-square pointer pull-right text-default" ng-show="showSourceAppPackage" ng-click="showSourceAppPackage = !showSourceAppPackage" style="margin-top:3px">&nbsp;</i>
+                            <i class="fa fa-plus-square pointer pull-right text-default " ng-show="!showSourceAppPackage" ng-click="showSourceAppPackage = !showSourceAppPackage" style="margin-top:3px">&nbsp;</i>
+                            <a href="/#/app_packages/{{source_app_package.app_package_id}}/edit" target="_blank">{{source_app_package.name}}</a>
+                        </li>
+                        <li class="list-group-item overflow-hidden fadeIn animated" ng-show="showSourceAppPackage">
+                            <p><span translate>Filename</span>: <strong>{{source_app_package.filename}}</strong></p>
+                            <p ng-if="source_app_package.version"><span translate>Version</span>: <strong>{{source_app_package.version}}</strong></p>
+                            <p><span translate>Size</span>: <strong>{{source_app_package.bytes | bytesToMB}}</strong></p>
+                            <p><span translate>Created</span>: <strong>{{source_app_package.date_created | date:'mediumDate'}} {{source_app_package.date_created | date:'shortTime'}}</strong></p>
+                            <p ng-if="source_app_package.description"><span translate>Description</span>: <em>{{source_app_package.description}}</em></p>
+                            <p class="text-right">
+                                <a class="btn btn-danger btn-xs spacer-t10" ng-click="removeSourceAppPackage()" translate>Remove</a>
+                                <a class="btn btn-primary btn-xs spacer-t10" app-package-select app-package="source_app_package" translate>Change</a>
+                            </p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-xs-12" ng-show="app.platform_hosted">
+                <div class="form-group" ng-class="{ 'has-error': form.settings_fields.$invalid }">
+                    <label for="settings_fields" class="control-label" translate>Settings Fields</label>
+                    <textarea class="form-control" name="settings_fields" ng-model="app_display.settings_fields" placeholder="{{ 'Optional' | translate}}"></textarea>
+                    <p class="help-block fadeInDown" ng-show="form.settings_fields.$error.json" translate>The input is not valid JSON.</p>
+                </div>
+            </div>
+
+            <div class="col-xs-12" ng-show="app.platform_hosted">
+                <div class="form-group" ng-class="{ 'has-error': form.style_fields.$invalid }">
+                    <label for="style_fields" class="control-label" translate>Style Fields</label>
+                    <textarea class="form-control" name="style_fields" ng-model="app_display.style_fields" placeholder="{{ 'Optional' | translate}}"></textarea>
+                    <p class="help-block fadeInDown" ng-show="form.style_fields.$error.json" translate>The input is not valid JSON.</p>
+                </div>
+            </div>
+
+            <div class="col-xs-12" ng-show="app.platform_hosted && app.client_side">
+                <div class="form-group" show-errors>
+                    <label for="csp_hosts" class="control-label" ng-class="{ 'required': app.is_public }" translate>Content Security Protection Hosts</label>
+                    <textarea class="form-control" name="csp_hosts" ng-model="app.csp_hosts" placeholder="{{ 'Enter one host per line' | translate}}"></textarea>
+                </div>
+                <p class="maxlength-message" max-length="1000" item="form.csp_hosts"></p>
+            </div>
+
+            <div class="col-xs-12" ng-show="app.platform_hosted && app.client_side">
+                <div class="form-group" show-errors>
+                    <label class="radio-group-label" translate>Allow Custom CSS?</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="allow_custom_css-1" class="radio" name="allow_custom_css" ng-model="app.allow_custom_css" ng-value="true" required>
+                        <label for="allow_custom_css-1" class="radio-label">Yes</label>
+                        <input type="radio" id="allow_custom_css-2" class="radio" name="allow_custom_css" ng-model="app.allow_custom_css" ng-value="false" required>
+                        <label for="allow_custom_css-2" class="radio-label">No</label>
+                    </div>
+                    <p class="help-block hidden fadeInDown" translate>Please make a selection</p>
+                </div>
+            </div>
+
+            <div class="col-xs-12" ng-show="app.platform_hosted && app.client_side">
+                <div class="form-group" show-errors>
+                    <label class="radio-group-label" translate>Allow Custom JavaScript?</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="allow_custom_javascript-1" class="radio" name="allow_custom_javascript" ng-model="app.allow_custom_javascript" ng-value="true" required>
+                        <label for="allow_custom_javascript-1" class="radio-label">Yes</label>
+                        <input type="radio" id="allow_custom_javascript-2" class="radio" name="allow_custom_javascript" ng-model="app.allow_custom_javascript" ng-value="false" required>
+                        <label for="allow_custom_javascript-2" class="radio-label">No</label>
+                    </div>
+                    <p class="help-block hidden fadeInDown" translate>Please make a selection</p>
+                </div>
+            </div>
+
+            <div class="col-xs-12" ng-show="app.platform_hosted && app.client_side && app.type == 'storefront'">
+                <div class="form-group" show-errors>
+                    <label class="radio-group-label" translate>Hash Based Navigation?</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="hash_navigation-1" class="radio" name="hash_navigation" ng-model="app.hash_navigation" ng-value="true" required>
+                        <label for="hash_navigation-1" class="radio-label">Yes</label>
+                        <input type="radio" id="hash_navigation-2" class="radio" name="hash_navigation" ng-model="app.hash_navigation" ng-value="false" required>
+                        <label for="hash_navigation-2" class="radio-label">No</label>
+                    </div>
+                    <p class="help-block hidden fadeInDown" translate>Please make a selection</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" ng-show="app.platform_hosted && app.client_side && app.type == 'storefront'">
+                <div class="form-group" show-errors>
+                    <label for="version" class="control-label" translate>Cart URL</label>
+                    <input type="text" class="form-control" name="version" ng-model="app.cart_url">
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" ng-show="app.platform_hosted && app.client_side && app.type == 'storefront'">
+                <div class="form-group" show-errors>
+                    <label for="version" class="control-label" translate>Invoice URL</label>
+                    <input type="text" class="form-control" name="version" ng-model="app.invoice_url">
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label for="comments" class="control-label" translate>Comments</label>
+                    <textarea class="form-control" name="comments" ng-model="app.comments" placeholder="{{ 'Optional' | translate}}"></textarea>
+                </div>
+                <p class="maxlength-message" max-length="1000" item="form.comments"></p>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label class="radio-group-label" translate>Set Active?</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="active-1" class="radio" name="active" ng-model="app.active" ng-value="true" required>
+                        <label for="active-1" class="radio-label">Yes</label>
+                        <input type="radio" id="active-2" class="radio" name="active" ng-model="app.active" ng-value="false" required>
+                        <label for="active-2" class="radio-label">No</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label for="comments" class="control-label" translate>Permissions</label>
+                    <div ng-show="app.client_side == true && app.type == 'storefront'">
+                        <span class="text-muted text-italics" translate>Storefront apps always request all permissions necessary to operate storefront functions.</span>
+                    </div>
+                    <div ng-show="app.type != 'storefront' || app.client_side == false">
+                        <permissions effective="app.effective_permissions" auth-type="app" result="app.permissions"></permissions>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <button ng-if="add" type="submit" class="btn btn-primary btn-right" ng-click="addApp()" ng-disabled="form.$pending" validate-on-submit translate>Create App</button>
+                <button ng-if="update" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updateApp()" validate-on-submit translate>Save Changes</button>
+                <button ng-if="update" type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="confirmCancel()" translate>Cancel</button>
+            </div>
+
+            <div class="row"></div>
+
+            <div ng-if="update" class="panel-footer submenu" resource="apps" method="delete">
+                <span class="delete" ng-click="confirmDelete()" ng-if="!app.deleted" translate>Delete this app</span>
+                <span class="undelete" ng-click="undelete()" ng-if="app.deleted" resource="apps" method="update" translate>Undelete this app</span>
+            </div>
+
+        </div>
+    </form>
+</div>

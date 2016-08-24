@@ -1,0 +1,335 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Comecero - Admin\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.6.9\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: ../products/list.html
+msgid "Actions"
+msgstr "Действия"
+
+#: ../products/list.html ../products/view.html
+msgid "Active"
+msgstr "Активный"
+
+#: ../products/add.html ../products/list.html
+msgid "Add a Product"
+msgstr "Добавить товар"
+
+#: ../products/list.html
+msgid "Add a Product Now"
+msgstr "Добавить товар сейчас"
+
+#: ../products/add.html ../products/edit.html
+msgid "Add a price in another currency"
+msgstr "Добавить цену в другой валюте"
+
+#: ../products/add.html
+msgid "Add the Product"
+msgstr "Добавить товар"
+
+#: ../products/list.html
+msgid "Adding a product is easy. Get started now."
+msgstr "Добавление товаров легко. Начните прямо сейчас."
+
+#: ../modals/confirm.html
+msgid "Are you sure you want to delete this product?"
+msgstr "Вы уверены, что хотите удалить этот товар?"
+
+#: ../orders/list.html ../products/list.html
+msgid "Back"
+msgstr "Предыдущая"
+
+#: ../products/view.html
+msgid "Basic Info"
+msgstr "Основная информация"
+
+#: ../orders/view.html
+msgid "Billing Info"
+msgstr "Платежная информация"
+
+#: ../modals/confirm.html ../products/edit.html
+msgid "Cancel"
+msgstr "Отменить"
+
+#: ../orders/list.html
+msgid "Complete"
+msgstr "законченный"
+
+#: ../orders/view.html
+msgid "Credit Card"
+msgstr "кредитная карта"
+
+#: ../products/add.html ../products/edit.html
+msgid "Currency"
+msgstr "Валюта"
+
+#: ../orders/list.html
+msgid "Date"
+msgstr "Дата"
+
+#: ../products/view.html
+msgid "Date Created"
+msgstr "Дата создания"
+
+#: ../modals/confirm.html
+msgid "Delete"
+msgstr "Удалить"
+
+#: ../products/edit.html
+msgid "Delete this product"
+msgstr "Удалить этот товар"
+
+#: ../products/list.html ../products/view.html
+msgid "Deleted"
+msgstr "Удаленый"
+
+#: ../products/add.html ../products/edit.html ../products/view.html
+msgid "Description"
+msgstr "Описание"
+
+#: ../modals/confirm.html
+msgid "Discard Changes"
+msgstr "Отменить изменения"
+
+#: ../products/view.html
+msgid "Edit This Product"
+msgstr "Изменить товар"
+
+#: ../orders/list.html ../products/list.html
+msgid "ID"
+msgstr "ID"
+
+#: ../products/list.html ../products/view.html
+msgid "Inactive"
+msgstr "Неактивный"
+
+#: ../orders/list.html
+msgid "Incomplete"
+msgstr "незаконченный"
+
+#: ../products/view.html
+msgid "Last Modified"
+msgstr "Дата изменения"
+
+#: ../products/add.html
+msgid "Leave blank and we'll create one for you."
+msgstr "Оставьте пустым, и мы создадим для вас."
+
+#: ../products/add.html ../products/edit.html
+msgid "Make Active?"
+msgstr "Сделайте активным?"
+
+#: ../products/list.html
+msgid "Make Inactive"
+msgstr "Сделайте неактивным"
+
+#: ../products/list.html
+msgid "Make active"
+msgstr "Сделайте активным"
+
+#: ../orders/list.html ../products/list.html
+msgid "Next"
+msgstr "Следующая"
+
+#: ../products/add.html ../products/edit.html
+msgid "No"
+msgstr "Нет"
+
+#: ../orders/list.html
+msgid "No orders found"
+msgstr "Нет заказов"
+
+#: ../products/list.html
+msgid "No products found"
+msgstr "Товар не был найден"
+
+#: ../products/add.html ../products/edit.html
+msgid "Optional"
+msgstr "Необязательно"
+
+#: ../orders/view.html
+msgid "Order Date"
+msgstr "Дата заказа"
+
+#: ../orders/list.html
+msgid "Orders"
+msgstr "Заказы"
+
+#: ../products/view.html
+msgid "Other Details"
+msgstr "Подробная информация"
+
+#: ../orders/view.html
+msgid "Payment Currency"
+msgstr "Валюта платежа"
+
+#: ../orders/view.html
+msgid "Payment Info"
+msgstr "информация об оплате"
+
+#: ../orders/view.html
+msgid "Phone"
+msgstr "Тел."
+
+#: ../modals/confirm.html
+msgid "Please confirm"
+msgstr "Подтвердите"
+
+#: ../products/edit.html
+msgid "Please enter a valid price"
+msgstr "Введите действительное цену"
+
+#: ../products/add.html ../products/edit.html
+msgid "Please provide a name"
+msgstr "Укажите название"
+
+#: ../products/add.html
+msgid "Please provide a valid price"
+msgstr "Укажите правильное цену"
+
+#: ../products/add.html
+msgid "Please select a currency"
+msgstr "Выберите валюту"
+
+#: ../orders/view.html ../products/add.html ../products/edit.html
+#: ../products/list.html
+msgid "Price"
+msgstr "Цена"
+
+#: ../products/view.html
+msgid "Pricing"
+msgstr "Цены"
+
+#: ../products/view.html
+msgid "Product ID"
+msgstr "Product ID"
+
+#: ../orders/view.html ../products/add.html ../products/edit.html
+#: ../products/list.html
+msgid "Product Name"
+msgstr "Название"
+
+#: ../products/list.html
+msgid "Products"
+msgstr "Товары"
+
+#: ../orders/view.html
+msgid "Quantity"
+msgstr "Кол."
+
+#: ../products/edit.html
+msgid "Save Changes"
+msgstr "Сохранить изменения"
+
+#: ../orders/list.html ../products/list.html
+msgid "Search"
+msgstr "поиск"
+
+#: ../orders/view.html
+msgid "Settlement Currency"
+msgstr "Валюта расчетов"
+
+#: ../orders/view.html
+msgid "Shipping Info"
+msgstr "информация доставка"
+
+#: ../orders/list.html ../products/list.html ../products/view.html
+msgid "Status"
+msgstr "Статус"
+
+#: ../modals/confirm.html
+msgid "Stay on Page"
+msgstr "Остановиться"
+
+#: ../orders/view.html
+msgid "Subtotal"
+msgstr "итого"
+
+#: ../orders/list.html
+msgid "Take a look at how easy it is to start selling!"
+msgstr "Посмотрите, как легко это, чтобы начать продавать!"
+
+#: ../orders/view.html
+msgid "Tax"
+msgstr "налог"
+
+#: ../products/add.html
+msgid "The Product ID cannot contain spaces or special characters."
+msgstr "Product ID не может содержать пробелы или специальные символы."
+
+#: ../products/add.html
+msgid "The Product ID you entered is already in use."
+msgstr "Product ID уже используется."
+
+#: ../orders/list.html ../orders/view.html
+msgid "Total"
+msgstr "сумма"
+
+#: ../index.html
+msgid ""
+"We were unable to update the product '{{growl.name}}'. Please try your "
+"request again."
+msgstr ""
+"Мы не могли удалить товар '{{growl.name}}'. Пожалуйста, попробуйте еще раз."
+
+#: ../products/add.html ../products/edit.html
+msgid "Yes"
+msgstr "Да"
+
+#: ../orders/list.html
+msgid "You don't have any orders"
+msgstr "У вас нет заказов"
+
+#: ../products/list.html
+msgid "You don't have any products"
+msgstr "У вас нет товаров"
+
+#: ../index.html
+msgid "You have successfully activated {{growl.count}} item"
+msgid_plural "You have successfully activated {{growl.count}} items"
+msgstr[0] "Вы успешно активировали {{growl.count}} товар"
+msgstr[1] "Вы успешно активировали {{growl.count}} товара"
+msgstr[2] "Вы успешно активировали {{growl.count}} товаров"
+
+#: ../index.html
+msgid "You have successfully deleted the product."
+msgstr "Вы успешно удалили товар."
+
+#: ../index.html
+msgid "You have successfully inactivated {{growl.count}} item"
+msgid_plural "You have successfully inactivated {{growl.count}} items"
+msgstr[0] "Вы успешно инактивировали {{growl.count}} товар"
+msgstr[1] "Вы успешно инактивировали {{growl.count}} товара"
+msgstr[2] "Вы успешно инактивировали {{growl.count}} товаров"
+
+#: ../modals/confirm.html
+msgid "Your changes will be lost. Are you sure?"
+msgstr "Ваши изменения будут потеряны. Вы уверены?"
+
+#~ msgid "Active only"
+#~ msgstr "Активные"
+
+#~ msgid "Inactive only"
+#~ msgstr "Неактивные"
+
+#~ msgid "{{$count}} product"
+#~ msgid_plural "{{$count}} products"
+#~ msgstr[0] "{{$count}} tовар"
+#~ msgstr[1] "{{$count}} tовара"
+#~ msgstr[2] "{{$count}} товаров"
+
+#~ msgid "1 product"
+#~ msgid_plural "{{$count}} products"
+#~ msgstr[0] "Товар"
+#~ msgstr[1] "Товара"
+#~ msgstr[2] "Товаров"

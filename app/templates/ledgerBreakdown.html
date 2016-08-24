@@ -1,0 +1,59 @@
+﻿<div class="panel clearfix">
+    <div class="panel-heading">
+        <span class="panel-title">{{panelTitle}}</span>
+
+        <div class="panel-heading-controls">
+            <div class="btn-group" ng-if="showCurrencies()" uib-dropdown>
+                <button type="button" class="btn btn-default btn-header btn-sm dropdown-toggle" uib-dropdown-toggle>{{selected.currency}}&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                <ul class="dropdown-menu dropdown-menu-right">
+                    <li class="dropdown-header" translate>Payment Currency</li>
+                    <li ng-click="load('transaction')" ng-class="{ 'selected-li': currencyType == 'transaction' }"><a>{{transaction_currency}}</a></li>
+                    <li class="dropdown-header" translate>Settlement Currency</li>
+                    <li ng-click="load('settlement')" ng-class="{ 'selected-li': currencyType == 'settlement' }"><a>{{settlement_currency}}</a></li>
+                    <li class="dropdown-header" translate>Reporting Currency</li>
+                    <li ng-click="load('reporting')" ng-class="{ 'selected-li': currencyType == 'reporting' }"><a>{{reporting_currency}}</a></li>
+                    <li ng-click="load('reporting_alt')" ng-class="{ 'selected-li': currencyType == 'reporting_alt' }" ng-if="reporting_alt_currency"><a>{{reporting_alt_currency}}</a></li>
+                </ul>
+            </div>
+            <span ng-if="!(showCurrencies())"><strong>{{transaction.currency}}</strong></span>
+        </div>
+
+    </div>
+
+    <div class="panel-body panel-tight">
+        <div class="col-xs-12 panel-tight-row">
+            <div class="col-xs-12 panel-tight-section ledger"><label translate>Subtotal</label><span class="pull-right" ng-class="{ 'text-danger': isRefund }">{{selected.subtotal | currency: ""}}</span></div>
+        </div>
+
+        <div class="col-xs-12 panel-tight-row">
+            <div class="col-xs-12 panel-tight-section ledger"><label translate>Shipping</label><span class="pull-right" ng-class="{ 'text-danger': isRefund }">{{selected.shipping | currency: ""}}</span></div>
+        </div>
+
+        <div class="col-xs-12 panel-tight-row">
+            <div class="col-xs-12 panel-tight-section ledger"><label translate>Tax</label><span class="pull-right" ng-class="{ 'text-danger': isRefund }">{{selected.tax | currency: ""}}</span></div>
+        </div>
+
+        <div class="col-xs-12 panel-tight-row">
+            <div class="col-xs-12 panel-tight-section ledger last text-bg"><label translate>Total</label><span class="pull-right" ng-class="{ 'text-danger': isRefund }">{{selected.total | currency: ""}}</span></div>
+        </div>
+
+        <div class="col-xs-12 panel-tight-row" style="margin-bottom: -2px;" ng-if="loadDetails != null">
+            <div class="col-xs-12 panel-tight-section">
+                <span>
+                    <a class="pointer" ng-click="toggleLoadDetails()" ng-show="loadDetails ==  false" translate>See details</a>
+                    <a class="pointer" ng-click="toggleLoadDetails()" ng-show="loadDetails ==  true" translate>Hide details</a>
+                </span>
+            </div>
+        </div>
+
+        <div class="col-xs-12 panel-tight-row" style="margin-bottom: -2px;" ng-if="detailsUrl != null">
+            <div class="col-xs-12 panel-tight-section">
+                <span>
+                    <a href="{{detailsUrl}}">See details</a>
+                </span>
+            </div>
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,17 @@
+﻿<div ng-controller="InvoicesListCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1>Invoices</h1>
+        <a id="top" href="/#/invoices/add" class="btn btn-primary btn-right" translate resource="invoices" method="create"><span class="hidden-xs" translate>Add New</span><span class="hidden-sm hidden-md hidden-lg"><i class="fa fa-plus"></i></span></a>
+    </div>
+
+    <div class="panel panel-body light-shadow">
+        <div object-list type="invoice" url="{{resources.invoiceListUrl}}" template-url="app/templates/invoiceList.html" embedded="false" page="cursor" error="exception.error"></div>
+    </div>
+</div>

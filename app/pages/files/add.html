@@ -1,0 +1,66 @@
+﻿<div ng-controller="FilesAddCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1>Add a File</h1>
+    </div>
+
+    <div class="panel panel-body light-shadow">
+        <form name="form" class="form-group dropzone" dropzone dropzone-url="/files" dropzone-max-files="1" dropzone-max-size="75000000" dropzone-auto-upload="false" dropzone-template-id="dz-file" dropzone-show-delete="false">
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group">
+                    <label for="name" class="control-label" translate>Name</label>
+                    <input type="text" class="form-control" name="name" ng-model="file.name" placeholder="{{ 'Optional' | translate}}">
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="version" class="control-label" translate>Version</label>
+                    <input type="text" class="form-control" name="version" ng-model="file.version" placeholder="{{ 'Optional' | translate}}">
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="expires_in_days" class="control-label" translate>Days till a link expires</label>
+                    <input type="tel" class="form-control" name="expires_in_days" ng-model="file.expires_in_days" placeholder="{{ 'Optional' | translate}}" is-valid-integer allow-empty-value="true">
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="expires_in_clicks" class="control-label" translate>Clicks till a link expires</label>
+                    <input type="tel" class="form-control" name="expires_in_clicks" ng-model="file.expires_in_clicks" placeholder="{{ 'Optional' | translate}}" is-valid-integer allow-empty-value="true">
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="description" class="control-label" translate>Description</label>
+                    <div>
+                        <textarea class="form-control" id="description" name="description" ng-model="file.description"></textarea>
+                    </div>
+                </div>
+                <p class="maxlength-message" max-length="1000" item="form.description"></p>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <button id="top" class="btn btn-danger btn-right spacer-b10" ng-click="cancel()" ng-if="uploadSending"><i class="icon fa fa-times-circle"></i>&nbsp;<span translate>Cancel Upload</span></button>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+        </form>
+    </div>
+</div>

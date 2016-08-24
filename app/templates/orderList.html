@@ -1,0 +1,137 @@
+﻿<div class="col-sm-12 text-right spacer-b40" ng-if="settings.search">
+    <form class="form-inline">
+        <div class="form-group has-feedback">
+            <input type="text" class="form-control" ng-model="userParams.q" ng-change="search(userParams.q)" ng-model-options="{ updateOn: 'default blur', debounce: { default: 750, blur: 0 } }" select-on-click placeholder="{{ 'Search' | translate }}...">
+            <span class="fa fa-search form-control-feedback"></span>
+        </div>
+    </form>
+</div>
+
+<div class="gridtable">
+
+    <div class="gridtable-header hidden-xs hidden-sm">
+
+        <div class="col-md-3"><label>Order ID</label></div>
+        <div class="col-md-3"><label ng-click="sort('date_created', !userParams.desc)" class="pointer text-primary">Date</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="getSortValue() == 'date_created' && userParams.desc == true"></i><i class="icon fa fa-caret-up" ng-if="getSortValue() == 'date_created' && userParams.desc == false"></i></div>
+        <div class="col-md-2 btn-header">
+            <div class="btn-group" uib-dropdown>
+                <button type="button" class="btn btn-default dropdown-toggle" uib-dropdown-toggle><span translate>Payment</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                <ul class="dropdown-menu">
+                    <li ng-click="setParam('payment_status', null)" ng-class="{ 'selected-li': userParams.payment_status == null }"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
+                    <li ng-click="setParam('payment_status', 'completed')" ng-class="{ 'selected-li': userParams.payment_status == 'completed' }"><a><i class="dropdown-icon fa fa-check-circle text-success"></i>&nbsp;&nbsp;<span translate>Completed</span></a></li>
+                    <li ng-click="setParam('payment_status', 'pending')" ng-class="{'selected-li': userParams.payment_status == 'pending' }"><a><i class="dropdown-icon fa fa-clock-o text-pa-purple"></i>&nbsp;&nbsp;<span translate>Pending</span></a></li>
+                    <li ng-click="setParam('payment_status', 'refunded')" ng-class="{'selected-li': userParams.payment_status == 'refunded' }"><a><i class="dropdown-icon fa fa-undo text-warning"></i>&nbsp;&nbsp;<span translate>Refunded</span></a></li>
+                    <li ng-click="setParam('payment_status', 'cancelled')" ng-class="{'selected-li': userParams.payment_status == 'cancelled' }"><a><i class="dropdown-icon fa fa-ban text-danger"></i>&nbsp;&nbsp;<span translate>Cancelled</span></a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-2 btn-header">
+            <div class="btn-group" uib-dropdown>
+                <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Fulfillment</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                <ul class="dropdown-menu">
+                    <li ng-click="setParam('fulfilled', null)" ng-class="{ 'selected-li': userParams.fulfilled == null }"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
+                    <li ng-click="setParam('fulfilled', true)" ng-class="{ 'selected-li': userParams.fulfilled == true }"><a><i class="dropdown-icon fa fa-check-circle text-success"></i>&nbsp;&nbsp;<span translate>Fulfilled</span></a></li>
+                    <li ng-click="setParam('fulfilled', false)" ng-class="{'selected-li': userParams.fulfilled == false }"><a><i class="dropdown-icon fa fa-minus-circle text-warning"></i>&nbsp;&nbsp;<span translate>Unfulfilled</span></a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-2 text-right"><label>Total</label></div>
+
+    </div>
+
+    <div class="col-xs-12 hidden-md hidden-lg padding-l0">
+        <div class="btn-group" uib-dropdown>
+            <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Filter</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+            <ul class="dropdown-menu">
+                <li class="dropdown-header">Status</li>
+                <li ng-click="setParam('payment_status', null)" ng-class="{ 'selected-li': userParams.payment_status == null }"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
+                <li ng-click="setParam('payment_status', 'completed')" ng-class="{ 'selected-li': userParams.payment_status == 'completed' }"><a><i class="dropdown-icon fa fa-check-circle text-success"></i>&nbsp;&nbsp;<span translate>Completed</span></a></li>
+                <li ng-click="setParam('payment_status', 'pending')" ng-class="{'selected-li': userParams.payment_status == 'pending' }"><a><i class="dropdown-icon fa fa-clock-o text-pa-purple"></i>&nbsp;&nbsp;<span translate>Pending</span></a></li>
+                <li ng-click="setParam('payment_status', 'refunded')" ng-class="{'selected-li': userParams.payment_status == 'refunded' }"><a><i class="dropdown-icon fa fa-undo text-undo text-warning"></i>&nbsp;&nbsp;<span translate>Refunded</span></a></li>
+                <li ng-click="setParam('payment_status', 'cancelled')" ng-class="{'selected-li': userParams.payment_status == 'cancelled' }"><a><i class="dropdown-icon fa fa-ban text-danger"></i>&nbsp;&nbsp;<span translate>Cancelled</span></a></li>
+                <li class="divider"></li>
+                <li class="dropdown-header">Fulfillment</li>
+                <li ng-click="setParam('fulfilled', null)" ng-class="{'selected-li': userParams.fulfilled == null}"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
+                <li ng-click="setParam('fulfilled', true)" ng-class="{'selected-li': userParams.fulfilled == true}"><a><i class="dropdown-icon fa fa-check-circle text-success"></i>&nbsp;&nbsp;<span translate>Fulfilled</span></a></li>
+                <li ng-click="setParam('fulfilled', false)" ng-class="{'selected-li': userParams.fulfilled == false}"><a><i class="dropdown-icon fa fa-minus-circle text-warning"></i>&nbsp;&nbsp;<span translate>Unfulfilled</span></a></li>
+            </ul>
+        </div>
+
+        <div class="btn-group " uib-dropdown>
+            <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Sort</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+            <ul class="dropdown-menu">
+                <li class="dropdown-header">Date Created</li>
+                <li ng-click="sort('date_created', false)" ng-class="{'selected-li': getSortValue() == 'date_created' && userParams.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                <li ng-click="sort('date_created', true)" ng-class="{'selected-li': getSortValue() == 'date_created' && userParams.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                <li class="divider"></li>
+                <li class="dropdown-header">Date Updated</li>
+                <li ng-click="sort('date_modified', false)" ng-class="{'selected-li': getSortValue() == 'date_modified' && userParams.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                <li ng-click="sort('date_modified', true)" ng-class="{'selected-li': getSortValue() == 'date_modified' && userParams.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row spacer-b10 hidden-md hidden-lg"></div> <!--Needed to have the buttons clear-->
+
+    <div class="gridtable-row" ng-repeat="order in list.data">
+
+        <div class="col-xs-12 col-sm-6 col-md-3">
+            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Order ID</label></div>
+            <div class="col-xs-7 col-sm-12 col-md-12 value"><a href="#/orders/{{order.order_id}}">{{order.order_id}}</a></div>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-3">
+            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Date</label></div>
+            <div class="col-xs-7 col-sm-12 col-md-12 value"><span>{{order.date_created | date:'short'}}</span></div>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-2">
+            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Payment</label></div>
+            <div class="col-xs-7 col-sm-12 col-md-12 value">
+                <span ng-if="order.payment_status == 'completed'"><i class="icon fa fa-check-circle text-success"></i> <span translate>Completed</span></span>
+                <span ng-if="order.payment_status == 'pending'"><i class="icon fa fa-clock-o text-pa-purple"></i> <span translate>Pending</span></span>
+                <span ng-if="order.payment_status == 'refunded'"><i class="icon fa fa-undo text-warning"></i> <span translate>Refunded</span></span>
+                <span ng-if="order.payment_status == 'failed'"><i class="icon fa fa-times-circle text-danger"></i> <span translate>Failed</span></span>
+                <span ng-if="order.payment_status == 'cancelled'"><i class="icon fa fa-ban text-danger"></i> <span translate>Cancelled</span></span>
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-2">
+            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Fulfillment</label></div>
+            <div class="col-xs-7 col-sm-12 col-md-12 value">
+                <span ng-if="order.fulfilled == true"><i class="icon fa fa-check-circle text-success"></i> <span translate>Fulfilled</span></span>
+                <span ng-if="order.fulfilled == false"><i class="icon fa fa-minus-circle text-warning"></i> <span translate>Unfulfilled</span></span>
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-2">
+            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Total</label></div>
+            <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value">
+                <span>{{order.total | currency: ""}} {{order.currency}}</span>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Show pagination if there is at least one page -->
+<div class="col-sm-12" ng-if="list.data.length > 0 && settings.page == 'cursor'">
+    <ul class="pager">
+        <li class="previous" ng-click="movePage('-', list.previous_page_before_item)" ng-if="list.previous_page_before_item"><a><i class="fa fa-chevron-circle-left"></i>&nbsp;<span translate>Back</span></a></li>
+        <li class="next" ng-click="movePage('+', list.next_page_after_item)" ng-if="list.next_page_after_item"><a><span translate>Next</span>&nbsp;<i class="fa fa-chevron-circle-right"></i></a></li>
+    </ul>
+</div>
+
+<div class="col-sm-12" ng-if="list.data.length > 0 && settings.page == 'offset'">
+    <ul class="pager">
+        <li class="previous" ng-click="movePage('-', list.previous_page_offset)" ng-if="list.previous_page_offset !== null"><a><i class="fa fa-chevron-circle-left"></i> <span translate>Back</span></a></li>
+        <li class="next" ng-click="movePage('+', list.next_page_offset)" ng-if="list.next_page_offset !== null"><a><span translate>Next</span> <i class="fa fa-chevron-circle-right"></i></a></li>
+    </ul>
+    <p class="text-right" translate>Showing page {{list.current_page}} of {{list.total_pages}}</p>
+</div>
+
+<!-- Show a "not found" message if no orders were found  -->
+<div class="col-sm-12" ng-if="list.data.length == 0">
+    <p class="no-info" translate>No orders found</p>
+</div>

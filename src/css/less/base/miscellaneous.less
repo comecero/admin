@@ -1,0 +1,101 @@
+/*
+ * General: Miscellaneous
+ * ----------------------
+ */
+// 10px padding and margins
+.pad {
+  padding: 10px;
+}
+.margin {
+  margin: 10px;
+}
+.margin-bottom {
+  margin-bottom: 20px;
+}
+.margin-bottom-none {
+  margin-bottom: 0;
+}
+.margin-r-5 {
+  margin-right: 5px;
+}
+// Display inline
+.inline {
+  display: inline;
+}
+
+//Disabled!
+[class^="bg-"].disabled {
+  .opacity(.65);
+}
+
+// Hide elements by display none only
+.hide {
+  display: none !important;
+}
+
+// Remove borders
+.no-border {
+  border: 0 !important;
+}
+// Remove padding
+.no-padding {
+  padding: 0 !important;
+}
+// Remove margins
+.no-margin {
+  margin: 0 !important;
+}
+
+// Remove box shadow
+.no-shadow {
+  box-shadow: none!important;
+}
+
+// Unstyled List
+.list-unstyled {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.list-group-unbordered {
+  > .list-group-item {
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0; 
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+// Remove border radius
+.flat {
+  .border-radius(0)!important;
+}
+
+.text-bold {
+  &, &.table td, &.table th {
+    font-weight: 700;
+  }
+}
+.text-sm {
+  font-size: 12px;
+}
+
+// _fix for sparkline tooltip
+.jqstooltip{
+  padding: 5px!important;
+  width:auto!important;
+  height:auto!important;
+}
+
+// Charts
+.chart {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  svg,
+  canvas {
+    width: 100%!important;
+  }
+}

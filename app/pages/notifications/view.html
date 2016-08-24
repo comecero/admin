@@ -1,0 +1,114 @@
+﻿<div ng-controller="NotificationsViewCtrl" class="content container">
+
+    <form name="form" novalidate>
+
+        <div class="callout callout-danger" ng-if="exception.error">
+            <h4 translate>Oops! We had a problem.</h4>
+            <p>{{exception.error.message}}</p>
+            <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+        </div>
+
+        <div class="page-header">
+            <h1 translate>Notification</h1>
+        </div>
+
+        <div class="panel light-shadow">
+            <div class="panel-heading">
+                <span class="panel-title text-bg text-bold">{{notification.notification_id}}</span>
+                <div class="panel-heading-controls">
+                    <span class="badge badge-success" ng-if="notification.status == 'delivered'"><i class="fa fa-check-circle"></i>&nbsp;<span translate>Delivered</span></span>
+                    <span class="badge badge-pa-purple" ng-if="notification.status == 'queued'"><i class="fa fa-clock-o"></i>&nbsp;&nbsp;<span translate>Queued</span></span>
+                    <span class="badge badge-warning" ng-if="notification.status == 'retry'"><i class="fa fa-undo"></i>&nbsp;&nbsp;<span translate>Retry</span></span>
+                    <span class="badge badge-danger" ng-if="notification.status == 'failed'"><i class="fa fa-times-circle"></i>&nbsp;&nbsp;<span translate>Failed</span></span>
+                </div>
+            </div>
+            <div class="panel-body">
+
+                <div class="col-md-6 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label" translate>Type</label>
+                        <div class="text-capitalize">{{notification.type.replace(":", " ")}}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label" translate>Method</label>
+                        <div>{{notification.method}}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label" translate>To</label>
+                        <div>{{notification.destination}}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label" translate>From</label>
+                        <div>{{notification.from_name}} ({{notification.from}})</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label" translate>Reply To</label>
+                        <div>{{notification.reply_to}}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label" translate>Customer</label>
+                        <div><a ng-href="/#/customers/{{notification.customer.customer_id}}">{{notification.customer.customer_id}}</a></div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label" translate>Created</label>
+                        <div>{{notification.date_created | date:'short'}}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label" translate>Updated</label>
+                        <div>{{notification.date_modified | date:'short'}}</div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12">
+                    <div class="form-group" ng-show="!showResend">
+                        <a class="btn btn-info spacer-t5" ng-click="showResend = !showResend" translate>Resend</a>
+                    </div>
+                    <div class="form-group" ng-show="showResend" show-errors>
+                        <label for="email" class="control-label" translate>Resend To</label>
+                        <input type="email" name="email" class="form-control" ng-model="email" is-valid-email required />
+                        <p class="help-block hidden fadeInDown" translate>Please provide a valid email address</p>
+                        <a class="btn btn-default spacer-t5" ng-click="showResend = !showResend" translate>Cancel</a>
+                        <a class="btn btn-success spacer-t5" ng-click="resend(form)" validate-on-submit translate>Send</a>
+                    </div>
+                </div>
+
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label" translate>Subject</label>
+                        <div>{{notification.subject}}</div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12">
+                    <label translate>Preview</label>
+                    <iframe class="notification-preview" src="{{previewUrl}}"></iframe>
+                </div>
+
+            </div>
+
+        </div>
+    </form>
+</div>
+
+

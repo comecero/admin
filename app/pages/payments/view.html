@@ -1,0 +1,191 @@
+﻿<div ng-controller="PaymentsViewCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1 translate>Payment</h1>
+    </div>
+
+    <div class="panel light-shadow">
+        <div class="panel-heading">
+            <span class="panel-title text-bg text-bold">{{payment.payment_id}}</span>
+            <div class="panel-heading-controls">
+                    <span class="badge badge-success" ng-if="payment.status == 'completed'"><i class="fa fa-check-circle"></i>&nbsp;<span translate>Completed</span></span>
+                    <span class="badge badge-pa-purple" ng-if="payment.status == 'pending'"><i class="fa fa-clock-o"></i>&nbsp;&nbsp;<span translate>Pending</span></span>
+                    <span class="badge badge-warning" ng-if="payment.status == 'refunded'"><i class="fa fa-undo"></i>&nbsp;&nbsp;<span translate>Refunded</span></span>
+                    <span class="badge badge-danger" ng-if="payment.status == 'failed'"><i class="fa fa-times-circle"></i>&nbsp;&nbsp;<span translate>Failed</span></span>
+                    <span class="badge badge-danger" ng-if="payment.status == 'cancelled'"><i class="fa fa-ban"></i>&nbsp;&nbsp;<span translate>Cancelled</span></span>
+            </div>
+        </div>
+        <div class="panel-body">
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <span class="panel-title">Payment Details</span>
+                    <div class="panel-heading-controls">
+                        <span class="btn btn-success btn btn-sm btn-danger" refund payment="payment" gateway-account-id="payment.gateway.account_id" fees="payment.fees.data" items="payment.order.items" shipping-item="payment.order.shipping_item" resource="refunds" method="create" translate>Process Refund</span>
+                        <span class="btn btn-danger btn btn-sm spacer-t5" void payment="payment" error="exception.error" translate>Cancel</span>
+                        <span class="btn btn-success btn btn-sm spacer-t5" capture payment="payment" items="payment.order.items" shipping-item="payment.order.shipping_item" error="exception.error" translate>Capture</span>
+                    </div>
+                </div>
+
+                <div class="panel-body panel-tight">
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Payment ID</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section"><div>{{payment.payment_id}}</div></div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Status</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section text-capitalize">{{payment.status}}</div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Response Code</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section">{{payment.response_code}}</div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Response Message</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section">{{payment.response_message}}</div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Gateway Code</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section">{{payment.gateway_error_code}}</div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Gateway Message</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section">{{payment.gateway_error_message}}</div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Created</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section">{{payment.date_created | date:'short'}}</div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Modified</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section">{{payment.date_modified | date:'short'}}</div>
+                    </div>
+
+                    <div class="col-xs-12 panel-tight-row">
+                        <div class="col-xs-12 panel-tight-section"><button class="btn btn-info btn-xs" transaction-debug url="payment.debug">Debug</button></div>
+                    </div>
+
+                    <div class="col-xs-12 panel-tight-row" ng-if="payment.risk_decline">
+                        <div class="panel-body" style="padding-bottom:0px;">
+                            <div class=" alert alert-warning spacer-b5 text-center">
+                                <div translate>This payment was declined by the gateway due to high risk factors.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <span class="panel-title" translate>Payment Method</span>
+                </div>
+                <div class="panel-body panel-tight">
+                    <payment-method payment-method-data="payment.payment_method"></payment-method>
+                </div>
+            </div>
+
+            <ledger-breakdown currency-type="currencyType" transactions="payment" panel-title="{{'Payment Amounts' | translate}}"></ledger-breakdown>
+
+            <ledger-breakdown currency-type="currencyType" transactions="payment.refunds.data" include-status="completed,pending" panel-title="{{'Refund Amounts' | translate}}" load-details="prefs.loadRefundDetails" resource="refunds" method="read"></ledger-breakdown>
+
+            <div class="panel" resource="refunds" method="read" ng-show="prefs.loadRefundDetails">
+                <div class="panel-heading">
+                    <span class="panel-title" translate>Refund Details</span>
+                </div>
+                <div class="panel-body">
+                    <div object-list type="refund" url="{{refundListUrl}}" template-url="app/templates/refundList.html" embedded="true" page="offset" limit="5" search="false" error="exception.error" count="count.refunds" refresh-on-change="payment.refunds.data"></div>
+                </div>
+            </div>
+
+            <div customer-edit="payment.customer" error="exception.error"></div>
+
+            <div class="panel" resource="gateways" method="read">
+                <div class="panel-heading">
+                    <span class="panel-title">Gateway</span>
+                </div>
+
+                <div class="panel-body panel-tight">
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Name</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section text-capitalize"><a href="/#/gateways/{{payment.gateway.gateway_id}}/edit">{{payment.gateway.name}}</a></div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Provider</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section">{{payment.gateway.provider_id}}</div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Transaction ID</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section">{{payment.gateway_transaction_id}}</div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row" ng-if="payment.gateway_error_code">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Error Code</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section">{{payment.gateway_error_code}}</div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row" ng-if="payment.gateway_error_message">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Error Message</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section">{{payment.gateway_error_message}}</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <ledger-items items="payment.fees.data" description-property="type" panel-title="{{'Fees' | translate}}" no-items-message="{{'No fees for this payment' | translate}}" resource="fees" method="read"></ledger-items>
+
+            <ledger-items items="payment.commissions.data" description-property="type" panel-title="{{'Commissions' | translate}}" no-items-message="{{'No commissions for this payment' | translate}}" resource="commissions" method="read"></ledger-items>
+
+            <div class="panel" ng-if="payment.fraud_result">
+                <div class="panel-heading">
+                    <span class="panel-title">Fraud Results</span>
+                </div>
+                <div class="panel-body panel-tight">
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Pass?</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section">{{payment.fraud_result.pass}}</div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Score</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section">{{payment.fraud_result.score}}</div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Provider</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section">{{payment.fraud_result.provider}}</div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Provider ID</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section">{{payment.fraud_result.provider_transaction_id}}</div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div meta-to-html="{{payment.meta}}"></div>
+
+    </div>
+
+</div>
+
+

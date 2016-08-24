@@ -1,0 +1,164 @@
+﻿<div ng-controller="ReportFeesController" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1 translate>Fees Report</h1>
+    </div>
+
+    <div class="panel light-shadow">
+        <div class="panel-heading">
+            <span class="panel-title"><b translate>Select Options</b></span>
+        </div>
+
+        <div class="panel-body">
+
+            <div class="col-lg-3 col-sm-6 col-xs-12 spacer-t10">
+                <label class="control-label" translate>Category</label>
+                <select class="form-control" ng-model="options.category">
+                    <option value="">All</option>
+                    <option value="transaction">Transaction</option>
+                    <option value="operation">Operation</option>
+                </select>
+            </div>
+
+            <div class="col-lg-3 col-sm-6 col-xs-12 spacer-t10">
+                <label class="control-label" translate>Currency</label>
+                <select class="form-control" ng-options="currency as currency for currency in options.currencies" ng-model="options.currency"></select>
+            </div>
+
+            <div class="col-lg-6 col-sm-12 col-xs-12 spacer-t10">
+                <div class="form-group spacer-b20">
+                    <label class="radio-group-label" translate>Search by</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="search_by-1" class="radio" name="search_by" ng-model="options.search_by" value="date" required>
+                        <label for="search_by-1" class="radio-label">Date</label>
+                        <input type="radio" id="search_by-2" class="radio" name="search_by" ng-model="options.search_by" value="doc" required>
+                        <label for="search_by-2" class="radio-label">Accounting Document ID</label>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-show="options.search_by == 'date'">
+                <div class="col-lg-3 col-sm-6 col-xs-12 spacer-t10">
+                    <label class="control-label">Dates</label>
+                    <select class="form-control" ng-model="options.dates">
+                        <option value="today">Today</option>
+                        <option value="yesterday">Yesterday</option>
+                        <option value="this_week">This Week</option>
+                        <option value="last_week">Last Week</option>
+                        <option value="last_7">Last 7 days</option>
+                        <option value="this_month">This Month</option>
+                        <option value="last_month">Last Month</option>
+                        <option value="last_30">Last 30 days</option>
+                        <option value="this_year">This Year</option>
+                        <option value="last_year">Last Year</option>
+                        <option value="custom">Custom Range</option>
+                    </select>
+                </div>
+
+                <div class="col-lg-3 col-sm-6 col-xs-12 spacer-t10" ng-show="options.dates == 'custom'">
+                    <label class="control-label">Begin Date</label>
+                    <div class="input-group dp">
+                        <input type="text" class="form-control" uib-datepicker-popup="yyyy-MM-dd" ng-model="datepicker.date_start" is-open="datepicker.status.date_start.opened" datepicker-options="datepicker.options" close-text="Close" />
+                        <span class="input-group-addon pointer" ng-click="datepicker.open($event, 'date_start')"><i class="fa fa-calendar"></i></span>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-sm-6 col-xs-12 spacer-t10" ng-show="options.dates == 'custom'">
+                    <label class="control-label">End Date</label>
+                    <div class="input-group dp">
+                        <input type="text" class="form-control" uib-datepicker-popup="yyyy-MM-dd" ng-model="datepicker.date_end" is-open="datepicker.status.date_end.opened" datepicker-options="datepicker.options" close-text="Close" />
+                        <span class="input-group-addon pointer" ng-click="datepicker.open($event, 'date_end')"><i class="fa fa-calendar"></i></span>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-sm-6 col-xs-12 spacer-t10">
+                    <label class="control-label">Timezone</label>
+                    <input type="text" class="form-control" name="timezone" ng-model="options.timezone" uib-typeahead="timezone as timezone for timezone in timezones | filter:$viewValue | limitTo:20" typeahead-editable="false" typeahead-min-length="0" required>
+                </div>
+
+            </div>
+
+            <div ng-show="options.search_by == 'doc'">
+                <div class="col-lg-6 col-sm-6 col-xs-12 spacer-t10">
+                    <label class="control-label">Accounting Document ID</label>
+                    <input type="text" class="form-control" name="accounting_id" ng-model="options.accounting_id">
+                </div>
+            </div>
+
+            <div class="col-xs-12 spacer-t20">
+                <div class="form-group">
+                    <button class="btn btn-primary" ng-click="run(true)" translate>Run Report</button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div ng-repeat="group in report.data">
+
+        <div class="stat-panel">
+            <div class="stat-row">
+                <div class="stat-cell bg-success padding-sm">
+                    <div class="text-xs spacer-b10" translate>Fees ({{group.currency}})</div>
+                    <div class="stats-sparklines" id="fees" style="width: 100%" sparkbar="data[group.currency].data" labels="data[group.currency].labels" values="data[group.currency].values"></div>
+                </div>
+            </div>
+
+            <div class="stat-row">
+                <div class="stat-counters bordered no-border-t text-center">
+                    <div class="stat-cell col-xs-6 padding-sm no-padding-hr">
+                        <span class="text-bg"><strong>{{group.formatted.total}}</strong></span><br>
+                        <span class="text-xs text-muted text-uppercase" translate>Total ({{group.currency}})</span>
+                    </div>
+                    <div class="stat-cell col-xs-6 padding-sm no-padding-hr">
+                        <span class="text-bg"><strong>{{group.transaction_count}}</strong></span><br>
+                        <span class="text-xs text-muted text-uppercase" translate>Fee Count</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="panel">
+            <div class="panel-heading">
+                <span class="panel-title"><b translate>Breakdown</b></span>
+            </div>
+
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th translate>Description</th>
+                                <th class="text-right" translate>Fee Count</th>
+                                <th class="text-right" translate>Total ({{group.currency}})</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in group.breakdowns">
+                                <td class="text-capitalize">{{item.type | removeUnderscore }}</td>
+                                <td class="text-right">{{item.transaction_count}}</td>
+                                <td class="text-right">{{item.formatted.total}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="form-group">
+                    <button class="btn btn-primary" ng-click="downloadCsv(group.breakdowns, group.currency)" translate>Download CSV</button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

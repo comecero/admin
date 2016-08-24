@@ -1,0 +1,258 @@
+﻿<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" ng-click="refund.cancel()">×</button>
+        <h4 class="modal-title"><i class="fa fa-credit-card"></i> <span translate>Refund Payment</span></h4>
+    </div>
+    <form name="form" novalidate>
+        <div class="modal-body">
+            <div class="callout callout-danger" ng-if="modalError">
+                <h4 translate>Oops! We had a problem.</h4>
+                <p>{{modalError.message}}</p>
+                <br /><small>Error code: {{modalError.reference}}</small>
+            </div>
+            <uib-tabset>
+                <uib-tab active="refundTabs[0].active" resource="files" method="create" select="refund.clearTotal()" ng-if="showItemsTab">
+                    <tab-heading><i class="fa fa-tags"></i> <small translate>Items</small></tab-heading>
+
+                    <div class="gridtable">
+
+                        <div class="gridtable-header hidden-xs hidden-sm">
+
+                            <div class="col-md-2"><label translate>Quantity</label></div>
+                            <div class="col-md-4"><label translate>Item</label></div>
+                            <div class="col-md-2"><label translate>Not Refunded</label></div>
+                            <div class="col-md-1"><label translate>Price</label></div>
+                            <div class="col-md-1"><label translate>Tax</label></div>
+                            <div class="col-md-2 text-right"><label translate>Subtotal</label>&nbsp;({{refund.currency}})</div>
+
+                        </div>
+
+                        <div class="gridtable-row" ng-repeat="item in refund.items" ng-if="refund.getUnrefundedQuantity(item) > 0 && refund.getUnrefundedTotal() >= (item.price + (item.tax / item.order_quantity))">
+                            <div class="col-xs-12 col-md-12 col-md-2">
+                                <div class="col-xs-12 col-sm-12 hidden-md hidden-lg lbl"><label>Quantity</label></div>
+                                <div class="col-xs-12 col-sm-12 col-md-12 value">
+                                    <ng-form name="items" novalidate>
+                                        <div class="form-group" ng-class="{ 'has-error': items.quantity.$invalid && (items.quantity.$dirty || form.$submitted) }">
+                                            <div class="input-group">
+                                                <span style="min-width:42px" class="input-group-addon text-info pointer" ng-if="!item.quantity" ng-click="item.quantity = refund.getUnrefundedQuantity(item)" title="{{ 'Load quantity' | translate}}"><i class="fa fa-arrow-right fadeIn"></i></span>
+                                                <span style="min-width:42px" class="input-group-addon pointer text-success" ng-if="item.quantity && item.quantity == refund.getUnrefundedQuantity(item)" ng-click="item.quantity = null" title="{{ 'Click to reset' | translate}}"><i class="fa fa-check fadeIn"></i></span>
+                                                <span style="min-width:42px" class="input-group-addon pointer text-warning" ng-if="item.quantity && item.quantity < refund.getUnrefundedQuantity(item)" ng-click="item.quantity = null" title="{{ 'Partial refund. Click to reset.' | translate}}"><i class="fa fa-check fadeIn"></i></span>
+                                                <input style="max-width:100px;" type="tel" name="quantity" ng-model="item.quantity" ng-model-options="{ updateOn: 'blur' }" class="form-control" is-valid-integer allow-empty-value="true" less-than-or-equal="{{refund.getUnrefundedQuantity(item)}}">
+                                            </div>
+                                            <p class="help-block fadeInDown" ng-show="items.quantity.$invalid && (items.quantity.$dirty || form.$submitted)" translate>Please enter a valid quantity</p>
+                                        </div>
+                                    </ng-form>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-4">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label translate>Item</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value"><span>{{item.name}}</span></div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-2">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label translate>Not Refunded</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value"><span>{{refund.getUnrefundedQuantity(item)}}</span></div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-1">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label translate>Price</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value"><span>{{item.price | currency: ""}}</span></div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-1">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label translate>Tax</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value"><span>{{item.tax_rate * 100}}%</span></div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-2">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label translate>Subtotal</label>&nbsp;({{refund.currency}})</div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value"><span>{{(refund.getItemTotal(item.price, item.tax_rate, item.quantity)) | currency: ""}}</span></div>
+                            </div>
+
+                        </div>
+
+                        <div class="gridtable-row" ng-if="refund.shipping_item">
+
+                            <div class="col-xs-12 col-md-12 col-md-2">
+                                <div class="col-xs-12 col-sm-12 hidden-md hidden-lg lbl"><label>Quantity</label></div>
+                                <div class="col-xs-12 col-sm-12 col-md-12 value">
+                                    <div class="form-group" ng-class="{ 'has-error': form.shipping_quantity.$invalid && (form.shipping_quantity.$dirty || form.$submitted) }">
+                                        <div class="input-group">
+                                            <span style="min-width:42px" class="input-group-addon text-info pointer" ng-if="!refund.shipping_quantity" ng-click="refund.shipping_quantity = 1" title="{{ 'Load quantity' | translate}}"><i class="fa fa-arrow-right fadeIn"></i></span>
+                                            <span style="min-width:42px" class="input-group-addon pointer text-success" ng-if="refund.shipping_quantity && refund.shipping_quantity == 1" ng-click="refund.shipping_quantity = null" title="{{ 'Click to reset' | translate}}"><i class="fa fa-check fadeIn"></i></span>
+                                            <span style="min-width:42px" class="input-group-addon pointer text-warning" ng-if="refund.shipping_quantity && refund.shipping_quantity < 1" ng-click="refund.shipping_quantity = null" title="{{ 'Partial capture. Click to reset.' | translate}}"><i class="fa fa-check fadeIn"></i></span>
+                                            <input style="max-width:100px;" type="tel" name="shipping_quantity" ng-model="refund.shipping_quantity" ng-model-options="{ updateOn: 'blur' }" class="form-control" is-valid-integer allow-empty-value="true" less-than-or-equal="1">
+                                        </div>
+                                        <p class="help-block fadeInDown" ng-show="form.shipping_quantity.$invalid && (form.shipping_quantity.$dirty)" translate>Please enter a valid quantity</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-4">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label translate>Item</label>({{refund.currency}})></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value"><span>{{refund.shipping_item.name}}</span></div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-2">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label translate>Not Refunded</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value"><span>1</span></div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-1">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label translate>Price</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value"><span>{{refund.shipping_item.price | currency: ""}}</span></div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-1">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label translate>Tax</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value"><span>{{refund.shipping_item.tax_rate * 100}}%</span></div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-2">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label translate>Subtotal</label>&nbsp;({{refund.currency}})</div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value"><span>{{(refund.getShippingTotal(refund.shipping_quantity)) | currency: ""}}</span></div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="row"></div>
+
+                    <div class="row spacer-t30">
+                        <div class="col-sm-12 text-right text-bg text-lg"><span translate>Total</span>: {{refund.getItemsTotal(refund.items, refund.shipping_quantity) | currency: ""}} {{refund.currency}}</div>
+                    </div>
+
+                    <div class="row"></div>
+
+                    <div class="col-xs-12" ng-if="refund.show_chargeback">
+                        <div class="checkbox-group inline">
+                            <input type="checkbox" id="chargeback" class="checkbox" name="chargeback" ng-model="refund.is_chargeback" ng-true-value="true" ng-false-value="false">
+                            <label for="chargeback" class="checkbox-label">This is a chargeback</label>
+                        </div>
+                        <p class="help-block fadeInDown" ng-show="refund.is_chargeback" translate>When selected, money will not be returned to the customer. The refund is recorded keeping purposes only.</p>
+                    </div>
+
+                    <div class="row"></div>
+
+                    <div class="form-group spacer-t20 spacer-b20 padding-l15 padding-r15" ng-class="{ 'has-error': form.reason.$invalid && (form.reason.$dirty || form.$submitted) }">
+                        <label for=" reason" class="control-label" translate>
+                            Reason
+                        </label>
+                        <div ng-if="refund.is_chargeback">
+                            <select ng-if="refund.chargeback_reasons.length > 0" class="form-control" ng-model="refund.reason" name="reason" ng-options="reason for reason in refund.chargeback_reasons" required></select>
+                            <input ng-if="refund.chargeback_reasons.length == 0" type="text" class="form-control" name="reason" ng-model="refund.reason" placeholder="{{ 'Optional' | translate}}">
+                        </div>
+                        <div ng-if="!refund.is_chargeback">
+                            <select ng-if="refund.reasons.length > 0" class="form-control" ng-model="refund.reason" name="reason" ng-options="reason for reason in refund.reasons" required></select>
+                            <input ng-if="refund.reasons.length == 0" type="text" class="form-control" name="reason" ng-model="refund.reason" placeholder="{{ 'Optional' | translate}}">
+                        </div>
+                        <p class="help-block fadeInDown" ng-show="form.reason.$invalid && (form.reason.$dirty || form.$submitted)" translate>Please provide a reason</p>
+                    </div>
+
+                </uib-tab>
+
+                <uib-tab active="refundTabs[1].active" select="refund.clearQuantities()">
+                    <tab-heading><i class="fa fa-dollar"></i> <small translate>Amount</small></tab-heading>
+
+                    <div class="col-xs-12 spacer-t10 spacer-b10"><span class="text-bold">Unrefunded Total: {{refund.getUnrefundedTotal() | currency: ""}}</span></div>
+
+                    <div class="gridtable">
+
+                        <div class="gridtable-header hidden-xs hidden-sm">
+
+                            <div class="col-md-4"><label translate>Amount</label></div>
+                            <div class="col-md-2"><label translate>Subtotal</label></div>
+                            <div class="col-md-2"><label translate>Shipping</label></div>
+                            <div class="col-md-2"><label translate>Tax</label></div>
+                            <div class="col-md-2 text-right"><label translate>Total</label>&nbsp;({{refund.currency}})</div>
+
+                        </div>
+
+                        <div class="gridtable-row">
+
+                            <div class="col-xs-12 col-md-12 col-md-4">
+                                <div class="col-xs-12 col-sm-12 hidden-md hidden-lg lbl"><label>Amount</label></div>
+                                <div class="col-xs-12 col-sm-12 col-md-12 value">
+                                    <div class="form-group" ng-class="{ 'has-error': form.total.$invalid && (form.total.$dirty || form.$submitted) }">
+                                        <div class="input-group">
+                                            <span style="min-width:42px" class="input-group-addon text-info pointer" ng-if="!refund.total" ng-click="refund.total = refund.getUnrefundedTotal()" title="{{ 'Load total' | translate}}"><i class="fa fa-arrow-right fadeIn"></i></span>
+                                            <span style="min-width:42px" class="input-group-addon pointer text-success" ng-if="refund.total && refund.total == refund.getUnrefundedTotal()" ng-click="refund.total = null" title="{{ 'Click to reset' | translate}}"><i class="fa fa-check fadeIn"></i></span>
+                                            <span style="min-width:42px" class="input-group-addon pointer text-warning" ng-if="refund.total && refund.total < refund.getUnrefundedTotal()" ng-click="refund.total = null" title="{{ 'Partial refund. Click to reset.' | translate}}"><i class="fa fa-check fadeIn"></i></span>
+                                            <input style="max-width:150px;" type="text" name="total" ng-model="refund.total" ng-model-options="{ updateOn: 'blur' }" class="form-control" is-valid-price allow-empty-price="true" clean-price less-than-or-equal="{{refund.getUnrefundedTotal()}}" greater-than-or-equal="0.01">
+                                        </div>
+                                        <p class="help-block fadeInDown" ng-show="form.total.$invalid && (form.total.$dirty)" translate>Please enter a valid amount</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-2">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label translate>Subtotal</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value">{{refund.getAmountSubtotal(refund.total)  | currency: ""}}</div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-2">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label translate>Shipping</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value">{{refund.getAmountShipping(refund.total)  | currency: ""}}</div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-2">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label translate>Tax</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value">{{refund.getAmountTax(refund.total)  | currency: ""}}</div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-6 col-md-2">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label translate>Total</label>&nbsp;({{refund.currency}})</div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value last text-right-md text-right-lg text-bg text-bold">{{refund.getAmountTotal(refund.total)  | currency: ""}}</div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="row"></div>
+
+                    <div class="col-xs-12 spacer-t30" ng-if="refund.show_chargeback">
+                        <div class="checkbox-group inline">
+                            <input type="checkbox" id="chargeback" class="checkbox" name="chargeback" ng-model="refund.is_chargeback" ng-true-value="true" ng-false-value="false">
+                            <label for="chargeback" class="checkbox-label">This is a chargeback</label>
+                        </div>
+                        <p class="help-block fadeInDown" ng-show="refund.is_chargeback" translate>When selected, money will not be returned to the customer. The refund is recorded for record keeping purposes only.</p>
+                    </div>
+
+                    <div class="row"></div>
+
+                    <div class="form-group spacer-t20 spacer-b20 padding-l15 padding-r15" ng-class="{ 'has-error': form.reason.$invalid && (form.reason.$dirty || form.$submitted) }">
+                        <label for=" reason" class="control-label" translate>
+                            Reason
+                        </label>
+                        <div ng-if="refund.is_chargeback">
+                            <select ng-if="refund.chargeback_reasons.length > 0" class="form-control" ng-model="refund.reason" name="reason" ng-options="reason for reason in refund.chargeback_reasons" required></select>
+                            <input ng-if="refund.chargeback_reasons.length == 0" type="text" class="form-control" name="reason" ng-model="refund.reason" placeholder="{{ 'Optional' | translate}}">
+                        </div>
+                        <div ng-if="!refund.is_chargeback">
+                            <select ng-if="refund.reasons.length > 0" class="form-control" ng-model="refund.reason" name="reason" ng-options="reason for reason in refund.reasons" required></select>
+                            <input ng-if="refund.reasons.length == 0" type="text" class="form-control" name="reason" ng-model="refund.reason" placeholder="{{ 'Optional' | translate}}">
+                        </div>
+                        <p class="help-block fadeInDown" ng-show="form.reason.$invalid && (form.reason.$dirty || form.$submitted)" translate>Please provide a reason</p>
+                    </div>
+
+                </uib-tab>
+            </uib-tabset>
+        </div>
+
+        <div class="row"></div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" ng-click="refund.cancel()">
+                <span translate>Cancel</span>
+            </button>
+            <button type="submit" class="btn btn-primary" ng-click="refund.ok(form)">
+                <span ng-show="!refund.is_chargeback" translate>Process Refund</span>
+                <span ng-show="refund.is_chargeback" translate>Record Chargeback</span>
+            </button>
+        </div>
+    </form>
+
+</div>

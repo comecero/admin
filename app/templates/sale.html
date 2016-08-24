@@ -1,0 +1,101 @@
+﻿<div class="gridtable">
+
+    <div class="gridtable-header hidden-xs">
+
+        <div class="col-sm-3"><label translate>Item</label></div>
+        <div class="col-sm-2 text-right"><label translate>Quantity</label></div>
+        <div class="col-sm-3 text-right btn-header">
+            <span ng-if="sale.currency == sale.settlement_currency"><label translate>Price</label>&nbsp;<small>({{sale.currency}})</small></span>
+            <div class="btn-group" ng-if="sale.currency != sale.settlement_currency" uib-dropdown>
+                <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Price</span>&nbsp;<small ng-if="prefs.currency == 'transaction'">{{sale.currency}}</small><small ng-if="prefs.currency == 'settlement'">{{sale.settlement_currency}}</small>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                <ul class="dropdown-menu">
+                    <li class="dropdown-header" translate>Payment Currency</li>
+                    <li ng-click="prefs.currency = 'transaction'" ng-class="{ 'selected-li': prefs.currency == 'transaction' }"><a ng-click="prefs.currency = 'transaction'">{{sale.currency}}</a></li>
+                    <li class="dropdown-header" translate>Settlement Currency</li>
+                    <li ng-click="prefs.currency = 'settlement'" ng-class="{ 'selected-li': prefs.currency == 'settlement' }"><a ng-click="prefs.currency = 'settlement'">{{sale.settlement_currency}}</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-sm-2 text-right"><label translate>Tax</label></div>
+        <div class="col-sm-2 text-right"><label translate>Total</label></div>
+
+    </div>
+
+    <div class="col-xs-12 hidden-sm hidden-md hidden-lg padding-l0">
+        <div class="btn-group" ng-if="sale.currency != sale.settlement_currency" uib-dropdown>
+            <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span class="text-bold" translate>Currency</span>&nbsp;<small ng-if="prefs.currency == 'transaction'">{{sale.currency}}</small><small ng-if="prefs.currency == 'settlement'">{{sale.settlement_currency}}</small>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+            <ul class="dropdown-menu">
+                <li class="dropdown-header" translate>Payment Currency</li>
+                <li ng-click="prefs.currency = 'transaction'" ng-class="{ 'selected-li': prefs.currency == 'transaction' }"><a ng-click="prefs.currency = 'transaction'">{{sale.currency}}</a></li>
+                <li class="dropdown-header" translate>Settlement Currency</li>
+                <li ng-click="prefs.currency = 'settlement'" ng-class="{ 'selected-li': prefs.currency == 'settlement' }"><a ng-click="prefs.currency = 'settlement'">{{sale.settlement_currency}}</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row spacer-b10 hidden-sm hidden-md hidden-lg"></div> <!--Needed to have the buttons clear-->
+
+    <div class="gridtable-row wide-md" ng-repeat="item in sale.items">
+
+        <div class="col-xs-12 col-sm-3 wide-md">
+            <div class="col-xs-5 hidden-sm hidden-md hidden-lg lbl"><label translate>Item</label></div>
+            <div class="col-xs-7 col-sm-12 col-md-12 text-right-xs value">
+                <a ng-if="item.product_id" ng-href="/#/products/{{item.product_id}}/edit">{{item.name}}</a><span ng-if="!item.product_id">{{item.name}}</span>
+                <span ng-if="item.subscription">&nbsp;<a href="/#/subscriptions/{{item.subscription.subscription_id}}" title="{{'Subscription Details' | translate}}"><i class="fa fa-refresh text-success"></i></a></span>
+                <span download="item.download" ng-if="item.download">&nbsp;<i class="fa fa-download pointer text-info" title="{{'Download Details' | translate}}"></i></span>
+                <span license="item.license" ng-if="item.license">&nbsp;<i class="fa fa-file-text-o pointer text-purple" title="{{'License Details' | translate}}"></i></span>
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-2 wide-md">
+            <div class="col-xs-5 hidden-sm hidden-md hidden-lg lbl"><label translate>Quantity</label></div>
+            <div class="col-xs-7 col-sm-12 text-right value">{{item.quantity}}</div>
+        </div>
+
+        <div class="col-xs-12 col-sm-3 wide-md">
+            <div class="col-xs-5 hidden-sm hidden-md hidden-lg lbl"><label translate>Price</label></div>
+            <div class="col-xs-7 col-sm-12 text-right value"><span ng-if="prefs.currency == 'transaction'"><span class="strikethrough" ng-if="item.price_original != item.price">{{item.formatted.price_original}}&nbsp;</span>{{item.formatted.price}}</span><span ng-if="prefs.currency == 'settlement'">{{item.formatted.settlement_price}}</span></div>
+        </div>
+
+        <div class="col-xs-12 col-sm-2 wide-md">
+            <div class="col-xs-5 hidden-sm hidden-md hidden-lg lbl"><label translate>Tax</label></div>
+            <div class="col-xs-7 col-sm-12 text-right value"><span ng-if="prefs.currency == 'transaction'">{{item.formatted.tax}}</span><span ng-if="prefs.currency == 'settlement'">{{item.formatted.settlement_tax}}</span></div>
+        </div>
+
+        <div class="col-xs-12 col-sm-2 wide-md">
+            <div class="col-xs-5 hidden-sm hidden-md hidden-lg lbl"><label translate>Total</label></div>
+            <div class="col-xs-7 col-sm-12 text-right value"><span ng-if="prefs.currency == 'transaction'">{{item.formatted.total}}</span><span ng-if="prefs.currency == 'settlement'">{{item.formatted.settlement_total}}</span></div>
+        </div>
+
+    </div>
+
+    <div class="gridtable-row wide-md no-hover no-border">
+
+        <div class="col-xs-12 wide-md tight">
+            <div class="col-xs-5 col-sm-9 text-right-sm text-right-md text-right-lg lbl"><label translate>Subtotal</label></div>
+            <div class="col-xs-7 col-sm-3 text-right value"><span ng-if="prefs.currency == 'transaction'">{{sale.formatted.subtotal_original}}</span><span ng-if="prefs.currency == 'settlement'">{{sale.formatted.settlement_subtotal_original}}</span></div>
+        </div>
+
+        <div class="col-xs-12 wide-md tight">
+            <div class="col-xs-5 col-sm-9 text-right-sm text-right-md text-right-lg lbl"><label translate>Shipping</label></div>
+            <div class="col-xs-7 col-sm-3 text-right value"><span ng-if="prefs.currency == 'transaction'">{{sale.formatted.shipping}}</span><span ng-if="prefs.currency == 'settlement'">{{sale.formatted.settlement_shipping}}</span></div>
+        </div>
+
+        <div class="col-xs-12 wide-md tight">
+            <div class="col-xs-5 col-sm-9 text-right-sm text-right-md text-right-lg lbl"><label translate>Discount</label></div>
+            <div class="col-xs-7 col-sm-3 text-right value"><span ng-if="prefs.currency == 'transaction'">{{sale.formatted.discount}}</span><span ng-if="prefs.currency == 'settlement'">{{sale.formatted.settlement_discount}}</span></div>
+        </div>
+
+        <div class="col-xs-12 wide-md tight">
+            <div class="col-xs-5 col-sm-9 text-right-sm text-right-md text-right-lg lbl"><label translate>Tax</label></div>
+            <div class="col-xs-7 col-sm-3 text-right value"><span ng-if="prefs.currency == 'transaction'">{{sale.formatted.tax}}</span><span ng-if="prefs.currency == 'settlement'">{{sale.formatted.settlement_tax}}</span></div>
+        </div>
+
+        <div class="col-xs-12 wide-md tight">
+            <div class="col-xs-5 col-sm-9 text-right-sm text-right-md text-right-lg text-bg lbl"><label translate>Total</label></div>
+            <div class="col-xs-7 col-sm-3 text-right text-bg text-bold text-success value"><span ng-if="prefs.currency == 'transaction'">{{sale.formatted.total}}&nbsp;{{sale.currency}}</span><span ng-if="prefs.currency == 'settlement'">{{sale.formatted.settlement_total}}&nbsp;{{sale.settlement_currency}}</span></div>
+        </div>
+
+    </div>
+
+</div>
