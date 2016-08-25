@@ -1,5 +1,5 @@
 .vs/
-/admin.sln
+*.sln
 /Web.config
 /Web.Debug.config
 /publish.js
