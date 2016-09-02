@@ -1,0 +1,90 @@
+﻿<div ng-controller="SubscriptionsSettingsCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1>Subscription Settings</h1>
+    </div>
+
+    <form name="form" novalidate>
+
+        <div class="panel panel-body light-shadow">
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="reporting_currency_primary" class="control-label" translate>Renewal Notification Days</label>
+                    <input type="text" class="form-control" name="subscription_renewal_notification_days" ng-model="settings.subscription_renewal_notification_days" required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a valid number of days</p>
+                    <div>
+                        <p class="help-text" translate>Renewal notification days.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="reporting_currency_secondary" class="control-label" translate>Invoice Payment Delay</label>
+                    <input type="text" class="form-control" name="subscription_invoice_payment_delay" ng-model="settings.subscription_invoice_payment_delay" required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a valid delay time</p>
+                    <div>
+                        <p class="help-text" translate>A secondary currency for financial reports. Cannot be changed after you start processing transactions.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label for="merchant_descriptor_contact" class="control-label" translate>Payment Retry Delay</label>
+                    <input type="text" class="form-control" name="payment_retry_delay" ng-model="settings.payment_retry_delay" required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a valid payment retry delay time</p>
+                    <div>
+                        <p class="help-text" translate>When you send a customer a link to a shopping cart, this defines the app the customer will be sent to. You can find the App ID under Apps, click on the arrow next to Launch, and go to Settings.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label for="merchant_descriptor_contact" class="radio-group-label" translate>Allow Deep Payment Retries</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="allow_deep_payment_retries-1" class="radio" name="allow_deep_payment_retries" ng-model="settings.allow_deep_payment_retries" ng-value="true" required>
+                        <label for="allow_deep_payment_retries-1" class="radio-label">Yes</label>
+                        <input type="radio" id="allow_deep_payment_retries-2" class="radio" name="allow_deep_payment_retries" ng-model="settings.allow_deep_payment_retries" ng-value="false" required>
+                        <label for="allow_deep_payment_retries-2" class="radio-label">No</label>
+                    </div>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a contact</p>
+                    <div>
+                        <p class="help-text" translate>When you send a customer a link to make an invoice payment, this defines the app the customer will be sent to. You can find the App ID under Apps, click on the arrow next to Launch, and go to Settings.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label for="merchant_descriptor_contact" class="control-label" translate>Max Payment Attempts</label>
+                    <input type="text" class="form-control" name="max_payment_attempts" ng-model="settings.max_payment_attempts" required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a max payment attempts</p>
+                    <div>
+                        <p class="help-text" translate>When you send a customer a link to make an invoice payment, this defines the app the customer will be sent to. You can find the App ID under Apps, click on the arrow next to Launch, and go to Settings.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updateSettings()" validate-on-submit translate>Save Changes</button>
+                    <button type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="confirmCancel()" translate>Cancel</button>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
