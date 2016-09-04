@@ -1,4 +1,4 @@
-﻿app.controller("SubscriptionsSettingsCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
+app.controller("SubscriptionsSettingsCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
 
     $scope.exception = {};
 
@@ -12,6 +12,7 @@
 
         // Make a copy of the original for comparision
         $scope.settings_orig = angular.copy($scope.settings);
+        $scope.cancellation_reasons = utils.arrayToString(settings.cancellation_reasons);
 
     }, function (error) {
         $scope.exception.error = error;
@@ -43,6 +44,10 @@
 
         if ($scope.form.$invalid) {
             return;
+        }
+        
+        if ($scope.cancellation_reasons != null) {
+            $scope.settings.cancellation_reasons = utils.stringToArray($scope.cancellation_reasons);
         }
 
         ApiService.set($scope.settings, $scope.url)
