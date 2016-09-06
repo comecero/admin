@@ -116,6 +116,7 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     $routeProvider.when("/settings/fulfillment", { templateUrl: "/app/pages/settings/fulfillment.html", reloadOnSearch: false });
     $routeProvider.when("/settings/analytics", { templateUrl: "/app/pages/settings/analytics.html", reloadOnSearch: false });
     $routeProvider.when("/settings/technical", { templateUrl: "/app/pages/settings/technical.html", reloadOnSearch: false });
+    $routeProvider.when("/settings/subscriptions", { templateUrl: "/app/pages/settings/subscriptions.html", reloadOnSearch: false });
 
     // Users
     $routeProvider.when("/users", { templateUrl: "/app/pages/users/list.html", reloadOnSearch: false });

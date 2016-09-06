@@ -1,0 +1,149 @@
+<div ng-controller="SubscriptionsSettingsCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1>Subscription Settings</h1>
+    </div>
+
+    <form name="form" novalidate>
+
+        <div class="panel panel-body light-shadow">
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label for="merchant_descriptor_contact" class="control-label" translate>Maximum Payment Attempts</label>
+                    <input type="text" class="form-control" name="max_payment_attempts" ng-model="settings.max_payment_attempts" is-valid-integer greater-than-or-equal="1" less-than-or-equal="7"  required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a value between 1 - 7.</p>
+                    <div>
+                        <p class="help-text" translate>Specify the maximum number of times a payment will be attempted before a subscription will be cancelled for non payment. Enter a value between 1-7.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label for="merchant_descriptor_contact" class="control-label" translate>Payment Retry Delay</label>
+                    <input type="text" class="form-control" name="payment_retry_delay" ng-model="settings.payment_retry_delay" is-valid-integer required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a valid number</p>
+                    <div>
+                        <p class="help-text" translate>When a payment fails, the number of days to wait before attempting an additional payment attempt.</p>
+                    </div>
+                </div>
+            </div>     
+            
+            <div class="row"></div>
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label for="merchant_descriptor_contact" class="radio-group-label" translate>Enable Deep Payment Retries</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="allow_deep_payment_retries-1" class="radio" name="allow_deep_payment_retries" ng-model="settings.allow_deep_payment_retries" ng-value="true" required>
+                        <label for="allow_deep_payment_retries-1" class="radio-label">Yes</label>
+                        <input type="radio" id="allow_deep_payment_retries-2" class="radio" name="allow_deep_payment_retries" ng-model="settings.allow_deep_payment_retries" ng-value="false" required>
+                        <label for="allow_deep_payment_retries-2" class="radio-label">No</label>
+                    </div>
+                    <div>
+                        <p class="help-text" translate>Indicates if you want to re-attempt payment of other overdue invoices for the same customer when a payment retry is successful.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label for="merchant_descriptor_contact" class="radio-group-label" translate>Enable Friday Payment Retry Bias</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="payment_retry_friday_bias-1" class="radio" name="payment_retry_friday_bias" ng-model="settings.payment_retry_friday_bias" ng-value="true" required>
+                        <label for="payment_retry_friday_bias-1" class="radio-label">Yes</label>
+                        <input type="radio" id="payment_retry_friday_bias-2" class="radio" name="payment_retry_friday_bias" ng-model="settings.payment_retry_friday_bias" ng-value="false" required>
+                        <label for="payment_retry_friday_bias-2" class="radio-label">No</label>
+                    </div>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a valid bias value.</p>
+                    <div>
+                        <p class="help-text" translate>Indicates if you want to reschedule payment retries to Friday when otherwise scheduled for Thursday or Saturday. Fridays more often line up with salary deposits, which increases the chances of sufficient funds for a payment attempt.</p>
+                    </div>
+                </div>
+            </div>       
+
+            <div class="row"></div>
+
+             <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label for="merchant_descriptor_contact" class="radio-group-label" translate>Copy Affiliate ID on Subscription Renewal?</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="copy_affiliate_id_on_subscription_renewal-1" class="radio" name="copy_affiliate_id_on_subscription_renewal" ng-model="settings.copy_affiliate_id_on_subscription_renewal" ng-value="true" required>
+                        <label for="copy_affiliate_id_on_subscription_renewal-1" class="radio-label">Yes</label>
+                        <input type="radio" id="copy_affiliate_id_on_subscription_renewal-2" class="radio" name="copy_affiliate_id_on_subscription_renewal" ng-model="settings.copy_affiliate_id_on_subscription_renewal" ng-value="false" required>
+                        <label for="copy_affiliate_id_on_subscription_renewal-2" class="radio-label">No</label>
+                    </div>
+                    <div>
+                        <p class="help-text" translate>Determines if the affiliate ID from the original order should be included on orders generated from subscription renewals.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="reporting_currency_primary" class="control-label" translate>Days Before Renewal Notification</label>
+                    <input type="text" class="form-control" name="subscription_renewal_notification_days" ng-model="settings.subscription_renewal_notification_days" is-valid-integer required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a valid number</p>
+                    <div>
+                        <p class="help-text" translate>The number of days before a subscription renewal that a renewal reminder email should be sent to the customer.</p>
+                    </div>
+                </div>
+            </div>
+            
+             <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label for="merchant_descriptor_contact" class="radio-group-label" translate>Cancel Subscription on Chargeback</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="cancel_on_chargeback-1" class="radio" name="cancel_on_chargeback" ng-model="settings.cancel_on_chargeback" ng-value="true" required>
+                        <label for="cancel_on_chargeback-1" class="radio-label">Yes</label>
+                        <input type="radio" id="cancel_on_chargeback-2" class="radio" name="cancel_on_chargeback" ng-model="settings.cancel_on_chargeback" ng-value="false" required>
+                        <label for="cancel_on_chargeback-2" class="radio-label">No</label>
+                    </div>
+                    <div>
+                        <p class="help-text" translate>Indicates if a subscription should automatically be cancelled if a chargeback is received for any subscription payment.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="reporting_currency_secondary" class="control-label" translate>Subscription Invoice Payment Delay</label>
+                    <input type="text" class="form-control" name="subscription_invoice_payment_delay" ng-model="settings.subscription_invoice_payment_delay" is-valid-integer required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a valid number</p>
+                    <div>
+                        <p class="help-text" translate>When a subscription is renewed, an invoice is generated and automatically paid by the customer's default payment method. Specify the time, in hours, between invoice creation and automatic payment. A delay will allow you to make adjustments to the invoice, if necessary, to the invoice before payment. Enter 0 for immediate payment.</p>
+                    </div>
+                </div>
+            </div> 
+            
+             <div class="col-sm-12">
+                <div class="form-group" show-errors>
+                    <label for="cancellation_reasons" class="control-label" translate>Cancellation Reasons</label>
+                    <textarea class="form-control" id="cancellation_reasons" name="cancellation_reasons" ng-model="cancellation_reasons" placeholder="{{ 'Enter one reason per line' | translate}}"></textarea>
+                    <div>
+                        <p class="help-text" translate>
+                            Allows you to restrict the reasons supplied when processing a subscription cancellation to a pre-determined list. Enter one reason per line.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updateSettings()" validate-on-submit translate>Save Changes</button>
+                    <button type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="confirmCancel()" translate>Cancel</button>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
