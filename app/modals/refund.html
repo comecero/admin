@@ -62,7 +62,7 @@
 
                             <div class="col-xs-12 col-sm-6 col-md-1">
                                 <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label translate>Tax</label></div>
-                                <div class="col-xs-7 col-sm-12 col-md-12 value"><span>{{item.tax_rate * 100}}%</span></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value"><span>{{item.tax_rate | percentage:2}}</span></div>
                             </div>
 
                             <div class="col-xs-12 col-sm-6 col-md-2">
@@ -106,7 +106,7 @@
 
                             <div class="col-xs-12 col-sm-6 col-md-1">
                                 <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label translate>Tax</label></div>
-                                <div class="col-xs-7 col-sm-12 col-md-12 value"><span>{{refund.shipping_item.tax_rate * 100}}%</span></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value"><span>{{refund.shipping_item.tax_rate | percentage:2}}</span></div>
                             </div>
 
                             <div class="col-xs-12 col-sm-6 col-md-2">
