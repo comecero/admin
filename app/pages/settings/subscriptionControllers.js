@@ -45,7 +45,7 @@ app.controller("SubscriptionsSettingsCtrl", ['$scope', '$routeParams', '$locatio
         if ($scope.form.$invalid) {
             return;
         }
-        
+
         if ($scope.cancellation_reasons != null) {
             $scope.settings.cancellation_reasons = utils.stringToArray($scope.cancellation_reasons);
         }

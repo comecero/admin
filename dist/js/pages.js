@@ -111,219 +111,6 @@ app.controller("AccountsUpdateCtrl", ['$scope', '$location', 'ApiService', 'Conf
 
 }]);
 
-//#region App_Installations
-
-app.controller("AppInstallationsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService, ConfirmService) {
-
-    // Establish your scope containers
-    $scope.exception = {};
-    $scope.resources = {};
-    $scope.resources.appInstallationListUrl = ApiService.buildUrl("/app_installations");
-    $scope.meta = {};
-
-    $scope.meta.test = localStorage.getItem("test");
-
-    // Set the app installation url
-    var alias = localStorage.getItem("alias");
-    $scope.meta.app_install_url_base = "https://" + alias + ".auth.comecero.com/oauth/callback/#access_token=" + localStorage.getItem("token") + "&test=" + $scope.meta.test + "&redirect_uri=";
-
-    $scope.functions = {};
-
-    $scope.functions.uninstall = function (app_installation_id, app_name) {
-
-        var url = ApiService.buildUrl("/app_installations/" + app_installation_id);
-
-        ApiService.remove(url)
-        .then(
-        function () {
-            GrowlsService.addGrowl({ id: "uninstall_success", name: app_name, type: "success" });
-            $scope.functions.refresh();
-        },
-        function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    }
-
-    $scope.functions.confirmUninstall = function (app_installation_id, app_name) {
-        var confirm = { id: "app_uninstall" };
-        confirm.onConfirm = function () {
-            $scope.functions.uninstall(app_installation_id, app_name);
-        }
-        ConfirmService.showConfirm($scope, confirm);
-    }
-
-    $scope.functions.setDefaultVersion = function (app_installation_id, version) {
-
-        var url = ApiService.buildUrl("/app_installations/" + app_installation_id);
-
-        var data = { is_default_version: true };
-
-        ApiService.set(data, url, { show: "name" })
-        .then(
-        function (response) {
-            GrowlsService.addGrowl({ id: "set_default_app_version", name: response.name, type: "success" });
-            $scope.functions.refresh();
-        },
-        function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-
-    }
-
-    $scope.functions.confirmSetDefaultVersion = function (app_installation_id) {
-        var confirm = { id: "set_default_app_version" };
-        confirm.onConfirm = function () {
-            $scope.functions.setDefaultVersion(app_installation_id);
-        }
-        ConfirmService.showConfirm($scope, confirm);
-    }
-
-}]);
-
-app.controller("AppInstallationsSettingsCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
-
-    $scope.exception = {};
-    $scope.selections = {};
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/app_installations/" + $routeParams.id)
-
-    // An object to hold checkboxes to monitor their state changes
-    $scope.checkboxState = {};
-
-    // Load the app_installation settings
-    ApiService.getItem($scope.url, { show: "app_installation_id,app_id,name,settings_fields.*,settings,alias,launch_url,location_url,allow_custom_javascript,custom_javascript" }).then(function (app_installation) {
-
-        $scope.app_installation = app_installation;
-
-        // Set style with current properties, if populated
-        if (app_installation.settings != null) {
-            $scope.selections = app_installation.settings;
-        }
-
-        // Make a copy of the original for comparision
-        $scope.settings_orig = angular.copy($scope.app_installation.settings);
-
-        // Define the app host
-        $scope.app_host = utils.left(app_installation.location_url, app_installation.location_url.length - app_installation.alias.length - 1);
-
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-    $scope.confirmCancel = function () {
-        if (angular.equals($scope.app_installation.config, $scope.config_orig)) {
-            utils.redirect($location, "/app_installations");
-        } else {
-            var confirm = { id: "changes_lost" };
-            confirm.onConfirm = function () {
-                utils.redirect($location, "/app_installations");
-            }
-            ConfirmService.showConfirm($scope, confirm);
-        }
-    }
-
-    $scope.updateAppInstallation = function (apply) {
-
-        // Set the style to the selections provided.
-        $scope.app_installation.settings = $scope.selections;
-
-        // Reset the error
-        $scope.exception = {};
-
-        ApiService.set($scope.app_installation, $scope.url, { show: "app_installation_id,name" })
-        .then(
-        function (app_installation) {
-            GrowlsService.addGrowl({ id: "edit_success", name: $scope.app_installation.name, type: "success", url: "#/app_installations/" + $scope.app_installation.app_installation_id + "/settings" });
-
-            if (!apply) {
-                utils.redirect($location, "/app_installations");
-            }
-
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception.error = error;
-        });
-    }
-
-}]);
-
-app.controller("AppInstallationsStyleCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
-
-    $scope.exception = {};
-    $scope.selections = {};
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/app_installations/" + $routeParams.id)
-
-    // An object to hold checkboxes to monitor their state changes
-    $scope.checkboxState = {};
-
-    // Load the app_installation style
-    ApiService.getItem($scope.url, { show: "app_installation_id,app_id,name,style_fields.*,style,allow_custom_css,custom_css" }).then(function (app_installation) {
-
-        $scope.app_installation = app_installation;
-
-        // Set style with current properties, if populated
-        if (app_installation.style != null) {
-            $scope.selections = app_installation.style;
-        }
-
-        // Make a copy of the original for comparision
-        $scope.style_orig = angular.copy($scope.app_installation.style);
-
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-    $scope.confirmCancel = function () {
-        if (angular.equals($scope.app_installation.style, $scope.style_orig)) {
-            utils.redirect($location, "/app_installations");
-        } else {
-            var confirm = { id: "changes_lost" };
-            confirm.onConfirm = function () {
-                utils.redirect($location, "/app_installations");
-            }
-            ConfirmService.showConfirm($scope, confirm);
-        }
-    }
-
-    $scope.updateAppInstallation = function (apply) {
-
-        // Set the style to the selections provided.
-        $scope.app_installation.style = $scope.selections;
-
-        // Reset the error
-        $scope.exception = {};
-
-        ApiService.set($scope.app_installation, $scope.url, { show: "app_installation_id,name" })
-        .then(
-        function (app_installation) {
-            GrowlsService.addGrowl({ id: "edit_success", name: $scope.app_installation.name, type: "success", url: "#/app_installations/" + $scope.app_installation.app_installation_id + "/style" });
-
-            if (!apply) {
-                utils.redirect($location, "/app_installations");
-            }
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception.error = error;
-        });
-    }
-
-}]);
-
-//#endregion AppInstallations
-
-
-
-
-
 //#region Apps
 
 app.controller("AppsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
@@ -912,6 +699,219 @@ app.controller("AuthsSetCtrl", ['$scope', '$rootScope', '$routeParams', '$locati
 }]);
 
 //#endregion Auths
+
+
+
+
+
+//#region App_Installations
+
+app.controller("AppInstallationsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService, ConfirmService) {
+
+    // Establish your scope containers
+    $scope.exception = {};
+    $scope.resources = {};
+    $scope.resources.appInstallationListUrl = ApiService.buildUrl("/app_installations");
+    $scope.meta = {};
+
+    $scope.meta.test = localStorage.getItem("test");
+
+    // Set the app installation url
+    var alias = localStorage.getItem("alias");
+    $scope.meta.app_install_url_base = "https://" + alias + ".auth.comecero.com/oauth/callback/#access_token=" + localStorage.getItem("token") + "&test=" + $scope.meta.test + "&redirect_uri=";
+
+    $scope.functions = {};
+
+    $scope.functions.uninstall = function (app_installation_id, app_name) {
+
+        var url = ApiService.buildUrl("/app_installations/" + app_installation_id);
+
+        ApiService.remove(url)
+        .then(
+        function () {
+            GrowlsService.addGrowl({ id: "uninstall_success", name: app_name, type: "success" });
+            $scope.functions.refresh();
+        },
+        function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
+    $scope.functions.confirmUninstall = function (app_installation_id, app_name) {
+        var confirm = { id: "app_uninstall" };
+        confirm.onConfirm = function () {
+            $scope.functions.uninstall(app_installation_id, app_name);
+        }
+        ConfirmService.showConfirm($scope, confirm);
+    }
+
+    $scope.functions.setDefaultVersion = function (app_installation_id, version) {
+
+        var url = ApiService.buildUrl("/app_installations/" + app_installation_id);
+
+        var data = { is_default_version: true };
+
+        ApiService.set(data, url, { show: "name" })
+        .then(
+        function (response) {
+            GrowlsService.addGrowl({ id: "set_default_app_version", name: response.name, type: "success" });
+            $scope.functions.refresh();
+        },
+        function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+
+    }
+
+    $scope.functions.confirmSetDefaultVersion = function (app_installation_id) {
+        var confirm = { id: "set_default_app_version" };
+        confirm.onConfirm = function () {
+            $scope.functions.setDefaultVersion(app_installation_id);
+        }
+        ConfirmService.showConfirm($scope, confirm);
+    }
+
+}]);
+
+app.controller("AppInstallationsSettingsCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
+
+    $scope.exception = {};
+    $scope.selections = {};
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/app_installations/" + $routeParams.id)
+
+    // An object to hold checkboxes to monitor their state changes
+    $scope.checkboxState = {};
+
+    // Load the app_installation settings
+    ApiService.getItem($scope.url, { show: "app_installation_id,app_id,name,settings_fields.*,settings,alias,launch_url,location_url,allow_custom_javascript,custom_javascript" }).then(function (app_installation) {
+
+        $scope.app_installation = app_installation;
+
+        // Set style with current properties, if populated
+        if (app_installation.settings != null) {
+            $scope.selections = app_installation.settings;
+        }
+
+        // Make a copy of the original for comparision
+        $scope.settings_orig = angular.copy($scope.app_installation.settings);
+
+        // Define the app host
+        $scope.app_host = utils.left(app_installation.location_url, app_installation.location_url.length - app_installation.alias.length - 1);
+
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+    $scope.confirmCancel = function () {
+        if (angular.equals($scope.app_installation.config, $scope.config_orig)) {
+            utils.redirect($location, "/app_installations");
+        } else {
+            var confirm = { id: "changes_lost" };
+            confirm.onConfirm = function () {
+                utils.redirect($location, "/app_installations");
+            }
+            ConfirmService.showConfirm($scope, confirm);
+        }
+    }
+
+    $scope.updateAppInstallation = function (apply) {
+
+        // Set the style to the selections provided.
+        $scope.app_installation.settings = $scope.selections;
+
+        // Reset the error
+        $scope.exception = {};
+
+        ApiService.set($scope.app_installation, $scope.url, { show: "app_installation_id,name" })
+        .then(
+        function (app_installation) {
+            GrowlsService.addGrowl({ id: "edit_success", name: $scope.app_installation.name, type: "success", url: "#/app_installations/" + $scope.app_installation.app_installation_id + "/settings" });
+
+            if (!apply) {
+                utils.redirect($location, "/app_installations");
+            }
+
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception.error = error;
+        });
+    }
+
+}]);
+
+app.controller("AppInstallationsStyleCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
+
+    $scope.exception = {};
+    $scope.selections = {};
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/app_installations/" + $routeParams.id)
+
+    // An object to hold checkboxes to monitor their state changes
+    $scope.checkboxState = {};
+
+    // Load the app_installation style
+    ApiService.getItem($scope.url, { show: "app_installation_id,app_id,name,style_fields.*,style,allow_custom_css,custom_css" }).then(function (app_installation) {
+
+        $scope.app_installation = app_installation;
+
+        // Set style with current properties, if populated
+        if (app_installation.style != null) {
+            $scope.selections = app_installation.style;
+        }
+
+        // Make a copy of the original for comparision
+        $scope.style_orig = angular.copy($scope.app_installation.style);
+
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+    $scope.confirmCancel = function () {
+        if (angular.equals($scope.app_installation.style, $scope.style_orig)) {
+            utils.redirect($location, "/app_installations");
+        } else {
+            var confirm = { id: "changes_lost" };
+            confirm.onConfirm = function () {
+                utils.redirect($location, "/app_installations");
+            }
+            ConfirmService.showConfirm($scope, confirm);
+        }
+    }
+
+    $scope.updateAppInstallation = function (apply) {
+
+        // Set the style to the selections provided.
+        $scope.app_installation.style = $scope.selections;
+
+        // Reset the error
+        $scope.exception = {};
+
+        ApiService.set($scope.app_installation, $scope.url, { show: "app_installation_id,name" })
+        .then(
+        function (app_installation) {
+            GrowlsService.addGrowl({ id: "edit_success", name: $scope.app_installation.name, type: "success", url: "#/app_installations/" + $scope.app_installation.app_installation_id + "/style" });
+
+            if (!apply) {
+                utils.redirect($location, "/app_installations");
+            }
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception.error = error;
+        });
+    }
+
+}]);
+
+//#endregion AppInstallations
 
 
 
@@ -3355,6 +3355,590 @@ app.controller("ProfileUpdateCtrl", ['$scope', '$routeParams', '$location', 'Gro
 
 
 
+
+//#region Refunds
+
+app.controller("RefundsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
+
+    // Establish your scope containers
+    $scope.exception = {};
+    $scope.resources = {};
+    $scope.resources.refundListUrl = ApiService.buildUrl("/refunds");
+
+}]);
+
+app.controller("RefundsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'ConfirmService', 'GrowlsService', function ($scope, $routeParams, ApiService, ConfirmService, GrowlsService) {
+
+    $scope.refund = {};
+    $scope.exception = {};
+    $scope.fee_currency = null;
+    $scope.items = [];
+    $scope.currencyType = "transaction";
+
+    $scope.prefs = {}
+    $scope.prefs.loadRefundDetails = false;
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/refunds/" + $routeParams.id)
+
+    // Load the refund
+    var params = { expand: "payment,customer,payment_method,gateway,fees,commissions,order,refunds.items" };
+    ApiService.getItem($scope.url, params).then(function (refund) {
+        $scope.refund = refund;
+
+        if (refund.fees.data.length > 0) {
+            $scope.fee_currency = refund.fees.data[0].currency;
+        }
+
+        if (refund.order != null) {
+            $scope.items = refund.order.items;
+        }
+
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+}]);
+
+//#endregion Refunds
+
+
+
+
+app.controller("AnalyticsSettingsCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
+
+    $scope.exception = {};
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/settings/analytics");
+
+    // Load the settings
+    ApiService.getItem($scope.url).then(function (settings) {
+
+        $scope.settings = settings;
+
+        // Make a copy of the original for comparision
+        $scope.settings_orig = angular.copy($scope.settings);
+
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+    var prepareSubmit = function () {
+
+        // Clear any previous errors
+        $scope.exception.error = null;
+
+    }
+
+    $scope.confirmCancel = function () {
+        if (angular.equals($scope.settings, $scope.settings_orig)) {
+            utils.redirect($location, "/");
+        } else {
+            var confirm = { id: "changes_lost" };
+            confirm.onConfirm = function () {
+                utils.redirect($location, "/");
+            }
+            ConfirmService.showConfirm($scope, confirm);
+        }
+    }
+
+    $scope.updateSettings = function (form) {
+
+        prepareSubmit();
+
+        if ($scope.form.$invalid) {
+            return;
+        }
+
+        if ($scope.refund_reasons != null) {
+            $scope.settings.refund_reasons = utils.stringToArray($scope.refund_reasons);
+        }
+
+        if ($scope.chargeback_reasons != null) {
+            $scope.settings.chargeback_reasons = utils.stringToArray($scope.chargeback_reasons);
+        }
+
+        ApiService.set($scope.settings, $scope.url)
+        .then(
+        function (settings) {
+            GrowlsService.addGrowl({ id: "edit_success", name: "Analytics Settings", type: "success", url: "#/settings/analytics" });
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception.error = error;
+        });
+    }
+
+}]);
+
+
+
+
+app.controller("FulfillmentSettingsCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
+
+    $scope.exception = {};
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/settings/fulfillment");
+
+    // Load the settings
+    ApiService.getItem($scope.url).then(function (settings) {
+
+        $scope.settings = settings;
+
+        // Make a copy of the original for comparision
+        $scope.settings_orig = angular.copy($scope.settings);
+
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+    var prepareSubmit = function () {
+
+        // Clear any previous errors
+        $scope.exception.error = null;
+
+    }
+
+    $scope.confirmCancel = function () {
+        if (angular.equals($scope.settings, $scope.settings_orig)) {
+            utils.redirect($location, "/");
+        } else {
+            var confirm = { id: "changes_lost" };
+            confirm.onConfirm = function () {
+                utils.redirect($location, "/");
+            }
+            ConfirmService.showConfirm($scope, confirm);
+        }
+    }
+
+    $scope.updateSettings = function (form) {
+
+        prepareSubmit();
+
+        if ($scope.form.$invalid) {
+            return;
+        }
+
+        ApiService.set($scope.settings, $scope.url)
+        .then(
+        function (settings) {
+            GrowlsService.addGrowl({ id: "edit_success", name: "Fulfillment Settings", type: "success", url: "#/settings/fulfillment" });
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception.error = error;
+        });
+    }
+
+}]);
+
+
+
+
+app.controller("GeneralSettingsCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'CurrenciesService', 'TimezonesService', 'HelperService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, CurrenciesService, TimezonesService, HelperService) {
+
+    $scope.exception = {};
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/settings/general");
+
+    // Load the currencies
+    $scope.currencies = CurrenciesService.getCurrencies();
+
+    // Load the timezones
+    $scope.timezones = TimezonesService.getTimezones();
+
+    $scope.helperService = HelperService;
+
+    // Load the settings
+    ApiService.getItem($scope.url).then(function (settings) {
+        $scope.settings = settings;
+
+        $scope.typeahead = {};
+        $scope.typeahead.reporting_currency_primary = _.find($scope.currencies, { code: settings.reporting_currency_primary });
+        $scope.typeahead.reporting_currency_secondary = _.find($scope.currencies, { code: settings.reporting_currency_secondary });
+
+        $scope.app_hosts = utils.arrayToString(settings.app_hosts);
+        $scope.cors_allowed_origins = utils.arrayToString(settings.cors_allowed_origins);
+        $scope.oauth_redirect_uris = utils.arrayToString(settings.oauth_redirect_uris);
+        $scope.notification_from_addresses = utils.arrayToString(settings.notification_from_addresses);
+
+        // Make a copy of the original for comparision
+        $scope.settings_orig = angular.copy($scope.settings);
+
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+    var prepareSubmit = function () {
+
+        // Clear any previous errors
+        $scope.exception.error = null;
+
+    }
+
+    $scope.onCurrencySelect = function (item, model, label, type) {
+        $scope.settings["reporting_currency_" + type] = model.code;
+    }
+
+    $scope.confirmCancel = function () {
+        if (angular.equals($scope.settings, $scope.settings_orig)) {
+            utils.redirect($location, "/");
+        } else {
+            var confirm = { id: "changes_lost" };
+            confirm.onConfirm = function () {
+                utils.redirect($location, "/");
+            }
+            ConfirmService.showConfirm($scope, confirm);
+        }
+    }
+
+    $scope.updateSettings = function () {
+
+        prepareSubmit();
+
+        if ($scope.form.$invalid) {
+            window.scrollTo(0, 0);
+            return;
+        }
+
+        if ($scope.app_hosts != null) {
+            $scope.settings.app_hosts = utils.stringToArray($scope.app_hosts);
+        }
+
+        if ($scope.cors_allowed_origins != null) {
+            $scope.settings.cors_allowed_origins = utils.stringToArray($scope.cors_allowed_origins);
+        }
+
+        if ($scope.oauth_redirect_uris != null) {
+            $scope.settings.oauth_redirect_uris = utils.stringToArray($scope.oauth_redirect_uris);
+        }
+
+        if ($scope.notification_from_addresses != null) {
+            $scope.settings.notification_from_addresses = utils.stringToArray($scope.notification_from_addresses);
+        }
+
+        ApiService.set($scope.settings, $scope.url)
+        .then(
+        function (settings) {
+            GrowlsService.addGrowl({ id: "edit_success", name: "General Settings", type: "success", url: "#/settings/general" });
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception.error = error;
+        });
+    }
+
+}]);
+
+
+
+
+app.controller("PaymentSettingsCtrl", ['$scope', '$routeParams', '$location', '$timeout', 'GrowlsService', 'ApiService', 'ConfirmService', 'CurrenciesService', 'HelperService', function ($scope, $routeParams, $location, $timeout, GrowlsService, ApiService, ConfirmService, CurrenciesService, HelperService) {
+
+    $scope.exception = {};
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/settings/payment");
+
+    // Load the currencies
+    $scope.currencies = CurrenciesService.getCurrencies();
+
+    // Load a place to hold your required fields settings
+    $scope.required_fields = {};
+    $scope.optional_fields = {};
+
+    $scope.helperService = HelperService;
+
+    // Load the settings
+    ApiService.getItem($scope.url).then(function (settings) {
+
+        $scope.settings = settings;
+
+        $scope.typeahead = {};
+        $scope.typeahead.default_payment_currency = _.find($scope.currencies, { code: settings.default_payment_currency });
+
+        $scope.refund_reasons = utils.arrayToString(settings.refund_reasons);
+        $scope.chargeback_reasons = utils.arrayToString(settings.chargeback_reasons);
+        $scope.blocked_countries = utils.arrayToString(settings.blocked_countries);
+
+        // Load the fields into objects
+        $scope.required_fields = loadFields(settings.customer_required_fields, $scope.required_fields);
+        $scope.optional_fields = loadFields(settings.customer_optional_fields, $scope.optional_fields);
+
+        // Make a copy of the original for comparision
+        $scope.settings_orig = angular.copy($scope.settings);
+
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+    $scope.onCurrencySelect = function (item, model, label, type) {
+        $scope.settings[type] = model.code;
+    }
+
+    $scope.toggleCustomerRequiredField = function (field) {
+        if ($scope.required_fields[field]) {
+            $scope.optional_fields[field] = false;
+        }
+    }
+
+    $scope.toggleCustomerOptionalField = function (field) {
+        if ($scope.optional_fields[field]) {
+            $scope.required_fields[field] = false;
+        }
+    }
+
+    function loadFields(fields, obj) {
+        _.each(fields, function (item) {
+            obj[item] = true;
+        });
+        return obj;
+    }
+
+    function loadList(obj) {
+        var list = [];
+        for (var property in obj) {
+            if (obj.hasOwnProperty(property)) {
+                if (obj[property] == true) {
+                    list.push(property);
+                }
+            }
+        }
+        return list;
+    }
+
+    var prepareSubmit = function () {
+
+        // Clear any previous errors
+        $scope.exception.error = null;
+
+    }
+
+    $scope.confirmCancel = function () {
+        if (angular.equals($scope.settings, $scope.settings_orig)) {
+            utils.redirect($location, "/");
+        } else {
+            var confirm = { id: "changes_lost" };
+            confirm.onConfirm = function () {
+                utils.redirect($location, "/");
+            }
+            ConfirmService.showConfirm($scope, confirm);
+        }
+    }
+
+    $scope.updateSettings = function (form) {
+
+        prepareSubmit();
+
+        if ($scope.form.$invalid) {
+            return;
+        }
+
+        if ($scope.refund_reasons != null) {
+            $scope.settings.refund_reasons = utils.stringToArray($scope.refund_reasons);
+        }
+
+        if ($scope.chargeback_reasons != null) {
+            $scope.settings.chargeback_reasons = utils.stringToArray($scope.chargeback_reasons);
+        }
+
+        if ($scope.blocked_countries != null) {
+            $scope.settings.blocked_countries = utils.stringToArray($scope.blocked_countries);
+        }
+
+        // Load the lists 
+        $scope.settings.customer_required_fields = loadList($scope.required_fields);
+        $scope.settings.customer_optional_fields = loadList($scope.optional_fields);
+
+        ApiService.set($scope.settings, $scope.url)
+        .then(
+        function (settings) {
+            GrowlsService.addGrowl({ id: "edit_success", name: "Payment Settings", type: "success", url: "#/settings/payment" });
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception.error = error;
+        });
+    }
+
+}]);
+
+
+
+
+app.controller("SubscriptionsSettingsCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
+
+    $scope.exception = {};
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/settings/subscription");
+
+    // Load the settings
+    ApiService.getItem($scope.url).then(function (settings) {
+
+        $scope.settings = settings;
+
+        // Make a copy of the original for comparision
+        $scope.settings_orig = angular.copy($scope.settings);
+        $scope.cancellation_reasons = utils.arrayToString(settings.cancellation_reasons);
+
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+    var prepareSubmit = function () {
+
+        // Clear any previous errors
+        $scope.exception.error = null;
+
+    }
+
+    $scope.confirmCancel = function () {
+        if (angular.equals($scope.settings, $scope.settings_orig)) {
+            utils.redirect($location, "/");
+        } else {
+            var confirm = { id: "changes_lost" };
+            confirm.onConfirm = function () {
+                utils.redirect($location, "/");
+            }
+            ConfirmService.showConfirm($scope, confirm);
+        }
+    }
+
+    $scope.updateSettings = function (form) {
+
+        prepareSubmit();
+
+        if ($scope.form.$invalid) {
+            return;
+        }
+
+        if ($scope.cancellation_reasons != null) {
+            $scope.settings.cancellation_reasons = utils.stringToArray($scope.cancellation_reasons);
+        }
+
+        ApiService.set($scope.settings, $scope.url)
+        .then(
+        function (settings) {
+            GrowlsService.addGrowl({ id: "edit_success", name: "Subscription Settings", type: "success", url: "#/settings/subscription" });
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception.error = error;
+        });
+    }
+
+}]);
+
+app.controller("TechnicalSettingsCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'CurrenciesService', 'TimezonesService', 'HelperService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, CurrenciesService, TimezonesService, HelperService) {
+
+    $scope.exception = {};
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/settings/technical");
+
+    // Load the currencies
+    $scope.currencies = CurrenciesService.getCurrencies();
+
+    // Load the timezones
+    $scope.timezones = TimezonesService.getTimezones();
+
+    $scope.helperService = HelperService;
+
+    // Load the settings
+    ApiService.getItem($scope.url).then(function (settings) {
+        $scope.settings = settings;
+
+        $scope.typeahead = {};
+        $scope.typeahead.reporting_currency_primary = _.find($scope.currencies, { code: settings.reporting_currency_primary });
+        $scope.typeahead.reporting_currency_secondary = _.find($scope.currencies, { code: settings.reporting_currency_secondary });
+
+        $scope.app_hosts = utils.arrayToString(settings.app_hosts);
+        $scope.cors_allowed_origins = utils.arrayToString(settings.cors_allowed_origins);
+        $scope.oauth_redirect_uris = utils.arrayToString(settings.oauth_redirect_uris);
+        $scope.notification_from_addresses = utils.arrayToString(settings.notification_from_addresses);
+
+        // Make a copy of the original for comparision
+        $scope.settings_orig = angular.copy($scope.settings);
+
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+    var prepareSubmit = function () {
+
+        // Clear any previous errors
+        $scope.exception.error = null;
+
+    }
+
+    $scope.onCurrencySelect = function (item, model, label, type) {
+        $scope.settings["reporting_currency_" + type] = model.code;
+    }
+
+    $scope.confirmCancel = function () {
+        if (angular.equals($scope.settings, $scope.settings_orig)) {
+            utils.redirect($location, "/");
+        } else {
+            var confirm = { id: "changes_lost" };
+            confirm.onConfirm = function () {
+                utils.redirect($location, "/");
+            }
+            ConfirmService.showConfirm($scope, confirm);
+        }
+    }
+
+    $scope.updateSettings = function () {
+
+        prepareSubmit();
+
+        if ($scope.form.$invalid) {
+            window.scrollTo(0, 0);
+            return;
+        }
+
+        if ($scope.app_hosts != null) {
+            $scope.settings.app_hosts = utils.stringToArray($scope.app_hosts);
+        }
+
+        if ($scope.cors_allowed_origins != null) {
+            $scope.settings.cors_allowed_origins = utils.stringToArray($scope.cors_allowed_origins);
+        }
+
+        if ($scope.oauth_redirect_uris != null) {
+            $scope.settings.oauth_redirect_uris = utils.stringToArray($scope.oauth_redirect_uris);
+        }
+
+        if ($scope.notification_from_addresses != null) {
+            $scope.settings.notification_from_addresses = utils.stringToArray($scope.notification_from_addresses);
+        }
+
+        ApiService.set($scope.settings, $scope.url)
+        .then(
+        function (settings) {
+            GrowlsService.addGrowl({ id: "edit_success", name: "Technical Settings", type: "success", url: "#/settings/technical" });
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception.error = error;
+        });
+    }
+
+}]);
+
+
+
+
 app.controller("ReportCommissionsController", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'TimezonesService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, TimezonesService) {
 
     $scope.exception = {};
@@ -4271,57 +4855,6 @@ app.controller("SubscriptionPlansSetCtrl", ['$scope', '$routeParams', '$location
 
 }]);
 
-
-//#region Refunds
-
-app.controller("RefundsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
-
-    // Establish your scope containers
-    $scope.exception = {};
-    $scope.resources = {};
-    $scope.resources.refundListUrl = ApiService.buildUrl("/refunds");
-
-}]);
-
-app.controller("RefundsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'ConfirmService', 'GrowlsService', function ($scope, $routeParams, ApiService, ConfirmService, GrowlsService) {
-
-    $scope.refund = {};
-    $scope.exception = {};
-    $scope.fee_currency = null;
-    $scope.items = [];
-    $scope.currencyType = "transaction";
-
-    $scope.prefs = {}
-    $scope.prefs.loadRefundDetails = false;
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/refunds/" + $routeParams.id)
-
-    // Load the refund
-    var params = { expand: "payment,customer,payment_method,gateway,fees,commissions,order,refunds.items" };
-    ApiService.getItem($scope.url, params).then(function (refund) {
-        $scope.refund = refund;
-
-        if (refund.fees.data.length > 0) {
-            $scope.fee_currency = refund.fees.data[0].currency;
-        }
-
-        if (refund.order != null) {
-            $scope.items = refund.order.items;
-        }
-
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-}]);
-
-//#endregion Refunds
-
-
-
-
 app.controller("UsersListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
 
     // Establish your scope containers
@@ -4580,530 +5113,3 @@ $("document").ready(function () {
     }
 
 });
-app.controller("AnalyticsSettingsCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
-
-    $scope.exception = {};
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/settings/analytics");
-
-    // Load the settings
-    ApiService.getItem($scope.url).then(function (settings) {
-
-        $scope.settings = settings;
-
-        // Make a copy of the original for comparision
-        $scope.settings_orig = angular.copy($scope.settings);
-
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-    var prepareSubmit = function () {
-
-        // Clear any previous errors
-        $scope.exception.error = null;
-
-    }
-
-    $scope.confirmCancel = function () {
-        if (angular.equals($scope.settings, $scope.settings_orig)) {
-            utils.redirect($location, "/");
-        } else {
-            var confirm = { id: "changes_lost" };
-            confirm.onConfirm = function () {
-                utils.redirect($location, "/");
-            }
-            ConfirmService.showConfirm($scope, confirm);
-        }
-    }
-
-    $scope.updateSettings = function (form) {
-
-        prepareSubmit();
-
-        if ($scope.form.$invalid) {
-            return;
-        }
-
-        if ($scope.refund_reasons != null) {
-            $scope.settings.refund_reasons = utils.stringToArray($scope.refund_reasons);
-        }
-
-        if ($scope.chargeback_reasons != null) {
-            $scope.settings.chargeback_reasons = utils.stringToArray($scope.chargeback_reasons);
-        }
-
-        ApiService.set($scope.settings, $scope.url)
-        .then(
-        function (settings) {
-            GrowlsService.addGrowl({ id: "edit_success", name: "Analytics Settings", type: "success", url: "#/settings/analytics" });
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception.error = error;
-        });
-    }
-
-}]);
-
-
-
-
-app.controller("FulfillmentSettingsCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
-
-    $scope.exception = {};
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/settings/fulfillment");
-
-    // Load the settings
-    ApiService.getItem($scope.url).then(function (settings) {
-
-        $scope.settings = settings;
-
-        // Make a copy of the original for comparision
-        $scope.settings_orig = angular.copy($scope.settings);
-
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-    var prepareSubmit = function () {
-
-        // Clear any previous errors
-        $scope.exception.error = null;
-
-    }
-
-    $scope.confirmCancel = function () {
-        if (angular.equals($scope.settings, $scope.settings_orig)) {
-            utils.redirect($location, "/");
-        } else {
-            var confirm = { id: "changes_lost" };
-            confirm.onConfirm = function () {
-                utils.redirect($location, "/");
-            }
-            ConfirmService.showConfirm($scope, confirm);
-        }
-    }
-
-    $scope.updateSettings = function (form) {
-
-        prepareSubmit();
-
-        if ($scope.form.$invalid) {
-            return;
-        }
-
-        ApiService.set($scope.settings, $scope.url)
-        .then(
-        function (settings) {
-            GrowlsService.addGrowl({ id: "edit_success", name: "Fulfillment Settings", type: "success", url: "#/settings/fulfillment" });
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception.error = error;
-        });
-    }
-
-}]);
-
-
-
-
-app.controller("GeneralSettingsCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'CurrenciesService', 'TimezonesService', 'HelperService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, CurrenciesService, TimezonesService, HelperService) {
-
-    $scope.exception = {};
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/settings/general");
-
-    // Load the currencies
-    $scope.currencies = CurrenciesService.getCurrencies();
-
-    // Load the timezones
-    $scope.timezones = TimezonesService.getTimezones();
-
-    $scope.helperService = HelperService;
-
-    // Load the settings
-    ApiService.getItem($scope.url).then(function (settings) {
-        $scope.settings = settings;
-
-        $scope.typeahead = {};
-        $scope.typeahead.reporting_currency_primary = _.find($scope.currencies, { code: settings.reporting_currency_primary });
-        $scope.typeahead.reporting_currency_secondary = _.find($scope.currencies, { code: settings.reporting_currency_secondary });
-
-        $scope.app_hosts = utils.arrayToString(settings.app_hosts);
-        $scope.cors_allowed_origins = utils.arrayToString(settings.cors_allowed_origins);
-        $scope.oauth_redirect_uris = utils.arrayToString(settings.oauth_redirect_uris);
-        $scope.notification_from_addresses = utils.arrayToString(settings.notification_from_addresses);
-
-        // Make a copy of the original for comparision
-        $scope.settings_orig = angular.copy($scope.settings);
-
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-    var prepareSubmit = function () {
-
-        // Clear any previous errors
-        $scope.exception.error = null;
-
-    }
-
-    $scope.onCurrencySelect = function (item, model, label, type) {
-        $scope.settings["reporting_currency_" + type] = model.code;
-    }
-
-    $scope.confirmCancel = function () {
-        if (angular.equals($scope.settings, $scope.settings_orig)) {
-            utils.redirect($location, "/");
-        } else {
-            var confirm = { id: "changes_lost" };
-            confirm.onConfirm = function () {
-                utils.redirect($location, "/");
-            }
-            ConfirmService.showConfirm($scope, confirm);
-        }
-    }
-
-    $scope.updateSettings = function () {
-
-        prepareSubmit();
-
-        if ($scope.form.$invalid) {
-            window.scrollTo(0, 0);
-            return;
-        }
-
-        if ($scope.app_hosts != null) {
-            $scope.settings.app_hosts = utils.stringToArray($scope.app_hosts);
-        }
-
-        if ($scope.cors_allowed_origins != null) {
-            $scope.settings.cors_allowed_origins = utils.stringToArray($scope.cors_allowed_origins);
-        }
-
-        if ($scope.oauth_redirect_uris != null) {
-            $scope.settings.oauth_redirect_uris = utils.stringToArray($scope.oauth_redirect_uris);
-        }
-
-        if ($scope.notification_from_addresses != null) {
-            $scope.settings.notification_from_addresses = utils.stringToArray($scope.notification_from_addresses);
-        }
-
-        ApiService.set($scope.settings, $scope.url)
-        .then(
-        function (settings) {
-            GrowlsService.addGrowl({ id: "edit_success", name: "General Settings", type: "success", url: "#/settings/general" });
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception.error = error;
-        });
-    }
-
-}]);
-
-
-
-
-app.controller("PaymentSettingsCtrl", ['$scope', '$routeParams', '$location', '$timeout', 'GrowlsService', 'ApiService', 'ConfirmService', 'CurrenciesService', 'HelperService', function ($scope, $routeParams, $location, $timeout, GrowlsService, ApiService, ConfirmService, CurrenciesService, HelperService) {
-
-    $scope.exception = {};
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/settings/payment");
-
-    // Load the currencies
-    $scope.currencies = CurrenciesService.getCurrencies();
-
-    // Load a place to hold your required fields settings
-    $scope.required_fields = {};
-    $scope.optional_fields = {};
-
-    $scope.helperService = HelperService;
-
-    // Load the settings
-    ApiService.getItem($scope.url).then(function (settings) {
-
-        $scope.settings = settings;
-
-        $scope.typeahead = {};
-        $scope.typeahead.default_payment_currency = _.find($scope.currencies, { code: settings.default_payment_currency });
-
-        $scope.refund_reasons = utils.arrayToString(settings.refund_reasons);
-        $scope.chargeback_reasons = utils.arrayToString(settings.chargeback_reasons);
-        $scope.blocked_countries = utils.arrayToString(settings.blocked_countries);
-
-        // Load the fields into objects
-        $scope.required_fields = loadFields(settings.customer_required_fields, $scope.required_fields);
-        $scope.optional_fields = loadFields(settings.customer_optional_fields, $scope.optional_fields);
-
-        // Make a copy of the original for comparision
-        $scope.settings_orig = angular.copy($scope.settings);
-
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-    $scope.onCurrencySelect = function (item, model, label, type) {
-        $scope.settings[type] = model.code;
-    }
-
-    $scope.toggleCustomerRequiredField = function (field) {
-        if ($scope.required_fields[field]) {
-            $scope.optional_fields[field] = false;
-        }
-    }
-
-    $scope.toggleCustomerOptionalField = function (field) {
-        if ($scope.optional_fields[field]) {
-            $scope.required_fields[field] = false;
-        }
-    }
-
-    function loadFields(fields, obj) {
-        _.each(fields, function (item) {
-            obj[item] = true;
-        });
-        return obj;
-    }
-
-    function loadList(obj) {
-        var list = [];
-        for (var property in obj) {
-            if (obj.hasOwnProperty(property)) {
-                if (obj[property] == true) {
-                    list.push(property);
-                }
-            }
-        }
-        return list;
-    }
-
-    var prepareSubmit = function () {
-
-        // Clear any previous errors
-        $scope.exception.error = null;
-
-    }
-
-    $scope.confirmCancel = function () {
-        if (angular.equals($scope.settings, $scope.settings_orig)) {
-            utils.redirect($location, "/");
-        } else {
-            var confirm = { id: "changes_lost" };
-            confirm.onConfirm = function () {
-                utils.redirect($location, "/");
-            }
-            ConfirmService.showConfirm($scope, confirm);
-        }
-    }
-
-    $scope.updateSettings = function (form) {
-
-        prepareSubmit();
-
-        if ($scope.form.$invalid) {
-            return;
-        }
-
-        if ($scope.refund_reasons != null) {
-            $scope.settings.refund_reasons = utils.stringToArray($scope.refund_reasons);
-        }
-
-        if ($scope.chargeback_reasons != null) {
-            $scope.settings.chargeback_reasons = utils.stringToArray($scope.chargeback_reasons);
-        }
-
-        if ($scope.blocked_countries != null) {
-            $scope.settings.blocked_countries = utils.stringToArray($scope.blocked_countries);
-        }
-
-        // Load the lists 
-        $scope.settings.customer_required_fields = loadList($scope.required_fields);
-        $scope.settings.customer_optional_fields = loadList($scope.optional_fields);
-
-        ApiService.set($scope.settings, $scope.url)
-        .then(
-        function (settings) {
-            GrowlsService.addGrowl({ id: "edit_success", name: "Payment Settings", type: "success", url: "#/settings/payment" });
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception.error = error;
-        });
-    }
-
-}]);
-
-
-
-
-app.controller("SubscriptionsSettingsCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
-
-    $scope.exception = {};
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/settings/subscription");
-
-    // Load the settings
-    ApiService.getItem($scope.url).then(function (settings) {
-
-        $scope.settings = settings;
-
-        // Make a copy of the original for comparision
-        $scope.settings_orig = angular.copy($scope.settings);
-
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-    var prepareSubmit = function () {
-
-        // Clear any previous errors
-        $scope.exception.error = null;
-
-    }
-
-    $scope.confirmCancel = function () {
-        if (angular.equals($scope.settings, $scope.settings_orig)) {
-            utils.redirect($location, "/");
-        } else {
-            var confirm = { id: "changes_lost" };
-            confirm.onConfirm = function () {
-                utils.redirect($location, "/");
-            }
-            ConfirmService.showConfirm($scope, confirm);
-        }
-    }
-
-    $scope.updateSettings = function (form) {
-
-        prepareSubmit();
-
-        if ($scope.form.$invalid) {
-            return;
-        }
-
-        ApiService.set($scope.settings, $scope.url)
-        .then(
-        function (settings) {
-            GrowlsService.addGrowl({ id: "edit_success", name: "Subscription Settings", type: "success", url: "#/settings/subscription" });
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception.error = error;
-        });
-    }
-
-}]);
-
-app.controller("TechnicalSettingsCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'CurrenciesService', 'TimezonesService', 'HelperService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, CurrenciesService, TimezonesService, HelperService) {
-
-    $scope.exception = {};
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/settings/technical");
-
-    // Load the currencies
-    $scope.currencies = CurrenciesService.getCurrencies();
-
-    // Load the timezones
-    $scope.timezones = TimezonesService.getTimezones();
-
-    $scope.helperService = HelperService;
-
-    // Load the settings
-    ApiService.getItem($scope.url).then(function (settings) {
-        $scope.settings = settings;
-
-        $scope.typeahead = {};
-        $scope.typeahead.reporting_currency_primary = _.find($scope.currencies, { code: settings.reporting_currency_primary });
-        $scope.typeahead.reporting_currency_secondary = _.find($scope.currencies, { code: settings.reporting_currency_secondary });
-
-        $scope.app_hosts = utils.arrayToString(settings.app_hosts);
-        $scope.cors_allowed_origins = utils.arrayToString(settings.cors_allowed_origins);
-        $scope.oauth_redirect_uris = utils.arrayToString(settings.oauth_redirect_uris);
-        $scope.notification_from_addresses = utils.arrayToString(settings.notification_from_addresses);
-
-        // Make a copy of the original for comparision
-        $scope.settings_orig = angular.copy($scope.settings);
-
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-    var prepareSubmit = function () {
-
-        // Clear any previous errors
-        $scope.exception.error = null;
-
-    }
-
-    $scope.onCurrencySelect = function (item, model, label, type) {
-        $scope.settings["reporting_currency_" + type] = model.code;
-    }
-
-    $scope.confirmCancel = function () {
-        if (angular.equals($scope.settings, $scope.settings_orig)) {
-            utils.redirect($location, "/");
-        } else {
-            var confirm = { id: "changes_lost" };
-            confirm.onConfirm = function () {
-                utils.redirect($location, "/");
-            }
-            ConfirmService.showConfirm($scope, confirm);
-        }
-    }
-
-    $scope.updateSettings = function () {
-
-        prepareSubmit();
-
-        if ($scope.form.$invalid) {
-            window.scrollTo(0, 0);
-            return;
-        }
-
-        if ($scope.app_hosts != null) {
-            $scope.settings.app_hosts = utils.stringToArray($scope.app_hosts);
-        }
-
-        if ($scope.cors_allowed_origins != null) {
-            $scope.settings.cors_allowed_origins = utils.stringToArray($scope.cors_allowed_origins);
-        }
-
-        if ($scope.oauth_redirect_uris != null) {
-            $scope.settings.oauth_redirect_uris = utils.stringToArray($scope.oauth_redirect_uris);
-        }
-
-        if ($scope.notification_from_addresses != null) {
-            $scope.settings.notification_from_addresses = utils.stringToArray($scope.notification_from_addresses);
-        }
-
-        ApiService.set($scope.settings, $scope.url)
-        .then(
-        function (settings) {
-            GrowlsService.addGrowl({ id: "edit_success", name: "Technical Settings", type: "success", url: "#/settings/technical" });
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception.error = error;
-        });
-    }
-
-}]);
-
-
-
