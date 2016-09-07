@@ -85,6 +85,10 @@
             var params = [];
             var launch_url = app_installation.launch_url;
 
+            if (window.location.hostname.indexOf("admin-staging.") > -1) {
+                launch_url = launch_url.replace("apps.comecero.com", "apps-staging.comecero.com");
+            }
+
             if (app_installation.client_side) {
 
                 // Set the token parameter. Live storefront apps are client side but don't have a token, so the token could be null even though client side. Don't set in that case.
@@ -163,7 +167,7 @@
             getToken(test, config, app_installation).then(function (token) {
 
                 var launch_url = getLaunchUrl(app_installation, token);
-                 window.location.href = launch_url;
+                window.location.href = launch_url;
             },
             function (error) {
                 console.log(error);
