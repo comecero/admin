@@ -1,4 +1,9 @@
-﻿<a name="1.0.2"></a>
+﻿<a name="1.0.3"></a>
+# 1.0.3
+
+Allowed apps to launch correctly when running the admin against the staging environment.
+
+<a name="1.0.2"></a>
 # 1.0.2
 
 - Fixed bug that prevented the refund modal from automatically closing when a refund was successfully processed.
