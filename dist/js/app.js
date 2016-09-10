@@ -29,6 +29,11 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     $routeProvider.when("/gateways", { templateUrl: "/app/pages/gateways/list.html", reloadOnSearch: false });
     $routeProvider.when("/gateways/add", { templateUrl: "/app/pages/gateways/set.html", reloadOnSearch: true });
     $routeProvider.when("/gateways/:id/edit", { templateUrl: "/app/pages/gateways/set.html", reloadOnSearch: true });
+    
+    // Templates
+    $routeProvider.when("/templates", { templateUrl: "/app/pages/templates/list.html", reloadOnSearch: false });
+    $routeProvider.when("/templates/add", { templateUrl: "/app/pages/templates/set.html", reloadOnSearch: true });
+    $routeProvider.when("/templates/:id/edit", { templateUrl: "/app/pages/templates/set.html", reloadOnSearch: true });
 
     // Subscription Plans
     $routeProvider.when("/subscription_plans", { templateUrl: "/app/pages/subscription_plans/list.html", reloadOnSearch: false });
