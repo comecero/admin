@@ -24,6 +24,13 @@
                     </div>
                 </div>
             </div>
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <span ng-repeat="country in models.selectedTaxInclusiveCountries">
+                        <span href="#" class="label label-success label-lg" title="{{country.name}} ({{country.code}})">{{country.code}}<i class="fa fa-times-circle pointer spacer-l20" ng-click="removeTaxInclusiveCountry(country)"></i></span>
+                    </span>
+                </div>
+            </div>
 
 
             <div class="col-xs-12">
@@ -36,13 +43,20 @@
                     </div>
                 </div>
             </div>
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <span ng-repeat="country in models.selectedGrossDiscountCountries">
+                        <span href="#" class="label label-success label-lg" title="{{country.name}} ({{country.code}})">{{country.code}}<i class="fa fa-times-circle pointer spacer-l20" ng-click="removeGrossDiscountCountry(country)"></i></span>
+                    </span>
+                </div>
+            </div>
             
             <div class="row"></div>
             
             <div class="col-xs-12">
                 <div class="form-group spacer-b10">
                     <h2 translate>Rules</h2>
-                    <button type="button" class="btn btn-primary btn-right" name="add_new_rule" ng-click="addNewRule()">Add New Rule</button>
+                    <button type="button" class="btn btn-success btn-right" name="add_new_rule" ng-click="addNewRule()">Add New Rule</button>
                 </div>
             </div>
 
@@ -109,8 +123,9 @@
                         </div>
                     </div>
                  </div>
-                <div>
-                    <button type="button" class="btn btn-danger btn-right" name="delete_rule_{{$index}}" ng-click="$parent.deleteRule(rule, $index)">Delete Rule</button>
+                <div class="row"></div>
+                <div class="panel-footer submenu text-right">
+                   <span class="delete"  ng-click="$parent.confirmDelete(rule, $index)">Delete this rule</span>
                 </div>
                 <div class="row"></div>
                 
@@ -118,6 +133,11 @@
             
 
             <div class="row"></div>
+            
+             <!-- Show a "not found" message if no rules were found  -->
+            <div class="col-sm-12" ng-if="settings.rules.length == 0">
+                <p class="no-info" translate>No rules found</p>
+            </div>
 
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
