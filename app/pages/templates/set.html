@@ -13,66 +13,60 @@
         <div class="panel panel-body light-shadow">
             
             <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="comments" class="control-label" translate>Description</label>
+                    <input type="text" class="form-control" name="comments" ng-model="template.comments">
+                    <div>
+                        <p class="help-text" translate>For your use in identifying the template.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="body" class="control-label" translate>Body</label>
+                    <textarea type="text" class="form-control big no-wrap" name="body" ng-model="template.body" required></textarea>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a template body.</p>
+                    <div>
+                        <p class="help-text" translate>The template body, which is generally HTML.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
                  <div class="form-group" show-errors >
                     <label for="expand" class="control-label" translate>Expand</label>
-                    <input type="text" class="form-control" name="expand" ng-model="template.expand" required>
-                    <p class="help-block hidden fadeInDown" translate>Please provide a valid state.</p>
+                    <input type="text" class="form-control" name="expand" ng-model="template.expand">
                     <div>
-                        <p class="help-text" translate>INSERT HELP TEXT HERE.</p>
+                        <p class="help-text" translate>Templates are designed to receive a particular resource (such as an order or shipment). You can supply a comma separated list of child resources you wish to expand for use within your template. For example, if you are creating an order confirmation template, your template will receive the order object and you way wish to expand the customer resource.</p>
                     </div>
                 </div>
             </div>
             <div class="col-xs-12">
                  <div class="form-group" show-errors >
                     <label for="show" class="control-label" translate>Show</label>
-                    <input type="text" class="form-control" name="show" ng-model="template.show" required>
-                    <p class="help-block hidden fadeInDown" translate>Please provide a valid state.</p>
+                    <input type="text" class="form-control" name="show" ng-model="template.show">
                     <div>
-                        <p class="help-text" translate>INSERT HELP TEXT HERE.</p>
+                        <p class="help-text" translate>To increase performance of template rendering, you can limit the fields that are supplied to your template to only the ones your template needs. <a href="https://docs.comecero.com/basic-concepts/#customizing-output" target="_blank">Read more</a> about customizing resources. If you supply a value for show, you cannot supply a value for hide.</p>
                     </div>
                 </div>
             </div>
             <div class="col-xs-12">
                  <div class="form-group" show-errors >
                     <label for="hide" class="control-label" translate>Hide</label>
-                    <input type="text" class="form-control" name="hide" ng-model="template.hide" required>
-                    <p class="help-block hidden fadeInDown" translate>Please provide a valid state.</p>
+                    <input type="text" class="form-control" name="hide" ng-model="template.hide">
                     <div>
-                        <p class="help-text" translate>INSERT HELP TEXT HERE.</p>
+                        <p class="help-text" translate>To increase performance of template rendering, you can limit the fields that are supplied to your template to only the ones your template needs. <a href="https://docs.comecero.com/basic-concepts/#customizing-output" target="_blank">Read more</a> about customizing resources. If you supply a value for hide, you cannot supply a value for show.</p>
                     </div>
                 </div>
             </div>
             <div class="col-xs-12">
                  <div class="form-group" show-errors >
                     <label for="wrapper_template" class="control-label" translate>Wrapper Template</label>
-                    <input type="text" class="form-control" name="wrapper_template" ng-model="template.wrapper_template" required>
-                    <p class="help-block hidden fadeInDown" translate>Please provide a valid state.</p>
+                    <input type="text" class="form-control" name="wrapper_template" ng-model="template.wrapper_template">
                     <div>
-                        <p class="help-text" translate>INSERT HELP TEXT HERE.</p>
+                        <p class="help-text" translate>If this template is designed to be wrapped by another template, enter the ID of the wrapper template.</p>
                     </div>
                 </div>
             </div>
-            <div class="col-xs-12">
-                 <div class="form-group" show-errors >
-                    <label for="comments" class="control-label" translate>Comments</label>
-                    <input type="text" class="form-control" name="comments" ng-model="template.comments" required>
-                    <p class="help-block hidden fadeInDown" translate>Please provide a valid state.</p>
-                    <div>
-                        <p class="help-text" translate>INSERT HELP TEXT HERE.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xs-12">
-                 <div class="form-group" show-errors >
-                    <label for="body" class="control-label" translate>Body</label>
-                     <textarea type="text" class="form-control" name="body" ng-model="template.body" required></textarea>
-                    <p class="help-block hidden fadeInDown" translate>Please provide a valid state.</p>
-                    <div>
-                        <p class="help-text" translate>INSERT HELP TEXT HERE.</p>
-                    </div>
-                </div>
-            </div>
-            
             
             <div class="form-group">
                 <button ng-if="add" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="addTemplate()" validate-on-submit translate>Add the Template</button>
