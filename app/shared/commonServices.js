@@ -82,6 +82,13 @@ app.service("SettingsService", ['$rootScope', "$q", "ApiService", function ($roo
             localStorage.setItem("payment_currencies", JSON.stringify(account.payment_currencies));
             $rootScope.account.default_payment_currency = account.default_payment_currency;
             localStorage.setItem("default_payment_currency", account.default_payment_currency);
+
+            // Set the contract select URL
+            $rootScope.plan_select_url = "https://" + account.alias + ".auth.comecero.com/plan/select";
+            if (window.location.hostname.indexOf("admin-staging.") > -1) {
+                $rootScope.plan_select_url = $rootScope.plan_select_url.replace(".auth.comecero.com", ".auth-staging.comecero.com");
+            }
+
         });
     }
 
