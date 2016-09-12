@@ -16,7 +16,7 @@
 
             <div class="col-xs-12 col-md-6">
                 <div class="form-group" show-errors>
-                    <label for="merchant_descriptor_contact" class="control-label" translate>Maximum Payment Attempts</label>
+                    <label for="max_payment_attempts" class="control-label" translate>Maximum Payment Attempts</label>
                     <input type="text" class="form-control" name="max_payment_attempts" ng-model="settings.max_payment_attempts" is-valid-integer greater-than-or-equal="1" less-than-or-equal="7"  required>
                     <p class="help-block hidden fadeInDown" translate>Please provide a value between 1 - 7.</p>
                     <div>
@@ -27,7 +27,7 @@
 
             <div class="col-xs-12 col-md-6">
                 <div class="form-group" show-errors>
-                    <label for="merchant_descriptor_contact" class="control-label" translate>Payment Retry Delay</label>
+                    <label for="payment_retry_delay" class="control-label" translate>Payment Retry Delay</label>
                     <input type="text" class="form-control" name="payment_retry_delay" ng-model="settings.payment_retry_delay" is-valid-integer required>
                     <p class="help-block hidden fadeInDown" translate>Please provide a valid number</p>
                     <div>
@@ -40,7 +40,7 @@
 
             <div class="col-xs-12 col-md-6">
                 <div class="form-group" show-errors>
-                    <label for="merchant_descriptor_contact" class="radio-group-label" translate>Enable Deep Payment Retries</label>
+                    <label class="radio-group-label" translate>Enable Deep Payment Retries</label>
                     <div class="radio-group inline">
                         <input type="radio" id="allow_deep_payment_retries-1" class="radio" name="allow_deep_payment_retries" ng-model="settings.allow_deep_payment_retries" ng-value="true" required>
                         <label for="allow_deep_payment_retries-1" class="radio-label">Yes</label>
@@ -55,7 +55,7 @@
 
             <div class="col-xs-12 col-md-6">
                 <div class="form-group" show-errors>
-                    <label for="merchant_descriptor_contact" class="radio-group-label" translate>Enable Friday Payment Retry Bias</label>
+                    <label class="radio-group-label" translate>Enable Friday Payment Retry Bias</label>
                     <div class="radio-group inline">
                         <input type="radio" id="payment_retry_friday_bias-1" class="radio" name="payment_retry_friday_bias" ng-model="settings.payment_retry_friday_bias" ng-value="true" required>
                         <label for="payment_retry_friday_bias-1" class="radio-label">Yes</label>
@@ -73,7 +73,7 @@
 
              <div class="col-xs-12 col-md-6">
                 <div class="form-group" show-errors>
-                    <label for="merchant_descriptor_contact" class="radio-group-label" translate>Copy Affiliate ID on Subscription Renewal?</label>
+                    <label class="radio-group-label" translate>Copy Affiliate ID on Subscription Renewal?</label>
                     <div class="radio-group inline">
                         <input type="radio" id="copy_affiliate_id_on_subscription_renewal-1" class="radio" name="copy_affiliate_id_on_subscription_renewal" ng-model="settings.copy_affiliate_id_on_subscription_renewal" ng-value="true" required>
                         <label for="copy_affiliate_id_on_subscription_renewal-1" class="radio-label">Yes</label>
@@ -88,7 +88,7 @@
 
             <div class="col-md-6 col-xs-12">
                 <div class="form-group" show-errors>
-                    <label for="reporting_currency_primary" class="control-label" translate>Days Before Renewal Notification</label>
+                    <label for="subscription_renewal_notification_days" class="control-label" translate>Days Before Renewal Notification</label>
                     <input type="text" class="form-control" name="subscription_renewal_notification_days" ng-model="settings.subscription_renewal_notification_days" is-valid-integer required>
                     <p class="help-block hidden fadeInDown" translate>Please provide a valid number</p>
                     <div>
@@ -99,7 +99,7 @@
             
              <div class="col-xs-12 col-md-6">
                 <div class="form-group" show-errors>
-                    <label for="merchant_descriptor_contact" class="radio-group-label" translate>Cancel Subscription on Chargeback</label>
+                    <label class="radio-group-label" translate>Cancel Subscription on Chargeback</label>
                     <div class="radio-group inline">
                         <input type="radio" id="cancel_on_chargeback-1" class="radio" name="cancel_on_chargeback" ng-model="settings.cancel_on_chargeback" ng-value="true" required>
                         <label for="cancel_on_chargeback-1" class="radio-label">Yes</label>
@@ -114,7 +114,7 @@
 
             <div class="col-md-6 col-xs-12">
                 <div class="form-group" show-errors>
-                    <label for="reporting_currency_secondary" class="control-label" translate>Subscription Invoice Payment Delay</label>
+                    <label for="subscription_invoice_payment_delay" class="control-label" translate>Subscription Invoice Payment Delay</label>
                     <input type="text" class="form-control" name="subscription_invoice_payment_delay" ng-model="settings.subscription_invoice_payment_delay" is-valid-integer required>
                     <p class="help-block hidden fadeInDown" translate>Please provide a valid number</p>
                     <div>
