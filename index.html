@@ -206,12 +206,13 @@
                             <li><a href="https://explorer.comecero.com/" target="_blank"><span class="mm-text">API Explorer</span></a></li>
                             <li><a href="/#/auths"><span class="mm-text">API Tokens</span></a></li>
                             <li><a href="/#/apps"><span class="mm-text">Custom Apps</span></a></li>
+                            <li><a href="/#/templates"><span class="mm-text">Templates</span></a></li>
                             <li><a href="/#/"><span class="mm-text">Event Subscriptions</span></a></li>
                             <li><a href="/#/"><span class="mm-text">License Requests</span></a></li>
                             <li><a href="/#/notifications"><span class="mm-text">Notifications</span></a></li>
                         </ul>
                     </li>
-                    <li class="highlight" ng-show="account.live == false"><a ng-href="https://{{account.alias}}.auth.comecero.com/plan/select"><i class="menu-icon fa fa-rocket"></i><span class="mm-text">Activate Your Account</span></a></li>
+                    <li class="highlight" ng-show="account.live == false"><a ng-href="{{plan_select_url}}"><i class="menu-icon fa fa-rocket"></i><span class="mm-text">Activate Your Account</span></a></li>
                 </ul><!-- /.sidebar-menu -->
             </section>
             <!-- /.sidebar -->

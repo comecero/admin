@@ -1,4 +1,6 @@
-﻿var gulp = require("gulp");
+var gulp = require("gulp");
+var watch = require("gulp-watch");
+var batch = require('gulp-batch');
 var concat = require("gulp-concat");
 var uglify = require("gulp-uglify");
 var rename = require("gulp-rename");
@@ -63,4 +65,10 @@ gulp.task('dist', function (done) {
     sequence('concat-libraries', 'concat-internal', 'concat-angular-pages', 'concat-angular-app', 'concat-angular-shared', 'less-base', 'concat-css-libraries', 'compress', function () {
         done();
     });
+});
+
+gulp.task('watch', function () {
+    watch('./app/**/*.js', batch(function (events, done) {
+        gulp.start('dist', done);
+    }));
 });

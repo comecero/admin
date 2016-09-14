@@ -1,4 +1,4 @@
-﻿var app = angular.module("admin", ['ngRoute', 'ngAnimate', 'ngMessages', 'ui.bootstrap', 'angular-loading-bar', 'http-auth-interceptor', 'gettext', 'tmh.dynamicLocale', 'colorpicker.module', 'ngSanitize']);
+var app = angular.module("admin", ['ngRoute', 'ngAnimate', 'ngMessages', 'ui.bootstrap', 'angular-loading-bar', 'http-auth-interceptor', 'gettext', 'tmh.dynamicLocale', 'colorpicker.module', 'ngSanitize']);
 
 app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 'cfpLoadingBarProvider', 'tmhDynamicLocaleProvider', '$sceDelegateProvider', function ($httpProvider, $routeProvider, $locationProvider, $provide, cfpLoadingBarProvider, tmhDynamicLocaleProvider, $sceDelegateProvider) {
 
@@ -29,6 +29,11 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     $routeProvider.when("/gateways", { templateUrl: "/app/pages/gateways/list.html", reloadOnSearch: false });
     $routeProvider.when("/gateways/add", { templateUrl: "/app/pages/gateways/set.html", reloadOnSearch: true });
     $routeProvider.when("/gateways/:id/edit", { templateUrl: "/app/pages/gateways/set.html", reloadOnSearch: true });
+    
+    // Templates
+    $routeProvider.when("/templates", { templateUrl: "/app/pages/templates/list.html", reloadOnSearch: false });
+    $routeProvider.when("/templates/add", { templateUrl: "/app/pages/templates/set.html", reloadOnSearch: true });
+    $routeProvider.when("/templates/:id/edit", { templateUrl: "/app/pages/templates/set.html", reloadOnSearch: true });
 
     // Subscription Plans
     $routeProvider.when("/subscription_plans", { templateUrl: "/app/pages/subscription_plans/list.html", reloadOnSearch: false });
@@ -117,6 +122,7 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     $routeProvider.when("/settings/analytics", { templateUrl: "/app/pages/settings/analytics.html", reloadOnSearch: false });
     $routeProvider.when("/settings/technical", { templateUrl: "/app/pages/settings/technical.html", reloadOnSearch: false });
     $routeProvider.when("/settings/subscriptions", { templateUrl: "/app/pages/settings/subscriptions.html", reloadOnSearch: false });
+    $routeProvider.when("/settings/tax", { templateUrl: "/app/pages/settings/tax.html", reloadOnSearch: false });
 
     // Users
     $routeProvider.when("/users", { templateUrl: "/app/pages/users/list.html", reloadOnSearch: false });
