@@ -1,4 +1,11 @@
-﻿<a name="1.0.3"></a>
+﻿<a name="1.1.0"></a>
+# 1.1.0
+
+- Added Settings> Tax. Allows you to configure and modify tax settings.
+- Added Developer> Templates. Allows you to list, configure and modify templates.
+- Allow app installations and account activations while running admin within the staging environment.
+
+<a name="1.0.3"></a>
 # 1.0.3
 
 Allowed apps to launch correctly when running the admin against the staging environment.
