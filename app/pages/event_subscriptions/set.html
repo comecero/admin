@@ -1,0 +1,151 @@
+<div ng-controller="EventSubscriptionsSetCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1 ng-if="add" translate>Add Event Subscription</h1>
+    </div>
+    <form name="form" novalidate>
+        <div class="panel panel-body light-shadow">
+
+            <!--ng-change="loadGatewayConfig(gateway.provider_id)"-->
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="event_type" class="control-label" translate>Event Type</label>
+                    <select class="form-control text-capitalize" name="event_type" ng-model="eventSubscription.event_type" ng-options="event_type.code as event_type.name for event_type in event_types" required></select>
+                    <div>
+                        <p class="help-text" translate>INSERT HELP TEXT HERE</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12" show-errors>
+                <div class="form-group">
+                    <label class="radio-group-label required" translate>Method</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="method-1" class="radio" name="method" ng-model="eventSubscription.method" value="email" required>
+                        <label for="method-1" class="radio-label">Email</label>
+                        <input type="radio" id="method-2" class="radio" name="method" ng-model="eventSubscription.method" value="http" required>
+                        <label for="method-2" class="radio-label">HTTP</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="destination" class="control-label" translate>Destination</label>
+                    <input type="{{getDestinationType(eventSubscription.method)}}" class="form-control" name="destination" ng-model="eventSubscription.destination" required>
+                    <div>
+                        <p class="help-text" translate>INSERT HELP TEXT HERE</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12" show-errors>
+                <div class="form-group">
+                    <label class="radio-group-label required" translate>Format</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="format-1" class="radio" name="format" ng-model="eventSubscription.format" value="json" required>
+                        <label for="format-1" class="radio-label">JSON</label>
+                        <input type="radio" id="format-2" class="radio" name="format" ng-model="eventSubscription.format" value="xml" required>
+                        <label for="format-2" class="radio-label">XML</label>
+                        <input type="radio" id="format-3" class="radio" name="format" ng-model="eventSubscription.format" value="html" required>
+                        <label for="format-3" class="radio-label">HTML</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="signature_key" class="control-label" translate>signature_key</label>
+                    <input type="text" class="form-control" name="signature_key" ng-model="eventSubscription.signature_key">
+                    <div>
+                        <p class="help-text" translate>INSERT HELP TEXT HERE</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="comments" class="control-label" translate>Comments</label>
+                    <textarea type="text" class="form-control no-wrap" name="comments" ng-model="eventSubscription.comments" required></textarea>
+                    <div>
+                        <p class="help-text" translate>For your use in identifying the event subscription.</p>
+                    </div>
+                </div>
+            </div>
+           
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="custom_header_name" class="control-label" translate>custom_header_name</label>
+                    <input type="text" class="form-control" name="custom_header_name" ng-model="eventSubscription.custom_header_name">
+                    <div>
+                        <p class="help-text" translate>INSERT HELP TEXT HERE</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="custom_header_value" class="control-label" translate>custom_header_value</label>
+                    <input type="text" class="form-control" name="custom_header_value" ng-model="eventSubscription.custom_header_value">
+                    <div>
+                        <p class="help-text" translate>INSERT HELP TEXT HERE</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xs-12">
+                 <div class="form-group" show-errors >
+                    <label for="expand" class="control-label" translate>Expand</label>
+                    <input type="text" class="form-control" name="expand" ng-model="eventSubscription.expand">
+                    <div>
+                        <p class="help-text" translate>Event subacriptions are designed to receive a particular resource (such as an order or shipment). You can supply a comma separated list of child resources you wish to expand for use within your template. For example, if you are creating an order confirmation event subscription, your event subscription will receive the order object and you way wish to expand the customer resource.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                 <div class="form-group" show-errors >
+                    <label for="show" class="control-label" translate>Show</label>
+                    <input type="text" class="form-control" name="show" ng-model="eventSubscription.show">
+                    <div>
+                        <p class="help-text" translate>To increase performance of event subscription rendering, you can limit the fields that are supplied to your event subscription to only the ones your event subscription needs. <a href="https://docs.comecero.com/basic-concepts/#customizing-output" target="_blank">Read more</a> about customizing resources. If you supply a value for show, you cannot supply a value for hide.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                 <div class="form-group" show-errors >
+                    <label for="hide" class="control-label" translate>Hide</label>
+                    <input type="text" class="form-control" name="hide" ng-model="eventSubscription.hide">
+                    <div>
+                        <p class="help-text" translate>To increase performance of event subscription rendering, you can limit the fields that are supplied to your event subscription to only the ones your event subscription needs. <a href="https://docs.comecero.com/basic-concepts/#customizing-output" target="_blank">Read more</a> about customizing resources. If you supply a value for hide, you cannot supply a value for show.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label class="radio-group-label" translate>Set Active?</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="active-1" class="radio" name="active" ng-model="eventSubscription.active" ng-value="true" required>
+                        <label for="active-1" class="radio-label">Yes</label>
+                        <input type="radio" id="active-2" class="radio" name="active" ng-model="eventSubscription.active" ng-value="false" required>
+                        <label for="active-2" class="radio-label">No</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <button ng-if="add" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="addEventSubscription()" validate-on-submit translate>Add Event Subscription</button>
+                <button ng-if="update" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updateEventSubscription()" validate-on-submit translate>Save Changes</button>
+                <button ng-if="update" type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="confirmCancel()" translate>Cancel</button>
+            </div>
+
+            <div class="row"></div>
+
+            <div ng-if="update" class="panel-footer submenu" resource="products" method="delete">
+                <span class="delete" ng-click="confirmDelete()" translate>Delete this subscription</span>
+            </div>
+
+        </div>
+    </form>
+</div>

@@ -35,6 +35,11 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     $routeProvider.when("/templates/add", { templateUrl: "/app/pages/templates/set.html", reloadOnSearch: true });
     $routeProvider.when("/templates/:id/edit", { templateUrl: "/app/pages/templates/set.html", reloadOnSearch: true });
 
+    // Templates
+    $routeProvider.when("/event_subscriptions", { templateUrl: "/app/pages/event_subscriptions/list.html", reloadOnSearch: false });
+    $routeProvider.when("/event_subscriptions/add", { templateUrl: "/app/pages/event_subscriptions/set.html", reloadOnSearch: true });
+    $routeProvider.when("/event_subscriptions/:id/edit", { templateUrl: "/app/pages/event_subscriptions/set.html", reloadOnSearch: true });
+
     // Subscription Plans
     $routeProvider.when("/subscription_plans", { templateUrl: "/app/pages/subscription_plans/list.html", reloadOnSearch: false });
     $routeProvider.when("/subscription_plans/add", { templateUrl: "/app/pages/subscription_plans/set.html", reloadOnSearch: true });
