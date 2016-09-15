@@ -22,6 +22,12 @@
                     </div>
                 </div>
             </div>
+            <div class="col-xs-12 ">
+                <div class="form-group">
+                    <label class="control-label">Timezone</label>
+                    <input type="text" class="form-control" name="timezone" ng-model="eventSubscription.timezone" uib-typeahead="timezone as timezone for timezone in timezones | filter:$viewValue | limitTo:20" typeahead-editable="false" typeahead-min-length="0" required>
+                </div>
+            </div>
             <div class="col-xs-12" show-errors>
                 <div class="form-group">
                     <label class="radio-group-label required" translate>Method</label>
