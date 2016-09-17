@@ -767,6 +767,10 @@ select.form-control {
   height: 42px;
   font-size: 16px;
 }
+select.form-control-small {
+  height: 30px;
+  font-size: 12px;
+}
 .maxlength-message {
   margin: -30px 0 20px 0;
   font-size: 12px;

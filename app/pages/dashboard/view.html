@@ -6,8 +6,9 @@
         <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
     </div>
 
-    <div class="page-header">
+    <div class="page-header padding-l7 padding-r7">
         <h1>Dashboard</h1>
+        <select class="form-control form-control-small pull-right" style="width: 75px;" name="currency" ng-model="options.currency" ng-options="currency as currency for currency in options.currencies" required ng-change="loadDashboard(options.currency)"></select>
     </div>
 
     <div class="col-sm-12 padding-l7 padding-r7">
@@ -21,15 +22,15 @@
             <div class="stat-row">
                 <div class="stat-counters bordered no-border-t text-center">
                     <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
-                        <span class="text-bg"><strong>{{sales_month | currency: ""}}</strong></span><br>
+                        <span class="text-bg"><strong>{{sales_month}}</strong></span><br>
                         <span class="text-xs text-muted text-uppercase" translate>30 days</span>
                     </div>
                     <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
-                        <span class="text-bg"><strong>{{sales_yesterday | currency: ""}}</strong></span><br>
+                        <span class="text-bg"><strong>{{sales_yesterday}}</strong></span><br>
                         <span class="text-xs text-muted text-uppercase" translate>Yesterday</span>
                     </div>
                     <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
-                        <span class="text-bg"><strong>{{sales_today | currency: ""}}</strong></span><br>
+                        <span class="text-bg"><strong>{{sales_today}}</strong></span><br>
                         <span class="text-xs text-muted text-uppercase" translate>Today</span>
                     </div>
                 </div>
@@ -123,21 +124,21 @@
             <div class="stat-row">
                 <div class="stat-cell bg-warning padding-sm">
                     <div class="text-xs spacer-b10" translate>Subscriptions</div>
-                    <div class="stats-sparklines" id="total_subscriptions" style="width: 100%" sparkline="total_subscriptions"></div>
+                    <div class="stats-sparklines" id="subscriptions" style="width: 100%" sparkline="subscriptions"></div>
                 </div>
             </div>
             <div class="stat-row">
                 <div class="stat-counters bordered no-border-t text-center">
                     <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
-                        <span class="text-bg"><strong>{{total_subscriptions_month | currency: ""}}</strong></span><br>
+                        <span class="text-bg"><strong>{{subscriptions_month}}</strong></span><br>
                         <span class="text-xs text-muted text-uppercase" translate>30 days</span>
                     </div>
                     <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
-                        <span class="text-bg"><strong>{{total_subscriptions_yesterday | currency: ""}}</strong></span><br>
+                        <span class="text-bg"><strong>{{subscriptions_yesterday}}</strong></span><br>
                         <span class="text-xs text-muted text-uppercase" translate>Yesterday</span>
                     </div>
                     <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
-                        <span class="text-bg"><strong>{{total_subscriptions_today | currency: ""}}</strong></span><br>
+                        <span class="text-bg"><strong>{{subscriptions_today}}</strong></span><br>
                         <span class="text-xs text-muted text-uppercase" translate>Today</span>
                     </div>
                 </div>
@@ -156,15 +157,15 @@
             <div class="stat-row">
                 <div class="stat-counters bordered no-border-t text-center">
                     <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
-                        <span class="text-bg"><strong>{{new_subscriptions_month | currency: ""}}</strong></span><br>
+                        <span class="text-bg"><strong>{{new_subscriptions_month}}</strong></span><br>
                         <span class="text-xs text-muted text-uppercase" translate>30 days</span>
                     </div>
                     <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
-                        <span class="text-bg"><strong>{{new_subscriptions_yesterday | currency: ""}}</strong></span><br>
+                        <span class="text-bg"><strong>{{new_subscriptions_yesterday}}</strong></span><br>
                         <span class="text-xs text-muted text-uppercase" translate>Yesterday</span>
                     </div>
                     <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
-                        <span class="text-bg"><strong>{{new_subscriptions_today | currency: ""}}</strong></span><br>
+                        <span class="text-bg"><strong>{{new_subscriptions_today}}</strong></span><br>
                         <span class="text-xs text-muted text-uppercase" translate>Today</span>
                     </div>
                 </div>
@@ -183,15 +184,15 @@
             <div class="stat-row">
                 <div class="stat-counters bordered no-border-t text-center">
                     <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
-                        <span class="text-bg"><strong>{{subscription_renewals_month | currency: ""}}</strong></span><br>
+                        <span class="text-bg"><strong>{{subscription_renewals_month}}</strong></span><br>
                         <span class="text-xs text-muted text-uppercase" translate>30 days</span>
                     </div>
                     <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
-                        <span class="text-bg"><strong>{{subscription_renewals_yesterday | currency: ""}}</strong></span><br>
+                        <span class="text-bg"><strong>{{subscription_renewals_yesterday}}</strong></span><br>
                         <span class="text-xs text-muted text-uppercase" translate>Yesterday</span>
                     </div>
                     <div class="stat-cell col-xs-4 padding-sm no-padding-hr">
-                        <span class="text-bg"><strong>{{subscription_renewals_today | currency: ""}}</strong></span><br>
+                        <span class="text-bg"><strong>{{subscription_renewals_today}}</strong></span><br>
                         <span class="text-xs text-muted text-uppercase" translate>Today</span>
                     </div>
                 </div>
