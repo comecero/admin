@@ -15,9 +15,14 @@
     $scope.options.group_by = "day";
     $scope.options.timezone = "UTC";
     $scope.options.dates = "last_30";
-    $scope.options.currency = "USD";
     $scope.options.labels = [];
     $scope.options.values = [];
+
+    // Set the currencies
+    $scope.options.currencies = [];
+    $scope.options.currencies.push(localStorage.getItem("reporting_currency_primary"));
+    $scope.options.currencies.push(localStorage.getItem("reporting_currency_secondary"));
+    $scope.options.currency = $scope.options.currencies[0];
 
     // Datepicker options
     $scope.datepicker = {};
@@ -75,7 +80,7 @@
                 break;
         }
 
-        ApiService.getItem($scope.url, { type: $scope.options.type, group_by: $scope.options.group_by, timezone: $scope.options.timezone, segment: $scope.options.segment, date_start: date_start, date_end: date_end, formatted: true }).then(function (report) {
+        ApiService.getItem($scope.url, { type: $scope.options.type, group_by: $scope.options.group_by, timezone: $scope.options.timezone, segment: $scope.options.segment, date_start: date_start, date_end: date_end, currency: $scope.options.currency, formatted: true }).then(function (report) {
 
             $scope.report = report;
 

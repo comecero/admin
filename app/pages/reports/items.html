@@ -27,10 +27,8 @@
             </div>
 
             <div class="col-lg-3 col-sm-6 col-xs-12 spacer-t10">
-                <label class="control-label" translate>Currency</label>
-                <select class="form-control" ng-model="options.currency">
-                    <option value="USD">USD</option>
-                </select>
+                <label class="control-label">Currency</label>
+                <select class="form-control" name="currency" ng-model="options.currency" ng-options="currency as currency for currency in options.currencies" required></select>
             </div>
 
             <div class="col-lg-3 col-sm-6 col-xs-12 spacer-t10">
