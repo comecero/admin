@@ -1,4 +1,10 @@
-﻿<a name="1.1.0"></a>
+﻿<a name="1.1.1"></a>
+# 1.1.1
+
+- Updated reports and dashboard to allow selection of primary or secondary reporting currency.
+- Updated dashboard to use formatted currency based on user settings and locale.
+
+<a name="1.1.0"></a>
 # 1.1.0
 
 - Added Settings> Tax. Allows you to configure and modify tax settings.

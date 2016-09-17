@@ -15,10 +15,15 @@
     $scope.options.sort_by = "subtotal";
     $scope.options.timezone = "UTC";
     $scope.options.dates = "yesterday";
-    $scope.options.currency = "USD";
     $scope.options.offset = "0";
     $scope.options.labels = [];
     $scope.options.values = [];
+
+    // Set the currencies
+    $scope.options.currencies = [];
+    $scope.options.currencies.push(localStorage.getItem("reporting_currency_primary"));
+    $scope.options.currencies.push(localStorage.getItem("reporting_currency_secondary"));
+    $scope.options.currency = $scope.options.currencies[0];
 
     // For scrolling
     $scope.nav = {};
@@ -83,7 +88,7 @@
                 break;
         }
 
-        ApiService.getItem($scope.url, { type: $scope.options.type, sort_by: $scope.options.sort_by, timezone: $scope.options.timezone, desc: $scope.options.desc, date_start: date_start, date_end: date_end, offset: $scope.options.offset, formatted: true }, true, 90000).then(function (report) {
+        ApiService.getItem($scope.url, { type: $scope.options.type, sort_by: $scope.options.sort_by, timezone: $scope.options.timezone, desc: $scope.options.desc, date_start: date_start, date_end: date_end, currency: $scope.options.currency, offset: $scope.options.offset, formatted: true }, true, 90000).then(function (report) {
 
             $scope.report = report;
 

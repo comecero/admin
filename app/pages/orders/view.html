@@ -102,9 +102,9 @@
 
                 <div meta-to-html="{{order.meta}}"></div>
 
-                <span class="btn btn-info btn spacer-t5" ng-click="downloadPdf()"><i class="fa fa-download"></i> <span translate>Download Receipt PDF</span></span>
 
                 <div class="col-xs-12">
+                    <span class="btn btn-info btn spacer-t5" ng-click="downloadPdf()"><i class="fa fa-download"></i> <span translate>Download Receipt PDF</span></span>
                     <span class="btn btn-danger btn spacer-t5" void payment="order.payment" error="exception.error" ng-if="!order.hideCapture" translate>Cancel Payment</span>
                     <span class="btn btn-success btn spacer-t5" capture payment="order.payment" items="order.items" shipping-item="order.shipping_item" error="exception.error" ng-if="!order.hideCapture" translate>Capture Payment</span>
                 </div>
