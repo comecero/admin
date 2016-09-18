@@ -55,6 +55,10 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     $routeProvider.when("/files/add", { templateUrl: "/app/pages/files/add.html", reloadOnSearch: true });
     $routeProvider.when("/files/:id/edit", { templateUrl: "/app/pages/files/edit.html", reloadOnSearch: true });
 
+    // Shipments
+    $routeProvider.when("/shipments", { templateUrl: "/app/pages/shipments/list.html", reloadOnSearch: false });
+    $routeProvider.when("/shipments/:id", { templateUrl: "/app/pages/shipments/view.html", reloadOnSearch: false });
+
     // Orders
     $routeProvider.when("/orders", { templateUrl: "/app/pages/orders/list.html", reloadOnSearch: false });
     $routeProvider.when("/orders/:id", { templateUrl: "/app/pages/orders/view.html", reloadOnSearch: false });
