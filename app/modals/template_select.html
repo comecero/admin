@@ -1,0 +1,170 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" ng-click="templateSelect.cancel()">×</button>
+        <h4 class="modal-title"><span translate>Select a Template</span></h4>
+    </div>
+    <div class="modal-body">
+
+        <div class="callout callout-danger" ng-if="modalError">
+            <h4 translate>Oops! We had a problem.</h4>
+            <p>{{modalError.message}}</p>
+            <span ng-show="modalError.reference">
+                <br /><small>Error code: {{modalError.reference}}</small>
+            </span>
+        </div>
+
+        <form name="modalform" novalidate>
+            <uib-tabset>
+                <uib-tab active="templateSelectTabs[0].active" resource="files" method="create">
+                    <tab-heading><i class="fa fa-plus-circle"></i> <small translate>New</small></tab-heading>
+
+                    <div class="col-xs-12">
+                        <div class="form-group" show-errors>
+                            <label for="comments" class="control-label" translate>Description</label>
+                            <input type="text" class="form-control" name="comments" ng-model="template.comments">
+                            <div>
+                                <p class="help-text" translate>For your use in identifying the template.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="form-group" show-errors>
+                            <label for="body" class="control-label" translate>Body</label>
+                            <textarea type="text" class="form-control big no-wrap" name="body" ng-model="template.body" required></textarea>
+                            <p class="help-block hidden fadeInDown" translate>Please provide a template body.</p>
+                            <div>
+                                <p class="help-text" translate>The template body, which is generally HTML.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                         <div class="form-group" show-errors >
+                            <label for="expand" class="control-label" translate>Expand</label>
+                            <input type="text" class="form-control" name="expand" ng-model="template.expand">
+                            <div>
+                                <p class="help-text" translate>Templates are designed to receive a particular resource (such as an order or shipment). You can supply a comma separated list of child resources you wish to expand for use within your template. For example, if you are creating an order confirmation template, your template will receive the order object and you way wish to expand the customer resource.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                         <div class="form-group" show-errors >
+                            <label for="show" class="control-label" translate>Show</label>
+                            <input type="text" class="form-control" name="show" ng-model="template.show">
+                            <div>
+                                <p class="help-text" translate>To increase performance of template rendering, you can limit the fields that are supplied to your template to only the ones your template needs. <a href="https://docs.comecero.com/basic-concepts/#customizing-output" target="_blank">Read more</a> about customizing resources. If you supply a value for show, you cannot supply a value for hide.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                         <div class="form-group" show-errors >
+                            <label for="hide" class="control-label" translate>Hide</label>
+                            <input type="text" class="form-control" name="hide" ng-model="template.hide">
+                            <div>
+                                <p class="help-text" translate>To increase performance of template rendering, you can limit the fields that are supplied to your template to only the ones your template needs. <a href="https://docs.comecero.com/basic-concepts/#customizing-output" target="_blank">Read more</a> about customizing resources. If you supply a value for hide, you cannot supply a value for show.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                         <div class="form-group" show-errors >
+                            <label for="wrapper_template" class="control-label" translate>Wrapper Template</label>
+                            <input type="text" class="form-control" name="wrapper_template" ng-model="template.wrapper_template">
+                            <div>
+                                <p class="help-text" translate>If this template is designed to be wrapped by another template, enter the ID of the wrapper template.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-right btn-margin-left" validate-on-submit isolate-validation="true" ng-click="templateSelect.create(modalform)">
+                            <span translate>Create Template</span>
+                        </button>
+                    </div>
+
+                </uib-tab>
+
+                <uib-tab active="templateSelectTabs[1].active">
+                    <tab-heading><i class="fa fa-files-o"></i> <small translate>Existing Plans</small></tab-heading>
+                    <div class="col-xs-12 text-right spacer-20">
+                        <div class="form-inline">
+                            <div class="form-group has-feedback">
+                                <input type="text" class="form-control" ng-model="templateSelect.q" ng-change="templateSelect.search()" ng-model-options="{ updateOn: 'default blur', debounce: { default: 750, blur: 0 } }" select-on-click placeholder="{{ 'Search' | translate }}...">
+                                <span class="fa fa-search form-control-feedback"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="gridtable">
+
+                        <div class="gridtable-header hidden-xs hidden-sm">
+
+                            <div class="col-md-4"><label>ID</label></div>
+                            <div class="col-md-5"><label>Description</label></div>
+                            
+                            <div class="col-md-3 text-right">
+                                <label ng-click="templateSelect.sort('date_created', !templateSelect.params.desc)" class="pointer text-primary">Created</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="templateSelect.params.sort_by == 'date_created' && templateSelect.params.desc == true"></i><i class="icon fa fa-caret-up" ng-if="templateSelect.params.sort_by == 'date_created' && templateSelect.params.desc == false"></i>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12 hidden-md hidden-lg padding-l0">
+                            <div class="btn-group" uib-dropdown>
+                                <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Sort</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                                <ul class="dropdown-menu">
+                                    <li class="dropdown-header">Date Created</li>
+                                    <li ng-click="templateSelect.sort('date_created', false)" ng-class="{'selected-li': templateSelect.params.sort_by == 'date_created' && templateSelect.params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                                    <li ng-click="templateSelect.sort('date_created', true)" ng-class="{'selected-li': templateSelect.params.sort_by == 'date_created' && templateSelect.params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                                    <li class="divider"></li>
+                                    <li class="dropdown-header">Date Updated</li>
+                                    <li ng-click="templateSelect.sort('date_modified', false)" ng-class="{'selected-li': templateSelect.params.sort_by == 'date_modified' && templateSelect.params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                                    <li ng-click="templateSelect.sort('date_modified', true)" ng-class="{'selected-li': templateSelect.params.sort_by == 'date_modified' && templateSelect.params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="row spacer-b10 hidden-md hidden-lg"></div> <!--Needed to have the buttons clear-->
+
+                        <div class="gridtable-row pointer" ng-repeat="template in templateList.data" ng-click="templateSelect.ok(template)">
+
+                            <div class="col-xs-12 col-sm-6 col-md-4">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>ID</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value"><span><a>{{template.template_id}}</a></span></div>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-md-5">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Description</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value"><span>{{template.comments}}</span></div>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Created</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value"><span>{{template.date_created | date:'shortDate'}}</span></div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Show pagination if there is at least one page -->
+                    <div class="col-xs-12" ng-if="templateList.data.length > 0">
+                        <ul class="pager">
+                            <li class="previous" ng-click="templateSelect.movePage('-')" ng-show="templateList.previous_page_offset !== null"><a><i class="fa fa-chevron-circle-left"></i> <span translate>Back</span></a></li>
+                            <li class="next" ng-click="templateSelect.movePage('+')" ng-show="templateList.next_page_offset !== null"><a><span translate>Next</span> <i class="fa fa-chevron-circle-right"></i></a></li>
+                        </ul>
+                        <p class="text-right" ng-if="templateList">Showing page {{templateList.current_page}} of {{templateList.total_pages}}</p>
+                    </div>
+
+                    <!-- Show a "not found" message if no images were found  -->
+                    <div class="col-xs-12" ng-if="templateList.data.length == 0">
+                        <p class="no-info" translate>No templates found</p>
+                    </div>
+
+                </uib-tab>
+            </uib-tabset>
+        </form>
+    </div>
+
+    <div class="row"></div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="templateSelect.cancel()">
+            <span translate>Cancel</span>
+        </button>
+    </div>
+</div>

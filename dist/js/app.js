@@ -34,6 +34,11 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     $routeProvider.when("/templates", { templateUrl: "/app/pages/templates/list.html", reloadOnSearch: false });
     $routeProvider.when("/templates/add", { templateUrl: "/app/pages/templates/set.html", reloadOnSearch: true });
     $routeProvider.when("/templates/:id/edit", { templateUrl: "/app/pages/templates/set.html", reloadOnSearch: true });
+    
+     // Notification Subscriptions
+    $routeProvider.when("/notification_subscriptions", { templateUrl: "/app/pages/notification_subscriptions/list.html", reloadOnSearch: false });
+    $routeProvider.when("/notification_subscriptions/add", { templateUrl: "/app/pages/notification_subscriptions/set.html", reloadOnSearch: true });
+    $routeProvider.when("/notification_subscriptions/:id/edit", { templateUrl: "/app/pages/notification_subscriptions/set.html", reloadOnSearch: true });
 
     // Subscription Plans
     $routeProvider.when("/subscription_plans", { templateUrl: "/app/pages/subscription_plans/list.html", reloadOnSearch: false });

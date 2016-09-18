@@ -1,0 +1,148 @@
+<div ng-controller="NotificationSubscriptionsSetCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1 ng-if="add" translate>Add a NotificationSubscription</h1>
+    </div>
+    <form name="form" novalidate>
+        <div class="panel panel-body light-shadow">
+           
+            
+            <div class="col-sm-12">
+                <div class="form-group" show-errors>
+                    <label class="radio-group-label" translate>Type</label>
+                    <div class="radio-group">
+                        <input type="radio" id="type-1" class="radio" name="type" ng-model="notificationSubscription.type" ng-value="typeValues[0]" required>
+                        <label for="type-1" class="radio-label"> Order Confirmation</label>
+                        <input type="radio" id="type-2" class="radio" name="type" ng-model="notificationSubscription.type" ng-value="typeValues[1]" required>
+                        <label for="type-2" class="radio-label">Shipment Confirmation</label>
+                        <input type="radio" id="type-3" class="radio" name="type" ng-model="notificationSubscription.type" ng-value="typeValues[2]" required>
+                        <label for="type-3" class="radio-label">Cart Link</label>
+                        <input type="radio" id="type-4" class="radio" name="type" ng-model="notificationSubscription.type" ng-value="typeValues[3]" required>
+                        <label for="type-4" class="radio-label">Invoice Link</label>
+                    </div>
+                    <div>
+                        <p class="help-text" translate>Indicates list of subscriptions types available to create a notification subscription.</p>
+                    </div>
+                </div>
+            </div>
+
+           
+
+            <div class="row"></div>
+            <div class="col-xs-12">
+                 <div class="form-group" show-errors >
+                    <label for="expand" class="control-label" translate>From</label>
+                    <input type="email" class="form-control" name="from" ng-model="notificationSubscription.from" >
+                     <p class="help-block hidden fadeInDown" translate>INSERT ERROR MESSAGE HERE</p>
+                    <div>
+                        <p class="help-text" translate>INSERT HELP TEXT HERE</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                 <div class="form-group" show-errors >
+                    <label for="show" class="control-label" translate>From Name</label>
+                    <input type="text" class="form-control" name="from_name" ng-model="notificationSubscription.from_name" >
+                    <p class="help-block hidden fadeInDown" translate>INSERT ERROR MESSAGE HERE</p>
+                    <div>
+                        <p class="help-text" translate>INSERT HELP TEXT HERE</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                 <div class="form-group" show-errors >
+                    <label for="hide" class="control-label" translate>ReplyTo</label>
+                    <input type="email" class="form-control" name="reply_to" ng-model="notificationSubscription.reply_to" >
+                    <p class="help-block hidden fadeInDown" translate>INSERT ERROR MESSAGE HERE</p>
+                    <div>
+                        <p class="help-text" translate>INSERT HELP TEXT HERE</p>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="body" class="control-label" translate>Subject</label>
+                    <textarea type="text" class="form-control big no-wrap" name="subject" ng-model="notificationSubscription.subject" ></textarea>
+                    <p class="help-block hidden fadeInDown" translate>Please provide subject.</p>
+                    <div>
+                        <p class="help-text" translate>INSERT HELP TEXT HERE</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="comments" class="control-label" translate>Description</label>
+                    <input type="text" class="form-control" name="comments" ng-model="notificationSubscription.comments">
+                    <div>
+                        <p class="help-text" translate>For your use in identifying the subscription.</p>
+                    </div>
+                </div>
+            </div>
+            
+             <div class="row"></div>
+            
+            <div class="col-sm-12">
+                <div class="form-group" show-errors>
+                    <label class="radio-group-label" translate>Set Active?</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="active-1" class="radio" name="active" ng-model="notificationSubscription.active" ng-value="true" required>
+                        <label for="active-1" class="radio-label">Yes</label>
+                        <input type="radio" id="active-2" class="radio" name="active" ng-model="notificationSubscription.active" ng-value="false" required>
+                        <label for="active-2" class="radio-label">No</label>
+                    </div>
+                    <div>
+                        <p class="help-text" translate>Indicates that subscription should active or not.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label class="control-label clear" translate>Template</label>
+                    <div ng-show="!notificationSubscription.template.template_id">
+                        <a class="btn btn-info" template-select template="notificationSubscription.template" translate>Add a template</a>
+                    </div>
+                    <div ng-show="notificationSubscription.template.template_id">
+                        <ul class="list-group">
+                            <li class="list-group-item overflow-hidden" ng-click="showTemplate = !showTemplate">
+                                <i class="fa fa-minus-square pointer pull-right text-default" ng-show="showTemplate" style="margin-top:3px"></i>
+                                <i class="fa fa-plus-square pointer pull-right text-default" ng-show="!showTemplate" style="margin-top:3px"></i>
+                                <a href="/#/templates/{{notificationSubscription.template.template_id}}/edit" target="_blank">{{notificationSubscription.template.template_id}}</a>
+                            </li>
+                            <li class="list-group-item overflow-hidden fadeIn animated" ng-show="showTemplate">
+                                <p><span translate>Template ID</span>: <strong>{{notificationSubscription.template.template_id}} </strong></p>
+                                <p><span translate>Created</span>: <strong>{{notificationSubscription.template.date_created | date:'mediumDate'}} {{notificationSubscription.template.date_created | date:'shortTime'}}</strong></p>
+                                <p ng-if="notificationSubscription.template.comments"><span translate>Description</span>: <em>{{notificationSubscription.template.comments}}</em></p>
+                                <p class="text-right">
+                                    <a class="btn btn-danger btn-xs spacer-t10" ng-click="removeTemplate()" translate>Remove</a>
+                                    <a class="btn btn-primary btn-xs spacer-t10" template-select template="notificationSubscription.template" translate>Change</a>
+                                </p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <button ng-if="add" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="addNotificationSubscription()" validate-on-submit translate>Add the Notification Subscription</button>
+                <button ng-if="update" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updateNotificationSubscription()" validate-on-submit translate>Save Changes</button>
+                <button ng-if="update" type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="confirmCancel()" translate>Cancel</button>
+            </div>
+
+            <div class="row"></div>
+
+            <div ng-if="update" class="panel-footer submenu" resource="products" method="delete">
+                <span class="delete" ng-click="confirmDelete()" translate>Delete this subscription</span>
+            </div>
+
+        </div>
+    </form>
+</div>
