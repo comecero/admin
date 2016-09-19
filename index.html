@@ -207,6 +207,7 @@
                             <li><a href="/#/auths"><span class="mm-text">API Tokens</span></a></li>
                             <li><a href="/#/apps"><span class="mm-text">Custom Apps</span></a></li>
                             <li><a href="/#/templates"><span class="mm-text">Templates</span></a></li>
+                            <li><a href="/#/events"><span class="mm-text">Events</span></a></li>
                             <li><a href="/#/"><span class="mm-text">Event Subscriptions</span></a></li>
                             <li><a href="/#/"><span class="mm-text">License Requests</span></a></li>
                             <li><a href="/#/notifications"><span class="mm-text">Notifications</span></a></li>
@@ -270,6 +271,7 @@
             <span ng-if="growl.id == 'download_reset'" translate>The download has been reset and is now functional.</span>
             <span ng-if="growl.id == 'download_kill'" translate>The download has been inactivated.</span>
             <span ng-if="growl.id == 'notification_resend'" translate>The notification has been sent to {{growl.email}}.</span>
+            <span ng-if="growl.id == 'event_resend'" translate>The event has been queued to be sent again. You can reload the event in a few moments to check the updated status.</span>
 
             <!-- Generic -->
             <span ng-if="growl.id == 'edit_success_no_link'" translate>Your changes have been saved.</span>
