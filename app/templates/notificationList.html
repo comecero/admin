@@ -12,12 +12,33 @@
     <div class="gridtable-header hidden-xs hidden-sm">
         <div class="col-md-3"><label>ID</label></div>
         <div class="col-md-4"><label>Type</label></div>
-        <div class="col-md-3"><label>Status</label></div>
+        <div class="col-md-3 btn-header">
+            <div class="btn-group" uib-dropdown>
+                <button type="button" class="btn btn-default dropdown-toggle" uib-dropdown-toggle><span translate>Status</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                <ul class="dropdown-menu">
+                    <li ng-click="setParam('status', 'delivered')" ng-class="{ 'selected-li': userParams.status == 'delivered' }"><a><i class="dropdown-icon fa fa-check-circle text-success"></i>&nbsp;&nbsp;<span translate>Delivered</span></a></li>
+                    <li ng-click="setParam('status', 'queued')" ng-class="{'selected-li': userParams.status == 'queued' }"><a><i class="dropdown-icon fa fa-clock-o text-pa-purple"></i>&nbsp;&nbsp;<span translate>Queued</span></a></li>
+                    <li ng-click="setParam('status', 'retry')" ng-class="{'selected-li': userParams.status == 'retry' }"><a><i class="dropdown-icon fa fa-undo text-warning"></i>&nbsp;&nbsp;<span translate>Retry</span></a></li>
+                    <li ng-click="setParam('status', 'failed')" ng-class="{'selected-li': userParams.status == 'failed' }"><a><i class="dropdown-icon fa fa-times-circle text-danger"></i>&nbsp;&nbsp;<span translate>Failed</span></a></li>
+                </ul>
+            </div>
+        </div>
         <div class="col-md-2 text-right"><label ng-click="sort('date_created', !userParams.desc)" class="pointer text-primary" translate>Created</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="getSortValue() == 'date_created' && userParams.desc == true"></i><i class="icon fa fa-caret-up" ng-if="userParams.sort_by == 'date_created' && userParams.desc == false"></i></div>
 
     </div>
 
     <div class="col-xs-12 hidden-md hidden-lg padding-l0">
+        <div class="btn-group" uib-dropdown>
+            <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Filter</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+            <ul class="dropdown-menu">
+                <li class="dropdown-header" translate>Status</li>
+                <li ng-click="setParam('status', 'delivered')" ng-class="{ 'selected-li': userParams.status == 'delivered' }"><a><i class="dropdown-icon fa fa-check-circle text-success"></i>&nbsp;&nbsp;<span translate>Delivered</span></a></li>
+                <li ng-click="setParam('status', 'queued')" ng-class="{'selected-li': userParams.status == 'queued' }"><a><i class="dropdown-icon fa fa-clock-o text-pa-purple"></i>&nbsp;&nbsp;<span translate>Queued</span></a></li>
+                <li ng-click="setParam('status', 'retry')" ng-class="{'selected-li': userParams.status == 'retry' }"><a><i class="dropdown-icon fa fa-undo text-warning"></i>&nbsp;&nbsp;<span translate>Retry</span></a></li>
+                <li ng-click="setParam('status', 'failed')" ng-class="{'selected-li': userParams.status == 'failed' }"><a><i class="dropdown-icon fa fa-times-circle text-danger"></i>&nbsp;&nbsp;<span translate>Failed</span></a></li>
+            </ul>
+        </div>
+
         <div class="btn-group" uib-dropdown>
             <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Sort</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
             <ul class="dropdown-menu">

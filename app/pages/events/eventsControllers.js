@@ -29,9 +29,8 @@ app.controller("EventsListCtrl", ['$scope', '$routeParams', '$location', '$q', '
 
     }
 
-
     $scope.loadEvents = function () {
-
+        
         ApiService.getList(ApiService.buildUrl("/events"), $scope.params).then(function (result) {
             $scope.events.eventList = result;
             $scope.eventsChecked = false;
@@ -47,6 +46,14 @@ app.controller("EventsListCtrl", ['$scope', '$routeParams', '$location', '$q', '
             $scope.exception.error = error;
             window.scrollTo(0, 0);
         });
+    }
+
+    $scope.setParam = function (param, value) {
+        $scope.params[param] = value;
+        $scope.params.before_item = null;
+        $scope.params.after_item = null;
+        $scope.nav.scrollTop = true;
+        $location.search($scope.params);
     }
 
     $scope.search = function () {
@@ -65,14 +72,24 @@ app.controller("EventsListCtrl", ['$scope', '$routeParams', '$location', '$q', '
         }
     }
 
-    $scope.setParam = function (param, value) {
-        $scope.params[param] = value;
-        $scope.params.before_item = null;
-        $scope.params.after_item = null;
+    $scope.movePage = function (direction, value) {
+
+        if (direction == "+") {
+            $scope.params.after_item = value;
+            $scope.params.before_item = null;
+        } else {
+            $scope.params.after_item = null;
+            $scope.params.before_item = value;
+        }
         $scope.nav.scrollTop = true;
         $location.search($scope.params);
     }
 
+    $scope.sort = function (sort_by, desc) {
+        $scope.params.sort_by = sort_by;
+        $scope.params.desc = desc;
+        $location.search($scope.params);
+    }
 
     $scope.$on('$routeUpdate', function (e) {
         $scope.parseParams();
@@ -120,7 +137,7 @@ app.controller("EventViewCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
         }, function (error) {
             $scope.exception.error = error;
             window.scrollTo(0, 0);
-      });
+        });
     };
 
 }]);
