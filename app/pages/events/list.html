@@ -92,17 +92,16 @@
                 <div class="col-xs-12 col-sm-6 col-md-2">
                     <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label translate>Status</label></div>
                     <div class="col-xs-7 col-sm-12 col-md-12 value">
-                        <span ng-if="event.status == 'queued'"><i class="icon fa fa-check-circle text-success"></i> <span translate>Queued</span></span>
-                        <span ng-if="event.status == 'delivered'"><i class="icon fa fa-clock-o text-pa-purple"></i> <span translate>Delivered</span></span>
+                        <span ng-if="event.status == 'delivered'"><i class="icon fa fa-check-circle text-success"></i> <span translate>Delivered</span></span>
+                        <span ng-if="event.status == 'queued'"><i class="icon fa fa-clock-o text-pa-purple"></i> <span translate>Queued</span></span>
                         <span ng-if="event.status == 'retry'"><i class="icon fa fa-undo text-warning"></i> <span translate>Retry</span></span>
                         <span ng-if="event.status == 'failed'"><i class="icon fa fa-times-circle text-danger"></i> <span translate>Failed</span></span>
                     </div>
                 </div>
-             
 
                 <div class="col-xs-12 col-sm-6 col-md-2">
                     <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Created</label></div>
-                    <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value"><span>{{event.date_created | date:'shortDate'}}</span></div>
+                    <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value"><span>{{event.date_created | date:'short'}}</span></div>
                 </div>
 
             </div>

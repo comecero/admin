@@ -7,14 +7,14 @@ app.controller("EventsListCtrl", ['$scope', '$routeParams', '$location', '$q', '
     $scope.events = {};
     $scope.nav = {};
     $scope.exception = {};
-    
+
     // Establish your settings from query string parameters
     $scope.parseParams = function () {
         $scope.params = ($location.search())
 
         // Convert any string true/false to bool
         utils.stringsToBool($scope.params);
-        
+
         if ($scope.params.status == null) {
             $scope.params.status = "delivered";
         }
@@ -48,8 +48,8 @@ app.controller("EventsListCtrl", ['$scope', '$routeParams', '$location', '$q', '
             window.scrollTo(0, 0);
         });
     }
-    
-     $scope.search = function () {
+
+    $scope.search = function () {
         if ($scope.params.q != null) {
 
             // Reset the view to the first page
@@ -64,7 +64,7 @@ app.controller("EventsListCtrl", ['$scope', '$routeParams', '$location', '$q', '
             $location.search($scope.params);
         }
     }
-    
+
     $scope.setParam = function (param, value) {
         $scope.params[param] = value;
         $scope.params.before_item = null;
@@ -89,37 +89,37 @@ app.controller("EventViewCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
 
     $scope.event = {};
     $scope.exception = {};
+    $scope.options = {};
+
+    $scope.options.raw = true;
 
     // Set the url for interacting with this item
     $scope.url = ApiService.buildUrl("/events/" + $routeParams.id)
 
     // Load the service
-    var params = {expand:"event_subscription,debug=true"};
+    var params = { expand: "event_subscription", debug: true };
     ApiService.getItem($scope.url, params).then(function (event) {
+
         $scope.event = event;
+
+        // Pretty format the event data
+        $scope.event.data = JSON.stringify($scope.event.data, null, 4)
 
     }, function (error) {
         $scope.exception.error = error;
         window.scrollTo(0, 0);
     });
-    
-    
-   
-    $scope.confirmCancel = function () {
-        var confirm = { id: "changes_lost" };
-        confirm.onConfirm = function () {
-            utils.redirect($location, "/events");
-        }
-        ConfirmService.showConfirm($scope, confirm);
-    }
-    
+
     $scope.retryEvent = function () {
-      ApiService.create($scope.event.url+"/retry")
-        .then(function(event){
-          
-      }, 
-      function(error){
-          
+
+        // Clear any previous errors
+        $scope.exception = {};
+
+        ApiService.set(null, $scope.event.url + "/retry").then(function (evnt) {
+            GrowlsService.addGrowl({ id: "event_resend", type: "success" });
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
       });
     };
 
