@@ -5,7 +5,6 @@ app.controller("EventSubscriptionsListCtrl", ['$scope', '$routeParams', '$locati
 
     // Establish your scope containers
     $scope.eventSubscriptions = {};
-    
 
     $scope.nav = {};
     $scope.exception = {};
@@ -114,7 +113,7 @@ app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$locatio
     { name: "Invoice Created", code: "invoice:created" },
     { name: "Invoice Payment Completed", code: "invoice:payment_completed" },
     { name: "Order Created", code: "order:created" },
-    { name: "Order Payment Complete", code: "order:payment_completed" },
+    { name: "Order Payment Completed", code: "order:payment_completed" },
     { name: "Order Fulfilled", code: "order:fulfilled" },
     { name: "Payment Created Success", code: "payment:created_success" },
     { name: "Payment Created Failure", code: "payment:created_failure" },
@@ -139,6 +138,7 @@ app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$locatio
     { name: "Subscription Renewal Success", code: "subscription:renewal_success" },
     { name: "Subscription Renewal Failure", code: "subscription:renewal_failure" }];
     $scope.exception = {};
+    $scope.options = { email: null, url: null };
 
     if ($routeParams.id != null) {
 
@@ -153,7 +153,12 @@ app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$locatio
         ApiService.getItem($scope.url).then(function (eventSubscription) {
             $scope.eventSubscription = eventSubscription;
 
-
+            // Copy in the email or url as the desination, depending on the selection
+            if ($scope.eventSubscription.method == "http") {
+                $scope.options.url = $scope.eventSubscription.destination;
+            } else {
+                $scope.options.email = $scope.eventSubscription.destination;
+            }
 
         }, function (error) {
             $scope.exception.error = error;
@@ -165,21 +170,26 @@ app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$locatio
         $scope.update = false;
         $scope.add = true;
 
+        // Set some defaults
+        $scope.eventSubscription.method = "http";
+        $scope.eventSubscription.format = "json";
+        $scope.eventSubscription.active = true;
+
     }
 
     var prepareSubmit = function () {
+
         // Clear any previous errors
         $scope.exception.error = null;
-    }
-    $scope.getDestinationType = function (method) {
-        if (!method) {
-            return 'text';
-        } else if (method === "http") {
-            return 'url';
-        }
-        return method;
 
-    };
+        // Copy in the email or url as the desination, depending on the selection
+        if ($scope.eventSubscription.method == "http") {
+            $scope.eventSubscription.destination = $scope.options.url;
+        } else {
+            $scope.eventSubscription.destination = $scope.options.email;
+        }
+
+    }
 
     $scope.confirmCancel = function () {
         var confirm = { id: "changes_lost" };
@@ -189,26 +199,27 @@ app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$locatio
         ConfirmService.showConfirm($scope, confirm);
     }
 
-    $scope.confirmDelete = function () {
-        var confirm = { id: "delete" };
-        confirm.onConfirm = function () {
-            $scope.delete();
-        }
-        ConfirmService.showConfirm($scope, confirm);
-    }
-
     $scope.addEventSubscription = function () {
 
         prepareSubmit();
+
+        // If the destination is http, skip email errors. If the destination is email, skip URL errors.
+        if ($scope.eventSubscription.method == "http") {
+            $scope.form.email.$setValidity("characters", true);
+            $scope.form.email.$setValidity("required", true);
+        }
+
+        if ($scope.eventSubscription.method == "email") {
+            $scope.form.url.$setValidity("characters", true);
+            $scope.form.url.$setValidity("required", true);
+        }
 
         if ($scope.form.$invalid) {
             window.scrollTo(0, 0);
             return;
         }
 
-
-        ApiService.set($scope.eventSubscription, ApiService.buildUrl("/event_subscriptions"), { show: "event_subscription_id,name" })
-        .then(
+        ApiService.set($scope.eventSubscription, ApiService.buildUrl("/event_subscriptions"), { show: "event_subscription_id,name" }).then(
         function (eventSubscription) {
             GrowlsService.addGrowl({ id: "add_success", name: eventSubscription.event_subscription_id, type: "success", event_subscription_id: eventSubscription.event_subscription_id, url: "#/event_subscriptions/" + eventSubscription.event_subscription_id + "/edit" });
             window.location = "#/event_subscriptions";
@@ -223,7 +234,19 @@ app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$locatio
 
         prepareSubmit();
 
+        // If the destination is http, skip email errors. If the destination is email, skip URL errors.
+        if ($scope.eventSubscription.method == "http") {
+            $scope.form.email.$setValidity("characters", true);
+            $scope.form.email.$setValidity("required", true);
+        }
+
+        if ($scope.eventSubscription.method == "email") {
+            $scope.form.url.$setValidity("characters", true);
+            $scope.form.url.$setValidity("required", true);
+        }
+
         if ($scope.form.$invalid) {
+            window.scrollTo(0, 0);
             return;
         }
 
@@ -239,10 +262,17 @@ app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$locatio
         });
     }
 
+    $scope.confirmDelete = function () {
+        var confirm = { id: "delete" };
+        confirm.onConfirm = function () {
+            $scope.delete();
+        }
+        ConfirmService.showConfirm($scope, confirm);
+    }
+
     $scope.delete = function () {
 
-        ApiService.remove($scope.eventSubscription.url)
-        .then(
+        ApiService.remove($scope.eventSubscription.url).then(
         function (eventSubscription) {
             GrowlsService.addGrowl({ id: "delete_success", name: $scope.eventSubscription.event_subscription_id, type: "success" });
             utils.redirect($location, "/event_subscriptions");
