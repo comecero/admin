@@ -26,7 +26,7 @@
             <div class="gridtable-header hidden-xs hidden-sm">
 
                 <div class="col-md-3"><label>ID</label></div>
-                <div class="col-md-5"><label>Type</label></div>
+                <div class="col-md-5"><label><label ng-click="sort('type', !params.desc)" class="pointer text-primary" translate>Type</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="params.sort_by == 'type' && params.desc == true"></i><i class="icon fa fa-caret-up" ng-if="params.sort_by == 'type' && params.desc == false"></i></label></div>
                  <div class="col-md-2"><label>Active</label></div>
                 <div class="col-md-2 text-right"><label ng-click="sort('date_created', !params.desc)" class="pointer text-primary" translate>Created</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="params.sort_by == 'date_created' && params.desc == true"></i><i class="icon fa fa-caret-up" ng-if="params.sort_by == 'date_created' && params.desc == false"></i></div>
             </div>
@@ -37,12 +37,14 @@
                 <div class="btn-group"uib-dropdown>
                     <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Sort</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
                     <ul class="dropdown-menu">
-                        
+                        <li class="dropdown-header">Type</li>
+                        <li ng-click="sort('type', false)" ng-class="{'selected-li': params.sort_by == 'type' && params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                        <li ng-click="sort('type', true)" ng-class="{'selected-li': params.sort_by == 'type' && params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                        <li class="divider"></li>
                         <li class="dropdown-header">Date Created</li>
                         <li ng-click="sort('date_created', false)" ng-class="{'selected-li': params.sort_by == 'date_created' && params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
                         <li ng-click="sort('date_created', true)" ng-class="{'selected-li': params.sort_by == 'date_created' && params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
                         <li class="divider"></li>
-                       
                     </ul>
                 </div>
             </div>

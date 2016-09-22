@@ -7,7 +7,7 @@
     </div>
 
     <div class="page-header">
-        <h1 ng-if="add" translate>Add a NotificationSubscription</h1>
+        <h1 ng-if="add" translate>Add a Notification Subscription</h1>
     </div>
     <form name="form" novalidate>
         <div class="panel panel-body light-shadow">
@@ -25,6 +25,7 @@
                         <label for="type-3" class="radio-label">Cart Link</label>
                         <input type="radio" id="type-4" class="radio" name="type" ng-model="notificationSubscription.type" ng-value="typeValues[3]" required>
                         <label for="type-4" class="radio-label">Invoice Link</label>
+                        <p class="help-block hidden fadeInDown" translate>Please provide subscription type.</p>
                     </div>
                     <div>
                         <p class="help-text" translate>Indicates list of subscriptions types available to create a notification subscription.</p>
@@ -78,7 +79,7 @@
                 </div>
             </div>
             <div class="col-xs-12">
-                <div class="form-group" show-errors>
+                <div class="form-group">
                     <label for="comments" class="control-label" translate>Description</label>
                     <input type="text" class="form-control" name="comments" ng-model="notificationSubscription.comments">
                     <div>
@@ -97,6 +98,7 @@
                         <label for="active-1" class="radio-label">Yes</label>
                         <input type="radio" id="active-2" class="radio" name="active" ng-model="notificationSubscription.active" ng-value="false" required>
                         <label for="active-2" class="radio-label">No</label>
+                        <p class="help-block hidden fadeInDown" translate>Please set active state.</p>
                     </div>
                     <div>
                         <p class="help-text" translate>Indicates that subscription should active or not.</p>
