@@ -242,8 +242,7 @@ app.controller("FilesEditCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
 
     $scope.deleteFile = function () {
 
-        ApiService.remove($scope.file.url)
-        .then(
+        ApiService.remove($scope.file.url).then(
         function () {
             GrowlsService.addGrowl({ id: "delete_success", name: $scope.file.name, type: "success" });
             utils.redirect($location, "/files");
@@ -252,6 +251,15 @@ app.controller("FilesEditCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
             window.scrollTo(0, 0);
             $scope.exception.error = error;
         });
+    }
+
+    $scope.createDownload = function () {
+
+        ApiService.set(null, ApiService.buildUrl($scope.url) + "/downloads").then(function (download) {
+
+
+        });
+
     }
 
 }]);

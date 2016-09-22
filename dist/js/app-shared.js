@@ -4733,6 +4733,130 @@ app.directive('download', ['ApiService', 'ConfirmService', 'GrowlsService', '$ui
 }]);
 
 
+app.directive('createDownload', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibModal', function (ApiService, ConfirmService, GrowlsService, $uibModal) {
+    return {
+        restrict: 'A',
+        scope: {
+            file: '=?',
+            error: '=?'
+        },
+        link: function (scope, elem, attrs, ctrl) {
+
+            elem.click(function () {
+
+                // Create a download for the file
+                ApiService.set({}, scope.file.url + "/downloads", { expand: "file", formatted: true }).then(function (download) {
+
+                    scope.download = download;
+                    scope.downloadDetails = {};
+                    scope.downloadDetails.params = {};
+                    scope.data = {};
+
+                    // Datepicker options
+                    scope.data.expires = new Date(scope.download.expires);
+                    scope.datepicker = {};
+                    scope.datepicker.status = {};
+                    scope.datepicker.options = {
+                        startingDay: 1,
+                        showWeeks: false,
+                        initDate: new Date(),
+                        yearRange: 10
+                    };
+
+                    scope.datepicker.status.expires = {
+                        opened: false
+                    };
+
+                    scope.datepicker.open = function ($event, which) {
+                        scope.datepicker.status[which].opened = true;
+                    };
+
+                    var downloadDetailsModal = $uibModal.open({
+                        size: "lg",
+                        templateUrl: "app/modals/download.html",
+                        scope: scope
+                    });
+
+                    scope.downloadDetails.close = function () {
+                        downloadDetailsModal.close();
+                    }
+
+                    scope.downloadDetails.ok = function (form) {
+
+                        // Clear any previous errors
+                        scope.modalError = null;
+
+                        if (form.$invalid) {
+                            return;
+                        }
+
+                        scope.download.expires = scope.data.expires.toISOString();
+
+                        // Save changes
+                        ApiService.set(download, ApiService.buildUrl("/downloads/" + scope.download.download_id), { expand: "file" }).then(function (updatedDownload) {
+                            GrowlsService.addGrowl({ id: "edit_success_no_link" });
+                            scope.download = updatedDownload;
+                            downloadDetailsModal.close();
+                        },
+                        function (error) {
+                            scope.modalError = error;
+                        });
+
+                    };
+
+                    scope.downloadDetails.reset = function () {
+
+                        // Clear any previous errors
+                        scope.modalError = null;
+
+                        // Reset
+                        ApiService.set(null, ApiService.buildUrl("/downloads/" + scope.download.download_id + "/reset"), { expand: "file" }).then(function (updatedDownload) {
+                            GrowlsService.addGrowl({ id: "download_reset" });
+                            scope.download = updatedDownload;
+                            downloadDetailsModal.close();
+                        },
+                        function (error) {
+                            scope.modalError = error;
+                        });
+
+                    };
+
+                    scope.downloadDetails.kill = function () {
+
+                        // Clear any previous errors
+                        scope.modalError = null;
+
+                        // Reset
+                        ApiService.set(null, ApiService.buildUrl("/downloads/" + scope.download.download_id + "/kill"), { expand: "file" }).then(function (updatedDownload) {
+                            GrowlsService.addGrowl({ id: "download_kill" });
+                            scope.download = updatedDownload;
+                            downloadDetailsModal.close();
+                        },
+                        function (error) {
+                            scope.modalError = error;
+                        });
+
+                    };
+
+                    // Handle when the modal is closed or dismissed
+                    downloadDetailsModal.result.then(function (result) {
+                        // Clear out any error messasges
+                        scope.modalError = null;
+                    }, function () {
+                        scope.modalError = null;
+                    });
+
+                }, function (error) {
+                    scope.error = error;
+                    window.scrollTo(0, 0);
+                });
+
+            });
+        }
+    };
+}]);
+
+
 app.directive('license', ['$uibModal', function ($uibModal) {
     return {
         restrict: 'A',
