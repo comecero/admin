@@ -1250,264 +1250,6 @@ app.controller("DashboardViewCtrl", ['$scope', '$routeParams', '$location', '$q'
     });
 
 }]);
-app.controller("FilesListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
-
-    // Establish your scope containers
-    $scope.files = {};
-    $scope.nav = {};
-    $scope.exception = {};
-
-    // Establish your settings from query string parameters
-    $scope.parseParams = function () {
-        $scope.params = ($location.search())
-
-        // Convert any string true/false to bool
-        utils.stringsToBool($scope.params);
-
-        if ($scope.params.sort_by == null) {
-            $scope.params.sort_by = "name";
-        }
-
-        if ($scope.params.desc == null) {
-            $scope.params.desc = false;
-        }
-
-    }
-
-    $scope.loadFiles = function () {
-
-        ApiService.getList(ApiService.buildUrl("/files?show=file_id,filename,name,version,bytes,date_created"), $scope.params).then(function (result) {
-            $scope.files.fileList = result;
-
-            // If instructed, scroll to the top upon completion
-            if ($scope.nav.scrollTop == true) {
-                window.scrollTo(0, 0);
-            }
-            $scope.nav.scrollTop = null;
-
-        },
-        function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    }
-
-    $scope.search = function () {
-        if ($scope.params.q != null) {
-
-            // Reset the view to the first page
-            $scope.params.offset = null;
-            $scope.nav.scrollTop = true;
-
-            // If empty, reset to null
-            if ($scope.params.q == "") {
-                $scope.params.q = null;
-            }
-
-            $location.search($scope.params);
-        }
-    }
-
-    $scope.movePage = function (direction) {
-        if (direction == "+") {
-            $scope.params.offset = $scope.files.fileList.next_page_offset;
-        } else {
-            $scope.params.offset = $scope.files.fileList.previous_page_offset;
-        }
-        $scope.nav.scrollTop = true;
-        $location.search($scope.params);
-    }
-
-    $scope.sort = function (sort_by, desc) {
-        $scope.params.sort_by = sort_by;
-        $scope.params.desc = desc;
-        $location.search($scope.params);
-    }
-
-    $scope.$on('$routeUpdate', function (e) {
-        $scope.parseParams();
-        $scope.loadFiles();
-    });
-
-    // Initial load
-    $scope.parseParams();
-    $scope.loadFiles();
-
-}]);
-
-
-app.controller("FilesAddCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
-
-    // Set defaults
-    $scope.file = {};
-    $scope.file.expires_in_days = 7;
-    $scope.file.expires_in_clicks = 10;
-    $scope.exception = {};
-
-    $scope.uploadSending = false;
-    var uploadSendingListener = $scope.$on('uploadSending', function (event, sending) {
-        // Set uploadSending to the received value
-        $scope.$apply(function () {
-            $scope.uploadSending = sending;
-        });
-    });
-
-    var uploadDeleteListener = $scope.$on('uploadDelete', function (event, uploadResponse, file) {
-
-        var confirm = { id: "delete" };
-        confirm.onConfirm = function () {
-
-            // Let the upload directive know the user deleted the file so it can remove the upload preview display
-            $scope.$broadcast("uploadDeleted", file);
-
-            ApiService.remove(uploadResponse.url, null, false);
-            utils.redirect($location, "/files");
-        }
-        ConfirmService.showConfirm($scope, confirm);
-
-    });
-
-    var uploadCompleteListener = $scope.$on('uploadComplete', function (event, file) {
-        GrowlsService.addGrowl({ id: "add_success", name: file.name, type: "success", file_id: file.file_id, url: "#/files/" + file.file_id + "/edit" });
-        utils.redirect($location, "/files");
-    });
-
-    // TO_DO figure out when to call this. On route change?
-    var cancelListeners = function () {
-        uploadSendingListener();
-        uploadDeleteListener();
-        uploadCompleteListener();
-    }
-
-    $scope.cancel = function () {
-        if ($scope.uploadSending) {
-            var confirm = { id: "upload_cancel" };
-            confirm.onConfirm = function () {
-                // Let the upload directive know the user cancelled the upload so it can stop sending data.
-                $scope.$broadcast("uploadCanceled");
-                utils.redirect($location, "/files");
-            }
-            ConfirmService.showConfirm($scope, confirm);
-        } else {
-            utils.redirect($location, "/files");
-        }
-    };
-
-}]);
-
-
-app.controller("FilesEditCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
-
-    // Set defaults
-    $scope.file = {};
-    $scope.exception = {};
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/files/" + $routeParams.id)
-    $scope.uploadUrl = "/files/" + $routeParams.id;
-
-    // Load the file
-    ApiService.getItem($scope.url).then(function (file) {
-        $scope.file = file;
-
-        // Make a copy of the original for comparision
-        $scope.file_orig = angular.copy($scope.file);
-
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-    $scope.confirmCancel = function () {
-        if (angular.equals($scope.file, $scope.file_orig)) {
-            utils.redirect($location, "/files");
-        } else {
-            var confirm = { id: "changes_lost" };
-            confirm.onConfirm = function () {
-                utils.redirect($location, "/files");
-            }
-            ConfirmService.showConfirm($scope, confirm);
-        }
-    }
-
-    $scope.uploadSending = false;
-    var uploadSendingListener = $scope.$on('uploadSending', function (event, sending) {
-        // Set uploadSending to the received value
-        $scope.$apply(function () {
-            $scope.uploadSending = sending;
-        });
-    });
-
-    var uploadResponseListener = $scope.$on('uploadComplete', function (event, uploadResponse) {
-        $scope.$apply(function () {
-            $scope.file = uploadResponse;
-        });
-    });
-
-    // TO_DO figure out when to call this. On route change? NEED TO DO FOR IMAGES AS WELL.
-    var cancelListeners = function () {
-        uploadSendingListener();
-    }
-
-    $scope.cancelUpload = function () {
-        if ($scope.uploadSending) {
-            var confirm = { id: "upload_cancel" };
-            confirm.onConfirm = function () {
-                // Let the upload directive know the user cancelled the upload so it can stop sending data.
-                $scope.$broadcast("uploadCanceled");
-                utils.redirect($location, "/files");
-            }
-            ConfirmService.showConfirm($scope, confirm);
-        } else {
-            utils.redirect($location, "/files");
-        }
-    };
-
-    var prepareSubmit = function () {
-        // Clear any previous errors
-        $scope.exception.error = null;
-    }
-
-    $scope.updateFile = function () {
-
-        prepareSubmit();
-
-        ApiService.multipartForm($scope.file, null, $scope.file.url, { show: "file_id,name" })
-        .then(
-        function (file) {
-            GrowlsService.addGrowl({ id: "edit_success", name: file.name, type: "success", file_id: file.file_id, url: "#/files/" + file.file_id + "/edit" });
-            utils.redirect($location, "/files");
-        },
-        function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    }
-
-    $scope.confirmDelete = function () {
-        var confirm = { id: "delete" };
-        confirm.onConfirm = function () {
-            $scope.deleteFile();
-        }
-        ConfirmService.showConfirm($scope, confirm);
-    }
-
-    $scope.deleteFile = function () {
-
-        ApiService.remove($scope.file.url)
-        .then(
-        function () {
-            GrowlsService.addGrowl({ id: "delete_success", name: $scope.file.name, type: "success" });
-            utils.redirect($location, "/files");
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception.error = error;
-        });
-    }
-
-}]);
-
 
 //#region Gateways
 
@@ -1913,37 +1655,10 @@ app.controller("GatewaysSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
 
 
 
-app.controller("GettingStartedViewCtrl", ['$scope', '$q', '$routeParams', 'ApiService', 'GrowlsService', function ($scope, $q, $routeParams, ApiService, GrowlsService) {
-
-    var getLimitedAuth = function (test) {
-
-        return $q(function (resolve, reject) {
-            ApiService.set(null, ApiService.buildUrl("/auths/limited"), { test: test })
-            .then(
-            function (auth) {
-                resolve(auth);
-            },
-            function (error) {
-                reject(error);
-            });
-        });
-    }
-
-    var setCartUrl = function (test) {
-
-        $scope.cartUrl = "/#/app_installations";
-
-    }
-
-    $scope.account_id = localStorage.getItem("account_id");
-
-    setCartUrl(utils.stringToBool(localStorage.getItem("test")));
-
-}]);
-app.controller("ImagesListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
+app.controller("FilesListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
 
     // Establish your scope containers
-    $scope.images = {};
+    $scope.files = {};
     $scope.nav = {};
     $scope.exception = {};
 
@@ -1955,18 +1670,19 @@ app.controller("ImagesListCtrl", ['$scope', '$routeParams', '$location', '$q', '
         utils.stringsToBool($scope.params);
 
         if ($scope.params.sort_by == null) {
-            $scope.params.sort_by = "date_created";
+            $scope.params.sort_by = "name";
         }
 
         if ($scope.params.desc == null) {
             $scope.params.desc = false;
         }
+
     }
 
-    $scope.loadImages = function () {
+    $scope.loadFiles = function () {
 
-        ApiService.getList(ApiService.buildUrl("/images?show=image_id,filename,link_square,link_large,date_created&sort_by=" + $scope.params.sort_by + "&desc=" + $scope.params.desc), $scope.params).then(function (result) {
-            $scope.images.imageList = result;
+        ApiService.getList(ApiService.buildUrl("/files?show=file_id,filename,name,version,bytes,date_created"), $scope.params).then(function (result) {
+            $scope.files.fileList = result;
 
             // If instructed, scroll to the top upon completion
             if ($scope.nav.scrollTop == true) {
@@ -1999,9 +1715,9 @@ app.controller("ImagesListCtrl", ['$scope', '$routeParams', '$location', '$q', '
 
     $scope.movePage = function (direction) {
         if (direction == "+") {
-            $scope.params.offset = $scope.images.imageList.next_page_offset;
+            $scope.params.offset = $scope.files.fileList.next_page_offset;
         } else {
-            $scope.params.offset = $scope.images.imageList.previous_page_offset;
+            $scope.params.offset = $scope.files.fileList.previous_page_offset;
         }
         $scope.nav.scrollTop = true;
         $location.search($scope.params);
@@ -2015,38 +1731,31 @@ app.controller("ImagesListCtrl", ['$scope', '$routeParams', '$location', '$q', '
 
     $scope.$on('$routeUpdate', function (e) {
         $scope.parseParams();
-        $scope.loadImages();
+        $scope.loadFiles();
     });
 
     // Initial load
     $scope.parseParams();
-    $scope.loadImages();
+    $scope.loadFiles();
 
 }]);
 
 
-app.controller("ImagesAddCtrl", ['$scope', '$routeParams', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, GrowlsService, ApiService, ConfirmService) {
+app.controller("FilesAddCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
 
     // Set defaults
-    $scope.image = {};
+    $scope.file = {};
+    $scope.file.expires_in_days = 7;
+    $scope.file.expires_in_clicks = 10;
     $scope.exception = {};
-    $scope.state = {};
 
-    $scope.state.uploadSending = false;
-    $scope.state.uploadComplete = false;
-
+    $scope.uploadSending = false;
     var uploadSendingListener = $scope.$on('uploadSending', function (event, sending) {
         // Set uploadSending to the received value
         $scope.$apply(function () {
-            $scope.state.uploadSending = sending;
+            $scope.uploadSending = sending;
         });
     });
-
-    // If the user has permission, allow the user to delete the file after upload
-    $scope.showDelete = false;
-    if (utils.hasPermission("images", "delete")) {
-        $scope.showDelete = true;
-    }
 
     var uploadDeleteListener = $scope.$on('uploadDelete', function (event, uploadResponse, file) {
 
@@ -2056,20 +1765,19 @@ app.controller("ImagesAddCtrl", ['$scope', '$routeParams', 'GrowlsService', 'Api
             // Let the upload directive know the user deleted the file so it can remove the upload preview display
             $scope.$broadcast("uploadDeleted", file);
 
-            // If the user has permission, delete the file completely
-            if (utils.hasPermission("images", "delete")) {
-                ApiService.remove(uploadResponse.url, null, false);
-            }
+            ApiService.remove(uploadResponse.url, null, false);
+            utils.redirect($location, "/files");
         }
         ConfirmService.showConfirm($scope, confirm);
 
     });
 
     var uploadCompleteListener = $scope.$on('uploadComplete', function (event, file) {
-        $scope.state.uploadComplete = true;
+        GrowlsService.addGrowl({ id: "add_success", name: file.name, type: "success", file_id: file.file_id, url: "#/files/" + file.file_id + "/edit" });
+        utils.redirect($location, "/files");
     });
 
-    // Allow easy cleanup of listeners when modal is closed / dismissed.
+    // TO_DO figure out when to call this. On route change?
     var cancelListeners = function () {
         uploadSendingListener();
         uploadDeleteListener();
@@ -2077,63 +1785,161 @@ app.controller("ImagesAddCtrl", ['$scope', '$routeParams', 'GrowlsService', 'Api
     }
 
     $scope.cancel = function () {
-        if ($scope.state.uploadSending) {
+        if ($scope.uploadSending) {
             var confirm = { id: "upload_cancel" };
             confirm.onConfirm = function () {
                 // Let the upload directive know the user cancelled the upload so it can stop sending data.
                 $scope.$broadcast("uploadCanceled");
-                utils.redirect($location, "/images");
+                utils.redirect($location, "/files");
             }
             ConfirmService.showConfirm($scope, confirm);
         } else {
-            utils.redirect($location, "/images");
+            utils.redirect($location, "/files");
         }
     };
 
 }]);
 
 
-app.controller("ImagesViewCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
+app.controller("FilesEditCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
 
     // Set defaults
-    $scope.image = {};
+    $scope.file = {};
     $scope.exception = {};
 
     // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/images/" + $routeParams.id)
+    $scope.url = ApiService.buildUrl("/files/" + $routeParams.id)
+    $scope.uploadUrl = "/files/" + $routeParams.id;
 
-    // Load the image
-    ApiService.getItem($scope.url).then(function (image) {
-        $scope.image = image;
+    // Load the file
+    ApiService.getItem($scope.url).then(function (file) {
+        $scope.file = file;
+
+        // Make a copy of the original for comparision
+        $scope.file_orig = angular.copy($scope.file);
+
     }, function (error) {
         $scope.exception.error = error;
         window.scrollTo(0, 0);
     });
 
+    $scope.confirmCancel = function () {
+        if (angular.equals($scope.file, $scope.file_orig)) {
+            utils.redirect($location, "/files");
+        } else {
+            var confirm = { id: "changes_lost" };
+            confirm.onConfirm = function () {
+                utils.redirect($location, "/files");
+            }
+            ConfirmService.showConfirm($scope, confirm);
+        }
+    }
+
+    $scope.uploadSending = false;
+    var uploadSendingListener = $scope.$on('uploadSending', function (event, sending) {
+        // Set uploadSending to the received value
+        $scope.$apply(function () {
+            $scope.uploadSending = sending;
+        });
+    });
+
+    var uploadResponseListener = $scope.$on('uploadComplete', function (event, uploadResponse) {
+        $scope.$apply(function () {
+            $scope.file = uploadResponse;
+        });
+    });
+
+    // TO_DO figure out when to call this. On route change? NEED TO DO FOR IMAGES AS WELL.
+    var cancelListeners = function () {
+        uploadSendingListener();
+    }
+
+    $scope.cancelUpload = function () {
+        if ($scope.uploadSending) {
+            var confirm = { id: "upload_cancel" };
+            confirm.onConfirm = function () {
+                // Let the upload directive know the user cancelled the upload so it can stop sending data.
+                $scope.$broadcast("uploadCanceled");
+                utils.redirect($location, "/files");
+            }
+            ConfirmService.showConfirm($scope, confirm);
+        } else {
+            utils.redirect($location, "/files");
+        }
+    };
+
+    var prepareSubmit = function () {
+        // Clear any previous errors
+        $scope.exception.error = null;
+    }
+
+    $scope.updateFile = function () {
+
+        prepareSubmit();
+
+        ApiService.multipartForm($scope.file, null, $scope.file.url, { show: "file_id,name" })
+        .then(
+        function (file) {
+            GrowlsService.addGrowl({ id: "edit_success", name: file.name, type: "success", file_id: file.file_id, url: "#/files/" + file.file_id + "/edit" });
+            utils.redirect($location, "/files");
+        },
+        function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
     $scope.confirmDelete = function () {
         var confirm = { id: "delete" };
         confirm.onConfirm = function () {
-            $scope.deleteImage();
+            $scope.deleteFile();
         }
         ConfirmService.showConfirm($scope, confirm);
     }
 
-    $scope.deleteImage = function () {
+    $scope.deleteFile = function () {
 
-        ApiService.remove($scope.image.url)
+        ApiService.remove($scope.file.url)
         .then(
         function () {
-            GrowlsService.addGrowl({ id: "delete_success", name: $scope.image.filename, type: "success" });
-            utils.redirect($location, "/images");
+            GrowlsService.addGrowl({ id: "delete_success", name: $scope.file.name, type: "success" });
+            utils.redirect($location, "/files");
         },
         function (error) {
             window.scrollTo(0, 0);
-            $scope.exception = error;
+            $scope.exception.error = error;
         });
     }
 
 }]);
 
+app.controller("GettingStartedViewCtrl", ['$scope', '$q', '$routeParams', 'ApiService', 'GrowlsService', function ($scope, $q, $routeParams, ApiService, GrowlsService) {
+
+    var getLimitedAuth = function (test) {
+
+        return $q(function (resolve, reject) {
+            ApiService.set(null, ApiService.buildUrl("/auths/limited"), { test: test })
+            .then(
+            function (auth) {
+                resolve(auth);
+            },
+            function (error) {
+                reject(error);
+            });
+        });
+    }
+
+    var setCartUrl = function (test) {
+
+        $scope.cartUrl = "/#/app_installations";
+
+    }
+
+    $scope.account_id = localStorage.getItem("account_id");
+
+    setCartUrl(utils.stringToBool(localStorage.getItem("test")));
+
+}]);
 app.controller("InvoicesListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
 
     // Establish your scope containers
@@ -2476,6 +2282,200 @@ app.controller("InvoicesSetCtrl", ['$scope', '$routeParams', '$location', 'ApiSe
 
 
 
+
+app.controller("ImagesListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
+
+    // Establish your scope containers
+    $scope.images = {};
+    $scope.nav = {};
+    $scope.exception = {};
+
+    // Establish your settings from query string parameters
+    $scope.parseParams = function () {
+        $scope.params = ($location.search())
+
+        // Convert any string true/false to bool
+        utils.stringsToBool($scope.params);
+
+        if ($scope.params.sort_by == null) {
+            $scope.params.sort_by = "date_created";
+        }
+
+        if ($scope.params.desc == null) {
+            $scope.params.desc = false;
+        }
+    }
+
+    $scope.loadImages = function () {
+
+        ApiService.getList(ApiService.buildUrl("/images?show=image_id,filename,link_square,link_large,date_created&sort_by=" + $scope.params.sort_by + "&desc=" + $scope.params.desc), $scope.params).then(function (result) {
+            $scope.images.imageList = result;
+
+            // If instructed, scroll to the top upon completion
+            if ($scope.nav.scrollTop == true) {
+                window.scrollTo(0, 0);
+            }
+            $scope.nav.scrollTop = null;
+
+        },
+        function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
+    $scope.search = function () {
+        if ($scope.params.q != null) {
+
+            // Reset the view to the first page
+            $scope.params.offset = null;
+            $scope.nav.scrollTop = true;
+
+            // If empty, reset to null
+            if ($scope.params.q == "") {
+                $scope.params.q = null;
+            }
+
+            $location.search($scope.params);
+        }
+    }
+
+    $scope.movePage = function (direction) {
+        if (direction == "+") {
+            $scope.params.offset = $scope.images.imageList.next_page_offset;
+        } else {
+            $scope.params.offset = $scope.images.imageList.previous_page_offset;
+        }
+        $scope.nav.scrollTop = true;
+        $location.search($scope.params);
+    }
+
+    $scope.sort = function (sort_by, desc) {
+        $scope.params.sort_by = sort_by;
+        $scope.params.desc = desc;
+        $location.search($scope.params);
+    }
+
+    $scope.$on('$routeUpdate', function (e) {
+        $scope.parseParams();
+        $scope.loadImages();
+    });
+
+    // Initial load
+    $scope.parseParams();
+    $scope.loadImages();
+
+}]);
+
+
+app.controller("ImagesAddCtrl", ['$scope', '$routeParams', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, GrowlsService, ApiService, ConfirmService) {
+
+    // Set defaults
+    $scope.image = {};
+    $scope.exception = {};
+    $scope.state = {};
+
+    $scope.state.uploadSending = false;
+    $scope.state.uploadComplete = false;
+
+    var uploadSendingListener = $scope.$on('uploadSending', function (event, sending) {
+        // Set uploadSending to the received value
+        $scope.$apply(function () {
+            $scope.state.uploadSending = sending;
+        });
+    });
+
+    // If the user has permission, allow the user to delete the file after upload
+    $scope.showDelete = false;
+    if (utils.hasPermission("images", "delete")) {
+        $scope.showDelete = true;
+    }
+
+    var uploadDeleteListener = $scope.$on('uploadDelete', function (event, uploadResponse, file) {
+
+        var confirm = { id: "delete" };
+        confirm.onConfirm = function () {
+
+            // Let the upload directive know the user deleted the file so it can remove the upload preview display
+            $scope.$broadcast("uploadDeleted", file);
+
+            // If the user has permission, delete the file completely
+            if (utils.hasPermission("images", "delete")) {
+                ApiService.remove(uploadResponse.url, null, false);
+            }
+        }
+        ConfirmService.showConfirm($scope, confirm);
+
+    });
+
+    var uploadCompleteListener = $scope.$on('uploadComplete', function (event, file) {
+        $scope.state.uploadComplete = true;
+    });
+
+    // Allow easy cleanup of listeners when modal is closed / dismissed.
+    var cancelListeners = function () {
+        uploadSendingListener();
+        uploadDeleteListener();
+        uploadCompleteListener();
+    }
+
+    $scope.cancel = function () {
+        if ($scope.state.uploadSending) {
+            var confirm = { id: "upload_cancel" };
+            confirm.onConfirm = function () {
+                // Let the upload directive know the user cancelled the upload so it can stop sending data.
+                $scope.$broadcast("uploadCanceled");
+                utils.redirect($location, "/images");
+            }
+            ConfirmService.showConfirm($scope, confirm);
+        } else {
+            utils.redirect($location, "/images");
+        }
+    };
+
+}]);
+
+
+app.controller("ImagesViewCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
+
+    // Set defaults
+    $scope.image = {};
+    $scope.exception = {};
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/images/" + $routeParams.id)
+
+    // Load the image
+    ApiService.getItem($scope.url).then(function (image) {
+        $scope.image = image;
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+    $scope.confirmDelete = function () {
+        var confirm = { id: "delete" };
+        confirm.onConfirm = function () {
+            $scope.deleteImage();
+        }
+        ConfirmService.showConfirm($scope, confirm);
+    }
+
+    $scope.deleteImage = function () {
+
+        ApiService.remove($scope.image.url)
+        .then(
+        function () {
+            GrowlsService.addGrowl({ id: "delete_success", name: $scope.image.filename, type: "success" });
+            utils.redirect($location, "/images");
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception = error;
+        });
+    }
+
+}]);
 
 app.controller("LicenseServicesListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
 
@@ -2952,8 +2952,8 @@ app.controller("NotificationSubscriptionsSetCtrl", ['$scope', '$routeParams', '$
             $scope.notificationSubscription.method = 'email';
         }
         
-        if($scope.notificationSubscription.template.template_id){
-            $scope.notificationSubscription.template = $scope.notificationSubscription.template.template_id;
+        if ($scope.notificationSubscription.template && $scope.notificationSubscription.template.template_id) {
+            $scope.notificationSubscription.template_id = $scope.notificationSubscription.template.template_id;
         }
 
         ApiService.set($scope.notificationSubscription, ApiService.buildUrl("/notification_subscriptions"), { show: "notification_subscription_id,name" })
@@ -2976,8 +2976,8 @@ app.controller("NotificationSubscriptionsSetCtrl", ['$scope', '$routeParams', '$
             return;
         }
         
-         if($scope.notificationSubscription.template.template_id){
-            $scope.notificationSubscription.template = $scope.notificationSubscription.template.template_id;
+        if ($scope.notificationSubscription.template && $scope.notificationSubscription.template.template_id) {
+            $scope.notificationSubscription.template_id = $scope.notificationSubscription.template.template_id;
         }
         
 
@@ -4960,63 +4960,6 @@ app.controller("TechnicalSettingsCtrl", ['$scope', '$routeParams', '$location', 
 
 
 
-
-//#region Subscriptions
-
-app.controller("SubscriptionsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
-
-    // Establish your scope containers
-    $scope.exception = {};
-    $scope.resources = {};
-    $scope.resources.subscriptionListUrl = ApiService.buildUrl("/subscriptions");
-
-}]);
-
-app.controller("SubscriptionsViewCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
-
-    $scope.exception = {};
-    $scope.payment_method = null;
-    $scope.invoices = {};
-    $scope.model = {};
-    $scope.model.subscription = {};
-    $scope.resources = {};
-    $scope.count = {};
-    $scope.count.invoices = 0;
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/subscriptions/" + $routeParams.id)
-
-    // Prep the billing history
-    $scope.resources.invoiceListUrl = $scope.url + "/invoices";
-
-    // Load the subscription
-    ApiService.getItem($scope.url, { expand: "subscription_plan,customer.payment_methods,item.product", hide: "product.images" }).then(function (subscription) {
-        $scope.model.subscription = subscription;
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-    $scope.uncancel = function () {
-
-        var data = { cancel_at_current_period_end: false };
-
-        ApiService.set(data, $scope.url, { expand: "subscription_plan,customer.cards,product", hide: "product.images" }).then(function (subscription) {
-            $scope.model.subscription = subscription;
-
-        }, function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    }
-
-}]);
-
-//#endregion Subscriptions
-
-
-
-
 app.controller("SubscriptionPlansListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
 
     // Establish your scope containers
@@ -5251,6 +5194,63 @@ app.controller("SubscriptionPlansSetCtrl", ['$scope', '$routeParams', '$location
     }
 
 }]);
+
+
+//#region Subscriptions
+
+app.controller("SubscriptionsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
+
+    // Establish your scope containers
+    $scope.exception = {};
+    $scope.resources = {};
+    $scope.resources.subscriptionListUrl = ApiService.buildUrl("/subscriptions");
+
+}]);
+
+app.controller("SubscriptionsViewCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
+
+    $scope.exception = {};
+    $scope.payment_method = null;
+    $scope.invoices = {};
+    $scope.model = {};
+    $scope.model.subscription = {};
+    $scope.resources = {};
+    $scope.count = {};
+    $scope.count.invoices = 0;
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/subscriptions/" + $routeParams.id)
+
+    // Prep the billing history
+    $scope.resources.invoiceListUrl = $scope.url + "/invoices";
+
+    // Load the subscription
+    ApiService.getItem($scope.url, { expand: "subscription_plan,customer.payment_methods,item.product", hide: "product.images" }).then(function (subscription) {
+        $scope.model.subscription = subscription;
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+    $scope.uncancel = function () {
+
+        var data = { cancel_at_current_period_end: false };
+
+        ApiService.set(data, $scope.url, { expand: "subscription_plan,customer.cards,product", hide: "product.images" }).then(function (subscription) {
+            $scope.model.subscription = subscription;
+
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
+}]);
+
+//#endregion Subscriptions
+
+
+
 
 
 //#region Templates

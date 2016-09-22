@@ -166,8 +166,8 @@ app.controller("NotificationSubscriptionsSetCtrl", ['$scope', '$routeParams', '$
             $scope.notificationSubscription.method = 'email';
         }
         
-        if($scope.notificationSubscription.template.template_id){
-            $scope.notificationSubscription.template = $scope.notificationSubscription.template.template_id;
+        if ($scope.notificationSubscription.template && $scope.notificationSubscription.template.template_id) {
+            $scope.notificationSubscription.template_id = $scope.notificationSubscription.template.template_id;
         }
 
         ApiService.set($scope.notificationSubscription, ApiService.buildUrl("/notification_subscriptions"), { show: "notification_subscription_id,name" })
@@ -190,8 +190,8 @@ app.controller("NotificationSubscriptionsSetCtrl", ['$scope', '$routeParams', '$
             return;
         }
         
-         if($scope.notificationSubscription.template.template_id){
-            $scope.notificationSubscription.template = $scope.notificationSubscription.template.template_id;
+        if ($scope.notificationSubscription.template && $scope.notificationSubscription.template.template_id) {
+            $scope.notificationSubscription.template_id = $scope.notificationSubscription.template.template_id;
         }
         
 
