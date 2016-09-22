@@ -1,9 +1,13 @@
-﻿<a name="1.2.0"></a>
+﻿<a name="1.2.1"></a>
+# 1.2.1
+
+- Added option to create protected, expiring download link for files (without the requiremnt for an associated order).
+
+<a name="1.2.0"></a>
 # 1.2.0
 
-- Added support to list, view and re-send / retry event notifications
-- Added support to list, view, update and create event subscriptions
-
+- Added support to list, view and re-send / retry event notifications.
+- Added support to list, view, update and create event subscriptions.
 
 <a name="1.1.1"></a>
 # 1.1.1
@@ -27,8 +31,8 @@ Allowed apps to launch correctly when running the admin against the staging envi
 # 1.0.2
 
 - Fixed bug that prevented the refund modal from automatically closing when a refund was successfully processed.
-- Fixed bug that caused incorrect sales tax percentage display in refund modal
-- Fixed bug that directed app icon clicks to an invalid location
+- Fixed bug that caused incorrect sales tax percentage display in refund modal.
+- Fixed bug that directed app icon clicks to an invalid location.
 
 
 <a name="1.0.1"></a>
