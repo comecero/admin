@@ -1,4 +1,11 @@
-﻿<a name="1.1.1"></a>
+﻿<a name="1.2.0"></a>
+# 1.2.0
+
+- Added support to list, view and re-send / retry event notifications
+- Added support to list, view, update and create event subscriptions
+
+
+<a name="1.1.1"></a>
 # 1.1.1
 
 - Updated reports and dashboard to allow selection of primary or secondary reporting currency.

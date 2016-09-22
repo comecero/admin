@@ -4180,7 +4180,7 @@ app.directive('metaToHtml', function () {
             attrs.$observe("metaToHtml", function (newValue) {
 
                 if (utils.isNullOrEmpty(newValue) == false) {
-                    var html = utils.jsonToHtmlTable(newValue, true, "Meta Data");
+                    var html = utils.jsonToHtmlTable(newValue, true, attrs.panelTitle);
                     elem.html(html);
                 }
 
