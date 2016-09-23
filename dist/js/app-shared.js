@@ -1124,6 +1124,24 @@ app.directive('dropzone', ['ApiService', function (ApiService) {
             file.previewTemplate.classList.add("hidden");
         });
 
+        // Watch to see if you should hide the dropzone UI.
+        scope.$watch(attrs.dropzoneHide, function (newVal, oldVal) {
+
+            if (newVal != oldVal) {
+                if (newVal == true) {
+                    var el = document.querySelectorAll(".dz-default");
+                    for (var i = 0; i < el.length; i++) {
+                        el[0].classList.add("hidden");
+                    }
+                } else {
+                    var el = document.querySelectorAll(".dz-default");
+                    for (var i = 0; i < el.length; i++) {
+                        el[0].classList.remove("hidden");
+                    }
+                }
+            }
+
+        });
     };
 }]);
 

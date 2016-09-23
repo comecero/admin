@@ -113,18 +113,62 @@
         </div>
         <div class="panel-body">
 
+            <form class="form-group dropzone" dropzone dropzone-url="{{ uploadUrl }}" dropzone-max-files="1" dropzone-max-size="75000000" dropzone-auto-upload="false" dropzone-template-id="dz-file" dropzone-show-delete="false" dropzone-hide="options.by_url" novalidate>
+
+                <div class="col-xs-12" ng-show="!uploadSending">
+                    <div class="form-group" show-errors>
+                        <label class="radio-group-label" translate>How do you want to send your file?</label>
+                        <div class="radio-group inline">
+                            <input type="radio" id="by_url-1" class="radio" name="by_url" ng-model="options.by_url" ng-value="false" required>
+                            <label for="by_url-1" class="radio-label">Direct file upload</label>
+                            <input type="radio" id="by_url-2" class="radio" name="send_events" ng-model="options.by_url" ng-value="true" required>
+                            <label for="by_url-2" class="radio-label">From a URL</label>
+                        </div>
+                        <div>
+                            <p class="help-text" translate>Direct file uploads are limited to 75 MB. Upload from a URL for larger files.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div ng-show="options.by_url">
+                    <div class="col-xs-12">
+                        <div class="form-group" show-errors>
+                            <label for="options_url" class="control-label required" translate>URL</label>
+                            <input type="text" class="form-control" name="options_url" ng-model="options.url" placeholder="">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-xs-12">
+                        <div class="form-group" show-errors>
+                            <label for="options_http_authorization_username" class="control-label" translate>HTTP Authorization Username</label>
+                            <input type="tel" class="form-control" name="options_http_authorization_username" ng-model="options.http_authorization_username" placeholder="{{ 'Optional' | translate}}">
+                            <div>
+                                <p class="help-text" translate>Supply credentials if your server requires</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-xs-12">
+                        <div class="form-group" show-errors>
+                            <label for="options_http_authorization_password" class="control-label" translate>HTTP Authorization Password</label>
+                            <input type="tel" class="form-control" name="options_http_authorization_password" ng-model="options.http_authorization_password" placeholder="{{ 'Optional' | translate}}">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <a class="btn btn-primary btn-right btn-margin-left" ng-click="uploadByUrl()" translate>Upload File</a>
+                    </div>
+
+                </div>
+
+            </form>
+
             <div class="row"></div>
 
             <div class="col-xs-12">
                 <div class="form-group">
                     <button id="top" class="btn btn-danger btn-right spacer-b10" ng-click="cancelUpload()" ng-if="uploadSending"><i class="icon fa fa-times-circle"></i>&nbsp;<span translate>Cancel Upload</span></button>
                 </div>
-            </div>
-
-            <div class="row"></div>
-
-            <div class="row">
-                <form class="form-group dropzone" dropzone dropzone-url="{{ uploadUrl }}" dropzone-max-files="1" dropzone-max-size="75000000" dropzone-auto-upload="false" dropzone-template-id="dz-file" dropzone-show-delete="false"></form>
             </div>
 
         </div>
