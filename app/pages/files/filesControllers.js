@@ -90,6 +90,7 @@ app.controller("FilesAddCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSe
     $scope.file = {};
     $scope.file.expires_in_days = 7;
     $scope.file.expires_in_clicks = 10;
+    $scope.options = { by_url: false };
     $scope.exception = {};
 
     $scope.uploadSending = false;
@@ -120,6 +121,24 @@ app.controller("FilesAddCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSe
         utils.redirect($location, "/files");
     });
 
+    $scope.uploadByUrl = function () {
+
+        // Make a copy so you can modify what you send without changing the model in the UI
+        var file = angular.copy($scope.file);
+        file.url = $scope.options.url;
+        file.http_authorization_username = $scope.options.http_authorization_username;
+        file.http_authorization_password = $scope.options.http_authorization_password;
+
+        ApiService.multipartForm(file, null, ApiService.buildUrl("/files")).then(function (newFile) {
+            GrowlsService.addGrowl({ id: "add_success", name: newFile.name, type: "success", file_id: newFile.file_id, url: "#/files/" + newFile.file_id + "/edit" });
+            utils.redirect($location, "/files");
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+
+    };
+
     // TO_DO figure out when to call this. On route change?
     var cancelListeners = function () {
         uploadSendingListener();
@@ -149,6 +168,7 @@ app.controller("FilesEditCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
     // Set defaults
     $scope.file = {};
     $scope.exception = {};
+    $scope.options = { by_url: false };
 
     // Set the url for interacting with this item
     $scope.url = ApiService.buildUrl("/files/" + $routeParams.id)
@@ -186,9 +206,10 @@ app.controller("FilesEditCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
         });
     });
 
-    var uploadResponseListener = $scope.$on('uploadComplete', function (event, uploadResponse) {
+    var uploadResponseListener = $scope.$on('uploadComplete', function (event, file) {
         $scope.$apply(function () {
-            $scope.file = uploadResponse;
+            GrowlsService.addGrowl({ id: "edit_success", name: file.name, type: "success", file_id: file.file_id, url: "#/files/" + file.file_id + "/edit" });
+            utils.redirect($location, "/files");
         });
     });
 
@@ -220,8 +241,7 @@ app.controller("FilesEditCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
 
         prepareSubmit();
 
-        ApiService.multipartForm($scope.file, null, $scope.file.url, { show: "file_id,name" })
-        .then(
+        ApiService.multipartForm($scope.file, null, $scope.file.url, { show: "file_id,name" }).then(
         function (file) {
             GrowlsService.addGrowl({ id: "edit_success", name: file.name, type: "success", file_id: file.file_id, url: "#/files/" + file.file_id + "/edit" });
             utils.redirect($location, "/files");
@@ -231,6 +251,26 @@ app.controller("FilesEditCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
             window.scrollTo(0, 0);
         });
     }
+
+    $scope.uploadByUrl = function () {
+
+        prepareSubmit();
+
+        // Make a copy so you can modify what you send without changing the model in the UI
+        var file = angular.copy($scope.file);
+        file.url = $scope.options.url;
+        file.http_authorization_username = $scope.options.http_authorization_username;
+        file.http_authorization_password = $scope.options.http_authorization_password;
+
+        ApiService.multipartForm(file, null, ApiService.buildUrl("/files/" + file.file_id)).then(function (newFile) {
+            GrowlsService.addGrowl({ id: "edit_success", name: newFile.name, type: "success", file_id: newFile.file_id, url: "#/files/" + newFile.file_id + "/edit" });
+            utils.redirect($location, "/files");
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+
+    };
 
     $scope.confirmDelete = function () {
         var confirm = { id: "delete" };
@@ -251,15 +291,6 @@ app.controller("FilesEditCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
             window.scrollTo(0, 0);
             $scope.exception.error = error;
         });
-    }
-
-    $scope.createDownload = function () {
-
-        ApiService.set(null, ApiService.buildUrl($scope.url) + "/downloads").then(function (download) {
-
-
-        });
-
     }
 
 }]);
