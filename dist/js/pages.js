@@ -1148,124 +1148,6 @@ app.controller("CustomersViewCtrl", ['$scope', '$routeParams', '$location', 'Gro
 
 
 
-app.controller("DashboardViewCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
-
-    $scope.dashboard = {};
-    $scope.exception = {};
-
-    // Set the currencies
-    $scope.options = {};
-    $scope.options.currencies = [];
-    $scope.options.currencies.push(localStorage.getItem("reporting_currency_primary"));
-    $scope.options.currencies.push(localStorage.getItem("reporting_currency_secondary"));
-    $scope.options.currency = $scope.options.currencies[0];
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/dashboard")
-
-    // Setup the function to load the dashboard
-    $scope.loadDashboard = function (currency) {
-
-        ApiService.getItem($scope.url, { currency: currency, formatted:true }).then(function (dashboard) {
-
-            // Header
-            $scope.currency = dashboard.currency;
-
-            // Sales
-            $scope.sales = [];
-            _.each(dashboard.sales, function (item) {
-                $scope.sales.push(item.total);
-            });
-            $scope.sales_today = dashboard.sales[29].formatted.total;
-            $scope.sales_yesterday = dashboard.sales[28].formatted.total;
-            $scope.sales_month = dashboard.sales_summary.formatted.total;
-
-            // New Subscriptions
-            $scope.new_subscriptions = [];
-            _.each(dashboard.new_subscriptions, function (item) {
-                $scope.new_subscriptions.push(item.total);
-            });
-            $scope.new_subscriptions_today = dashboard.new_subscriptions[29].formatted.total;
-            $scope.new_subscriptions_yesterday = dashboard.new_subscriptions[28].formatted.total;
-            $scope.new_subscriptions_month = dashboard.new_subscriptions_summary.formatted.total;
-
-            // Subscription Renewals
-            $scope.subscription_renewals = [];
-            _.each(dashboard.subscription_renewals, function (item) {
-                $scope.subscription_renewals.push(item.total);
-            });
-            $scope.subscription_renewals_today = dashboard.subscription_renewals[29].formatted.total;
-            $scope.subscription_renewals_yesterday = dashboard.subscription_renewals[28].formatted.total;
-            $scope.subscription_renewals_month = dashboard.subscription_renewals_summary.formatted.total;
-
-            // Total Subscriptions
-            $scope.subscriptions = [];
-            _.each(dashboard.subscriptions, function (item) {
-                $scope.subscriptions.push(item.total);
-            });
-            $scope.subscriptions_today = dashboard.subscriptions[29].formatted.total;
-            $scope.subscriptions_yesterday = dashboard.subscriptions[28].formatted.total;
-            $scope.subscriptions_month = dashboard.subscriptions_summary.formatted.total;
-
-            // Cart visitors
-            $scope.cart_visitors = [];
-            $scope.cart_visitors = _.pluck(dashboard.cart_visitors, 'value');
-            $scope.cart_visitors_today = dashboard.cart_visitors[29].value;
-            $scope.cart_visitors_yesterday = dashboard.cart_visitors[28].value;
-            for (var i = 0, sum = 0; i < $scope.cart_visitors.length; sum += $scope.cart_visitors[i++]);
-            $scope.cart_visitors_month = sum;
-
-            // Cart conversions
-            $scope.cart_conversions = [];
-            $scope.cart_conversions = _.pluck(dashboard.cart_conversions, 'value');
-            $scope.cart_conversions_today = dashboard.cart_conversions[29].value;
-            $scope.cart_conversions_yesterday = dashboard.cart_conversions[28].value;
-            for (var i = 0, sum = 0; i < $scope.cart_conversions.length; sum += $scope.cart_conversions[i++]);
-            $scope.cart_conversions_month = sum;
-
-            // Cart conversions rate
-            $scope.cart_conversion_rates = [];
-            $scope.cart_conversion_rates = _.pluck(dashboard.cart_conversion_rates, 'value');
-            $scope.cart_conversion_rates_today = dashboard.cart_conversion_rates[29].value;
-            $scope.cart_conversion_rates_yesterday = dashboard.cart_conversion_rates[28].value;
-            $scope.cart_conversion_rates_month = dashboard.average_cart_conversion_rate;
-
-            // Operating System
-            utils.renameProperty(dashboard.customer_operating_systems, "item", "label");
-            $scope.customer_operating_systems = dashboard.customer_operating_systems;
-
-            // Customer Languages
-            utils.renameProperty(dashboard.customer_languages, "item", "label");
-            $scope.customer_languages = dashboard.customer_languages;
-
-            // Customer Browsers
-            utils.renameProperty(dashboard.customer_browsers, "item", "label");
-            $scope.customer_browsers = dashboard.customer_browsers;
-
-            // Customer Locations
-            utils.renameProperty(dashboard.customer_locations, "item", "label");
-            $scope.customer_locations = dashboard.customer_locations;
-
-            // Customer Devices
-            utils.renameProperty(dashboard.customer_devices, "item", "label");
-            $scope.customer_devices = dashboard.customer_devices;
-
-            // Customer New vs Returning
-            utils.renameProperty(dashboard.customer_new_vs_returning, "item", "label");
-            $scope.customer_new_vs_returning = dashboard.customer_new_vs_returning;
-
-
-        }, function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-
-    }
-
-    // Load the dashboard on page load
-    $scope.loadDashboard($scope.options.currency);
-
-}]);
 
 //#region Events
 
@@ -1415,6 +1297,124 @@ app.controller("EventViewCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
 
 
 
+app.controller("DashboardViewCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
+
+    $scope.dashboard = {};
+    $scope.exception = {};
+
+    // Set the currencies
+    $scope.options = {};
+    $scope.options.currencies = [];
+    $scope.options.currencies.push(localStorage.getItem("reporting_currency_primary"));
+    $scope.options.currencies.push(localStorage.getItem("reporting_currency_secondary"));
+    $scope.options.currency = $scope.options.currencies[0];
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/dashboard")
+
+    // Setup the function to load the dashboard
+    $scope.loadDashboard = function (currency) {
+
+        ApiService.getItem($scope.url, { currency: currency, formatted:true }).then(function (dashboard) {
+
+            // Header
+            $scope.currency = dashboard.currency;
+
+            // Sales
+            $scope.sales = [];
+            _.each(dashboard.sales, function (item) {
+                $scope.sales.push(item.total);
+            });
+            $scope.sales_today = dashboard.sales[29].formatted.total;
+            $scope.sales_yesterday = dashboard.sales[28].formatted.total;
+            $scope.sales_month = dashboard.sales_summary.formatted.total;
+
+            // New Subscriptions
+            $scope.new_subscriptions = [];
+            _.each(dashboard.new_subscriptions, function (item) {
+                $scope.new_subscriptions.push(item.total);
+            });
+            $scope.new_subscriptions_today = dashboard.new_subscriptions[29].formatted.total;
+            $scope.new_subscriptions_yesterday = dashboard.new_subscriptions[28].formatted.total;
+            $scope.new_subscriptions_month = dashboard.new_subscriptions_summary.formatted.total;
+
+            // Subscription Renewals
+            $scope.subscription_renewals = [];
+            _.each(dashboard.subscription_renewals, function (item) {
+                $scope.subscription_renewals.push(item.total);
+            });
+            $scope.subscription_renewals_today = dashboard.subscription_renewals[29].formatted.total;
+            $scope.subscription_renewals_yesterday = dashboard.subscription_renewals[28].formatted.total;
+            $scope.subscription_renewals_month = dashboard.subscription_renewals_summary.formatted.total;
+
+            // Total Subscriptions
+            $scope.subscriptions = [];
+            _.each(dashboard.subscriptions, function (item) {
+                $scope.subscriptions.push(item.total);
+            });
+            $scope.subscriptions_today = dashboard.subscriptions[29].formatted.total;
+            $scope.subscriptions_yesterday = dashboard.subscriptions[28].formatted.total;
+            $scope.subscriptions_month = dashboard.subscriptions_summary.formatted.total;
+
+            // Cart visitors
+            $scope.cart_visitors = [];
+            $scope.cart_visitors = _.pluck(dashboard.cart_visitors, 'value');
+            $scope.cart_visitors_today = dashboard.cart_visitors[29].value;
+            $scope.cart_visitors_yesterday = dashboard.cart_visitors[28].value;
+            for (var i = 0, sum = 0; i < $scope.cart_visitors.length; sum += $scope.cart_visitors[i++]);
+            $scope.cart_visitors_month = sum;
+
+            // Cart conversions
+            $scope.cart_conversions = [];
+            $scope.cart_conversions = _.pluck(dashboard.cart_conversions, 'value');
+            $scope.cart_conversions_today = dashboard.cart_conversions[29].value;
+            $scope.cart_conversions_yesterday = dashboard.cart_conversions[28].value;
+            for (var i = 0, sum = 0; i < $scope.cart_conversions.length; sum += $scope.cart_conversions[i++]);
+            $scope.cart_conversions_month = sum;
+
+            // Cart conversions rate
+            $scope.cart_conversion_rates = [];
+            $scope.cart_conversion_rates = _.pluck(dashboard.cart_conversion_rates, 'value');
+            $scope.cart_conversion_rates_today = dashboard.cart_conversion_rates[29].value;
+            $scope.cart_conversion_rates_yesterday = dashboard.cart_conversion_rates[28].value;
+            $scope.cart_conversion_rates_month = dashboard.average_cart_conversion_rate;
+
+            // Operating System
+            utils.renameProperty(dashboard.customer_operating_systems, "item", "label");
+            $scope.customer_operating_systems = dashboard.customer_operating_systems;
+
+            // Customer Languages
+            utils.renameProperty(dashboard.customer_languages, "item", "label");
+            $scope.customer_languages = dashboard.customer_languages;
+
+            // Customer Browsers
+            utils.renameProperty(dashboard.customer_browsers, "item", "label");
+            $scope.customer_browsers = dashboard.customer_browsers;
+
+            // Customer Locations
+            utils.renameProperty(dashboard.customer_locations, "item", "label");
+            $scope.customer_locations = dashboard.customer_locations;
+
+            // Customer Devices
+            utils.renameProperty(dashboard.customer_devices, "item", "label");
+            $scope.customer_devices = dashboard.customer_devices;
+
+            // Customer New vs Returning
+            utils.renameProperty(dashboard.customer_new_vs_returning, "item", "label");
+            $scope.customer_new_vs_returning = dashboard.customer_new_vs_returning;
+
+
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+
+    }
+
+    // Load the dashboard on page load
+    $scope.loadDashboard($scope.options.currency);
+
+}]);
 
 //#region EventSubscriptions
 
@@ -5288,6 +5288,221 @@ app.controller("SubscriptionsViewCtrl", ['$scope', '$routeParams', '$location', 
 
 
 
+
+//#region Templates
+
+app.controller("TemplatesListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
+
+    // Establish your scope containers
+    $scope.templates = {};
+    $scope.nav = {};
+    $scope.exception = {};
+
+    // Establish your settings from query string parameters
+    $scope.parseParams = function () {
+        $scope.params = ($location.search())
+
+        // Convert any string true/false to bool
+        utils.stringsToBool($scope.params);
+
+        if ($scope.params.sort_by == null) {
+            $scope.params.sort_by = "date_created";
+        }
+
+        if ($scope.params.desc == null) {
+            $scope.params.desc = true;
+        }
+
+    }
+
+    $scope.loadTemplates = function () {
+
+        ApiService.getList(ApiService.buildUrl("/templates"), $scope.params).then(function (result) {
+            $scope.templates.templateList = result;
+            $scope.templatesChecked = false;
+
+            // If instructed, scroll to the top upon completion
+            if ($scope.nav.scrollTop == true) {
+                window.scrollTo(0, 0);
+            }
+            $scope.nav.scrollTop = null;
+
+        },
+        function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
+    
+    $scope.setParam = function (param, value) {
+        $scope.params[param] = value;
+        $scope.params.before_item = null;
+        $scope.params.after_item = null;
+        $scope.nav.scrollTop = true;
+        $location.search($scope.params);
+    }
+
+    $scope.search = function () {
+        if ($scope.params.q != null) {
+
+            // Reset the view to the first page
+            $scope.params.offset = null;
+            $scope.nav.scrollTop = true;
+
+            // If empty, reset to null
+            if ($scope.params.q == "") {
+                $scope.params.q = null;
+            }
+
+            $location.search($scope.params);
+        }
+    }
+
+    $scope.movePage = function (direction) {
+        if (direction == "+") {
+            $scope.params.offset = $scope.templates.templateList.next_page_offset;
+        } else {
+            $scope.params.offset = $scope.templates.templateList.previous_page_offset;
+        }
+        $scope.nav.scrollTop = true;
+        $location.search($scope.params);
+    }
+
+    $scope.sort = function (sort_by, desc) {
+        $scope.params.sort_by = sort_by;
+        $scope.params.desc = desc;
+        $location.search($scope.params);
+    }
+
+    $scope.$on('$routeUpdate', function (e) {
+        $scope.parseParams();
+        $scope.loadTemplates();
+    });
+
+    // Initial load
+    $scope.parseParams();
+    $scope.loadTemplates();
+
+}]);
+
+app.controller("TemplatesSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService) {
+
+    $scope.template = {};
+    $scope.exception = {};
+
+    if ($routeParams.id != null) {
+
+        // Indicate this is an edit
+        $scope.update = true;
+        $scope.add = false;
+
+        // Set the url for interacting with this item
+        $scope.url = ApiService.buildUrl("/templates/" + $routeParams.id)
+
+        // Load the service
+        ApiService.getItem($scope.url).then(function (template) {
+            $scope.template = template;
+
+            
+
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    } else {
+
+        // Indicate this is an add
+        $scope.update = false;
+        $scope.add = true;
+
+    }
+
+    var prepareSubmit = function () {
+        // Clear any previous errors
+        $scope.exception.error = null;
+    }
+
+   
+    $scope.confirmCancel = function () {
+        var confirm = { id: "changes_lost" };
+        confirm.onConfirm = function () {
+            utils.redirect($location, "/templates");
+        }
+        ConfirmService.showConfirm($scope, confirm);
+    }
+
+    $scope.confirmDelete = function () {
+        var confirm = { id: "delete" };
+        confirm.onConfirm = function () {
+            $scope.delete();
+        }
+        ConfirmService.showConfirm($scope, confirm);
+    }
+
+    $scope.addTemplate = function () {
+
+        prepareSubmit();
+
+        if ($scope.form.$invalid) {
+            window.scrollTo(0, 0);
+            return;
+        }
+
+
+        ApiService.set($scope.template, ApiService.buildUrl("/templates"), { show: "template_id,name" })
+        .then(
+        function (template) {
+            GrowlsService.addGrowl({ id: "add_success", name: template.template_id, type: "success", template_id: template.template_id, url: "#/templates/" + template.template_id + "/edit" });
+            window.location = "#/templates";
+        },
+        function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
+    $scope.updateTemplate = function () {
+
+        prepareSubmit();
+
+        if ($scope.form.$invalid) {
+            return;
+        }
+
+        ApiService.set($scope.template, $scope.url, { show: "template_id,name" })
+        .then(
+        function (template) {
+            GrowlsService.addGrowl({ id: "edit_success", name: template.template_id, type: "success", template_id: template.template_id, url: "#/templates/" + template.template_id + "/edit" });
+            window.location = "#/templates";
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception.error = error;
+        });
+    }
+
+    $scope.delete = function () {
+
+        ApiService.remove($scope.template.url)
+        .then(
+        function (template) {
+            GrowlsService.addGrowl({ id: "delete_success", name: $scope.template.template_id, type: "success" });
+            utils.redirect($location, "/templates");
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception.error = error;
+        });
+    }
+
+}]);
+
+//#endregion Products
+
+
+
+
 app.controller("SubscriptionPlansListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
 
     // Establish your scope containers
@@ -5522,221 +5737,6 @@ app.controller("SubscriptionPlansSetCtrl", ['$scope', '$routeParams', '$location
     }
 
 }]);
-
-
-//#region Templates
-
-app.controller("TemplatesListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
-
-    // Establish your scope containers
-    $scope.templates = {};
-    $scope.nav = {};
-    $scope.exception = {};
-
-    // Establish your settings from query string parameters
-    $scope.parseParams = function () {
-        $scope.params = ($location.search())
-
-        // Convert any string true/false to bool
-        utils.stringsToBool($scope.params);
-
-        if ($scope.params.sort_by == null) {
-            $scope.params.sort_by = "date_created";
-        }
-
-        if ($scope.params.desc == null) {
-            $scope.params.desc = true;
-        }
-
-    }
-
-    $scope.loadTemplates = function () {
-
-        ApiService.getList(ApiService.buildUrl("/templates"), $scope.params).then(function (result) {
-            $scope.templates.templateList = result;
-            $scope.templatesChecked = false;
-
-            // If instructed, scroll to the top upon completion
-            if ($scope.nav.scrollTop == true) {
-                window.scrollTo(0, 0);
-            }
-            $scope.nav.scrollTop = null;
-
-        },
-        function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    }
-
-    
-    $scope.setParam = function (param, value) {
-        $scope.params[param] = value;
-        $scope.params.before_item = null;
-        $scope.params.after_item = null;
-        $scope.nav.scrollTop = true;
-        $location.search($scope.params);
-    }
-
-    $scope.search = function () {
-        if ($scope.params.q != null) {
-
-            // Reset the view to the first page
-            $scope.params.offset = null;
-            $scope.nav.scrollTop = true;
-
-            // If empty, reset to null
-            if ($scope.params.q == "") {
-                $scope.params.q = null;
-            }
-
-            $location.search($scope.params);
-        }
-    }
-
-    $scope.movePage = function (direction) {
-        if (direction == "+") {
-            $scope.params.offset = $scope.templates.templateList.next_page_offset;
-        } else {
-            $scope.params.offset = $scope.templates.templateList.previous_page_offset;
-        }
-        $scope.nav.scrollTop = true;
-        $location.search($scope.params);
-    }
-
-    $scope.sort = function (sort_by, desc) {
-        $scope.params.sort_by = sort_by;
-        $scope.params.desc = desc;
-        $location.search($scope.params);
-    }
-
-    $scope.$on('$routeUpdate', function (e) {
-        $scope.parseParams();
-        $scope.loadTemplates();
-    });
-
-    // Initial load
-    $scope.parseParams();
-    $scope.loadTemplates();
-
-}]);
-
-app.controller("TemplatesSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService) {
-
-    $scope.template = {};
-    $scope.exception = {};
-
-    if ($routeParams.id != null) {
-
-        // Indicate this is an edit
-        $scope.update = true;
-        $scope.add = false;
-
-        // Set the url for interacting with this item
-        $scope.url = ApiService.buildUrl("/templates/" + $routeParams.id)
-
-        // Load the service
-        ApiService.getItem($scope.url).then(function (template) {
-            $scope.template = template;
-
-            
-
-        }, function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    } else {
-
-        // Indicate this is an add
-        $scope.update = false;
-        $scope.add = true;
-
-    }
-
-    var prepareSubmit = function () {
-        // Clear any previous errors
-        $scope.exception.error = null;
-    }
-
-   
-    $scope.confirmCancel = function () {
-        var confirm = { id: "changes_lost" };
-        confirm.onConfirm = function () {
-            utils.redirect($location, "/templates");
-        }
-        ConfirmService.showConfirm($scope, confirm);
-    }
-
-    $scope.confirmDelete = function () {
-        var confirm = { id: "delete" };
-        confirm.onConfirm = function () {
-            $scope.delete();
-        }
-        ConfirmService.showConfirm($scope, confirm);
-    }
-
-    $scope.addTemplate = function () {
-
-        prepareSubmit();
-
-        if ($scope.form.$invalid) {
-            window.scrollTo(0, 0);
-            return;
-        }
-
-
-        ApiService.set($scope.template, ApiService.buildUrl("/templates"), { show: "template_id,name" })
-        .then(
-        function (template) {
-            GrowlsService.addGrowl({ id: "add_success", name: template.template_id, type: "success", template_id: template.template_id, url: "#/templates/" + template.template_id + "/edit" });
-            window.location = "#/templates";
-        },
-        function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    }
-
-    $scope.updateTemplate = function () {
-
-        prepareSubmit();
-
-        if ($scope.form.$invalid) {
-            return;
-        }
-
-        ApiService.set($scope.template, $scope.url, { show: "template_id,name" })
-        .then(
-        function (template) {
-            GrowlsService.addGrowl({ id: "edit_success", name: template.template_id, type: "success", template_id: template.template_id, url: "#/templates/" + template.template_id + "/edit" });
-            window.location = "#/templates";
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception.error = error;
-        });
-    }
-
-    $scope.delete = function () {
-
-        ApiService.remove($scope.template.url)
-        .then(
-        function (template) {
-            GrowlsService.addGrowl({ id: "delete_success", name: $scope.template.template_id, type: "success" });
-            utils.redirect($location, "/templates");
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception.error = error;
-        });
-    }
-
-}]);
-
-//#endregion Products
-
-
-
 
 app.controller("UsersListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
 
