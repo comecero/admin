@@ -1,4 +1,9 @@
-﻿<a name="1.2.1"></a>
+﻿<a name="1.2.2"></a>
+# 1.2.2
+
+- Added the option to upload files by URL, including optional HTTP authorization details.
+
+<a name="1.2.1"></a>
 # 1.2.1
 
 - Added option to create protected, expiring download link for files (without the requiremnt for an associated order).
@@ -38,7 +43,7 @@ Allowed apps to launch correctly when running the admin against the staging envi
 <a name="1.0.1"></a>
 # 1.0.1
 
-Added Settings> Subscription section to control panel with associated help text.
+- Added Settings> Subscription section to control panel with associated help text.
 
 <a name="1.0.0"></a>
 # 1.0.0
