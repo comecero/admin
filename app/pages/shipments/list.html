@@ -1,0 +1,87 @@
+﻿<div ng-controller="ShipmentsListCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1>Shipments</h1>
+    </div>
+
+    <div class="panel panel-body light-shadow">
+        <div class="col-sm-12 text-right spacer-b40">
+            <form class="form-inline">
+                <div class="form-group has-feedback">
+                    <input type="text" class="form-control" ng-model="params.q" ng-change="search()" ng-model-options="{ updateOn: 'default blur', debounce: { default: 750, blur: 0 } }" select-on-click placeholder="{{ 'Search' | translate }}...">
+                    <span class="fa fa-search form-control-feedback"></span>
+                </div>
+            </form>
+        </div>
+
+        <div class="gridtable">
+
+            <div class="gridtable-header hidden-xs hidden-sm">
+
+                <div class="col-md-3"><label>ID</label></div>
+                <div class="col-md-3"><label>Courier</label></div>
+                <div class="col-md-4"><label>Tracking Number</label></div>
+                <div class="col-md-2 text-right"><label ng-click="sort('date_shipped', !params.desc)" class="pointer text-primary" translate>Shipped</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="params.sort_by == 'date_shipped' && params.desc == true"></i><i class="icon fa fa-caret-up" ng-if="params.sort_by == 'date_shipped' && params.desc == false"></i></div>
+
+            </div>
+
+            <div class="col-xs-12 hidden-md hidden-lg padding-l0">
+
+
+                <div class="btn-group" uib-dropdown>
+                    <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Sort</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown-header">Date Created</li>
+                        <li ng-click="sort('date_shipped', false)" ng-class="{'selected-li': params.sort_by == 'date_shipped' && params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                        <li ng-click="sort('date_shipped', true)" ng-class="{'selected-li': params.sort_by == 'date_shipped' && params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="row spacer-b10 hidden-md hidden-lg"></div> <!--Needed to have the buttons clear-->
+
+            <div class="gridtable-row" ng-repeat="shipment in shipments.shipmentList.data">
+
+                <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Shipment ID</label></div>
+                    <div class="col-xs-7 col-sm-12 col-md-12 value"><a href="#/shipments/{{shipment.shipment_id}}">{{shipment.shipment_id}}</a></div>
+                </div>
+
+                <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Courier</label></div>
+                    <div class="col-xs-7 col-sm-12 col-md-12 text-capitalize value"><span>{{shipment.courier}}</span></div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-4">
+                    <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Tracking</label></div>
+                    <div class="col-xs-7 col-sm-12 col-md-12 text-capitalize value"><a ng-href="{{shipment.tracking_url}}" target="_blank">{{shipment.tracking_number}}</a></div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-2">
+                    <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Shipped</label></div>
+                    <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value"><span>{{shipment.date_shipped | date:'shortDate'}}</span></div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Show pagination if there is at least one page -->
+        <div class="col-sm-12" ng-if="shipments.shipmentList.data.length > 0 ">
+            <ul class="pager">
+                <li class="previous" ng-click="movePage('-', shipments.shipmentList.previous_page_before_item)" ng-if="shipments.shipmentList.previous_page_before_item"><a><i class="fa fa-chevron-circle-left"></i>&nbsp;<span translate>Back</span></a></li>
+                <li class="next" ng-click="movePage('+', shipments.shipmentList.next_page_after_item)" ng-if="shipments.shipmentList.next_page_after_item"><a><span translate>Next</span>&nbsp;<i class="fa fa-chevron-circle-right"></i></a></li>
+            </ul>
+        </div>
+
+        <!-- Show a "not found" message if no shipments were found  -->
+        <div class="col-sm-12" ng-if="shipments.shipmentList.data.length == 0">
+            <p class="no-info" translate>No shipments found</p>
+        </div>
+    </div>
+
+</div>

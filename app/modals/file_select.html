@@ -14,36 +14,79 @@
         <uib-tabset>
             <uib-tab active="fileSelectTabs[0].active" resource="files" method="create">
                 <tab-heading><i class="fa fa-cloud-upload"></i> <small translate>New</small></tab-heading>
-                <form class="form-group dropzone" dropzone dropzone-url="/files" dropzone-max-files="1" dropzone-max-size="75000000" dropzone-template-id="dz-file">
+                <form class="form-group dropzone" dropzone dropzone-url="/files" dropzone-max-files="1" dropzone-max-size="75000000" dropzone-template-id="dz-file" dropzone-hide="options.by_url" novalidate>
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group no-margin-hr">
                                 <label class="control-label" translate>Name</label>
-                                <input type="text" name="name" class="form-control" placeholder="{{ 'Optional' | translate}}">
+                                <input type="text" name="name" ng-model="fileSelect.file.name" class="form-control" placeholder="{{ 'Optional' | translate}}">
                             </div>
                         </div>
                         <div class="col-sm-4">
                             <div class="form-group no-margin-hr">
                                 <label class="control-label" translate>Version</label>
-                                <input type="text" name="version" class="form-control" placeholder="{{ 'Optional' | translate}}">
+                                <input type="text" name="version" ng-model="fileSelect.file.version" class="form-control" placeholder="{{ 'Optional' | translate}}">
                             </div>
                         </div>
                         <div class="col-sm-4">
                             <div class="form-group no-margin-hr">
                                 <label class="control-label" translate>How many days till a link expires?</label>
-                                <input type="text" name="expires_in_days" class="form-control" value="7">
+                                <input type="text" name="expires_in_days" ng-model="fileSelect.file.expires_in_days" class="form-control" value="7">
                             </div>
                         </div>
                         <div class="col-sm-4">
                             <div class="form-group no-margin-hr">
                                 <label class="control-label" translate>How many clicks till a link expires?</label>
-                                <input type="text" name="expires_in_clicks" class="form-control" value="10">
+                                <input type="text" name="expires_in_clicks" ng-model="fileSelect.file.expires_in_clicks" class="form-control" value="10">
                             </div>
                         </div>
                         <div class="col-sm-12">
                             <div class="form-group no-margin-hr">
                                 <label class="control-label" translate>Description</label>
-                                <textarea name="description" class="form-control" rows="2" placeholder="{{ 'Optional' | translate}}"></textarea>
+                                <textarea name="description" class="form-control" ng-model="fileSelect.file.description" rows="2" placeholder="{{ 'Optional' | translate}}"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="form-group" show-errors>
+                                <label class="radio-group-label" translate>How do you want to send your file?</label>
+                                <div class="radio-group inline">
+                                    <input type="radio" id="by_url-1" class="radio" name="by_url" ng-model="options.by_url" ng-value="false" required>
+                                    <label for="by_url-1" class="radio-label">Direct file upload</label>
+                                    <input type="radio" id="by_url-2" class="radio" name="send_events" ng-model="options.by_url" ng-value="true" required>
+                                    <label for="by_url-2" class="radio-label">From a URL</label>
+                                </div>
+                                <div>
+                                    <p class="help-text" translate>Direct file uploads are limited to 75 MB. Upload from a URL for larger files.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div ng-show="options.by_url">
+                            <div class="col-xs-12">
+                                <div class="form-group" show-errors>
+                                    <label for="options_url" class="control-label required" translate>URL</label>
+                                    <input type="text" class="form-control" name="options_url" ng-model="options.url" placeholder="">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-xs-12">
+                                <div class="form-group" show-errors>
+                                    <label for="options_http_authorization_username" class="control-label" translate>HTTP Authorization Username</label>
+                                    <input type="tel" class="form-control" name="options_http_authorization_username" ng-model="options.http_authorization_username" placeholder="{{ 'Optional' | translate}}">
+                                    <div>
+                                        <p class="help-text" translate>Supply credentials if your server requires</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-xs-12">
+                                <div class="form-group" show-errors>
+                                    <label for="options_http_authorization_password" class="control-label" translate>HTTP Authorization Password</label>
+                                    <input type="tel" class="form-control" name="options_http_authorization_password" ng-model="options.http_authorization_password" placeholder="{{ 'Optional' | translate}}">
+                                </div>
+                            </div>
+
+                            <div class="form-group col-xs-12">
+                                <a class="btn btn-primary btn-right btn-margin-left" ng-click="uploadByUrl()" translate>Upload File</a>
                             </div>
                         </div>
                     </div>
