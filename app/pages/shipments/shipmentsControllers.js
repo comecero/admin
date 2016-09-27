@@ -16,7 +16,7 @@ app.controller("ShipmentsListCtrl", ['$scope', '$routeParams', '$location', '$q'
         utils.stringsToBool($scope.params);
 
         if ($scope.params.sort_by == null) {
-            $scope.params.sort_by = "date_created";
+            $scope.params.sort_by = "date_shipped";
         }
 
         if ($scope.params.desc == null) {
@@ -100,18 +100,41 @@ app.controller("ShipmentsViewCtrl", ['$scope', '$routeParams', '$location', 'Gro
 
     $scope.shipment = {};
     $scope.exception = {};
-
+    $scope.count = {};
+    $scope.resources = {};
 
     // Set the url for interacting with this item
     $scope.url = ApiService.buildUrl("/shipments/" + $routeParams.id)
+    $scope.resources.notificationListUrl = $scope.url + "/notifications";
 
     // Load the service
-    ApiService.getItem($scope.url).then(function (shipment) {
+    ApiService.getItem($scope.url, { expand: "order.customer" }).then(function (shipment) {
         $scope.shipment = shipment;
     }, function (error) {
         $scope.exception.error = error;
         window.scrollTo(0, 0);
     });
+
+    $scope.confirmDelete = function () {
+        var confirm = { id: "delete" };
+        confirm.onConfirm = function () {
+            $scope.delete();
+        }
+        ConfirmService.showConfirm($scope, confirm);
+    }
+
+    $scope.delete = function () {
+
+        ApiService.remove($scope.shipment.url).then(
+        function (eventSubscription) {
+            GrowlsService.addGrowl({ id: "delete_success", name: $scope.shipment.shipment_id, type: "success" });
+            utils.redirect($location, "/shipments");
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception.error = error;
+        });
+    }
 
 }]);
 

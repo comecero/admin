@@ -1131,12 +1131,12 @@ app.directive('dropzone', ['ApiService', function (ApiService) {
                 if (newVal == true) {
                     var el = document.querySelectorAll(".dz-default");
                     for (var i = 0; i < el.length; i++) {
-                        el[0].classList.add("hidden");
+                        el[i].classList.add("hidden");
                     }
                 } else {
                     var el = document.querySelectorAll(".dz-default");
                     for (var i = 0; i < el.length; i++) {
-                        el[0].classList.remove("hidden");
+                        el[i].classList.remove("hidden");
                     }
                 }
             }
@@ -3092,6 +3092,8 @@ app.directive('fileSelect', ['ApiService', 'ConfirmService', 'GrowlsService', '$
                 scope.fileSelect.params.limit = 5;
                 scope.fileSelect.params.sort_by = "name";
                 scope.fileSelect.params.desc = false;
+                scope.fileSelect = { file: {} };
+                scope.options = { by_url: false };
 
                 var loadFiles = function (url) {
                     ApiService.getList(url, scope.fileSelect.params).then(function (fileList) {
@@ -3100,6 +3102,22 @@ app.directive('fileSelect', ['ApiService', 'ConfirmService', 'GrowlsService', '$
                         scope.modalError = error;
                     });
                 }
+
+                scope.uploadByUrl = function () {
+
+                    // Make a copy so you can modify what you send without changing the model in the UI
+                    var file = angular.copy(scope.fileSelect.file);
+                    file.url = scope.options.url;
+                    file.http_authorization_username = scope.options.http_authorization_username;
+                    file.http_authorization_password = scope.options.http_authorization_password;
+
+                    ApiService.multipartForm(file, null, ApiService.buildUrl("/files")).then(function (newFile) {
+                        fileSelectModal.close(newFile);
+                    }, function (error) {
+                        scope.modalError = error;
+                    });
+
+                };
 
                 var uploadSending = false;
                 var uploadSendingListener = scope.$on('uploadSending', function (event, sending) {
