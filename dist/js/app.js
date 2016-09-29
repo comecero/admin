@@ -54,6 +54,10 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     $routeProvider.when("/license_services/add", { templateUrl: "/app/pages/license_services/set.html", reloadOnSearch: true });
     $routeProvider.when("/license_services/:id/edit", { templateUrl: "/app/pages/license_services/set.html", reloadOnSearch: true });
 
+    // License Requests
+    $routeProvider.when("/license_requests", { templateUrl: "/app/pages/license_requests/list.html", reloadOnSearch: false });
+    $routeProvider.when("/license_requests/:id", { templateUrl: "/app/pages/license_requests/view.html", reloadOnSearch: true });
+
     // Images
     $routeProvider.when("/images", { templateUrl: "/app/pages/images/list.html", reloadOnSearch: false });
     $routeProvider.when("/images/add", { templateUrl: "/app/pages/images/add.html", reloadOnSearch: true });
