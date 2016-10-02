@@ -111,10 +111,12 @@ app.controller("TemplatesSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
         $scope.url = ApiService.buildUrl("/templates/" + $routeParams.id)
 
         // Load the service
-        ApiService.getItem($scope.url).then(function (template) {
+        ApiService.getItem($scope.url, { expand: "wrapper_template" }).then(function (template) {
             $scope.template = template;
 
-            
+            if (template.wrapper_template) {
+                $scope.template.wrapper_template_id = template.wrapper_template.template_id;
+            }
 
         }, function (error) {
             $scope.exception.error = error;
@@ -132,7 +134,6 @@ app.controller("TemplatesSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
         // Clear any previous errors
         $scope.exception.error = null;
     }
-
    
     $scope.confirmCancel = function () {
         var confirm = { id: "changes_lost" };
@@ -159,10 +160,7 @@ app.controller("TemplatesSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
             return;
         }
 
-
-        ApiService.set($scope.template, ApiService.buildUrl("/templates"), { show: "template_id,name" })
-        .then(
-        function (template) {
+        ApiService.set($scope.template, ApiService.buildUrl("/templates"), { show: "template_id,name" }).then(function (template) {
             GrowlsService.addGrowl({ id: "add_success", name: template.template_id, type: "success", template_id: template.template_id, url: "#/templates/" + template.template_id + "/edit" });
             window.location = "#/templates";
         },
