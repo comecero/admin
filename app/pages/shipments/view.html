@@ -1,0 +1,110 @@
+﻿<div ng-controller="ShipmentsViewCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1 translate>Shipment</h1>
+    </div>
+
+    <div class="panel light-shadow">
+
+        <div class="panel-body">
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <span class="panel-title">Shipment Details</span>
+                </div>
+
+                <div class="panel-body panel-tight">
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Shipment ID</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section"><div>{{shipment.shipment_id}}</div></div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Courier</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section">{{shipment.courier}}</div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Tracking</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section"><a href="{{shipment.tracking_url}}">{{shipment.tracking_number}}</a></div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Date Shipped</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section">{{shipment.date_shipped | date:'shortDate'}}</div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Order ID</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section"><div><a href="/#/orders/{{shipment.order.order_id}}">{{shipment.order.order_id}}</a></div></div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Customer ID</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section"><div><a href="/#/customers/{{shipment.order.customer.customer_id}}">{{shipment.order.customer.customer_id}}</a></div></div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <span class="panel-title">Products</span>
+                </div>
+
+                <div class="panel-body panel-tight">
+
+                    <div class="gridtable">
+
+                        <div class="gridtable-header hidden-xs hidden-sm">
+
+                            <div class="col-xs-8">Name</div>
+                            <div class="col-xs-4 text-right">Quantity Shipped</div>
+                        </div>
+                        <div class="row spacer-b10 hidden-md hidden-lg"></div>
+                        <div class="gridtable-row" ng-repeat="item in shipment.items">
+                            <div class="col-xs-12 col-sm-6 col-md-8">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Name</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value">
+                                    <span ng-if="!item.product_id">{{item.name}}</span>
+                                    <a ng-if="item.product_id" href="/#/products/{{item.product_id}}/edit">{{item.name}}</a>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-md-4">
+                                <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Quantity</label></div>
+                                <div class="col-xs-7 col-sm-12 col-md-12 value text-right">{{item.quantity}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <span class="panel-title" translate>Notifications</span>
+                    <div class="panel-heading-controls">
+                        <span class="badge badge-danger">{{count.notifications}}</span>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div object-list type="notification" url="{{resources.notificationListUrl}}" template-url="app/templates/notificationList.html" embedded="true" page="offset" limit="5" search="false" error="exception.error" count="count.notifications" refresh-on-change="order.shipments.data"></div>
+                </div>
+            </div>
+
+            <div resource="shipments" method="delete">
+                <span class="delete" ng-click="confirmDelete()" translate>Delete this shipment</span>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
