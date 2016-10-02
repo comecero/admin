@@ -1,4 +1,10 @@
-﻿<a name="1.2.2"></a>
+﻿<a name="1.2.3"></a>
+# 1.2.3
+
+- Add the ability to view, edit and delete shipments.
+- Minor bug fixes.
+
+<a name="1.2.2"></a>
 # 1.2.2
 
 - Added the option to upload files by URL, including optional HTTP authorization details.

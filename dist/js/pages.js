@@ -668,59 +668,6 @@ app.controller("AppInstallationsStyleCtrl", ['$scope', '$routeParams', '$locatio
 
 
 
-app.controller("CartsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
-
-    // Establish your scope containers
-    $scope.exception = {};
-    $scope.resources = {};
-    $scope.resources.cartListUrl = ApiService.buildUrl("/carts");
-
-}]);
-
-app.controller("CartsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'ConfirmService', 'GrowlsService', function ($scope, $routeParams, ApiService, ConfirmService, GrowlsService) {
-
-    $scope.cart = {};  
-    $scope.payment = {};
-    $scope.exception = {};
-    $scope.count = {};
-    $scope.count.payments = 0;
-    $scope.resources = {};
-    $scope.functions = {};
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/carts/" + $routeParams.id);
-    $scope.resources.paymentListUrl = $scope.url + "/payments";
-
-    // Load the cart
-    var params = {expand: "customer,items.product,payments,payments.payment_method", hide: "items.product.images", formatted: true};
-    ApiService.getItem($scope.url, params).then(function (cart) {
-
-        $scope.cart = cart;
-        
-        // If one of the payments was successful, pluck it.
-        $scope.successful_payment = _.findWhere($scope.cart.payments.data, { success: true });
-
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-    $scope.hasPermission = function (resource, method) {
-        return utils.hasPermission(resource, method);
-    }
-
-    // Watch for a captured payment
-    $scope.$watch('successful_payment.status', function (newvalue, oldvalue) {
-        // Update the payment in the cart payment 
-        if ($scope.successful_payment && oldvalue != undefined) {
-            $scope.cart.payment_status = $scope.successful_payment.status;
-        }
-    });
-
-}]);
-
-
-
 
 //#region Auths
 
@@ -1148,6 +1095,59 @@ app.controller("CustomersViewCtrl", ['$scope', '$routeParams', '$location', 'Gro
 
 
 
+app.controller("CartsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
+
+    // Establish your scope containers
+    $scope.exception = {};
+    $scope.resources = {};
+    $scope.resources.cartListUrl = ApiService.buildUrl("/carts");
+
+}]);
+
+app.controller("CartsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'ConfirmService', 'GrowlsService', function ($scope, $routeParams, ApiService, ConfirmService, GrowlsService) {
+
+    $scope.cart = {};  
+    $scope.payment = {};
+    $scope.exception = {};
+    $scope.count = {};
+    $scope.count.payments = 0;
+    $scope.resources = {};
+    $scope.functions = {};
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/carts/" + $routeParams.id);
+    $scope.resources.paymentListUrl = $scope.url + "/payments";
+
+    // Load the cart
+    var params = {expand: "customer,items.product,payments,payments.payment_method", hide: "items.product.images", formatted: true};
+    ApiService.getItem($scope.url, params).then(function (cart) {
+
+        $scope.cart = cart;
+        
+        // If one of the payments was successful, pluck it.
+        $scope.successful_payment = _.findWhere($scope.cart.payments.data, { success: true });
+
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+    $scope.hasPermission = function (resource, method) {
+        return utils.hasPermission(resource, method);
+    }
+
+    // Watch for a captured payment
+    $scope.$watch('successful_payment.status', function (newvalue, oldvalue) {
+        // Update the payment in the cart payment 
+        if ($scope.successful_payment && oldvalue != undefined) {
+            $scope.cart.payment_status = $scope.successful_payment.status;
+        }
+    });
+
+}]);
+
+
+
 app.controller("DashboardViewCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
 
     $scope.dashboard = {};
@@ -1530,7 +1530,6 @@ app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$locatio
     { name: "Invoice Created", code: "invoice:created" },
     { name: "Invoice Payment Completed", code: "invoice:payment_completed" },
     { name: "Order Created", code: "order:created" },
-    { name: "Order Licenses Assigned", code: "order:licenses_assigned" },
     { name: "Order Payment Completed", code: "order:payment_completed" },
     { name: "Order Fulfilled", code: "order:fulfilled" },
     { name: "Payment Created Success", code: "payment:created_success" },
@@ -5233,63 +5232,6 @@ app.controller("TechnicalSettingsCtrl", ['$scope', '$routeParams', '$location', 
 
 
 
-//#region Subscriptions
-
-app.controller("SubscriptionsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
-
-    // Establish your scope containers
-    $scope.exception = {};
-    $scope.resources = {};
-    $scope.resources.subscriptionListUrl = ApiService.buildUrl("/subscriptions");
-
-}]);
-
-app.controller("SubscriptionsViewCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
-
-    $scope.exception = {};
-    $scope.payment_method = null;
-    $scope.invoices = {};
-    $scope.model = {};
-    $scope.model.subscription = {};
-    $scope.resources = {};
-    $scope.count = {};
-    $scope.count.invoices = 0;
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/subscriptions/" + $routeParams.id)
-
-    // Prep the billing history
-    $scope.resources.invoiceListUrl = $scope.url + "/invoices";
-
-    // Load the subscription
-    ApiService.getItem($scope.url, { expand: "subscription_plan,customer.payment_methods,item.product", hide: "product.images" }).then(function (subscription) {
-        $scope.model.subscription = subscription;
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-    $scope.uncancel = function () {
-
-        var data = { cancel_at_current_period_end: false };
-
-        ApiService.set(data, $scope.url, { expand: "subscription_plan,customer.cards,product", hide: "product.images" }).then(function (subscription) {
-            $scope.model.subscription = subscription;
-
-        }, function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    }
-
-}]);
-
-//#endregion Subscriptions
-
-
-
-
-
 //#region Shipments
 
 app.controller("ShipmentsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
@@ -5430,6 +5372,63 @@ app.controller("ShipmentsViewCtrl", ['$scope', '$routeParams', '$location', 'Gro
 }]);
 
 //#endregion Products
+
+
+
+
+
+//#region Subscriptions
+
+app.controller("SubscriptionsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
+
+    // Establish your scope containers
+    $scope.exception = {};
+    $scope.resources = {};
+    $scope.resources.subscriptionListUrl = ApiService.buildUrl("/subscriptions");
+
+}]);
+
+app.controller("SubscriptionsViewCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
+
+    $scope.exception = {};
+    $scope.payment_method = null;
+    $scope.invoices = {};
+    $scope.model = {};
+    $scope.model.subscription = {};
+    $scope.resources = {};
+    $scope.count = {};
+    $scope.count.invoices = 0;
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/subscriptions/" + $routeParams.id)
+
+    // Prep the billing history
+    $scope.resources.invoiceListUrl = $scope.url + "/invoices";
+
+    // Load the subscription
+    ApiService.getItem($scope.url, { expand: "subscription_plan,customer.payment_methods,item.product", hide: "product.images" }).then(function (subscription) {
+        $scope.model.subscription = subscription;
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+    $scope.uncancel = function () {
+
+        var data = { cancel_at_current_period_end: false };
+
+        ApiService.set(data, $scope.url, { expand: "subscription_plan,customer.cards,product", hide: "product.images" }).then(function (subscription) {
+            $scope.model.subscription = subscription;
+
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
+}]);
+
+//#endregion Subscriptions
 
 
 
@@ -5782,12 +5781,10 @@ app.controller("TemplatesSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
         $scope.url = ApiService.buildUrl("/templates/" + $routeParams.id)
 
         // Load the service
-        ApiService.getItem($scope.url, { expand: "wrapper_template" }).then(function (template) {
+        ApiService.getItem($scope.url).then(function (template) {
             $scope.template = template;
 
-            if (template.wrapper_template) {
-                $scope.template.wrapper_template_id = template.wrapper_template.template_id;
-            }
+            
 
         }, function (error) {
             $scope.exception.error = error;
@@ -5805,6 +5802,7 @@ app.controller("TemplatesSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
         // Clear any previous errors
         $scope.exception.error = null;
     }
+
    
     $scope.confirmCancel = function () {
         var confirm = { id: "changes_lost" };
@@ -5831,7 +5829,10 @@ app.controller("TemplatesSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
             return;
         }
 
-        ApiService.set($scope.template, ApiService.buildUrl("/templates"), { show: "template_id,name" }).then(function (template) {
+
+        ApiService.set($scope.template, ApiService.buildUrl("/templates"), { show: "template_id,name" })
+        .then(
+        function (template) {
             GrowlsService.addGrowl({ id: "add_success", name: template.template_id, type: "success", template_id: template.template_id, url: "#/templates/" + template.template_id + "/edit" });
             window.location = "#/templates";
         },
