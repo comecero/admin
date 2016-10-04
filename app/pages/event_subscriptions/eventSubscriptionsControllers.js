@@ -100,7 +100,7 @@ app.controller("EventSubscriptionsListCtrl", ['$scope', '$routeParams', '$locati
 app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', 'TimezonesService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService, TimezonesService) {
 
     $scope.eventSubscription = {};
-    $scope.timezones = TimezonesService.getTimezones();
+    $scope.timezones = TimezonesService.getTimezones(); 
     $scope.event_types = [
     { name: "Account Modified", code: "account:modified" },
     { name: "Cart Payment Completed", code: "cart:payment_completed" },
