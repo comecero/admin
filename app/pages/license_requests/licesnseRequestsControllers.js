@@ -31,7 +31,7 @@ app.controller("LicenseRequestsListCtrl", ['$scope', '$routeParams', '$location'
 
     $scope.loadLicenseRequests = function () {
         
-        ApiService.getList(ApiService.buildUrl("/license_requests"), $scope.params).then(function (result) {
+        ApiService.getList(ApiService.buildUrl("/license_requests", { expand: "order", show: "license_request_id,status,date_created,order.order_id" }), $scope.params).then(function (result) {
             $scope.licenseRequests.licenseRequestList = result;
             $scope.licenseRequestsChecked = false;
 
@@ -109,15 +109,25 @@ app.controller("LicenseRequestViewCtrl", ['$scope', '$routeParams', '$location',
     $scope.options = {};
 
     $scope.options.raw = true;
+    $scope.options.html = true;
 
     // Set the url for interacting with this item
     $scope.url = ApiService.buildUrl("/license_requests/" + $routeParams.id)
 
     // Load the service
-    var params = { expand: "license_service"};
+    var params = { expand: "license,license_service"};
     ApiService.getItem($scope.url, params).then(function (licenseRequest) {
 
         $scope.licenseRequest = licenseRequest;
+        $scope.renderedLicenseText = licenseRequest.license.label + ":\n" + licenseRequest.license.text;
+        if (licenseRequest.license.instructions) {
+            $scope.renderedLicenseText += "\n\n" + licenseRequest.license.instructions;
+        }
+
+        $scope.renderedLicenseHtml = licenseRequest.license.label + "<br>" + licenseRequest.license.html;
+        if (licenseRequest.license.instructions) {
+            $scope.renderedLicenseHtml += "<br><br>" + licenseRequest.license.instructions;
+        }
 
         // Pretty format the licenseRequest data
         $scope.licenseRequest.order = JSON.stringify($scope.licenseRequest.order, null, 4)
