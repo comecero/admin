@@ -1,0 +1,62 @@
+<div ng-controller="LicenseRequestViewCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1 translate>License Request {{licenseRequest.license_request_id}}</h1>
+    </div>
+
+    <div class="panel panel-body light-shadow">
+        <div class="col-xs-12 col-sm-6 panel-tight-row">
+            <div class="col-xs-12 col-md-4 panel-tight-section"><label>Status</label></div>
+            <div class="col-xs-12 col-md-8 panel-tight-section">
+                <span ng-if="licenseRequest.status == 'queued'"><i class="icon fa fa-clock-o text-pa-purple"></i> <span translate>Queued</span></span>
+                <span ng-if="licenseRequest.status == 'completed'"><i class="icon fa fa-check-circle text-success"></i> <span translate>Completed</span></span>
+                <span ng-if="licenseRequest.status == 'retry'"><i class="icon fa fa-undo text-warning"></i> <span translate>Retry</span></span>
+                <span ng-if="licenseRequest.status == 'failed'"><i class="icon fa fa-times-circle text-danger"></i> <span translate>Failed</span></span>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 panel-tight-row">
+            <div class="col-xs-12 col-md-4 panel-tight-section"><label>Product</label></div>
+            <div class="col-xs-12 col-md-8 panel-tight-section"><a ng-href="/#/products/{{licenseRequest.product_id}}/edit">{{licenseRequest.product_id}}</a></div>
+        </div>
+        <div class="col-xs-12 col-sm-6 panel-tight-row">
+            <div class="col-xs-12 col-md-4 panel-tight-section"><label>Created</label></div>
+            <div class="col-xs-12 col-md-8 panel-tight-section">{{licenseRequest.date_created | date:'short'}}</div>
+        </div>
+        <div class="col-xs-12 col-sm-6 panel-tight-row">
+            <div class="col-xs-12 col-md-4 panel-tight-section"><label>Modified</label></div>
+            <div class="col-xs-12 col-md-8 panel-tight-section">{{licenseRequest.date_modified | date:'short'}}</div>
+        </div>
+        <div class="col-xs-12 col-sm-6 panel-tight-row">
+            <div class="col-xs-12 col-md-4 panel-tight-section"><label>License Service</label></div>
+            <div class="col-xs-12 col-md-8 panel-tight-section"><a ng-href="/#/license_services/{{licenseRequest.license_service.license_service_id}}/edit">{{licenseRequest.license_service.license_service_id}}</a></div>
+        </div>
+        <div class="row"></div>
+
+        <div class="col-xs-12 panel-tight-row">
+            <div class="col-xs-12 panel-tight-section">
+                <label>License</label>
+                <a class="pull-right pointer" ng-show="!options.html" ng-click="options.html = true" translate>Show HTML</a>
+                <a class="pull-right pointer" ng-show="options.html" ng-click="options.html = false" translate>Show Text</a>
+            </div>
+            <div class="col-xs-12 panel-tight-section" style="border:1px solid #eee; padding:10px; border-radius: 4px;" ng-show="options.html" ng-bind-html="renderedLicenseHtml"></div>
+            <div class="col-xs-12 panel-tight-section" ng-show="!options.html"><pre>{{renderedLicenseText}}</pre></div>
+        </div>
+
+        <div class="col-xs-12 panel-tight-row">
+            <div class="col-xs-12 panel-tight-section">
+                <label>Request Order Payload</label>
+                <a class="pull-right pointer" ng-show="!options.raw" ng-click="options.raw = true" translate>Show Raw</a>
+                <a class="pull-right pointer" ng-show="options.raw" ng-click="options.raw = false" translate>Show Formatted</a>
+            </div>
+            <div class="col-xs-12 panel-tight-section" ng-show="options.raw"><pre>{{licenseRequest.order}}</pre></div>
+            <div meta-to-html="{{licenseRequest.order}}" ng-show="!options.raw"></div>
+        </div>
+
+    </div>
+</div>

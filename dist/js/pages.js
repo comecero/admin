@@ -922,59 +922,6 @@ app.controller("AppInstallationsStyleCtrl", ['$scope', '$routeParams', '$locatio
 
 
 
-app.controller("CartsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
-
-    // Establish your scope containers
-    $scope.exception = {};
-    $scope.resources = {};
-    $scope.resources.cartListUrl = ApiService.buildUrl("/carts");
-
-}]);
-
-app.controller("CartsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'ConfirmService', 'GrowlsService', function ($scope, $routeParams, ApiService, ConfirmService, GrowlsService) {
-
-    $scope.cart = {};  
-    $scope.payment = {};
-    $scope.exception = {};
-    $scope.count = {};
-    $scope.count.payments = 0;
-    $scope.resources = {};
-    $scope.functions = {};
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/carts/" + $routeParams.id);
-    $scope.resources.paymentListUrl = $scope.url + "/payments";
-
-    // Load the cart
-    var params = {expand: "customer,items.product,payments,payments.payment_method", hide: "items.product.images", formatted: true};
-    ApiService.getItem($scope.url, params).then(function (cart) {
-
-        $scope.cart = cart;
-        
-        // If one of the payments was successful, pluck it.
-        $scope.successful_payment = _.findWhere($scope.cart.payments.data, { success: true });
-
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-    $scope.hasPermission = function (resource, method) {
-        return utils.hasPermission(resource, method);
-    }
-
-    // Watch for a captured payment
-    $scope.$watch('successful_payment.status', function (newvalue, oldvalue) {
-        // Update the payment in the cart payment 
-        if ($scope.successful_payment && oldvalue != undefined) {
-            $scope.cart.payment_status = $scope.successful_payment.status;
-        }
-    });
-
-}]);
-
-
-
 
 //#region Customers
 
@@ -1145,6 +1092,59 @@ app.controller("CustomersViewCtrl", ['$scope', '$routeParams', '$location', 'Gro
 
 //#endregion Customers
 
+
+
+
+app.controller("CartsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
+
+    // Establish your scope containers
+    $scope.exception = {};
+    $scope.resources = {};
+    $scope.resources.cartListUrl = ApiService.buildUrl("/carts");
+
+}]);
+
+app.controller("CartsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'ConfirmService', 'GrowlsService', function ($scope, $routeParams, ApiService, ConfirmService, GrowlsService) {
+
+    $scope.cart = {};  
+    $scope.payment = {};
+    $scope.exception = {};
+    $scope.count = {};
+    $scope.count.payments = 0;
+    $scope.resources = {};
+    $scope.functions = {};
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/carts/" + $routeParams.id);
+    $scope.resources.paymentListUrl = $scope.url + "/payments";
+
+    // Load the cart
+    var params = {expand: "customer,items.product,payments,payments.payment_method", hide: "items.product.images", formatted: true};
+    ApiService.getItem($scope.url, params).then(function (cart) {
+
+        $scope.cart = cart;
+        
+        // If one of the payments was successful, pluck it.
+        $scope.successful_payment = _.findWhere($scope.cart.payments.data, { success: true });
+
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+    $scope.hasPermission = function (resource, method) {
+        return utils.hasPermission(resource, method);
+    }
+
+    // Watch for a captured payment
+    $scope.$watch('successful_payment.status', function (newvalue, oldvalue) {
+        // Update the payment in the cart payment 
+        if ($scope.successful_payment && oldvalue != undefined) {
+            $scope.cart.payment_status = $scope.successful_payment.status;
+        }
+    });
+
+}]);
 
 
 
@@ -2410,33 +2410,6 @@ app.controller("GatewaysSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
 
 
 
-app.controller("GettingStartedViewCtrl", ['$scope', '$q', '$routeParams', 'ApiService', 'GrowlsService', function ($scope, $q, $routeParams, ApiService, GrowlsService) {
-
-    var getLimitedAuth = function (test) {
-
-        return $q(function (resolve, reject) {
-            ApiService.set(null, ApiService.buildUrl("/auths/limited"), { test: test })
-            .then(
-            function (auth) {
-                resolve(auth);
-            },
-            function (error) {
-                reject(error);
-            });
-        });
-    }
-
-    var setCartUrl = function (test) {
-
-        $scope.cartUrl = "/#/app_installations";
-
-    }
-
-    $scope.account_id = localStorage.getItem("account_id");
-
-    setCartUrl(utils.stringToBool(localStorage.getItem("test")));
-
-}]);
 app.controller("ImagesListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
 
     // Establish your scope containers
@@ -2631,6 +2604,33 @@ app.controller("ImagesViewCtrl", ['$scope', '$routeParams', '$location', 'Growls
 
 }]);
 
+app.controller("GettingStartedViewCtrl", ['$scope', '$q', '$routeParams', 'ApiService', 'GrowlsService', function ($scope, $q, $routeParams, ApiService, GrowlsService) {
+
+    var getLimitedAuth = function (test) {
+
+        return $q(function (resolve, reject) {
+            ApiService.set(null, ApiService.buildUrl("/auths/limited"), { test: test })
+            .then(
+            function (auth) {
+                resolve(auth);
+            },
+            function (error) {
+                reject(error);
+            });
+        });
+    }
+
+    var setCartUrl = function (test) {
+
+        $scope.cartUrl = "/#/app_installations";
+
+    }
+
+    $scope.account_id = localStorage.getItem("account_id");
+
+    setCartUrl(utils.stringToBool(localStorage.getItem("test")));
+
+}]);
 app.controller("InvoicesListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
 
     // Establish your scope containers
@@ -2970,6 +2970,152 @@ app.controller("InvoicesSetCtrl", ['$scope', '$routeParams', '$location', 'ApiSe
     }
 
 }]);
+
+
+
+
+
+//#region LicenseRequests
+
+app.controller("LicenseRequestsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
+
+    // Establish your scope containers
+    $scope.licenseRequests = {};
+    $scope.nav = {};
+    $scope.exception = {};
+
+    // Establish your settings from query string parameters
+    $scope.parseParams = function () {
+        $scope.params = ($location.search())
+
+        // Convert any string true/false to bool
+        utils.stringsToBool($scope.params);
+
+        if ($scope.params.status == null) {
+            $scope.params.status = "completed";
+        }
+
+        if ($scope.params.sort_by == null) {
+            $scope.params.sort_by = "date_created";
+        }
+
+        if ($scope.params.desc == null) {
+            $scope.params.desc = true;
+        }
+
+    }
+
+    $scope.loadLicenseRequests = function () {
+        
+        ApiService.getList(ApiService.buildUrl("/license_requests", { expand: "order", show: "license_request_id,status,date_created,order.order_id" }), $scope.params).then(function (result) {
+            $scope.licenseRequests.licenseRequestList = result;
+            $scope.licenseRequestsChecked = false;
+
+            // If instructed, scroll to the top upon completion
+            if ($scope.nav.scrollTop == true) {
+                window.scrollTo(0, 0);
+            }
+            $scope.nav.scrollTop = null;
+
+        },
+        function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
+    $scope.setParam = function (param, value) {
+        $scope.params[param] = value;
+        $scope.params.before_item = null;
+        $scope.params.after_item = null;
+        $scope.nav.scrollTop = true;
+        $location.search($scope.params);
+    }
+
+    $scope.search = function () {
+        if ($scope.params.q != null) {
+
+            // Reset the view to the first page
+            $scope.params.offset = null;
+            $scope.nav.scrollTop = true;
+
+            // If empty, reset to null
+            if ($scope.params.q == "") {
+                $scope.params.q = null;
+            }
+
+            $location.search($scope.params);
+        }
+    }
+
+    $scope.movePage = function (direction, value) {
+
+        if (direction == "+") {
+            $scope.params.after_item = value;
+            $scope.params.before_item = null;
+        } else {
+            $scope.params.after_item = null;
+            $scope.params.before_item = value;
+        }
+        $scope.nav.scrollTop = true;
+        $location.search($scope.params);
+    }
+
+    $scope.sort = function (sort_by, desc) {
+        $scope.params.sort_by = sort_by;
+        $scope.params.desc = desc;
+        $location.search($scope.params);
+    }
+
+    $scope.$on('$routeUpdate', function (e) {
+        $scope.parseParams();
+        $scope.loadLicenseRequests();
+    });
+
+    // Initial load
+    $scope.parseParams();
+    $scope.loadLicenseRequests();
+
+}]);
+
+app.controller("LicenseRequestViewCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService) {
+
+    $scope.licenseRequest = {};
+    $scope.exception = {};
+    $scope.options = {};
+
+    $scope.options.raw = true;
+    $scope.options.html = true;
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/license_requests/" + $routeParams.id)
+
+    // Load the service
+    var params = { expand: "license,license_service"};
+    ApiService.getItem($scope.url, params).then(function (licenseRequest) {
+
+        $scope.licenseRequest = licenseRequest;
+        $scope.renderedLicenseText = licenseRequest.license.label + ":\n" + licenseRequest.license.text;
+        if (licenseRequest.license.instructions) {
+            $scope.renderedLicenseText += "\n\n" + licenseRequest.license.instructions;
+        }
+
+        $scope.renderedLicenseHtml = licenseRequest.license.label + "<br>" + licenseRequest.license.html;
+        if (licenseRequest.license.instructions) {
+            $scope.renderedLicenseHtml += "<br><br>" + licenseRequest.license.instructions;
+        }
+
+        // Pretty format the licenseRequest data
+        $scope.licenseRequest.order = JSON.stringify($scope.licenseRequest.order, null, 4)
+
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+}]);
+
+//#endregion Products
 
 
 
@@ -4073,57 +4219,6 @@ app.controller("ProfileUpdateCtrl", ['$scope', '$routeParams', '$location', 'Gro
 
 
 
-
-//#region Refunds
-
-app.controller("RefundsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
-
-    // Establish your scope containers
-    $scope.exception = {};
-    $scope.resources = {};
-    $scope.resources.refundListUrl = ApiService.buildUrl("/refunds");
-
-}]);
-
-app.controller("RefundsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'ConfirmService', 'GrowlsService', function ($scope, $routeParams, ApiService, ConfirmService, GrowlsService) {
-
-    $scope.refund = {};
-    $scope.exception = {};
-    $scope.fee_currency = null;
-    $scope.items = [];
-    $scope.currencyType = "transaction";
-
-    $scope.prefs = {}
-    $scope.prefs.loadRefundDetails = false;
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/refunds/" + $routeParams.id)
-
-    // Load the refund
-    var params = { expand: "payment,customer,payment_method,gateway,fees,commissions,order,refunds.items" };
-    ApiService.getItem($scope.url, params).then(function (refund) {
-        $scope.refund = refund;
-
-        if (refund.fees.data.length > 0) {
-            $scope.fee_currency = refund.fees.data[0].currency;
-        }
-
-        if (refund.order != null) {
-            $scope.items = refund.order.items;
-        }
-
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-}]);
-
-//#endregion Refunds
-
-
-
-
 app.controller("ReportCommissionsController", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'TimezonesService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, TimezonesService) {
 
     $scope.exception = {};
@@ -4757,6 +4852,57 @@ app.controller("ReportSalesCtrl", ['$scope', '$routeParams', '$location', 'Growl
     $scope.run();
 
 }]);
+
+
+//#region Refunds
+
+app.controller("RefundsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
+
+    // Establish your scope containers
+    $scope.exception = {};
+    $scope.resources = {};
+    $scope.resources.refundListUrl = ApiService.buildUrl("/refunds");
+
+}]);
+
+app.controller("RefundsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'ConfirmService', 'GrowlsService', function ($scope, $routeParams, ApiService, ConfirmService, GrowlsService) {
+
+    $scope.refund = {};
+    $scope.exception = {};
+    $scope.fee_currency = null;
+    $scope.items = [];
+    $scope.currencyType = "transaction";
+
+    $scope.prefs = {}
+    $scope.prefs.loadRefundDetails = false;
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/refunds/" + $routeParams.id)
+
+    // Load the refund
+    var params = { expand: "payment,customer,payment_method,gateway,fees,commissions,order,refunds.items" };
+    ApiService.getItem($scope.url, params).then(function (refund) {
+        $scope.refund = refund;
+
+        if (refund.fees.data.length > 0) {
+            $scope.fee_currency = refund.fees.data[0].currency;
+        }
+
+        if (refund.order != null) {
+            $scope.items = refund.order.items;
+        }
+
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+}]);
+
+//#endregion Refunds
+
+
+
 
 app.controller("AnalyticsSettingsCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
 

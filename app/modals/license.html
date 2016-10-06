@@ -25,12 +25,14 @@
                 </div>
             </div>
 
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label for="expires_in_clicks" class="control-label" translate>License</label>
-                    <textarea class="form-control" select-on-click>{{license.text}}</textarea>
-                    <p class="help-block hidden fadeInDown" translate>Please provide a number less than 100.</p>
+            <div class="col-xs-12 panel-tight-row">
+                <div class="col-xs-12 panel-tight-section">
+                    <label>License</label>
+                    <a class="pull-right pointer" ng-show="!options.html" ng-click="options.html = true" translate>Show HTML</a>
+                    <a class="pull-right pointer" ng-show="options.html" ng-click="options.html = false" translate>Show Text</a>
                 </div>
+                <div class="col-xs-12 panel-tight-section" style="border:1px solid #eee; padding:10px; border-radius: 4px;" ng-show="options.html" ng-bind-html="renderedLicenseHtml"></div>
+                <div class="col-xs-12 panel-tight-section" ng-show="!options.html"><pre>{{renderedLicenseText}}</pre></div>
             </div>
 
         </div>

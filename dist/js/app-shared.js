@@ -5020,6 +5020,17 @@ app.directive('license', ['$uibModal', function ($uibModal) {
                 scope.licenseDetails = {};
                 scope.licenseDetails.params = {};
                 scope.data = {};
+                scope.options = { html: true };
+
+                scope.renderedLicenseText = scope.license.label + ":\n" + scope.license.text;
+                if (scope.license.instructions) {
+                    scope.renderedLicenseText += "\n\n" + scope.license.instructions;
+                }
+
+                scope.renderedLicenseHtml = scope.license.label + "<br>" + scope.license.html;
+                if (scope.license.instructions) {
+                    scope.renderedLicenseHtml += "<br><br>" + scope.license.instructions;
+                }
 
                 var licenseDetailsModal = $uibModal.open({
                     size: "lg",
