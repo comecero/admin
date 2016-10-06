@@ -33,6 +33,17 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     // Templates
     $routeProvider.when("/templates", { templateUrl: "/app/pages/templates/list.html", reloadOnSearch: false });
     $routeProvider.when("/templates/add", { templateUrl: "/app/pages/templates/set.html", reloadOnSearch: true });
+    $routeProvider.when("/templates/:id/edit", { templateUrl: "/app/pages/templates/set.html", reloadOnSearch: true }); 
+    
+    // Events
+    $routeProvider.when("/events", { templateUrl: "/app/pages/events/list.html", reloadOnSearch: false });
+    $routeProvider.when("/events/:id", { templateUrl: "/app/pages/events/view.html", reloadOnSearch: true });
+
+    // Event Subscriptions
+    $routeProvider.when("/event_subscriptions", { templateUrl: "/app/pages/event_subscriptions/list.html", reloadOnSearch: false });
+    $routeProvider.when("/event_subscriptions/add", { templateUrl: "/app/pages/event_subscriptions/set.html", reloadOnSearch: true });
+    $routeProvider.when("/event_subscriptions/:id/edit", { templateUrl: "/app/pages/event_subscriptions/set.html", reloadOnSearch: true });
+
     $routeProvider.when("/templates/:id/edit", { templateUrl: "/app/pages/templates/set.html", reloadOnSearch: true });
     
      // Notification Subscriptions
@@ -59,6 +70,10 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     $routeProvider.when("/files", { templateUrl: "/app/pages/files/list.html", reloadOnSearch: false });
     $routeProvider.when("/files/add", { templateUrl: "/app/pages/files/add.html", reloadOnSearch: true });
     $routeProvider.when("/files/:id/edit", { templateUrl: "/app/pages/files/edit.html", reloadOnSearch: true });
+
+    // Shipments
+    $routeProvider.when("/shipments", { templateUrl: "/app/pages/shipments/list.html", reloadOnSearch: false });
+    $routeProvider.when("/shipments/:id", { templateUrl: "/app/pages/shipments/view.html", reloadOnSearch: false });
 
     // Orders
     $routeProvider.when("/orders", { templateUrl: "/app/pages/orders/list.html", reloadOnSearch: false });

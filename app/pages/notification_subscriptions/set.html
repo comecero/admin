@@ -70,35 +70,7 @@
                         <p class="help-text" translate>The subject of the notification. You can use dynamic values by enclosing in <code ng-non-bindable>{{}}</code>. For example, to reference the order ID in the Order Confirmation notification, you can supply: <code ng-non-bindable>Your Order: {{order.order_id}}</code>. If not supplied, a default subject will be used.</p>
                     </div>
                 </div>
-            </div>
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label for="comments" class="control-label" translate>Description</label>
-                    <input type="text" class="form-control" name="comments" ng-model="notificationSubscription.comments">
-                    <div>
-                        <p class="help-text" translate>For your use in identifying the notification subscription.</p>
-                    </div>
-                </div>
-            </div>
-            
-             <div class="row"></div>
-            
-            <div class="col-sm-12">
-                <div class="form-group" show-errors>
-                    <label class="radio-group-label" translate>Set Active?</label>
-                    <div class="radio-group inline">
-                        <input type="radio" id="active-1" class="radio" name="active" ng-model="notificationSubscription.active" ng-value="true" required>
-                        <label for="active-1" class="radio-label">Yes</label>
-                        <input type="radio" id="active-2" class="radio" name="active" ng-model="notificationSubscription.active" ng-value="false" required>
-                        <label for="active-2" class="radio-label">No</label>
-                        <p class="help-block hidden fadeInDown" translate>Please set active state.</p>
-                    </div>
-                    <div>
-                        <p class="help-text" translate>Indicates that subscription should active or not.</p>
-                    </div>
-                </div>
-            </div>
-            
+            </div>            
             <div class="col-xs-12">
                 <div class="form-group">
                     <label class="control-label clear" translate>Template</label>
@@ -122,6 +94,35 @@
                                 </p>
                             </li>
                         </ul>
+                    </div>
+                    <div>
+                        <p class="help-text" translate>Select a template to use for notifications. If a template is not supplied, a default template will be used.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12">
+                <div class="form-group" show-errors>
+                    <label class="radio-group-label" translate>Set Active?</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="active-1" class="radio" name="active" ng-model="notificationSubscription.active" ng-value="true" required>
+                        <label for="active-1" class="radio-label">Yes</label>
+                        <input type="radio" id="active-2" class="radio" name="active" ng-model="notificationSubscription.active" ng-value="false" required>
+                        <label for="active-2" class="radio-label">No</label>
+                        <p class="help-block hidden fadeInDown" translate>Please set active state.</p>
+                    </div>
+                    <div>
+                        <p class="help-text" translate>Indicates that subscription should active or not.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label for="comments" class="control-label" translate>Description</label>
+                    <input type="text" class="form-control" name="comments" ng-model="notificationSubscription.comments">
+                    <div>
+                        <p class="help-text" translate>For your use in identifying the notification subscription.</p>
                     </div>
                 </div>
             </div>
