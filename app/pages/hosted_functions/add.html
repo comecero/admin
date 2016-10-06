@@ -1,0 +1,71 @@
+﻿<div ng-controller="HostedFunctionsAddCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1>Add a Hosted Function</h1>
+    </div>
+
+    <div class="panel panel-body light-shadow">
+        <form name="form" class="form-group dropzone" dropzone dropzone-url="/hosted_functions" dropzone-max-files="1" dropzone-max-size="15000000" dropzone-auto-upload="false" dropzone-template-id="dz-file" dropzone-show-delete="false">
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="name" class="control-label" translate>Name</label>
+                    <input type="text" class="form-control" name="name" ng-model="hostedFunction.name" placeholder="{{ 'Enter name' | translate}}" required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a name</p>
+                </div>
+            </div>
+
+            
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="handler" class="control-label" translate>Handler</label>
+                    <input type="text" class="form-control" name="handler" ng-model="hostedFunction.handler" placeholder="{{ 'Handler' | translate}}" required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a handler</p>
+                </div>
+            </div>
+
+            <div class="col-md-12 col-xs-12">
+                <div class="form-group" show-errors>
+                    <label class="radio-group-label required" translate>Environment</label>
+                    <div class="radio-group">
+                        <input type="radio" id="environment-1" class="radio" name="environment" ng-model="hostedFunction.environment" value="nodejs4.3" required>
+                        <label for="environment-1" class="radio-label">Nodejs4.3</label>
+                        <input type="radio" id="environment-2" class="radio" name="environment" ng-model="hostedFunction.environment" value="java8" required>
+                        <label for="environment-2" class="radio-label">Java8</label>
+                        <input type="radio" id="environment-3" class="radio" name="environment" ng-model="hostedFunction.environment" value="python2.7" required>
+                        <label for="environment-3" class="radio-label">Python2.7</label>
+                    </div>
+                    <p class="help-block hidden fadeInDown" translate>Please select environment</p>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="description" class="control-label" translate>Description</label>
+                    <div>
+                        <textarea class="form-control" id="description" name="description" ng-model="hostedFunction.description"></textarea>
+                    </div>
+                </div>
+                <p class="maxlength-message" max-length="1000" item="form.description"></p>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <button id="top" class="btn btn-danger btn-right spacer-b10" ng-click="cancel()" ng-if="uploadSending"><i class="icon fa fa-times-circle"></i>&nbsp;<span translate>Cancel Upload</span></button>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+        </form>
+    </div>
+</div>
