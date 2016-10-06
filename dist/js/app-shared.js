@@ -3404,6 +3404,7 @@ app.directive('templateSelect', ['ApiService', 'ConfirmService', 'GrowlsService'
     };
 }]);
 
+
 app.directive('imagesSelect', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibModal', function (ApiService, ConfirmService, GrowlsService, $uibModal) {
     return {
         restrict: 'A',
@@ -4974,10 +4975,10 @@ app.filter('truncateUrl', function () {
     };
 });
 
-app.filter('removeUnderscore', function () {
-    return function (str) {
+app.filter('replace', function () {
+    return function (str, find, rep) {
         if (str != null) {
-            return str.split("_").join(" ");
+            return str.split(find).join(rep);
         }
     }
 });

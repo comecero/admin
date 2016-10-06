@@ -88,10 +88,10 @@ app.filter('truncateUrl', function () {
     };
 });
 
-app.filter('removeUnderscore', function () {
-    return function (str) {
+app.filter('replace', function () {
+    return function (str, find, rep) {
         if (str != null) {
-            return str.split("_").join(" ");
+            return str.split(find).join(rep);
         }
     }
 });

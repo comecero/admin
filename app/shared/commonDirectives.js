@@ -3109,6 +3109,7 @@ app.directive('templateSelect', ['ApiService', 'ConfirmService', 'GrowlsService'
     };
 }]);
 
+
 app.directive('imagesSelect', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibModal', function (ApiService, ConfirmService, GrowlsService, $uibModal) {
     return {
         restrict: 'A',

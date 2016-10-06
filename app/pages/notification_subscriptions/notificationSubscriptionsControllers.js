@@ -1,6 +1,3 @@
-
-//#region NotificationSubscriptions
-
 app.controller("NotificationSubscriptionsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
 
     // Establish your scope containers
@@ -116,9 +113,6 @@ app.controller("NotificationSubscriptionsSetCtrl", ['$scope', '$routeParams', '$
         var params = {expand:"template"};
         ApiService.getItem($scope.url, params).then(function (notificationSubscription) {
             $scope.notificationSubscription = notificationSubscription;
-
-            
-
         }, function (error) {
             $scope.exception.error = error;
             window.scrollTo(0, 0);
@@ -135,7 +129,6 @@ app.controller("NotificationSubscriptionsSetCtrl", ['$scope', '$routeParams', '$
         // Clear any previous errors
         $scope.exception.error = null;
     }
-
    
     $scope.confirmCancel = function () {
         var confirm = { id: "changes_lost" };
@@ -187,17 +180,15 @@ app.controller("NotificationSubscriptionsSetCtrl", ['$scope', '$routeParams', '$
         prepareSubmit();
 
         if ($scope.form.$invalid) {
+            window.scrollTo(0, 0);
             return;
         }
         
         if ($scope.notificationSubscription.template && $scope.notificationSubscription.template.template_id) {
             $scope.notificationSubscription.template_id = $scope.notificationSubscription.template.template_id;
         }
-        
 
-        ApiService.set($scope.notificationSubscription, $scope.url, { show: "notification_subscription_id,name" })
-        .then(
-        function (notificationSubscription) {
+        ApiService.set($scope.notificationSubscription, $scope.url, { show: "notification_subscription_id,name" }).then(function (notificationSubscription) {
             GrowlsService.addGrowl({ id: "edit_success", name: notificationSubscription.notification_subscription_id, type: "success", notification_subscription_id: notificationSubscription.notification_subscription_id, url: "#/notification_subscriptions/" + notificationSubscription.notification_subscription_id + "/edit" });
             window.location = "#/notification_subscriptions";
         },
@@ -209,9 +200,7 @@ app.controller("NotificationSubscriptionsSetCtrl", ['$scope', '$routeParams', '$
 
     $scope.delete = function () {
 
-        ApiService.remove($scope.notificationSubscription.url)
-        .then(
-        function (notificationSubscription) {
+        ApiService.remove($scope.notificationSubscription.url).then(function (notificationSubscription) {
             GrowlsService.addGrowl({ id: "delete_success", name: $scope.notificationSubscription.notification_subscription_id, type: "success" });
             utils.redirect($location, "/notification_subscriptions");
         },
@@ -227,8 +216,5 @@ app.controller("NotificationSubscriptionsSetCtrl", ['$scope', '$routeParams', '$
     }
 
 }]);
-
-//#endregion Products
-
 
 
