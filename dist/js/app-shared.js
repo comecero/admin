@@ -3328,6 +3328,119 @@ app.directive('subscriptionPlanSelect', ['ApiService', 'ConfirmService', 'Growls
 }]);
 
 
+app.directive('templateSelect', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibModal', '$rootScope', function (ApiService, ConfirmService, GrowlsService, $uibModal, $rootScope) {
+    return {
+        restrict: 'A',
+        scope: {
+            template: '=?',
+            error: '=?'
+        },
+        link: function (scope, elem, attrs, ctrl) {
+
+            elem.click(function () {
+
+                scope.templateSelect = {};
+                scope.templateSelect.params = {};
+                scope.templateSelect.params.show = "template_id,comments,date_created,date_modified";
+                scope.templateSelect.params.limit = 5;
+                scope.templateSelect.params.sort_by = "name";
+                scope.templateSelect.params.desc = false;
+                scope.template = {};
+                scope.settings = $rootScope.settings;
+
+                var loadtemplates = function (url) {
+                    ApiService.getList(url, scope.templateSelect.params).then(function (templateList) {
+                        scope.templateList = templateList;
+                    }, function (error) {
+                        scope.modalError = error;
+                    });
+                }
+
+                // Load the initial list of templates
+                loadtemplates(ApiService.buildUrl("/templates"));
+
+                // Determine which tab is active. If no permissions to create, the modal will also hide the "new template" option.
+                if (utils.hasPermission("templates", "create")) {
+                    scope.templateSelectTabs = [
+                      { active: true },
+                      { active: false }
+                    ];
+                } else {
+                    scope.templateSelectTabs = [
+                      { active: false },
+                      { active: true }
+                    ];
+                }
+
+                var templateSelectModal = $uibModal.open({
+                    size: "lg",
+                    templateUrl: "app/modals/template_select.html",
+                    scope: scope
+                });
+
+                // Handle when the modal is closed or dismissed
+                templateSelectModal.result.then(function (template) {
+                    scope.template = template;
+                    // Clear out any error messasges
+                    scope.modalError = null;
+                }, function () {
+                    scope.modalError = null;
+                });
+
+                scope.templateSelect.ok = function (result) {
+                    templateSelectModal.close(result);
+                };
+
+                scope.templateSelect.cancel = function () {
+                    templateSelectModal.dismiss();
+                };
+
+                scope.templateSelect.search = function () {
+                    scope.templateSelect.params.q = scope.templateSelect.q;
+                    loadtemplates(ApiService.buildUrl("/templates"));
+                };
+
+                scope.templateSelect.sort = function (sort_by, desc) {
+                    scope.templateSelect.params.sort_by = sort_by;
+                    scope.templateSelect.params.desc = desc;
+                    loadtemplates(ApiService.buildUrl("/templates"));
+                }
+
+                scope.templateSelect.setParam = function (param, value) {
+                    scope.templateSelect.params[param] = value;
+                    loadtemplates(ApiService.buildUrl("/templates"));
+                }
+
+                scope.templateSelect.create = function (form) {
+
+                    if (form.$invalid) {
+                        return;
+                    }
+
+                    ApiService.set(scope.template, ApiService.buildUrl("/templates"))
+                        .then(
+                        function (template) {
+                            templateSelectModal.close(template);
+                        },
+                        function (error) {
+                            scope.modalError = error;
+                        });
+                }
+
+                scope.templateSelect.movePage = function (direction) {
+                    if (direction == "+") {
+                        loadtemplates(scope.templateList.next_page_url);
+                    } else {
+                        loadtemplates(scope.templateList.previous_page_url);
+                    }
+                }
+
+            });
+        }
+    };
+}]);
+
+
 app.directive('imagesSelect', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibModal', function (ApiService, ConfirmService, GrowlsService, $uibModal) {
     return {
         restrict: 'A',
@@ -5022,10 +5135,10 @@ app.filter('truncateUrl', function () {
     };
 });
 
-app.filter('removeUnderscore', function () {
-    return function (str) {
+app.filter('replace', function () {
+    return function (str, find, rep) {
         if (str != null) {
-            return str.split("_").join(" ");
+            return str.split(find).join(rep);
         }
     }
 });

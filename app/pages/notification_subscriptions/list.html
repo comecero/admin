@@ -1,0 +1,116 @@
+<div ng-controller="NotificationSubscriptionsListCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1>Notification Subscriptions</h1>
+        <a id="top" href="/#/notification_subscriptions/add" class="btn btn-primary btn-right" translate resource="notification_subscriptions" method="create"><span class="hidden-xs" translate>Add New</span><span class="hidden-sm hidden-md hidden-lg"><i class="fa fa-plus"></i></span></a>
+    </div>  
+
+    <div class="panel panel-body light-shadow">
+        <div class="col-sm-12 text-right spacer-b40">
+            <form class="form-inline">
+                <div class="form-group has-feedback">
+                    <input type="text" class="form-control" ng-model="params.q" ng-change="search()" ng-model-options="{ updateOn: 'default blur', debounce: { default: 750, blur: 0 } }" select-on-click placeholder="{{ 'Search' | translate }}...">
+                    <span class="fa fa-search form-control-feedback"></span>
+                </div>
+            </form>
+        </div>
+
+        <div class="gridtable">
+
+            <div class="gridtable-header hidden-xs hidden-sm">
+
+                <div class="col-md-3"><label>ID</label></div>
+                <div class="col-md-5"><label><label ng-click="sort('type', !params.desc)" class="pointer text-primary" translate>Type</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="params.sort_by == 'type' && params.desc == true"></i><i class="icon fa fa-caret-up" ng-if="params.sort_by == 'type' && params.desc == false"></i></label></div>
+                 <div class="col-md-2">
+                     <div class="btn-group" uib-dropdown>
+                         <button type="button" class="btn btn-default dropdown-toggle" uib-dropdown-toggle><span translate>Status</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                         <ul class="dropdown-menu">
+                             <li ng-click="setParam('active', null)" ng-class="{ 'selected-li': params.active == null }"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
+                             <li ng-click="setParam('active', true)" ng-class="{ 'selected-li': params.active == true }"><a><i class="dropdown-icon fa fa-check-circle text-success"></i>&nbsp;&nbsp;<span translate>Active</span></a></li>
+                             <li ng-click="setParam('active', false)" ng-class="{'selected-li': params.active == false }"><a><i class="dropdown-icon fa fa-minus-circle text-warning"></i>&nbsp;&nbsp;<span translate>Inactive</span></a></li>
+                         </ul>
+                     </div>
+
+                 </div>
+                <div class="col-md-2 text-right"><label ng-click="sort('date_created', !params.desc)" class="pointer text-primary" translate>Created</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="params.sort_by == 'date_created' && params.desc == true"></i><i class="icon fa fa-caret-up" ng-if="params.sort_by == 'date_created' && params.desc == false"></i></div>
+            </div>
+
+            <div class="col-xs-12 hidden-md hidden-lg padding-l0">
+
+                <div class="btn-group" uib-dropdown>
+                    <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Filter</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown-header">Status</li>
+                        <li ng-click="setParam('active', null)" ng-class="{ 'selected-li': params.active == null }"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
+                        <li ng-click="setParam('active', true)" ng-class="{ 'selected-li': params.active == true }"><a><i class="dropdown-icon fa fa-check-circle text-success"></i>&nbsp;&nbsp;<span translate>Active</span></a></li>
+                        <li ng-click="setParam('active', false)" ng-class="{'selected-li': params.active == false }"><a><i class="dropdown-icon fa fa-minus-circle text-warning"></i>&nbsp;&nbsp;<span translate>Inactive</span></a></li>
+                    </ul>
+                </div>
+               
+                <div class="btn-group"uib-dropdown>
+                    <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Sort</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown-header">Type</li>
+                        <li ng-click="sort('type', false)" ng-class="{'selected-li': params.sort_by == 'type' && params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                        <li ng-click="sort('type', true)" ng-class="{'selected-li': params.sort_by == 'type' && params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                        <li class="divider"></li>
+                        <li class="dropdown-header">Date Created</li>
+                        <li ng-click="sort('date_created', false)" ng-class="{'selected-li': params.sort_by == 'date_created' && params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                        <li ng-click="sort('date_created', true)" ng-class="{'selected-li': params.sort_by == 'date_created' && params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                        <li class="divider"></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="row spacer-b10 hidden-md hidden-lg"></div> <!--Needed to have the buttons clear-->
+
+            <div class="gridtable-row" ng-repeat="notificationSubscription in notificationSubscriptions.notificationSubscriptionList.data">
+
+                <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>ID</label></div>
+                    <div class="col-xs-7 col-sm-12 col-md-12 value"><a href="#/notification_subscriptions/{{notificationSubscription.notification_subscription_id}}/edit">{{notificationSubscription.notification_subscription_id}}</a></div>
+                </div>
+
+               <div class="col-xs-12 col-sm-6 col-md-5">
+                    <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Type</label></div>
+                    <div class="col-xs-7 col-sm-12 col-md-12 text-capitalize value"><span>{{notificationSubscription.type | replace: ':':' '}}</span></div>
+                </div>
+                 <div class="col-xs-12 col-sm-6 col-md-2">
+                    <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Active</label></div>
+                    <div class="col-xs-7 col-sm-12 col-md-12 text-capitalize value">
+                        <span ng-if="notificationSubscription.active == true"><i class="icon fa fa-check-circle text-success"></i> <span translate>Active</span></span>
+                        <span ng-if="notificationSubscription.active == false"><i class="icon fa fa-minus-circle text-warning"></i>&nbsp;<span translate>Inactive</span></span>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-sm-6 col-md-2">
+                    <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Created</label></div>
+                    <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value"><span>{{notificationSubscription.date_created | date:'shortDate'}}</span></div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Show pagination if there is at least one page -->
+        <div class="col-sm-12" ng-if="notificationSubscriptions.notificationSubscriptionList.data.length > 0">
+            <ul class="pager">
+                <li class="previous" ng-click="movePage('-')" ng-show="notificationSubscriptions.notificationSubscriptionList.previous_page_offset !== null"><a><i class="fa fa-chevron-circle-left"></i> <span translate>Back</span></a></li>
+                <li class="next" ng-click="movePage('+')" ng-show="notificationSubscriptions.notificationSubscriptionList.next_page_offset !== null"><a><span translate>Next</span> <i class="fa fa-chevron-circle-right"></i></a></li>
+            </ul>
+            <p class="text-right" ng-if="notificationSubscriptions.notificationSubscriptionList">Showing page {{notificationSubscriptions.notificationSubscriptionList.current_page}} of {{notificationSubscriptions.notificationSubscriptionList.total_pages}}</p>
+        </div>
+
+        <!-- Show a "not found" message if no notificationSubscriptions were found  -->
+        <div class="col-sm-12" ng-if="notificationSubscriptions.notificationSubscriptionList.data.length == 0">
+            <p class="no-info" translate>No notification subscriptions found</p>
+        </div>
+    </div>
+
+</div>

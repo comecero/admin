@@ -109,7 +109,7 @@
 
                     <div class="col-xs-12 col-sm-6 panel-tight-row" ng-if="model.subscription.cancellation_reason">
                         <div class="col-xs-12 col-md-4 panel-tight-section"><label translate>Cancel Reason</label></div>
-                        <div class="col-xs-12 col-md-8 panel-tight-section text-capitalize-first"><div>{{model.subscription.cancellation_reason | removeUnderscore}}</div></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section text-capitalize-first"><div>{{model.subscription.cancellation_reason | replace: '_':' '}}</div></div>
                     </div>
 
                     <div class="col-xs-12 col-sm-6 panel-tight-row">
@@ -164,7 +164,7 @@
 
                     <div class="col-xs-12 col col-sm-6 panel-tight-row">
                         <div class="col-xs-12 col-md-4 panel-tight-section"><label>Payment Method</label></div>
-                        <div class="col-xs-12 col-md-8 panel-tight-section text-capitalize">{{model.subscription.payment_method | removeUnderscore }}</div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section text-capitalize">{{model.subscription.payment_method | replace: '_':' ' }}</div>
                     </div>
 
                 </div>

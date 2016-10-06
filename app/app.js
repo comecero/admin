@@ -39,10 +39,17 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     $routeProvider.when("/events", { templateUrl: "/app/pages/events/list.html", reloadOnSearch: false });
     $routeProvider.when("/events/:id", { templateUrl: "/app/pages/events/view.html", reloadOnSearch: true });
 
-    // Templates
+    // Event Subscriptions
     $routeProvider.when("/event_subscriptions", { templateUrl: "/app/pages/event_subscriptions/list.html", reloadOnSearch: false });
     $routeProvider.when("/event_subscriptions/add", { templateUrl: "/app/pages/event_subscriptions/set.html", reloadOnSearch: true });
     $routeProvider.when("/event_subscriptions/:id/edit", { templateUrl: "/app/pages/event_subscriptions/set.html", reloadOnSearch: true });
+
+    $routeProvider.when("/templates/:id/edit", { templateUrl: "/app/pages/templates/set.html", reloadOnSearch: true });
+    
+     // Notification Subscriptions
+    $routeProvider.when("/notification_subscriptions", { templateUrl: "/app/pages/notification_subscriptions/list.html", reloadOnSearch: false });
+    $routeProvider.when("/notification_subscriptions/add", { templateUrl: "/app/pages/notification_subscriptions/set.html", reloadOnSearch: true });
+    $routeProvider.when("/notification_subscriptions/:id/edit", { templateUrl: "/app/pages/notification_subscriptions/set.html", reloadOnSearch: true });
 
     // Subscription Plans
     $routeProvider.when("/subscription_plans", { templateUrl: "/app/pages/subscription_plans/list.html", reloadOnSearch: false });
