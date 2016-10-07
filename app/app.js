@@ -75,6 +75,11 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     $routeProvider.when("/files/add", { templateUrl: "/app/pages/files/add.html", reloadOnSearch: true });
     $routeProvider.when("/files/:id/edit", { templateUrl: "/app/pages/files/edit.html", reloadOnSearch: true });
 
+    // Hosted Functions
+    $routeProvider.when("/hosted_functions", { templateUrl: "/app/pages/hosted_functions/list.html", reloadOnSearch: false });
+    $routeProvider.when("/hosted_functions/add", { templateUrl: "/app/pages/hosted_functions/add.html", reloadOnSearch: true });
+    $routeProvider.when("/hosted_functions/:id/edit", { templateUrl: "/app/pages/hosted_functions/edit.html", reloadOnSearch: true });
+
     // Shipments
     $routeProvider.when("/shipments", { templateUrl: "/app/pages/shipments/list.html", reloadOnSearch: false });
     $routeProvider.when("/shipments/:id", { templateUrl: "/app/pages/shipments/view.html", reloadOnSearch: false });
