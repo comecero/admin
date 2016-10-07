@@ -3086,13 +3086,12 @@ app.directive('fileSelect', ['ApiService', 'ConfirmService', 'GrowlsService', '$
 
             elem.click(function () {
 
-                scope.fileSelect = {};
+                scope.fileSelect = { file: {} };
                 scope.fileSelect.params = {};
                 scope.fileSelect.params.show = "file_id,name,filename,version,bytes,description,date_created,date_modified";
                 scope.fileSelect.params.limit = 5;
                 scope.fileSelect.params.sort_by = "name";
                 scope.fileSelect.params.desc = false;
-                scope.fileSelect = { file: {} };
                 scope.options = { by_url: false };
 
                 var loadFiles = function (url) {
@@ -4187,7 +4186,7 @@ app.directive('isProductIdAvailable', ['$http', '$q', 'ApiService', function ($h
             });
         }
     }
-}])
+}]);
 
 
 app.directive('showErrors', function () {
@@ -4781,7 +4780,7 @@ app.directive('download', ['ApiService', 'ConfirmService', 'GrowlsService', '$ui
                 scope.downloadDetails = {};
                 scope.downloadDetails.params = {};
                 scope.data = {};
-               
+
                 // Datepicker options
                 scope.data.expires = new Date(scope.download.expires);
                 scope.datepicker = {};
