@@ -31,7 +31,7 @@
             <div class="col-md-6 col-xs-12" ng-show="add && gateway_config.payment_method_types.length > 1">
                 <div class="form-group" show-errors>
                     <label for="payment_method_type" class="control-label" translate>Payment Method</label>
-                    <select class="form-control text-capitalize" name="payment_method_type" ng-model="gateway.payment_method_type" ng-options="payment_method_type as (payment_method_type | removeUnderscore ) for payment_method_type in gateway_config.payment_method_types" required></select>
+                    <select class="form-control text-capitalize" name="payment_method_type" ng-model="gateway.payment_method_type" ng-options="payment_method_type as (payment_method_type | replace: '_':' ' ) for payment_method_type in gateway_config.payment_method_types" required></select>
                     <p class="help-block hidden fadeInDown" translate>Please provide a payment method</p>
                 </div>
             </div>
@@ -39,14 +39,14 @@
             <div class="col-md-6 col-xs-12" ng-show="add && gateway_config.payment_method_types.length == 1">
                 <div class="form-group">
                     <label for="payment_method_type" class="control-label" translate>Payment Method</label>
-                    <div class="text-capitalize">{{gateway_config.payment_method_types[0] | removeUnderscore }}</div>
+                    <div class="text-capitalize">{{gateway_config.payment_method_types[0] | replace: '_':' ' }}</div>
                 </div>
             </div>
 
             <div class="col-md-6 col-xs-12" ng-show="update">
                 <div class="form-group">
                     <label for="payment_method_type" class="control-label" translate>Payment Method</label>
-                    <div class="text-capitalize">{{gateway.payment_method_type | removeUnderscore }}</div>
+                    <div class="text-capitalize">{{gateway.payment_method_type | replace: '_':' ' }}</div>
                 </div>
             </div>
 

@@ -182,6 +182,39 @@
 .btn-warning.hover {
   background-color: #f3a537;
 }
+.btn-purple {
+  background-color: #a959bd;
+  border-color: #9f48b5;
+  color: #ffffff;
+}
+.btn-purple:hover,
+.btn-purple:active,
+.btn-purple.hover {
+  background-color: #9f48b5;
+  color: #f2f2f2;
+}
+.btn-teal {
+  background-color: #12a199;
+  border-color: #0f8a83;
+  color: #ffffff;
+}
+.btn-teal:hover,
+.btn-teal:active,
+.btn-teal.hover {
+  background-color: #0f8a83;
+  color: #f2f2f2;
+}
+.btn-blue {
+  background-color: #579be6;
+  border-color: #418ee3;
+  color: #ffffff;
+}
+.btn-blue:hover,
+.btn-blue:active,
+.btn-blue.hover {
+  background-color: #418ee3;
+  color: #f2f2f2;
+}
 .btn-outline {
   border: 1px solid #fff;
   background: transparent;
@@ -2338,7 +2371,7 @@ a.stat-cell:hover {
 }
 .sidebar-menu .treeview-menu > li {
   margin: 0;
-  padding: 5px 0 5px 33px;
+  padding: 5px 0 5px 25px;
 }
 .sidebar-menu .treeview-menu > li > a {
   padding: 5px 5px 5px 15px;

@@ -1,7 +1,7 @@
 ﻿    <div class="panel-body panel-tight">
         <div class="col-xs-12 col-sm-6 panel-tight-row">
             <div class="col-xs-12 col-md-4 panel-tight-section"><label translate>Type</label></div>
-            <div class="col-xs-12 col-md-8 panel-tight-section text-capitalize">{{paymentMethodData.type | removeUnderscore }}</div>
+            <div class="col-xs-12 col-md-8 panel-tight-section text-capitalize">{{paymentMethodData.type | replace: '_':' ' }}</div>
         </div>
 
         <div class="col-xs-12 col-sm-6 panel-tight-row" ng-if="transaction_type == 'payment' && transaction_id">

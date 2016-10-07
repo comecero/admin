@@ -39,10 +39,17 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     $routeProvider.when("/events", { templateUrl: "/app/pages/events/list.html", reloadOnSearch: false });
     $routeProvider.when("/events/:id", { templateUrl: "/app/pages/events/view.html", reloadOnSearch: true });
 
-    // Templates
+    // Event Subscriptions
     $routeProvider.when("/event_subscriptions", { templateUrl: "/app/pages/event_subscriptions/list.html", reloadOnSearch: false });
     $routeProvider.when("/event_subscriptions/add", { templateUrl: "/app/pages/event_subscriptions/set.html", reloadOnSearch: true });
     $routeProvider.when("/event_subscriptions/:id/edit", { templateUrl: "/app/pages/event_subscriptions/set.html", reloadOnSearch: true });
+
+    $routeProvider.when("/templates/:id/edit", { templateUrl: "/app/pages/templates/set.html", reloadOnSearch: true });
+    
+     // Notification Subscriptions
+    $routeProvider.when("/notification_subscriptions", { templateUrl: "/app/pages/notification_subscriptions/list.html", reloadOnSearch: false });
+    $routeProvider.when("/notification_subscriptions/add", { templateUrl: "/app/pages/notification_subscriptions/set.html", reloadOnSearch: true });
+    $routeProvider.when("/notification_subscriptions/:id/edit", { templateUrl: "/app/pages/notification_subscriptions/set.html", reloadOnSearch: true });
 
     // Subscription Plans
     $routeProvider.when("/subscription_plans", { templateUrl: "/app/pages/subscription_plans/list.html", reloadOnSearch: false });
@@ -54,6 +61,10 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     $routeProvider.when("/license_services/add", { templateUrl: "/app/pages/license_services/set.html", reloadOnSearch: true });
     $routeProvider.when("/license_services/:id/edit", { templateUrl: "/app/pages/license_services/set.html", reloadOnSearch: true });
 
+    // License Requests
+    $routeProvider.when("/license_requests", { templateUrl: "/app/pages/license_requests/list.html", reloadOnSearch: false });
+    $routeProvider.when("/license_requests/:id", { templateUrl: "/app/pages/license_requests/view.html", reloadOnSearch: true });
+
     // Images
     $routeProvider.when("/images", { templateUrl: "/app/pages/images/list.html", reloadOnSearch: false });
     $routeProvider.when("/images/add", { templateUrl: "/app/pages/images/add.html", reloadOnSearch: true });
@@ -63,6 +74,11 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     $routeProvider.when("/files", { templateUrl: "/app/pages/files/list.html", reloadOnSearch: false });
     $routeProvider.when("/files/add", { templateUrl: "/app/pages/files/add.html", reloadOnSearch: true });
     $routeProvider.when("/files/:id/edit", { templateUrl: "/app/pages/files/edit.html", reloadOnSearch: true });
+
+    // Hosted Functions
+    $routeProvider.when("/hosted_functions", { templateUrl: "/app/pages/hosted_functions/list.html", reloadOnSearch: false });
+    $routeProvider.when("/hosted_functions/add", { templateUrl: "/app/pages/hosted_functions/add.html", reloadOnSearch: true });
+    $routeProvider.when("/hosted_functions/:id/edit", { templateUrl: "/app/pages/hosted_functions/edit.html", reloadOnSearch: true });
 
     // Shipments
     $routeProvider.when("/shipments", { templateUrl: "/app/pages/shipments/list.html", reloadOnSearch: false });

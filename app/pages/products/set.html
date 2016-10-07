@@ -130,6 +130,7 @@
                                 <p ng-if="data.file.version"><span translate>Version</span>: <strong>{{data.file.version}}</strong></p>
                                 <p><span translate>Size</span>: <strong>{{data.file.bytes | bytesToMB}}</strong></p>
                                 <p><span translate>Created</span>: <strong>{{data.file.date_created | date:'mediumDate'}} {{data.file.date_created | date:'shortTime'}}</strong></p>
+                                <p><span translate>Updated</span>: <strong>{{data.file.date_modified | date:'mediumDate'}} {{data.file.date_modified | date:'shortTime'}}</strong></p>
                                 <p ng-if="data.file.description"><span translate>Description</span>: <em>{{data.file.description}}</em></p>
                                 <p class="text-right">
                                     <a class="btn btn-danger btn-xs spacer-t10" ng-click="removeFile()" translate>Remove</a>

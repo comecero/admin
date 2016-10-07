@@ -3086,13 +3086,12 @@ app.directive('fileSelect', ['ApiService', 'ConfirmService', 'GrowlsService', '$
 
             elem.click(function () {
 
-                scope.fileSelect = {};
+                scope.fileSelect = { file: {} };
                 scope.fileSelect.params = {};
                 scope.fileSelect.params.show = "file_id,name,filename,version,bytes,description,date_created,date_modified";
                 scope.fileSelect.params.limit = 5;
                 scope.fileSelect.params.sort_by = "name";
                 scope.fileSelect.params.desc = false;
-                scope.fileSelect = { file: {} };
                 scope.options = { by_url: false };
 
                 var loadFiles = function (url) {
@@ -3319,6 +3318,119 @@ app.directive('subscriptionPlanSelect', ['ApiService', 'ConfirmService', 'Growls
                         loadSubscriptionPlans(scope.subscriptionPlanList.next_page_url);
                     } else {
                         loadSubscriptionPlans(scope.subscriptionPlanList.previous_page_url);
+                    }
+                }
+
+            });
+        }
+    };
+}]);
+
+
+app.directive('templateSelect', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibModal', '$rootScope', function (ApiService, ConfirmService, GrowlsService, $uibModal, $rootScope) {
+    return {
+        restrict: 'A',
+        scope: {
+            template: '=?',
+            error: '=?'
+        },
+        link: function (scope, elem, attrs, ctrl) {
+
+            elem.click(function () {
+
+                scope.templateSelect = {};
+                scope.templateSelect.params = {};
+                scope.templateSelect.params.show = "template_id,comments,date_created,date_modified";
+                scope.templateSelect.params.limit = 5;
+                scope.templateSelect.params.sort_by = "name";
+                scope.templateSelect.params.desc = false;
+                scope.template = {};
+                scope.settings = $rootScope.settings;
+
+                var loadtemplates = function (url) {
+                    ApiService.getList(url, scope.templateSelect.params).then(function (templateList) {
+                        scope.templateList = templateList;
+                    }, function (error) {
+                        scope.modalError = error;
+                    });
+                }
+
+                // Load the initial list of templates
+                loadtemplates(ApiService.buildUrl("/templates"));
+
+                // Determine which tab is active. If no permissions to create, the modal will also hide the "new template" option.
+                if (utils.hasPermission("templates", "create")) {
+                    scope.templateSelectTabs = [
+                      { active: true },
+                      { active: false }
+                    ];
+                } else {
+                    scope.templateSelectTabs = [
+                      { active: false },
+                      { active: true }
+                    ];
+                }
+
+                var templateSelectModal = $uibModal.open({
+                    size: "lg",
+                    templateUrl: "app/modals/template_select.html",
+                    scope: scope
+                });
+
+                // Handle when the modal is closed or dismissed
+                templateSelectModal.result.then(function (template) {
+                    scope.template = template;
+                    // Clear out any error messasges
+                    scope.modalError = null;
+                }, function () {
+                    scope.modalError = null;
+                });
+
+                scope.templateSelect.ok = function (result) {
+                    templateSelectModal.close(result);
+                };
+
+                scope.templateSelect.cancel = function () {
+                    templateSelectModal.dismiss();
+                };
+
+                scope.templateSelect.search = function () {
+                    scope.templateSelect.params.q = scope.templateSelect.q;
+                    loadtemplates(ApiService.buildUrl("/templates"));
+                };
+
+                scope.templateSelect.sort = function (sort_by, desc) {
+                    scope.templateSelect.params.sort_by = sort_by;
+                    scope.templateSelect.params.desc = desc;
+                    loadtemplates(ApiService.buildUrl("/templates"));
+                }
+
+                scope.templateSelect.setParam = function (param, value) {
+                    scope.templateSelect.params[param] = value;
+                    loadtemplates(ApiService.buildUrl("/templates"));
+                }
+
+                scope.templateSelect.create = function (form) {
+
+                    if (form.$invalid) {
+                        return;
+                    }
+
+                    ApiService.set(scope.template, ApiService.buildUrl("/templates"))
+                        .then(
+                        function (template) {
+                            templateSelectModal.close(template);
+                        },
+                        function (error) {
+                            scope.modalError = error;
+                        });
+                }
+
+                scope.templateSelect.movePage = function (direction) {
+                    if (direction == "+") {
+                        loadtemplates(scope.templateList.next_page_url);
+                    } else {
+                        loadtemplates(scope.templateList.previous_page_url);
                     }
                 }
 
@@ -4074,7 +4186,7 @@ app.directive('isProductIdAvailable', ['$http', '$q', 'ApiService', function ($h
             });
         }
     }
-}])
+}]);
 
 
 app.directive('showErrors', function () {
@@ -4668,7 +4780,7 @@ app.directive('download', ['ApiService', 'ConfirmService', 'GrowlsService', '$ui
                 scope.downloadDetails = {};
                 scope.downloadDetails.params = {};
                 scope.data = {};
-               
+
                 // Datepicker options
                 scope.data.expires = new Date(scope.download.expires);
                 scope.datepicker = {};
@@ -4907,6 +5019,17 @@ app.directive('license', ['$uibModal', function ($uibModal) {
                 scope.licenseDetails = {};
                 scope.licenseDetails.params = {};
                 scope.data = {};
+                scope.options = { html: true };
+
+                scope.renderedLicenseText = scope.license.label + ":\n" + scope.license.text;
+                if (scope.license.instructions) {
+                    scope.renderedLicenseText += "\n\n" + scope.license.instructions;
+                }
+
+                scope.renderedLicenseHtml = scope.license.label + "<br>" + scope.license.html;
+                if (scope.license.instructions) {
+                    scope.renderedLicenseHtml += "<br><br>" + scope.license.instructions;
+                }
 
                 var licenseDetailsModal = $uibModal.open({
                     size: "lg",
@@ -5022,10 +5145,10 @@ app.filter('truncateUrl', function () {
     };
 });
 
-app.filter('removeUnderscore', function () {
-    return function (str) {
+app.filter('replace', function () {
+    return function (str, find, rep) {
         if (str != null) {
-            return str.split("_").join(" ");
+            return str.split(find).join(rep);
         }
     }
 });

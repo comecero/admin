@@ -6,8 +6,9 @@
         <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
     </div>
 
-    <div class="page-header">
+    <div class="page-header"> 
         <h1 ng-if="add" translate>Add a Template</h1>
+        <h1 ng-if="update" translate>Template: {{template.template_id}}</h1>
     </div>
     <form name="form" novalidate>
         <div class="panel panel-body light-shadow">
@@ -60,10 +61,10 @@
             </div>
             <div class="col-xs-12">
                  <div class="form-group" show-errors >
-                    <label for="wrapper_template" class="control-label" translate>Wrapper Template</label>
-                    <input type="text" class="form-control" name="wrapper_template" ng-model="template.wrapper_template">
+                    <label for="wrapper_template" class="control-label" translate>Wrapper Template ID</label>
+                    <input type="text" class="form-control" name="wrapper_template" ng-model="template.wrapper_template_id">
                     <div>
-                        <p class="help-text" translate>If this template is designed to be wrapped by another template, enter the ID of the wrapper template.</p>
+                        <p class="help-text" translate>If this template is designed to be wrapped by another template, enter the ID of the template.</p>
                     </div>
                 </div>
             </div>

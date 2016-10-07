@@ -63,7 +63,7 @@
                 </div>
                 <div class="form-group" ng-show="eventSubscription.method == 'email'" show-errors>
                     <label for="email" class="control-label required" translate>Destination Email Address</label>
-                    <input type="email" class="form-control" name="email" ng-model="options.email" is-valid-email placeholder="">
+                    <input type="text" class="form-control" name="email" ng-model="options.email" placeholder="">
                     <p class="help-block hidden fadeInDown" translate>Please provide a valid email address</p>
                     <div>
                         <p class="help-text" translate>To send notification to more than one email address, provide a comma-separated list of email addresses.</p>

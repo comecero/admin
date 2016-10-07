@@ -9,7 +9,7 @@
     <div class="panel-body panel-tight">
 
         <div class="col-xs-12 panel-tight-row" ng-repeat="item in items">
-            <div class="col-xs-12 panel-tight-section ledger"><label class="text-capitalize">{{item.description | removeUnderscore}}</label><span class="pull-right" ng-class="{ 'text-danger': isRefund }">{{item.total | currency: ""}}</span></div>
+            <div class="col-xs-12 panel-tight-section ledger"><label class="text-capitalize">{{item.description | replace: '_':' '}}</label><span class="pull-right" ng-class="{ 'text-danger': isRefund }">{{item.total | currency: ""}}</span></div>
         </div>
 
         <div class="col-xs-12 panel-tight-row" ng-if="items.length > 0">

@@ -1,4 +1,14 @@
-﻿<a name="1.2.3"></a>
+﻿# Admin Change Log #
+
+<a name="1.2.4"></a>
+# 1.2.4
+
+- Add the ability to view, edit and add hosted functions.
+- Add the ability to view license requests.
+- Add the ability to view, edit and add notification subscriptions.
+- Refactor UI to view subscription, download and license details for order items.
+
+<a name="1.2.3"></a>
 # 1.2.3
 
 - Add the ability to view, edit and delete shipments.
