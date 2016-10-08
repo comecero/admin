@@ -25,6 +25,11 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     $routeProvider.when("/products/add", { templateUrl: "/app/pages/products/set.html", reloadOnSearch: true });
     $routeProvider.when("/products/:id/edit", { templateUrl: "/app/pages/products/set.html", reloadOnSearch: true });
 
+    // Promotions
+    $routeProvider.when("/promotions", { templateUrl: "/app/pages/promotions/list.html", reloadOnSearch: false });
+    $routeProvider.when("/promotions/add", { templateUrl: "/app/pages/promotions/set.html", reloadOnSearch: true });
+    $routeProvider.when("/promotions/:id/edit", { templateUrl: "/app/pages/promotions/set.html", reloadOnSearch: true });
+
     // Gateways
     $routeProvider.when("/gateways", { templateUrl: "/app/pages/gateways/list.html", reloadOnSearch: false });
     $routeProvider.when("/gateways/add", { templateUrl: "/app/pages/gateways/set.html", reloadOnSearch: true });
