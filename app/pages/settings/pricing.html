@@ -1,0 +1,177 @@
+<div ng-controller="PricingSettingsCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1>Pricing Settings</h1>
+    </div>
+
+    <form name="form" novalidate>
+
+        <div class="panel panel-body light-shadow">
+
+            
+            
+            <div class="col-xs-12">
+                <div class="form-group spacer-b10">
+                    <h3 class="inline">Currency rounding rules</h3>
+                    <a class="btn btn-primary pull-right" ng-click="addNew('currency_rounding_rules', {_positions:[]})" translate>Add</a>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <hr />
+            </div>
+            
+            <div class="col-xs-12" ng-repeat="rule in settings.currency_rounding_rules">
+
+                <ng-form name="rounding_rules">
+
+                   
+                    <div class="col-xs-12">
+                        <div class="form-group" show-errors>
+                            <label for="currency" class="control-label" translate>Currency</label>
+                            <select class="form-control" ng-model="rule.currency" name="currency" ng-options="currency.code as currency.name for currency in $parent.currencies" ></select>
+                            <p class="help-block hidden fadeInDown" translate>Please select a currency from the list</p>
+                            <div>
+                                <p class="help-text" translate>INSERT HELP TEXT HERE</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="form-group" show-errors>
+                            <label for="method" class="control-label" translate>Method</label>
+                            <select class="form-control" ng-model="rule.method" name="method" ng-options="method.value as method.name for method in $parent.methods" required></select>
+                            <p class="help-block hidden fadeInDown" translate>Please select a method from the list</p>
+                            <div>
+                                <p class="help-text" translate>INSERT HELP TEXT HERE</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12">
+                        <div class="form-group" show-errors>
+                            <label for="minimum" class="control-label" translate>Minimum</label>
+                            <input type="text" class="form-control" name="minimum" ng-model="rule.minimum" is-valid-integer required>
+                            <p class="help-block hidden fadeInDown" translate>Please give minimum value for rounding.</p>
+                            <div>
+                                <p class="help-text" translate>INSERT HELP TEXT HERE</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label class="control-label" translate>Positions</label>
+                        </div>
+                    </div>
+                    <div ng-repeat="position in rule._positions track by $index">
+                        <ng-form name="positions_form">
+                            <div class="col-md-6 col-xs-12">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <input type="tel" class="form-control " name="position" ng-model="position.value" ng-model-options="{ updateOn: 'blur' }">
+                                        <span class="input-group-addon pointer" ng-click="removeRoundingPosition(rule, $index)"><i class="fa fa-trash pointer text-default"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row"></div>
+                        </ng-form>
+                    </div>
+                    <div class="col-xs-12">
+                        <a class="btn btn-sm btn-info" ng-click="addRoundingPosition(rule)">
+                            <span translate>Add a position</span>
+                        </a>
+                    </div>
+                    <div class="row"></div>
+
+                    <div class="text-right">
+                        <span class="delete" ng-click="$parent.confirmDelete('currency_rounding_rules', rule, $index)">Delete this rounding rule</span>
+                    </div>
+                    <hr />
+
+                    <div class="row"></div>
+
+                </ng-form>
+
+            </div>     
+            
+
+            <div class="row"></div>
+            
+             <!-- Show a "not found" message if no rules were found  -->
+            <div class="col-sm-12" ng-if="settings.currency_rounding_rules.length == 0">
+                <p class="no-info" translate>No rounding rules configured</p>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group spacer-b10">
+                    <h3 class="inline">Currency markup rules</h3>
+                    <a class="btn btn-primary pull-right" ng-click="addNew('currency_markup_rules', {})" translate>Add</a>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <hr />
+            </div>
+
+            <div class="col-xs-12" ng-repeat="rule in settings.currency_markup_rules">
+
+                <ng-form name="markup_rules">
+                    <div class="col-xs-12">
+                        <div class="form-group" show-errors>
+                            <label for="currency" class="control-label" translate>Currency</label>
+                            <select class="form-control" ng-model="rule.currency" name="currency" ng-options="currency.code as currency.name for currency in $parent.currencies"></select>
+                            <p class="help-block hidden fadeInDown" translate>Please select a currency from the list</p>
+                            <div>
+                                <p class="help-text" translate>INSERT HELP TEXT HERE</p>
+                            </div>
+                        </div>
+                    </div>
+                   
+                    <div class="col-xs-12">
+                        <div class="form-group" show-errors>
+                            <label for="markup_percentage" class="control-label" translate>Markup Percentage</label>
+                            <input type="tel" class="form-control" name="markup_percentage" ng-model="rule.markup_percentage_value" is-valid-integer required>
+                            <p class="help-block hidden fadeInDown" translate>Please give minimum value for rounding.</p>
+                            <div>
+                                <p class="help-text" translate>INSERT HELP TEXT HERE</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row"></div>
+
+                    <div class="text-right">
+                        <span class="delete" ng-click="$parent.confirmDelete('currency_markup_rules', rule, $index)">Delete this markup rule</span>
+                    </div>
+                    <hr />
+
+                    <div class="row"></div>
+
+                </ng-form>
+
+            </div>
+
+
+            <div class="row"></div>
+
+            <!-- Show a "not found" message if no rules were found  -->
+            <div class="col-sm-12" ng-if="settings.currency_markup_rules.length == 0">
+                <p class="no-info" translate>No mark rules configured</p>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updateSettings()" validate-on-submit translate>Save Changes</button>
+                    <button type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="confirmCancel()" translate>Cancel</button>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
