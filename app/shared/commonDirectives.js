@@ -1913,6 +1913,10 @@ app.directive('ship', ['ApiService', 'ConfirmService', 'GrowlsService', 'Courier
                     // Set the courier and tracking info
                     shipment.tracking_number = scope.shipItems.tracking_number;
                     shipment.tracking_url = scope.shipItems.tracking_url;
+
+                    // We're going to assume the date the user entered is the date in their own timezone. As such, add the user's offset to the date shipped.
+                    shipment.date_shipped = new Date(scope.shipItems.date_shipped + (new Date(scope.shipItems.date_shipped).getTimezoneOffset() * 60)).toISOString();
+
                     if (utils.isNullOrEmpty(scope.shipItems.courier) == false) {
                         shipment.courier = scope.shipItems.courier;
                     }

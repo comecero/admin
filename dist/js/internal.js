@@ -1131,15 +1131,18 @@ var utils = (function () {
     }
 
     function isNullOrEmpty(string) {
+
         if (string == null || string == undefined) {
             return true;
         }
 
-        if (string == "") {
+        // The string could in fact be numeric, convert to string before you do the tests below.
+
+        if (string.toString() == "") {
             return true;
         }
 
-        if (string.replace(/ /g, '') == null) {
+        if (string.toString().replace(/ /g, '') == null) {
             return true;
         }
 
