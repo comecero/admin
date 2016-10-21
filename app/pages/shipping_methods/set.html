@@ -1,0 +1,111 @@
+<div ng-controller="ShippingMethodsSetCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header"> 
+        <h1 ng-if="add" translate>Add a ShippingMethod</h1>
+        <h1 ng-if="update" translate>ShippingMethod: {{shippingMethod.shipping_method_id}}</h1>
+    </div>
+    <form name="form" novalidate>
+        <div class="panel panel-body light-shadow">
+            
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="description" class="control-label" translate>Description</label>
+                    <input type="text" class="form-control" name="description" ng-model="shippingMethod.description">
+                    <div>
+                        <p class="help-text" translate>For your use in identifying the shipping method.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="details" class="control-label" translate>Details</label>
+                    <textarea type="text" class="form-control no-wrap" name="details" ng-model="shippingMethod.details" required></textarea>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a shipping method details.</p>
+                    <div>
+                        <p class="help-text" translate>INSERT HELP TEXT HERE</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group spacer-b10">
+                    <label for="shipping_method_countries" class="control-label" translate>Countries</label>
+                    <input type="text" class="form-control" name="shipping_method_countries" ng-model="typeahead.shipping_method_countries" uib-typeahead="country as country.name + ' (' + country.code + ')' for country in countries | filter:$viewValue | limitTo:12" typeahead-input-formatter="$model.name" typeahead-on-select="onCountrySelect($item, $model, $label, 'shipping_method_countries')" typeahead-editable="false">
+                    <div>
+                        <p class="help-text" translate>Supply the countries where you want prices to be tax inclusive. Note that 'All countries' and 'European Union' are options you can select.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <span ng-repeat="country in models.shipping_method_countries">
+                        <span href="#" class="label label-success label-lg" title="{{country.name}} ({{country.code}})">{{country.name}}<i class="fa fa-times-circle pointer spacer-l20" ng-click="removeCountry(country, 'shipping_method_countries')"></i></span>
+                    </span>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group" >
+                    <label translate>Adjustments</label>
+                    <a class="btn btn-primary" ng-click="addNewAdjustment()" translate>Add</a>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                 <div class="form-group" show-errors >
+                    <label for="expand" class="control-label" translate>Expand</label>
+                    <input type="text" class="form-control" name="expand" ng-model="shippingMethod.expand">
+                    <div>
+                        <p class="help-text" translate>ShippingMethods are designed to receive a particular resource (such as an order or shipment). You can supply a comma separated list of child resources you wish to expand for use within your shippingMethod. For example, if you are creating an order confirmation shippingMethod, your shippingMethod will receive the order object and you way wish to expand the customer resource.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                 <div class="form-group" show-errors >
+                    <label for="show" class="control-label" translate>Show</label>
+                    <input type="text" class="form-control" name="show" ng-model="shippingMethod.show">
+                    <div>
+                        <p class="help-text" translate>To increase performance of shippingMethod rendering, you can limit the fields that are supplied to your shippingMethod to only the ones your shippingMethod needs. <a href="https://docs.comecero.com/basic-concepts/#customizing-output" target="_blank">Read more</a> about customizing resources. If you supply a value for show, you cannot supply a value for hide.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                 <div class="form-group" show-errors >
+                    <label for="hide" class="control-label" translate>Hide</label>
+                    <input type="text" class="form-control" name="hide" ng-model="shippingMethod.hide">
+                    <div>
+                        <p class="help-text" translate>To increase performance of shippingMethod rendering, you can limit the fields that are supplied to your shippingMethod to only the ones your shippingMethod needs. <a href="https://docs.comecero.com/basic-concepts/#customizing-output" target="_blank">Read more</a> about customizing resources. If you supply a value for hide, you cannot supply a value for show.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                 <div class="form-group" show-errors >
+                    <label for="wrapper_shippingMethod" class="control-label" translate>Wrapper ShippingMethod ID</label>
+                    <input type="text" class="form-control" name="wrapper_shippingMethod" ng-model="shippingMethod.wrapper_shippingMethod_id">
+                    <div>
+                        <p class="help-text" translate>If this shippingMethod is designed to be wrapped by another shippingMethod, enter the ID of the shippingMethod.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <button ng-if="add" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="addShippingMethod()" validate-on-submit translate>Add the ShippingMethod</button>
+                <button ng-if="update" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updateShippingMethod()" validate-on-submit translate>Save Changes</button>
+                <button ng-if="update" type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="confirmCancel()" translate>Cancel</button>
+            </div>
+
+            <div class="row"></div>
+
+            <div ng-if="update" class="panel-footer submenu" resource="shipping_methods" method="delete">
+                <span class="delete" ng-click="confirmDelete()" translate>Delete this shipping method</span>
+            </div>
+
+        </div>
+    </form>
+</div>
