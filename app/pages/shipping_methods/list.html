@@ -7,7 +7,7 @@
     </div>
 
     <div class="page-header">
-        <h1>ShippingMethods</h1>
+        <h1>Shipping methods</h1>
         <a id="top" href="/#/shipping_methods/add" class="btn btn-primary btn-right" translate resource="shipping_methods" method="create"><span class="hidden-xs" translate>Add New</span><span class="hidden-sm hidden-md hidden-lg"><i class="fa fa-plus"></i></span></a>
     </div>  
 
@@ -90,9 +90,9 @@
             <p class="text-right" ng-if="shippingMethods.shippingMethodList">Showing page {{shippingMethods.shippingMethodList.current_page}} of {{shippingMethods.shippingMethodList.total_pages}}</p>
         </div>
 
-        <!-- Show a "not found" message if no shippingMethods were found  -->
+        <!-- Show a "not found" message if no shipping methods were found  -->
         <div class="col-sm-12" ng-if="shippingMethods.shippingMethodList.data.length == 0">
-            <p class="no-info" translate>No shippingMethods found</p>
+            <p class="no-info" translate>No shipping methods found</p>
         </div>
     </div>
 

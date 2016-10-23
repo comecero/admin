@@ -2693,6 +2693,200 @@ app.controller("HostedFunctionsEditCtrl", ['$scope', '$routeParams', '$location'
 
 }]);
 
+app.controller("ImagesListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
+
+    // Establish your scope containers
+    $scope.images = {};
+    $scope.nav = {};
+    $scope.exception = {};
+
+    // Establish your settings from query string parameters
+    $scope.parseParams = function () {
+        $scope.params = ($location.search())
+
+        // Convert any string true/false to bool
+        utils.stringsToBool($scope.params);
+
+        if ($scope.params.sort_by == null) {
+            $scope.params.sort_by = "date_created";
+        }
+
+        if ($scope.params.desc == null) {
+            $scope.params.desc = false;
+        }
+    }
+
+    $scope.loadImages = function () {
+
+        ApiService.getList(ApiService.buildUrl("/images?show=image_id,filename,link_square,link_large,date_created&sort_by=" + $scope.params.sort_by + "&desc=" + $scope.params.desc), $scope.params).then(function (result) {
+            $scope.images.imageList = result;
+
+            // If instructed, scroll to the top upon completion
+            if ($scope.nav.scrollTop == true) {
+                window.scrollTo(0, 0);
+            }
+            $scope.nav.scrollTop = null;
+
+        },
+        function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
+    $scope.search = function () {
+        if ($scope.params.q != null) {
+
+            // Reset the view to the first page
+            $scope.params.offset = null;
+            $scope.nav.scrollTop = true;
+
+            // If empty, reset to null
+            if ($scope.params.q == "") {
+                $scope.params.q = null;
+            }
+
+            $location.search($scope.params);
+        }
+    }
+
+    $scope.movePage = function (direction) {
+        if (direction == "+") {
+            $scope.params.offset = $scope.images.imageList.next_page_offset;
+        } else {
+            $scope.params.offset = $scope.images.imageList.previous_page_offset;
+        }
+        $scope.nav.scrollTop = true;
+        $location.search($scope.params);
+    }
+
+    $scope.sort = function (sort_by, desc) {
+        $scope.params.sort_by = sort_by;
+        $scope.params.desc = desc;
+        $location.search($scope.params);
+    }
+
+    $scope.$on('$routeUpdate', function (e) {
+        $scope.parseParams();
+        $scope.loadImages();
+    });
+
+    // Initial load
+    $scope.parseParams();
+    $scope.loadImages();
+
+}]);
+
+
+app.controller("ImagesAddCtrl", ['$scope', '$routeParams', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, GrowlsService, ApiService, ConfirmService) {
+
+    // Set defaults
+    $scope.image = {};
+    $scope.exception = {};
+    $scope.state = {};
+
+    $scope.state.uploadSending = false;
+    $scope.state.uploadComplete = false;
+
+    var uploadSendingListener = $scope.$on('uploadSending', function (event, sending) {
+        // Set uploadSending to the received value
+        $scope.$apply(function () {
+            $scope.state.uploadSending = sending;
+        });
+    });
+
+    // If the user has permission, allow the user to delete the file after upload
+    $scope.showDelete = false;
+    if (utils.hasPermission("images", "delete")) {
+        $scope.showDelete = true;
+    }
+
+    var uploadDeleteListener = $scope.$on('uploadDelete', function (event, uploadResponse, file) {
+
+        var confirm = { id: "delete" };
+        confirm.onConfirm = function () {
+
+            // Let the upload directive know the user deleted the file so it can remove the upload preview display
+            $scope.$broadcast("uploadDeleted", file);
+
+            // If the user has permission, delete the file completely
+            if (utils.hasPermission("images", "delete")) {
+                ApiService.remove(uploadResponse.url, null, false);
+            }
+        }
+        ConfirmService.showConfirm($scope, confirm);
+
+    });
+
+    var uploadCompleteListener = $scope.$on('uploadComplete', function (event, file) {
+        $scope.state.uploadComplete = true;
+    });
+
+    // Allow easy cleanup of listeners when modal is closed / dismissed.
+    var cancelListeners = function () {
+        uploadSendingListener();
+        uploadDeleteListener();
+        uploadCompleteListener();
+    }
+
+    $scope.cancel = function () {
+        if ($scope.state.uploadSending) {
+            var confirm = { id: "upload_cancel" };
+            confirm.onConfirm = function () {
+                // Let the upload directive know the user cancelled the upload so it can stop sending data.
+                $scope.$broadcast("uploadCanceled");
+                utils.redirect($location, "/images");
+            }
+            ConfirmService.showConfirm($scope, confirm);
+        } else {
+            utils.redirect($location, "/images");
+        }
+    };
+
+}]);
+
+
+app.controller("ImagesViewCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
+
+    // Set defaults
+    $scope.image = {};
+    $scope.exception = {};
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/images/" + $routeParams.id)
+
+    // Load the image
+    ApiService.getItem($scope.url).then(function (image) {
+        $scope.image = image;
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+    $scope.confirmDelete = function () {
+        var confirm = { id: "delete" };
+        confirm.onConfirm = function () {
+            $scope.deleteImage();
+        }
+        ConfirmService.showConfirm($scope, confirm);
+    }
+
+    $scope.deleteImage = function () {
+
+        ApiService.remove($scope.image.url)
+        .then(
+        function () {
+            GrowlsService.addGrowl({ id: "delete_success", name: $scope.image.filename, type: "success" });
+            utils.redirect($location, "/images");
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception = error;
+        });
+    }
+
+}]);
+
 app.controller("InvoicesListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
 
     // Establish your scope containers
@@ -3035,200 +3229,6 @@ app.controller("InvoicesSetCtrl", ['$scope', '$routeParams', '$location', 'ApiSe
 
 
 
-
-app.controller("ImagesListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
-
-    // Establish your scope containers
-    $scope.images = {};
-    $scope.nav = {};
-    $scope.exception = {};
-
-    // Establish your settings from query string parameters
-    $scope.parseParams = function () {
-        $scope.params = ($location.search())
-
-        // Convert any string true/false to bool
-        utils.stringsToBool($scope.params);
-
-        if ($scope.params.sort_by == null) {
-            $scope.params.sort_by = "date_created";
-        }
-
-        if ($scope.params.desc == null) {
-            $scope.params.desc = false;
-        }
-    }
-
-    $scope.loadImages = function () {
-
-        ApiService.getList(ApiService.buildUrl("/images?show=image_id,filename,link_square,link_large,date_created&sort_by=" + $scope.params.sort_by + "&desc=" + $scope.params.desc), $scope.params).then(function (result) {
-            $scope.images.imageList = result;
-
-            // If instructed, scroll to the top upon completion
-            if ($scope.nav.scrollTop == true) {
-                window.scrollTo(0, 0);
-            }
-            $scope.nav.scrollTop = null;
-
-        },
-        function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    }
-
-    $scope.search = function () {
-        if ($scope.params.q != null) {
-
-            // Reset the view to the first page
-            $scope.params.offset = null;
-            $scope.nav.scrollTop = true;
-
-            // If empty, reset to null
-            if ($scope.params.q == "") {
-                $scope.params.q = null;
-            }
-
-            $location.search($scope.params);
-        }
-    }
-
-    $scope.movePage = function (direction) {
-        if (direction == "+") {
-            $scope.params.offset = $scope.images.imageList.next_page_offset;
-        } else {
-            $scope.params.offset = $scope.images.imageList.previous_page_offset;
-        }
-        $scope.nav.scrollTop = true;
-        $location.search($scope.params);
-    }
-
-    $scope.sort = function (sort_by, desc) {
-        $scope.params.sort_by = sort_by;
-        $scope.params.desc = desc;
-        $location.search($scope.params);
-    }
-
-    $scope.$on('$routeUpdate', function (e) {
-        $scope.parseParams();
-        $scope.loadImages();
-    });
-
-    // Initial load
-    $scope.parseParams();
-    $scope.loadImages();
-
-}]);
-
-
-app.controller("ImagesAddCtrl", ['$scope', '$routeParams', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, GrowlsService, ApiService, ConfirmService) {
-
-    // Set defaults
-    $scope.image = {};
-    $scope.exception = {};
-    $scope.state = {};
-
-    $scope.state.uploadSending = false;
-    $scope.state.uploadComplete = false;
-
-    var uploadSendingListener = $scope.$on('uploadSending', function (event, sending) {
-        // Set uploadSending to the received value
-        $scope.$apply(function () {
-            $scope.state.uploadSending = sending;
-        });
-    });
-
-    // If the user has permission, allow the user to delete the file after upload
-    $scope.showDelete = false;
-    if (utils.hasPermission("images", "delete")) {
-        $scope.showDelete = true;
-    }
-
-    var uploadDeleteListener = $scope.$on('uploadDelete', function (event, uploadResponse, file) {
-
-        var confirm = { id: "delete" };
-        confirm.onConfirm = function () {
-
-            // Let the upload directive know the user deleted the file so it can remove the upload preview display
-            $scope.$broadcast("uploadDeleted", file);
-
-            // If the user has permission, delete the file completely
-            if (utils.hasPermission("images", "delete")) {
-                ApiService.remove(uploadResponse.url, null, false);
-            }
-        }
-        ConfirmService.showConfirm($scope, confirm);
-
-    });
-
-    var uploadCompleteListener = $scope.$on('uploadComplete', function (event, file) {
-        $scope.state.uploadComplete = true;
-    });
-
-    // Allow easy cleanup of listeners when modal is closed / dismissed.
-    var cancelListeners = function () {
-        uploadSendingListener();
-        uploadDeleteListener();
-        uploadCompleteListener();
-    }
-
-    $scope.cancel = function () {
-        if ($scope.state.uploadSending) {
-            var confirm = { id: "upload_cancel" };
-            confirm.onConfirm = function () {
-                // Let the upload directive know the user cancelled the upload so it can stop sending data.
-                $scope.$broadcast("uploadCanceled");
-                utils.redirect($location, "/images");
-            }
-            ConfirmService.showConfirm($scope, confirm);
-        } else {
-            utils.redirect($location, "/images");
-        }
-    };
-
-}]);
-
-
-app.controller("ImagesViewCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
-
-    // Set defaults
-    $scope.image = {};
-    $scope.exception = {};
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/images/" + $routeParams.id)
-
-    // Load the image
-    ApiService.getItem($scope.url).then(function (image) {
-        $scope.image = image;
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-    $scope.confirmDelete = function () {
-        var confirm = { id: "delete" };
-        confirm.onConfirm = function () {
-            $scope.deleteImage();
-        }
-        ConfirmService.showConfirm($scope, confirm);
-    }
-
-    $scope.deleteImage = function () {
-
-        ApiService.remove($scope.image.url)
-        .then(
-        function () {
-            GrowlsService.addGrowl({ id: "delete_success", name: $scope.image.filename, type: "success" });
-            utils.redirect($location, "/images");
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception = error;
-        });
-    }
-
-}]);
 
 
 //#region LicenseRequests
@@ -6100,12 +6100,20 @@ app.controller("ShippingMethodsListCtrl", ['$scope', '$routeParams', '$location'
 
 app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', 'GeographiesService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService, GeographiesService) {
 
-    $scope.shippingMethod = {};
+    $scope.shippingMethod = {
+        quantity_config: { prices_per_quantity: [], rules: [] },
+        weight_config: { prices_per_unit: [], rules: [] },
+        subtotal_config: { rules: [] },
+    };
+
     $scope.exception = {};
     $scope.geo = GeographiesService;
+    var geographies =  $scope.geo.getGeographies();
 
     //Load the countries
-    $scope.countries = $scope.geo.getGeographies().countries;
+    $scope.countries = geographies.countries;
+    $scope.us_states = geographies.us_states;
+    $scope.ca_provinces = geographies.ca_provinces;
 
     // Add "EU" as an alias for all EU countries, which the API will accept
     $scope.countries.push({ code: "EU", name: "European Union" });
@@ -6113,10 +6121,19 @@ app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location',
     // Re-sort
     $scope.countries = _.sortBy($scope.countries, "name");
 
+    //Adjustment countries
+    $scope.adjustmentsEligibleCountries = ["US", "CA"];
+    $scope.adjustmentCountries = [];
+
+    // Get the pricing currencies available for the account
+    $scope.currencies = JSON.parse(localStorage.getItem("payment_currencies"));
+
     // Set up some models to hold user input.
     $scope.models = {};
     $scope.models.shipping_method_countries = [];
     $scope.typeahead = {};
+    $scope.shipping_method_config_type = null;
+    $scope.units = [{ code: 'lb', name: 'Pound' }, { code: 'oz', name: 'Ounce' }, { code: 'kg', name: 'Kilogram' }, { code: 'g', name: 'Gram' }];
 
 
     if ($routeParams.id != null) {
@@ -6138,7 +6155,29 @@ app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location',
                     $scope.models.shipping_method_countries.push(country);
                 }
             });
-            
+
+            //Update adjustments creatable countries
+            updateAdjustmentCountries('shipping_method_countries');
+
+            //Update adjustments
+            $scope.shippingMethod.adjustments = _.map($scope.shippingMethod.adjustments, mapAdjustments);
+
+            //Set config type
+            if ($scope.shippingMethod.subtotal_config) {
+                $scope.shipping_method_config_type = 'subtotal';
+                $scope.shippingMethod.quantity_config = { prices_per_quantity: [] } ;
+                $scope.shippingMethod.weight_config = { prices_per_unit: [] };
+                $scope.shippingMethod.subtotal_config.percent_of_subtotal *= 100;
+
+            } else if($scope.shippingMethod.quantity_config){
+                $scope.shipping_method_config_type = 'quantity';
+                $scope.shippingMethod.weight_config = { prices_per_unit: [] };
+                $scope.shippingMethod.subtotal_config = {};
+            } else if ($scope.shippingMethod.weight_config) {
+                $scope.shipping_method_config_type = 'weight';
+                $scope.shippingMethod.quantity_config = { prices_per_quantity: [] };
+                $scope.shippingMethod.subtotal_config = {};
+            }
 
         }, function (error) {
             $scope.exception.error = error;
@@ -6152,27 +6191,114 @@ app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location',
 
     }
 
+    function mapAdjustments(adjustment) {
+        adjustment._states = [];
+        adjustment.typeahead = {};
+
+        if (adjustment.percentage) {
+            adjustment.adjustment_type = 'percentage';
+            adjustment.percentage *= 100;
+            adjustment.amounts = [];
+        } else if (adjustment.amounts) {
+            adjustment.adjustment_type = 'amounts';
+        }
+
+        if (adjustment.country == "US") {
+            setAdjustmentStates(adjustment, 'us_states');
+        } else if (adjustment.country == "CA") {
+            setAdjustmentStates(adjustment, 'ca_provinces');
+        }
+
+        return adjustment;
+    }
+
+    function setAdjustmentStates(adjustment, states) {
+        _.each(adjustment.regions, function (item) {
+            var state_prev = _.findWhere($scope[states], { code: item });
+            if (state_prev != null) {
+                adjustment._states.push(state_prev);
+            }
+        });
+        return adjustment;
+    }
+
     var prepareSubmit = function () {
         // Clear any previous errors
         $scope.exception.error = null;
     }
 
+
+    //Country handlers
      $scope.onCountrySelect = function (item, model, label, type) {
          if (!_.findWhere($scope.models[type], { code: model.code })) {
              $scope.models[type].push(model);
          }
          // Clear the form value
          $scope.typeahead[type] = null;
+         updateAdjustmentCountries(type);
      };
 
      $scope.removeCountry = function (country, type) {
          $scope.models[type] = _.reject($scope.models[type], function (item) {
-             return item.code == country.code
+             return item.code == country.code;
+         });
+
+         updateAdjustmentCountries(type);
+     };
+
+     $scope.onRuleCurrencySelect = function (item, model, label, event, rule) {
+         rule.currency = model.code;
+     }
+
+    //Adjustments handlers
+     function updateAdjustmentCountries(type) {
+         $scope.adjustmentCountries = _.filter($scope.models[type], function (model) {
+             return $scope.adjustmentsEligibleCountries.indexOf(model.code) != -1;
          });
      }
 
-     $scope.addNewAdjustments = function () {
-         $scope.shippingMethod.adjustments.unshift({});
+     function canHaveAdjustments() {
+         return !!$scope.adjustmentCountries.length;
+     }
+
+     $scope.addNewAdjustment = function () {
+         var adjustment = {
+             amounts: [],
+             _states: [],
+             typeahead: {},
+         };
+         $scope.shippingMethod.adjustments ? $scope.shippingMethod.adjustments.unshift(adjustment) : $scope.shippingMethod.adjustments = [adjustment];
+     };
+
+     $scope.removeAdjustment = function (method, adjustment, index) {
+         $scope.shippingMethod.adjustments.splice(index, 1);
+     };
+
+    //Adjustment state handlers
+     $scope.onStateSelect = function (adjustment, item, model, label) {
+         if (!_.findWhere(adjustment._states, { code: model.code })) {
+             adjustment._states.push(model);
+         }
+         // Clear the form value
+         adjustment.typeahead.state_prov = null;
+     };
+
+     $scope.removeState = function (adjustment, state) {
+         adjustment._states = _.reject(adjustment._states, function (item) {
+             return item.code == state.code;
+         });
+     };
+
+    //Subtotal config rules handlers
+     $scope.addNewRule = function (config, defaultConfig) {
+         if (!$scope.shippingMethod[config].rules) {
+             $scope.shippingMethod[config].rules = [];
+         }
+         $scope.shippingMethod[config].rules.unshift(defaultConfig || {});
+     };
+
+     $scope.removeRule = function (method, config, rule, index) {
+         $scope.shippingMethod[config].rules.splice(index, 1);
      };
    
     $scope.confirmCancel = function () {
@@ -6183,12 +6309,50 @@ app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location',
         ConfirmService.showConfirm($scope, confirm);
     }
 
-    $scope.confirmDelete = function () {
+    $scope.confirmDelete = function (method, configType, ruleObj, index, arg1) {
         var confirm = { id: "delete" };
-        confirm.onConfirm = function () {
-            $scope.delete();
-        }
+        confirm.onConfirm = method.bind($scope, method, configType, ruleObj, index, arg1);
         ConfirmService.showConfirm($scope, confirm);
+    }
+
+    function getShippingMethodCopy() {
+        // Map our UI to our rules before sending them to the API. We'll make a copy to preserve the UI.
+        var shippingMethodCopy = angular.copy($scope.shippingMethod);
+
+        // Copy the countries from the models to settings
+        shippingMethodCopy.countries = _.pluck($scope.models.shipping_method_countries, "code");
+
+        //Update adjustments
+        if (!canHaveAdjustments()) {
+            shippingMethodCopy.adjustments = null;
+        } else {
+            shippingMethodCopy.adjustments = _.map(shippingMethodCopy.adjustments, reMapAdjustments);
+        }
+
+        //Update config
+        if ($scope.shipping_method_config_type == 'subtotal') {
+            shippingMethodCopy.quantity_config = null;
+            shippingMethodCopy.weight_config = null;
+            shippingMethodCopy.subtotal_config.percent_of_subtotal /= 100;
+        } else if ($scope.shipping_method_config_type == 'quantity') {
+            shippingMethodCopy.subtotal_config = null;
+            shippingMethodCopy.weight_config = null;
+        } else if ($scope.shipping_method_config_type = 'weight') {
+            shippingMethodCopy.subtotal_config = null;
+            shippingMethodCopy.quantity_config = null;
+        }
+
+        return shippingMethodCopy;
+    }
+
+    function reMapAdjustments(adjustment) {
+        adjustment.adjustment_type == 'percentage' ? adjustment.amounts = null : adjustment.percentage = null;
+        adjustment.regions = _.pluck(adjustment._states, "code");
+        if (adjustment.percentage) {
+            adjustment.percentage /= 100;
+        }
+        delete adjustment.adjustment_type;
+        return adjustment;
     }
 
     $scope.addShippingMethod = function () {
@@ -6200,7 +6364,9 @@ app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location',
             return;
         }
 
-        ApiService.set($scope.shippingMethod, ApiService.buildUrl("/shipping_methods"), { show: "shipping_method_id,name" }).then(function (shippingMethod) {
+        var shippingMethodCopy = getShippingMethodCopy();
+
+        ApiService.set(shippingMethodCopy, ApiService.buildUrl("/shipping_methods"), { show: "shipping_method_id,name" }).then(function (shippingMethod) {
             GrowlsService.addGrowl({ id: "add_success", name: shippingMethod.shipping_method_id, type: "success", shipping_method_id: shippingMethod.shipping_method_id, url: "#/shipping_methods/" + shippingMethod.shipping_method_id + "/edit" });
             window.location = "#/shipping_methods";
         },
@@ -6218,7 +6384,9 @@ app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location',
             return;
         }
 
-        ApiService.set($scope.shippingMethod, $scope.url, { show: "shipping_method_id,name" })
+        var shippingMethodCopy = getShippingMethodCopy();
+
+        ApiService.set(shippingMethodCopy, $scope.url, { show: "shipping_method_id,name" })
         .then(
         function (shippingMethod) {
             GrowlsService.addGrowl({ id: "edit_success", name: shippingMethod.shipping_method_id, type: "success", shipping_method_id: shippingMethod.shipping_method_id, url: "#/shipping_methods/" + shippingMethod.shipping_method_id + "/edit" });

@@ -4323,6 +4323,33 @@ app.directive('prices', function () {
     };
 });
 
+app.directive('ranges', function () {
+    return {
+        restrict: 'A',
+        require: '^form',
+        templateUrl: "app/templates/ranges.html",
+        scope: {
+            ranges: '=?',
+        },
+        link: function (scope, elem, attrs, ctrl) {
+
+            scope.form = ctrl;
+
+            scope.showAddRange = function () {
+                if (!scope.ranges) {
+                    scope.ranges = [];
+                }
+                scope.ranges.push({ minimum: "", maximum: "", price: "" });
+            }
+
+            scope.removeRange = function (ranges, index) {
+                scope.ranges.splice(index, 1);
+            }
+
+        }
+    };
+});
+
 
 app.directive('metaToHtml', function () {
     return {
