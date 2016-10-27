@@ -1,7 +1,7 @@
 ﻿# Admin Change Log #
 
-<a name="1.2.4"></a>
-# 1.2.4
+<a name="1.3.0"></a>
+# 1.3.0
 
 - Add the ability to view, edit and add hosted functions.
 - Add the ability to view license requests.
