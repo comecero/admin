@@ -323,6 +323,7 @@ app.controller("ProductsSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
         prepareSubmit();
 
         if ($scope.form.$invalid) {
+            window.scrollTo(0, 0);
             return;
         }
 
