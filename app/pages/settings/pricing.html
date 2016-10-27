@@ -13,73 +13,71 @@
     <form name="form" novalidate>
 
         <div class="panel panel-body light-shadow">
-
-            
             
             <div class="col-xs-12">
                 <div class="form-group spacer-b10">
-                    <h3 class="inline">Currency rounding rules</h3>
+                    <h4 class="inline">Currency Rounding Rules</h4>
                     <a class="btn btn-primary pull-right" ng-click="addNew('currency_rounding_rules', {_positions:[]})" translate>Add</a>
                 </div>
             </div>
 
-            <div class="col-xs-12">
-                <hr />
+            <div class="col-xs-12 spacer-b20 spacer-t20">
+                <p class="help-text" translate>Currency Rounding Rules allow to automatically generate "friendly" price endings for your products (such as .95 and .99) in spite of exchange rate fluctuations.</p>
             </div>
             
             <div class="col-xs-12" ng-repeat="rule in settings.currency_rounding_rules">
 
                 <ng-form name="rounding_rules">
-
                    
                     <div class="col-xs-12">
                         <div class="form-group" show-errors>
-                            <label for="currency" class="control-label" translate>Currency</label>
+                            <label for="currency" class="control-label required" translate>Currency</label>
                             <select class="form-control" ng-model="rule.currency" name="currency" ng-options="currency.code as currency.name for currency in $parent.currencies" ></select>
                             <p class="help-block hidden fadeInDown" translate>Please select a currency from the list</p>
                             <div>
-                                <p class="help-text" translate>INSERT HELP TEXT HERE</p>
+                                <p class="help-text" translate>The currency to which this rule will apply. Choose 'All other currencies' to create a default rule for all currencies which do not have a specific rule created.</p>
                             </div>
                         </div>
                     </div>
-                    <div class="col-xs-12">
+                    <div class="col-md-6 col-xs-12">
                         <div class="form-group" show-errors>
-                            <label for="method" class="control-label" translate>Method</label>
+                            <label for="method" class="control-label" translate>Rounding Method</label>
                             <select class="form-control" ng-model="rule.method" name="method" ng-options="method.value as method.name for method in $parent.methods" required></select>
                             <p class="help-block hidden fadeInDown" translate>Please select a method from the list</p>
                             <div>
-                                <p class="help-text" translate>INSERT HELP TEXT HERE</p>
+                                <p class="help-text" translate>Indicates how you want rounding to be applied. Highest rounds to the next highest position, closest rounds to the most near position, lowest rounds to the next lowest position.</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-xs-12">
+                    <div class="col-md-6 col-xs-12">
                         <div class="form-group" show-errors>
                             <label for="minimum" class="control-label" translate>Minimum</label>
-                            <input type="text" class="form-control" name="minimum" ng-model="rule.minimum" is-valid-integer required>
+                            <input type="text" class="form-control" name="minimum" ng-model="rule.minimum" is-valid-number required>
                             <p class="help-block hidden fadeInDown" translate>Please give minimum value for rounding.</p>
                             <div>
-                                <p class="help-text" translate>INSERT HELP TEXT HERE</p>
+                                <p class="help-text" translate>Prices that are lower than or equal to the minimum specified will not have rounding rules applied. This allows you to prevent large changes from being applied to low values due to rounding.</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="col-xs-12">
-                        <div class="form-group">
-                            <label class="control-label" translate>Positions</label>
+                        <label class="control-label" translate>Rounding Positions</label>
+                        <div>
+                            <p class="help-text" translate>Rounding positions indicate the targets for your price rounding. For example, you would specify rounding positions of 0, 0.50, 0.95 and 0.99 if you want all your prices to end with those values. The decimal value for your prices will automatically be selected from the positions your provide based on the selected 'Rounding Method' above. You must supply at least one rounding position.</p>
                         </div>
                     </div>
+
                     <div ng-repeat="position in rule._positions track by $index">
                         <ng-form name="positions_form">
-                            <div class="col-md-6 col-xs-12">
+                            <div class="col-md-3 col-xs-12">
                                 <div class="form-group">
                                     <div class="input-group">
-                                        <input type="tel" class="form-control " name="position" ng-model="position.value" ng-model-options="{ updateOn: 'blur' }">
+                                        <input type="text" class="form-control " name="position" ng-model="position.value" ng-model-options="{ updateOn: 'blur' }">
                                         <span class="input-group-addon pointer" ng-click="removeRoundingPosition(rule, $index)"><i class="fa fa-trash pointer text-default"></i></span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row"></div>
                         </ng-form>
                     </div>
                     <div class="col-xs-12">
@@ -90,7 +88,7 @@
                     <div class="row"></div>
 
                     <div class="text-right">
-                        <span class="delete" ng-click="$parent.confirmDelete('currency_rounding_rules', rule, $index)">Delete this rounding rule</span>
+                        <span class="delete" ng-click="$parent.confirmDelete('currency_rounding_rules', rule, $index)">Delete this rule</span>
                     </div>
                     <hr />
 
@@ -100,46 +98,45 @@
 
             </div>     
             
-
-            <div class="row"></div>
-            
              <!-- Show a "not found" message if no rules were found  -->
             <div class="col-sm-12" ng-if="settings.currency_rounding_rules.length == 0">
                 <p class="no-info" translate>No rounding rules configured</p>
             </div>
 
+            <div class="row spacer-b40"></div>
+
             <div class="col-xs-12">
                 <div class="form-group spacer-b10">
-                    <h3 class="inline">Currency markup rules</h3>
+                    <h4 class="inline">Exchange Rate Adjustment Rules</h4>
                     <a class="btn btn-primary pull-right" ng-click="addNew('currency_markup_rules', {})" translate>Add</a>
                 </div>
             </div>
 
-            <div class="col-xs-12">
-                <hr />
+            <div class="col-xs-12 spacer-b20 spacer-t20">
+                <p class="help-text" translate>Exchange Rate Adjustment Rules allow you to adjust the real-time wholesale exchange rates that are used to calculate product prices in different currencies. This allows you to add additional margin to the amount you will receive in your local currency after currency conversion.</p>
             </div>
 
             <div class="col-xs-12" ng-repeat="rule in settings.currency_markup_rules">
 
                 <ng-form name="markup_rules">
-                    <div class="col-xs-12">
+                    <div class="col-md-6 col-xs-12">
                         <div class="form-group" show-errors>
-                            <label for="currency" class="control-label" translate>Currency</label>
+                            <label for="currency" class="control-label required" translate>Currency</label>
                             <select class="form-control" ng-model="rule.currency" name="currency" ng-options="currency.code as currency.name for currency in $parent.currencies"></select>
                             <p class="help-block hidden fadeInDown" translate>Please select a currency from the list</p>
                             <div>
-                                <p class="help-text" translate>INSERT HELP TEXT HERE</p>
+                                <p class="help-text" translate>The currency to which this rule will apply. Choose 'All other currencies' to create a default rule for all currencies which do not have a specific rule created.</p>
                             </div>
                         </div>
                     </div>
                    
-                    <div class="col-xs-12">
+                    <div class="col-md-6 col-xs-12">
                         <div class="form-group" show-errors>
-                            <label for="markup_percentage" class="control-label" translate>Markup Percentage</label>
-                            <input type="tel" class="form-control" name="markup_percentage" ng-model="rule.markup_percentage_value" is-valid-integer required>
+                            <label for="markup_percentage" class="control-label" translate>Adjustment Percentage</label>
+                            <input type="text" class="form-control" name="markup_percentage" ng-model="rule.markup_percentage_value" is-valid-number required>
                             <p class="help-block hidden fadeInDown" translate>Please give minimum value for rounding.</p>
                             <div>
-                                <p class="help-text" translate>INSERT HELP TEXT HERE</p>
+                                <p class="help-text" translate>The percentage of adjustment you want to apply to wholesale exchange rates for this currency. For example, to add 3.5% to the wholesale exchange rate, enter '3.5'.</p>
                             </div>
                         </div>
                     </div>
@@ -147,7 +144,7 @@
                     <div class="row"></div>
 
                     <div class="text-right">
-                        <span class="delete" ng-click="$parent.confirmDelete('currency_markup_rules', rule, $index)">Delete this markup rule</span>
+                        <span class="delete" ng-click="$parent.confirmDelete('currency_markup_rules', rule, $index)">Delete this rule</span>
                     </div>
                     <hr />
 
@@ -162,7 +159,7 @@
 
             <!-- Show a "not found" message if no rules were found  -->
             <div class="col-sm-12" ng-if="settings.currency_markup_rules.length == 0">
-                <p class="no-info" translate>No mark rules configured</p>
+                <p class="no-info" translate>No adjustment rules configured</p>
             </div>
 
             <div class="form-group">

@@ -7,9 +7,9 @@ app.controller("PricingSettingsCtrl", ['$scope', '$routeParams', '$location', 'G
 
     //Get currencies
     $scope.currencies = JSON.parse(localStorage.getItem("payment_currencies"));
-    $scope.currencies.unshift({ code: null, name: 'All other countries' });
+    $scope.currencies.unshift({ code: null, name: 'All other currencies (default)' });
 
-    $scope.methods = [{ name: 'Highest', value: 'highest' }, { name: 'Lowest', value: 'lowest' }, { name: 'Closest', value: 'closest' }];
+    $scope.methods = [{ name: 'Highest', value: 'highest' }, { name: 'Closest', value: 'closest' }, { name: 'Lowest', value: 'lowest' }];
 
     // Load the settings
     ApiService.getItem($scope.url).then(function (settings) {
@@ -30,7 +30,18 @@ app.controller("PricingSettingsCtrl", ['$scope', '$routeParams', '$location', 'G
         window.scrollTo(0, 0);
     });
   
-    $scope.addNew = function(prop, val){  
+    $scope.addNew = function (prop, val) {
+
+        if (prop == 'currency_rounding_rules') {
+            // Add some default values
+            val.method = "highest";
+            val.minimum = "3";
+            val._positions.push({value: 0});
+            val._positions.push({ value: 0.5 });
+            val._positions.push({ value: 0.95 });
+            val._positions.push({ value: 0.99 });
+        }
+
         $scope.settings[prop].unshift(val);
     };
     
@@ -54,8 +65,6 @@ app.controller("PricingSettingsCtrl", ['$scope', '$routeParams', '$location', 'G
          rule._positions.splice(index, 1);
      };
 
-   
-
     $scope.confirmCancel = function () {
         var confirm = { id: "changes_lost" };
         confirm.onConfirm = function () {
@@ -70,6 +79,8 @@ app.controller("PricingSettingsCtrl", ['$scope', '$routeParams', '$location', 'G
         $scope.exception.error = null;
 
         if ($scope.form.$invalid) {
+            $scope.exception = { error: { message: "Please review the fields highlighted below." } };
+            window.scrollTo(0, 0);
             return;
         }
 
@@ -79,6 +90,8 @@ app.controller("PricingSettingsCtrl", ['$scope', '$routeParams', '$location', 'G
             rule.positions = _.map(rule._positions, function (pos) {
                 return pos.value;
             });
+            // Remove the _positions object from the copy
+            delete rule._positions;
         });
 
         _.each(settingsCopy.currency_markup_rules, function (rule) {
