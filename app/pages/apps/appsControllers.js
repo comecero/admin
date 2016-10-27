@@ -11,7 +11,13 @@ app.controller("AppsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'Gr
 
     // Set the app installation url
     var alias = localStorage.getItem("alias");
-    $scope.meta.app_install_url_base = "https://" + alias + ".auth.comecero.com/oauth/callback/#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
+    var host = alias + ".auth.comecero.com";
+
+    if (window.location.hostname.indexOf("admin-staging.") > -1) {
+        host = host.replace(".auth.comecero.com", ".auth-staging.comecero.com");
+    }
+
+    $scope.meta.app_install_url_base = "https://" + host + "/oauth/callback/#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
 
     $scope.meta.test = localStorage.getItem("test");
 
