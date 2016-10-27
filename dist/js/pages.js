@@ -123,7 +123,13 @@ app.controller("AppsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'Gr
 
     // Set the app installation url
     var alias = localStorage.getItem("alias");
-    $scope.meta.app_install_url_base = "https://" + alias + ".auth.comecero.com/oauth/callback/#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
+    var host = alias + ".auth.comecero.com";
+
+    if (window.location.hostname.indexOf("admin-staging.") > -1) {
+        host = host.replace(".auth.comecero.com", ".auth-staging.comecero.com");
+    }
+
+    $scope.meta.app_install_url_base = "https://" + host + "/oauth/callback/#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
 
     $scope.meta.test = localStorage.getItem("test");
 
@@ -1835,7 +1841,7 @@ app.controller("FilesAddCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSe
 
         // Make a copy so you can modify what you send without changing the model in the UI
         var file = angular.copy($scope.file);
-        file.url = $scope.options.url;
+        file.file_url = $scope.options.url;
         file.http_authorization_username = $scope.options.http_authorization_username;
         file.http_authorization_password = $scope.options.http_authorization_password;
 
@@ -1968,7 +1974,7 @@ app.controller("FilesEditCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
 
         // Make a copy so you can modify what you send without changing the model in the UI
         var file = angular.copy($scope.file);
-        file.url = $scope.options.url;
+        file.file_url = $scope.options.url;
         file.http_authorization_username = $scope.options.http_authorization_username;
         file.http_authorization_password = $scope.options.http_authorization_password;
 
@@ -6299,7 +6305,6 @@ app.controller("SubscriptionPlansSetCtrl", ['$scope', '$routeParams', '$location
         $scope.subscription_plan.order_confirmation_on_renewal = true;
         $scope.subscription_plan.trial_interval_unit = null;
         $scope.subscription_plan.billing_interval_unit = "month";
-
 
     }
 
