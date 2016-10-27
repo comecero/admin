@@ -1,6 +1,3 @@
-
-//#region Promotions
-
 app.controller("PromotionsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
 
     // Establish your scope containers
@@ -98,13 +95,12 @@ app.controller("PromotionsListCtrl", ['$scope', '$routeParams', '$location', '$q
 
 app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService) {
 
-    $scope.promotion = {};
-    $scope.promotion.config = {};
-    $scope.promotion.config.discount_amount = [];
+    $scope.promotion = { apply_to_recurring: false, active: false };
+    $scope.promotion.config = { max_uses_per_customer: 1, discount_amount: [{ price: null, currency: null }] };
     $scope.exception = {};
     $scope.options = {};
-    $scope.options.discount_type = '';
-    $scope.options.coupon_code_type = '';
+    $scope.options.discount_type = "coupon";
+    $scope.options.coupon_code_type = "";
 
     // Datepicker options
     $scope.datepicker = {};
@@ -261,8 +257,6 @@ app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'Gro
     }
 
 }]);
-
-//#endregion Products
 
 
 

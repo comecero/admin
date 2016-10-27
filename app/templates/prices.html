@@ -2,7 +2,7 @@
 
     <ng-form name="prices">
 
-        <div class="col-md-6 col-xs-12" ng-class="{ 'has-error': prices.price.$invalid && (prices.price.$dirty || form.$submitted) }" style="margin-bottom:15px;">
+        <div class="col-md-6 col-xs-12" ng-class="{ 'has-error': prices.price.$invalid && (prices.price.$dirty || form.$submitted) }" style="margin-bottom:-15px;">
             <div class="form-group">
                 <label for="price" class="control-label" translate>Price</label>
                 <div class="input-group">
@@ -13,7 +13,7 @@
             </div>
         </div>
 
-        <div class="col-md-6 col-xs-12" ng-class="{ 'has-error': prices.currency.$invalid && (prices.currency.$dirty || form.$submitted) }" style="margin-bottom:15px;">
+        <div class="col-md-6 col-xs-12" ng-class="{ 'has-error': prices.currency.$invalid && (prices.currency.$dirty || form.$submitted) }" style="margin-bottom:-15px;">
             <div class="form-group">
                 <label for="currency" class="control-label" translate>Currency</label>
                 <select class="form-control" name="currency" ng-model="price.currency" ng-options="currency.code as currency.code + ' - ' + currency.name for currency in currencies" required></select>

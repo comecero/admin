@@ -24,17 +24,34 @@
         <div class="gridtable">
 
             <div class="gridtable-header hidden-xs hidden-sm">
-
+                <div class="col-md-3"><label ng-click="sort('name', !params.desc)" class="pointer text-primary" translate>Name</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="params.sort_by == 'name' && params.desc == true"></i><i class="icon fa fa-caret-up" ng-if="params.sort_by == 'name' && params.desc == false"></i></div>
                 <div class="col-md-3"><label>ID</label></div>
-                <div class="col-md-5"><label>Description</label></div>
+                <div class="col-md-2"><label>Type</label></div>
+                <div class="col-md-2 btn-header">
+                    <div class="btn-group" uib-dropdown>
+                        <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Status</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                        <ul class="dropdown-menu">
+                            <li ng-click="setParam('active', null)" ng-class="{ 'selected-li': params.active == null }"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
+                            <li ng-click="setParam('active', true)" ng-class="{ 'selected-li': params.active == true }"><a><i class="dropdown-icon fa fa-check-circle text-success"></i>&nbsp;&nbsp;<span translate>Active</span></a></li>
+                            <li ng-click="setParam('active', false)" ng-class="{'selected-li': params.active == false }"><a><i class="dropdown-icon fa fa-minus-circle text-warning"></i>&nbsp;&nbsp;<span translate>Inactive</span></a></li>
+                        </ul>
+                    </div>
+                </div>
                 <div class="col-md-2 text-right"><label ng-click="sort('date_created', !params.desc)" class="pointer text-primary" translate>Created</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="params.sort_by == 'date_created' && params.desc == true"></i><i class="icon fa fa-caret-up" ng-if="params.sort_by == 'date_created' && params.desc == false"></i></div>
-                <div class="col-md-2 text-right"><label ng-click="sort('date_modified', !params.desc)" class="pointer text-primary" translate>Updated</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="params.sort_by == 'date_modified' && params.desc == true"></i><i class="icon fa fa-caret-up" ng-if="params.sort_by == 'date_modified' && params.desc == false"></i></div>
-
             </div>
 
             <div class="col-xs-12 hidden-md hidden-lg padding-l0">
 
-               
+                <div class="btn-group" uib-dropdown>
+                    <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Filter</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown-header">Status</li>
+                        <li ng-click="setParam('active', null)" ng-class="{ 'selected-li': params.active == null }"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
+                        <li ng-click="setParam('active', true)" ng-class="{ 'selected-li': params.active == true }"><a><i class="dropdown-icon fa fa-check-circle text-success"></i>&nbsp;&nbsp;<span translate>Active</span></a></li>
+                        <li ng-click="setParam('active', false)" ng-class="{'selected-li': params.active == false }"><a><i class="dropdown-icon fa fa-minus-circle text-warning"></i>&nbsp;&nbsp;<span translate>Inactive</span></a></li>
+                    </ul>
+                </div>
+
                 <div class="btn-group"uib-dropdown>
                     <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Sort</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
                     <ul class="dropdown-menu">
@@ -58,23 +75,31 @@
             <div class="gridtable-row" ng-repeat="promotion in promotions.promotionList.data">
 
                 <div class="col-xs-12 col-sm-6 col-md-3">
-                    <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Promotion ID</label></div>
-                    <div class="col-xs-7 col-sm-12 col-md-12 value"><a href="#/promotions/{{promotion.promotion_id}}/edit">{{promotion.promotion_id}}</a></div>
+                    <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Name</label></div>
+                    <div class="col-xs-7 col-sm-12 col-md-12 value"><span><a href="#/promotions/{{promotion.promotion_id}}/edit">{{promotion.name}}</a></span></div>
                 </div>
 
-               <div class="col-xs-12 col-sm-6 col-md-5">
-                    <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Description</label></div>
-                    <div class="col-xs-7 col-sm-12 col-md-12 text-capitalize value"><span>{{promotion.comments}}</span></div>
+                <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Promotion ID</label></div>
+                    <div class="col-xs-7 col-sm-12 col-md-12 value">{{promotion.promotion_id}}</div>
+                </div>
+
+                <div class="col-xs-12 col-sm-6 col-md-2">
+                    <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Type</label></div>
+                    <div class="col-xs-7 col-sm-12 col-md-12 value">{{promotion.type}}</div>
+                </div>
+
+                <div class="col-xs-12 col-sm-6 col-md-2">
+                    <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Status</label></div>
+                    <div class="col-xs-7 col-sm-12 col-md-12 value">
+                        <span ng-if="promotion.active == true"><i class="icon fa fa-check-circle text-success"></i> <span translate>Active</span></span>
+                        <span ng-if="promotion.active == false"><i class="icon fa fa-minus-circle text-warning"></i>&nbsp;<span translate>Inactive</span></span>
+                    </div>
                 </div>
 
                 <div class="col-xs-12 col-sm-6 col-md-2">
                     <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Created</label></div>
                     <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value"><span>{{promotion.date_created | date:'shortDate'}}</span></div>
-                </div>
-
-                <div class="col-xs-12 col-sm-6 col-md-2">
-                    <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Updated</label></div>
-                    <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value"><span>{{promotion.date_modified | date:'shortDate'}}</span></div>
                 </div>
 
             </div>
