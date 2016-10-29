@@ -16,20 +16,19 @@
             <div class="col-xs-12">
                 <div class="form-group" show-errors>
                     <label for="description" class="control-label" translate>Description</label>
-                    <input type="text" class="form-control" name="description" ng-model="shippingMethod.description">
+                    <input type="text" class="form-control" name="description" ng-model="shippingMethod.description" required>
                     <p class="help-block hidden fadeInDown" translate>Please provide a valid state</p>
                     <div>
-                        <p class="help-text" translate>For your use in identifying the shipping method.</p>
+                        <p class="help-text" translate>The name of the shipping method presented to customers, for example, 'Standard Shipping'.</p>
                     </div>
                 </div>
             </div>
             <div class="col-xs-12">
-                <div class="form-group">
+                <div class="form-group" show-errors>
                     <label for="details" class="control-label" translate>Details</label>
-                    <textarea type="text" class="form-control no-wrap" name="details" ng-model="shippingMethod.details"></textarea>
-                    <p class="help-block hidden fadeInDown" translate>Please provide a shipping method details.</p>
+                    <input type="text" class="form-control no-wrap" name="details" ng-model="shippingMethod.details">
                     <div>
-                        <p class="help-text" translate>INSERT HELP TEXT HERE</p>
+                        <p class="help-text" translate>Additional details to provide to customers about this shipping method, for example 'Typically arrives within 3-4 business days'.</p>
                     </div>
                 </div>
             </div>
@@ -39,7 +38,7 @@
                     <label for="shipping_method_countries" class="control-label" translate>Countries</label>
                     <input type="text" class="form-control" name="shipping_method_countries" ng-model="typeahead.shipping_method_countries" uib-typeahead="country as country.name + ' (' + country.code + ')' for country in countries | filter:$viewValue | limitTo:12" typeahead-input-formatter="$model.name" typeahead-on-select="onCountrySelect($item, $model, $label, 'shipping_method_countries')" typeahead-editable="false">
                     <div>
-                        <p class="help-text" translate>Supply the countries where you want prices to be tax inclusive. Note that 'All countries' and 'European Union' are options you can select.</p>
+                        <p class="help-text" translate>The country or countries to which this shipping method applies.</p>
                     </div>
                 </div>
             </div>
@@ -51,103 +50,16 @@
                 </div>
             </div>
 
-            <div class="row"></div>
-            <hr />
-            <div class="row"></div>
-
-            <!-- Adjustments section -->
-            <div ng-if="adjustmentCountries.length">
-                <div class="col-xs-12">
-                    <div class="form-group spacer-b10">
-                        <a class="btn btn-primary" ng-click="addNewAdjustment()" translate>Add a new adjustment</a>
-                    </div>
-                </div>
-                <div class="col-xs-12">
-                    <hr />
-                </div>
-                <div ng-repeat="adjustment in shippingMethod.adjustments">
-                    <ng-form name="adjustments">
-                         <div class="col-xs-12">
-                            <div class="form-group">
-                                <label for="country" class="control-label" translate>Country</label>
-                                <select name="country" class="form-control" ng-model="adjustment.country" ng-options="country.code as country.name for country in $parent.adjustmentCountries"></select>
-                                <p class="help-block hidden fadeInDown" translate>Please select a country</p>
-                                <div>
-                                    <p class="help-text" translate>INSERT HELP TEXT HERE</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xs-12" ng-if="adjustment.country == 'US'">
-                            <div class="form-group" show-errors>
-                                <label for="state_prov" class="control-label" translate>State</label>
-                                <input type="text" class="form-control" name="state_prov" ng-model="adjustment.typeahead.state_prov" uib-typeahead="state as state.name for state in $parent.us_states | filter:$viewValue | limitTo:8" typeahead-input-formatter="$model.name" typeahead-on-select="$parent.onStateSelect(adjustment, $item, $model, $label)" typeahead-editable="false" >
-                                <p class="help-block hidden fadeInDown" translate>Please provide a valid state</p>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12" ng-if="adjustment.country == 'CA'">
-                            <div class="form-group" show-errors>
-                                <label for="state_prov" class="control-label" translate>Province</label>
-                                <input type="text" class="form-control" name="state_prov" ng-model="adjustment.typeahead.state_prov" uib-typeahead="state as state.name for state in $parent.ca_provinces | filter:$viewValue | limitTo:8" typeahead-input-formatter="$model.name" typeahead-on-select="$parent.onStateSelect(adjustment, $item, $model, $label)" typeahead-editable="false" >
-                                <p class="help-block hidden fadeInDown" translate>Please provide a valid state</p>
-                            </div>
-                        </div>
-                        <div class="col-xs-12">
-                            <div class="form-group">
-                                <span ng-repeat="state in adjustment._states">
-                                    <span href="#" class="label label-success label-lg" title="{{state.name}} ({{state.code}})">{{state.name}}<i class="fa fa-times-circle pointer spacer-l20" ng-click="$parent.removeState(adjustment, state)"></i></span>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="col-xs-12">
-                            <div class="form-group">
-                                <label class="radio-group-label required" translate>Adjustment Type</label>
-                                <div class="radio-group ">
-                                    <input type="radio" id="adjustment_type-1" class="radio" name="adjustment_type_{{$index}}" ng-model="adjustment.adjustment_type" value="percentage" required>
-                                    <label for="adjustment_type-1" class="radio-label" translate>Percentage</label>
-                                    <input type="radio" id="adjustment_type-2" class="radio" name="adjustment_type_{{$index}}" ng-model="adjustment.adjustment_type" value="amounts" required>
-                                    <label for="adjustment_type-2" class="radio-label" translate>Use amounts I specify</label>
-                                </div>
-                                <div>
-                                    <p class="help-text" translate>INSERT HELP TEXT HERE</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xs-12" ng-if="adjustment.adjustment_type == 'percentage'">
-                            <div class="form-group" show-errors>
-                                <label for="percentage" class="control-label" translate>Percentage</label>
-                                <input type="tel" class="form-control" name="percentage" ng-model="adjustment.percentage" required>
-                                <p class="help-block hidden fadeInDown" translate>Please provide a valid percentage</p>
-                            </div>
-                        </div>
-                        <div prices="adjustment.amounts" currencies="$parent.currencies" ng-if="adjustment.adjustment_type == 'amounts'"></div>
-                        <div class="row"></div>
-
-                        <div class="text-right">
-                            <span class="delete" ng-click="$parent.confirmDelete(removeAdjustment, adjustment, $index)">Delete this adjustment</span>
-                        </div>
-                        <hr />
-
-                        <div class="row"></div>
-                    </ng-form>
-                </div>
-            </div>
-
-            <!-- End of Adjustments section -->
-
             <div class="col-xs-12">
                 <div class="form-group">
-                    <label class="radio-group-label required" translate>Shipping Config Type</label>
+                    <label class="radio-group-label required" translate>How is the shipping price determined?</label>
                     <div class="radio-group ">
                         <input type="radio" id="shipping_method_config_type-1" class="radio" name="shipping_method_config_type" ng-model="shipping_method_config_type" value="subtotal" required>
-                        <label for="shipping_method_config_type-1" class="radio-label" translate>Subtotal</label>
-                        <input type="radio" id="shipping_method_config_type-2" class="radio" name="shipping_method_config_type" ng-model="shipping_method_config_type" value="quantity" required>
-                        <label for="shipping_method_config_type-2" class="radio-label" translate>Quantity</label>
+                        <label for="shipping_method_config_type-1" class="radio-label" translate>By the order subtotal</label>
                         <input type="radio" id="shipping_method_config_type-3" class="radio" name="shipping_method_config_type" ng-model="shipping_method_config_type" value="weight" required>
-                        <label for="shipping_method_config_type-3" class="radio-label" translate>Weight</label>
-                    </div>
-                    <div>
-                        <p class="help-text" translate>INSERT HELP TEXT HERE</p>
+                        <label for="shipping_method_config_type-3" class="radio-label" translate>By the total weight of the items in the order</label>
+                        <input type="radio" id="shipping_method_config_type-2" class="radio" name="shipping_method_config_type" ng-model="shipping_method_config_type" value="quantity" required>
+                        <label for="shipping_method_config_type-2" class="radio-label" translate>By the total quantity of items in the order</label>
                     </div>
                 </div>
             </div>
@@ -361,6 +273,86 @@
 
             </div>
             <!-- End of Weight config section -->
+
+            <!-- Adjustments section -->
+            <div ng-if="adjustmentCountries.length">
+                <div class="col-xs-12">
+                    <div class="form-group spacer-b10">
+                        <a class="btn btn-primary" ng-click="addNewAdjustment()" translate>Add a new adjustment</a>
+                    </div>
+                </div>
+                <div class="col-xs-12">
+                    <hr />
+                </div>
+                <div ng-repeat="adjustment in shippingMethod.adjustments">
+                    <ng-form name="adjustments">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label for="country" class="control-label" translate>Country</label>
+                                <select name="country" class="form-control" ng-model="adjustment.country" ng-options="country.code as country.name for country in $parent.adjustmentCountries"></select>
+                                <p class="help-block hidden fadeInDown" translate>Please select a country</p>
+                                <div>
+                                    <p class="help-text" translate>INSERT HELP TEXT HERE</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12" ng-if="adjustment.country == 'US'">
+                            <div class="form-group" show-errors>
+                                <label for="state_prov" class="control-label" translate>State</label>
+                                <input type="text" class="form-control" name="state_prov" ng-model="adjustment.typeahead.state_prov" uib-typeahead="state as state.name for state in $parent.us_states | filter:$viewValue | limitTo:8" typeahead-input-formatter="$model.name" typeahead-on-select="$parent.onStateSelect(adjustment, $item, $model, $label)" typeahead-editable="false">
+                                <p class="help-block hidden fadeInDown" translate>Please provide a valid state</p>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12" ng-if="adjustment.country == 'CA'">
+                            <div class="form-group" show-errors>
+                                <label for="state_prov" class="control-label" translate>Province</label>
+                                <input type="text" class="form-control" name="state_prov" ng-model="adjustment.typeahead.state_prov" uib-typeahead="state as state.name for state in $parent.ca_provinces | filter:$viewValue | limitTo:8" typeahead-input-formatter="$model.name" typeahead-on-select="$parent.onStateSelect(adjustment, $item, $model, $label)" typeahead-editable="false">
+                                <p class="help-block hidden fadeInDown" translate>Please provide a valid state</p>
+                            </div>
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <span ng-repeat="state in adjustment._states">
+                                    <span href="#" class="label label-success label-lg" title="{{state.name}} ({{state.code}})">{{state.name}}<i class="fa fa-times-circle pointer spacer-l20" ng-click="$parent.removeState(adjustment, state)"></i></span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="radio-group-label required" translate>Adjustment Type</label>
+                                <div class="radio-group ">
+                                    <input type="radio" id="adjustment_type-1" class="radio" name="adjustment_type_{{$index}}" ng-model="adjustment.adjustment_type" value="percentage" required>
+                                    <label for="adjustment_type-1" class="radio-label" translate>Percentage</label>
+                                    <input type="radio" id="adjustment_type-2" class="radio" name="adjustment_type_{{$index}}" ng-model="adjustment.adjustment_type" value="amounts" required>
+                                    <label for="adjustment_type-2" class="radio-label" translate>Use amounts I specify</label>
+                                </div>
+                                <div>
+                                    <p class="help-text" translate>INSERT HELP TEXT HERE</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12" ng-if="adjustment.adjustment_type == 'percentage'">
+                            <div class="form-group" show-errors>
+                                <label for="percentage" class="control-label" translate>Percentage</label>
+                                <input type="tel" class="form-control" name="percentage" ng-model="adjustment.percentage" required>
+                                <p class="help-block hidden fadeInDown" translate>Please provide a valid percentage</p>
+                            </div>
+                        </div>
+                        <div prices="adjustment.amounts" currencies="$parent.currencies" ng-if="adjustment.adjustment_type == 'amounts'"></div>
+                        <div class="row"></div>
+
+                        <div class="text-right">
+                            <span class="delete" ng-click="$parent.confirmDelete(removeAdjustment, adjustment, $index)">Delete this adjustment</span>
+                        </div>
+                        <hr />
+
+                        <div class="row"></div>
+                    </ng-form>
+                </div>
+            </div>
+
+            <!-- End of Adjustments section -->
 
             <div class="form-group">
                 <button ng-if="add" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="addShippingMethod()" validate-on-submit translate>Add the Shipping Method</button>
