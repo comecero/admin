@@ -58,6 +58,17 @@
                 </div>
             </div>
             <div class="row"></div>
+            <div class="col-xs-12" ng-show="promotion.config.type === 'product'">
+                <div class="form-group">
+                    <label class="control-label clear" translate>Products</label>
+                    <div ng-show="!promotion.config.product_ids.length">
+                        <a class="btn btn-info" products-select products="promotion.config.product_ids" translate>Add products</a>
+                    </div>
+                    <div ng-show="promotion.config.product_ids.length > 0">
+                        <product-group products="promotion.config.product_ids"></product-group>
+                    </div>
+                </div>
+            </div>
             <div class="col-xs-12" show-errors>
                 <div class="form-group">
                     <label class="radio-group-label" translate>Discount Type</label>
@@ -80,8 +91,9 @@
                 </div>
             </div>
 
-            <div prices="promotion.config.discount_amount" currencies="currencies" ng-show="options.discount_type=='amounts'"></div>
-
+            <div ng-if="options.discount_type=='amounts'">
+                <div prices="promotion.config.discount_amount" currencies="currencies"></div>
+            </div>
             <div class="row"></div>
 
             <div class="col-xs-12" show-errors>

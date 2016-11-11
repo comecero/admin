@@ -130,7 +130,7 @@ app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'Gro
         $scope.url = ApiService.buildUrl("/promotions/" + $routeParams.id)
 
         // Load the service
-        ApiService.getItem($scope.url).then(function (promotion) {
+        ApiService.getItem($scope.url, { expand: "config.product_ids" }).then(function (promotion) {
             $scope.promotion = promotion;
 
             $scope.options.discount_type = promotion.config.discount_percent ? 'percentage' : 'amounts';
@@ -138,6 +138,12 @@ app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'Gro
             $scope.promotion.config.discount_amount = [];
             if ($scope.promotion.config.discount_percent) {
                 $scope.promotion.config._discount_percent = $scope.promotion.config.discount_percent * 100;
+            }
+
+            if ($scope.promotion.config.type === 'product' && $scope.promotion.config.product_ids.length) {
+                $scope.promotion.config.product_ids = _.map($scope.promotion.config.product_ids, function (product) {
+                    return { 'product_id': product };
+                });
             }
 
         }, function (error) {
@@ -194,6 +200,12 @@ app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'Gro
             $scope.promotion.config.code = undefined;
         }
 
+        if ($scope.promotion.config.type === 'product' && $scope.promotion.config.product_ids && $scope.promotion.config.product_ids.length) {
+            $scope.promotion.config.product_ids = _.pluck($scope.promotion.config.product_ids, 'product_id');
+        }
+
+        $scope.promotion.type = 'coupon';
+
         ApiService.set($scope.promotion, ApiService.buildUrl("/promotions"), { show: "promotion_id,name" })
         .then(
         function (promotion) {
@@ -228,6 +240,10 @@ app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'Gro
             $scope.promotion.config.generator_secret_key = undefined;
         } else if ($scope.options.coupon_code_type == 'unique') {
             $scope.promotion.config.code = undefined;
+        }
+
+        if ($scope.promotion.config.type === 'product' && $scope.promotion.config.product_ids && $scope.promotion.config.product_ids.length) {
+            $scope.promotion.config.product_ids = _.pluck($scope.promotion.config.product_ids, 'product_id');
         }
 
         ApiService.set($scope.promotion, $scope.url, { show: "promotion_id,name" })

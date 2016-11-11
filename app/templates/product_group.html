@@ -1,0 +1,21 @@
+﻿<ul class="list-group">
+    <li class="list-group-item overflow-hidden">
+        <i class="fa fa-minus-square pointer pull-right text-default" ng-show="showProducts" ng-click="showProducts = !showProducts" style="margin-top:3px"></i>
+        <i class="fa fa-plus-square pointer pull-right text-default" ng-show="!showProducts" ng-click="showProducts = !showProducts" style="margin-top:3px"></i>
+        <span translate translate-n="products.length" translate-plural="{{products.length}} products">{{products.length}} product</span>
+    </li>
+    <li class="list-group-item overflow-hidden fadeIn animated" ng-show="showProducts">
+        <div class="row hidden-sm hidden-xs">
+            <div class="col-md-6">ID</div>
+
+        </div>
+        <div class="row spacer-b30" ng-repeat="product in products">
+            <div class="col-md-6 hidden-sm hidden-xs"><a href="/#/products/{{product.product_id}}/edit" target="_blank">{{product.product_id }}</a></div>
+
+        </div>
+        <p class="text-right">
+            <a class="btn btn-primary btn-xs btn-danger spacer-t10" ng-click="removeAll()" translate>Remove All</a>
+            <a class="btn btn-primary btn-xs spacer-t10" products-select products="products" limit="{{limit}}" translate>Change</a>
+        </p>
+    </li>
+</ul>
