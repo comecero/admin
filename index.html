@@ -144,6 +144,7 @@
                             <li><a href="/#/products">Products</a></li>
                             <li><a href="/#/subscription_plans">Subscription Plans</a></li>
                             <li><a href="/#/images">Images</a></li>
+                            <li><a href="/#/promotions">Promotions</a></li>
                             <li><a href="/#/files">Files</a></li>
                             <li><a href="/#/license_services">License Services</a></li>
                         </ul>
@@ -186,7 +187,6 @@
                             <li><a href="/#/settings/subscriptions">Subscriptions</a></li>
                             <li><a href="/#/settings/tax">Tax</a></li>
                             <li><a href="/#/settings/technical">Technical</a></li>
-                            <li><a href="/#/settings/shipping">Shipping</a></li>
                             <li><a href="/#/settings/analytics">Analytics</a></li>
                         </ul>
                     </li>
@@ -236,7 +236,7 @@
         <footer class="main-footer">
             <!-- To the right -->
             <div class="pull-right">
-                <span class="hidden-xs">Brought to you by <a href="https://comecero.com" target="_blank">Comecero</a>.</span> <a href="https://docs.comecero.com" target="_blank">Documentation</a> | <a href="/#/">Support</a>
+                <span class="hidden-xs">Brought to you by <a href="https://comecero.com" target="_blank">Comecero</a>.</span> <a href="https://docs.comecero.com" target="_blank">Documentation</a> | <a href="https://comecero.com/contact.html" target="_blank">Support</a>
             </div>
             &nbsp;
         </footer>
@@ -280,6 +280,7 @@
             <span ng-if="growl.id == 'download_kill'" translate>The download has been inactivated.</span>
             <span ng-if="growl.id == 'notification_resend'" translate>The notification has been sent to {{growl.email}}.</span>
             <span ng-if="growl.id == 'event_resend'" translate>The event has been queued to be sent again. You can reload the event in a few moments to check the updated status.</span>
+            <span ng-if="growl.id == 'license_request_resend'" translate>The license requset has been queued to be sent again. You can reload the license request in a few moments to check the updated status.</span>
 
             <!-- Generic -->
             <span ng-if="growl.id == 'edit_success_no_link'" translate>Your changes have been saved.</span>

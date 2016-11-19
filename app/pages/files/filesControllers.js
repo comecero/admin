@@ -125,7 +125,7 @@ app.controller("FilesAddCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSe
 
         // Make a copy so you can modify what you send without changing the model in the UI
         var file = angular.copy($scope.file);
-        file.url = $scope.options.url;
+        file.file_url = $scope.options.url;
         file.http_authorization_username = $scope.options.http_authorization_username;
         file.http_authorization_password = $scope.options.http_authorization_password;
 
@@ -258,7 +258,7 @@ app.controller("FilesEditCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
 
         // Make a copy so you can modify what you send without changing the model in the UI
         var file = angular.copy($scope.file);
-        file.url = $scope.options.url;
+        file.file_url = $scope.options.url;
         file.http_authorization_username = $scope.options.http_authorization_username;
         file.http_authorization_password = $scope.options.http_authorization_password;
 

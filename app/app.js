@@ -25,6 +25,11 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     $routeProvider.when("/products/add", { templateUrl: "/app/pages/products/set.html", reloadOnSearch: true });
     $routeProvider.when("/products/:id/edit", { templateUrl: "/app/pages/products/set.html", reloadOnSearch: true });
 
+    // Promotions
+    $routeProvider.when("/promotions", { templateUrl: "/app/pages/promotions/list.html", reloadOnSearch: false });
+    $routeProvider.when("/promotions/add", { templateUrl: "/app/pages/promotions/set.html", reloadOnSearch: true });
+    $routeProvider.when("/promotions/:id/edit", { templateUrl: "/app/pages/promotions/set.html", reloadOnSearch: true });
+
     // Gateways
     $routeProvider.when("/gateways", { templateUrl: "/app/pages/gateways/list.html", reloadOnSearch: false });
     $routeProvider.when("/gateways/add", { templateUrl: "/app/pages/gateways/set.html", reloadOnSearch: true });
@@ -152,6 +157,7 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     $routeProvider.when("/settings/technical", { templateUrl: "/app/pages/settings/technical.html", reloadOnSearch: false });
     $routeProvider.when("/settings/subscriptions", { templateUrl: "/app/pages/settings/subscriptions.html", reloadOnSearch: false });
     $routeProvider.when("/settings/tax", { templateUrl: "/app/pages/settings/tax.html", reloadOnSearch: false });
+    $routeProvider.when("/settings/pricing", { templateUrl: "/app/pages/settings/pricing.html", reloadOnSearch: false });
 
     // Users
     $routeProvider.when("/users", { templateUrl: "/app/pages/users/list.html", reloadOnSearch: false });

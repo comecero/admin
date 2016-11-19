@@ -128,7 +128,6 @@ app.controller("SubscriptionPlansSetCtrl", ['$scope', '$routeParams', '$location
         $scope.subscription_plan.trial_interval_unit = null;
         $scope.subscription_plan.billing_interval_unit = "month";
 
-
     }
 
     var prepareSubmit = function () {

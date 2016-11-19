@@ -37,8 +37,32 @@
             <div class="col-xs-12 col-md-8 panel-tight-section"><a ng-href="/#/license_services/{{licenseRequest.license_service.license_service_id}}/edit">{{licenseRequest.license_service.license_service_id}}</a></div>
         </div>
         <div class="row"></div>
-
         <div class="col-xs-12 panel-tight-row">
+            <button type="button" class="btn btn-success btn-xs" ng-if="licenseRequest.status == 'completed'" ng-click="retry()" translate>Resend License Request</button>
+            <button type="button" class="btn btn-success btn-xs" ng-if="licenseRequest.status != 'completed'" ng-click="retry()" translate>Retry Now</button>
+        </div>
+
+        <div class="row"></div>
+
+        <div ng-if="licenseRequest.status == 'failed' || licenseRequest.status == 'retry'">
+            <div class="col-xs-12 col-sm-6 panel-tight-row">
+                <div class="col-xs-12 panel-tight-section"><label>Last Attempt</label></div>
+                <div class="col-xs-12 panel-tight-section">{{licenseRequest.date_last_request_attempt | date:'short'}}</div>
+            </div>
+            <div class="col-xs-12 col-sm-6 panel-tight-row">
+                <div class="col-xs-12 panel-tight-section"><label>Next Attempt</label> (approximate)</div>
+                <div class="col-xs-12 panel-tight-section">{{licenseRequest.date_next_request_attempt | date:'short'}}</div>
+            </div>
+
+            <div class="col-xs-12 panel-tight-row">
+                <div class="col-xs-12 panel-tight-section">
+                    <label>Latest Failure Response</label>
+                </div>
+                <div class="col-xs-12 panel-tight-section"><pre>{{licenseRequest.last_failure_meta}}</pre></div>
+            </div>
+        </div>
+
+        <div class="col-xs-12 panel-tight-row" ng-show="licenseRequest.license">
             <div class="col-xs-12 panel-tight-section">
                 <label>License</label>
                 <a class="pull-right pointer" ng-show="!options.html" ng-click="options.html = true" translate>Show HTML</a>
@@ -50,7 +74,7 @@
 
         <div class="col-xs-12 panel-tight-row">
             <div class="col-xs-12 panel-tight-section">
-                <label>Request Order Payload</label>
+                <label>Request Payload</label>
                 <a class="pull-right pointer" ng-show="!options.raw" ng-click="options.raw = true" translate>Show Raw</a>
                 <a class="pull-right pointer" ng-show="options.raw" ng-click="options.raw = false" translate>Show Formatted</a>
             </div>

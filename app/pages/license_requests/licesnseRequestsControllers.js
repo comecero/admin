@@ -115,18 +115,24 @@ app.controller("LicenseRequestViewCtrl", ['$scope', '$routeParams', '$location',
     $scope.url = ApiService.buildUrl("/license_requests/" + $routeParams.id)
 
     // Load the service
-    var params = { expand: "license,license_service"};
+    var params = { expand: "license,license_service", debug: true };
     ApiService.getItem($scope.url, params).then(function (licenseRequest) {
 
         $scope.licenseRequest = licenseRequest;
-        $scope.renderedLicenseText = licenseRequest.license.label + ":\n" + licenseRequest.license.text;
-        if (licenseRequest.license.instructions) {
-            $scope.renderedLicenseText += "\n\n" + licenseRequest.license.instructions;
-        }
 
-        $scope.renderedLicenseHtml = licenseRequest.license.label + "<br>" + licenseRequest.license.html;
-        if (licenseRequest.license.instructions) {
-            $scope.renderedLicenseHtml += "<br><br>" + licenseRequest.license.instructions;
+        if (licenseRequest.license) {
+
+            // If the license is provided, prepare it for presentation.
+            $scope.renderedLicenseText = licenseRequest.license.label + ":\n" + licenseRequest.license.text;
+            if (licenseRequest.license.instructions) {
+                $scope.renderedLicenseText += "\n\n" + licenseRequest.license.instructions;
+            }
+
+            $scope.renderedLicenseHtml = licenseRequest.license.label + "<br>" + licenseRequest.license.html;
+            if (licenseRequest.license.instructions) {
+                $scope.renderedLicenseHtml += "<br><br>" + licenseRequest.license.instructions;
+            }
+
         }
 
         // Pretty format the licenseRequest data
@@ -136,6 +142,19 @@ app.controller("LicenseRequestViewCtrl", ['$scope', '$routeParams', '$location',
         $scope.exception.error = error;
         window.scrollTo(0, 0);
     });
+
+    $scope.retry = function () {
+
+        // Clear any previous errors
+        $scope.exception = {};
+
+        ApiService.set(null, $scope.licenseRequest.url + "/retry").then(function (evnt) {
+            GrowlsService.addGrowl({ id: "license_request_resend", type: "success" });
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    };
 
 }]);
 

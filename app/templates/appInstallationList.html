@@ -83,7 +83,7 @@
 
         <div class="col-xs-12" style="padding:5px;" resource="app_installations" method="update" ng-show="app_installation.updated_version_available && app_installation.is_default_version">
             <div class="alert alert-success spacer-b5">
-                <strong>New Version Available.</strong> A new version of this app is available. <a href="{{meta.app_install_url_base + app_installation.install_url}}" target="_blank">Install now</a>.
+                <strong>New Version Available.</strong> A new version of this app is available. <a ng-href="{{meta.app_install_url_base + app_installation.install_url}}" target="_blank">Install now</a>.
             </div>
         </div>
 

@@ -2208,6 +2208,10 @@ app.directive('ship', ['ApiService', 'ConfirmService', 'GrowlsService', 'Courier
                     // Set the courier and tracking info
                     shipment.tracking_number = scope.shipItems.tracking_number;
                     shipment.tracking_url = scope.shipItems.tracking_url;
+
+                    // We're going to assume the date the user entered is the date in their own timezone. As such, add the user's offset to the date shipped.
+                    shipment.date_shipped = new Date(scope.shipItems.date_shipped + (new Date(scope.shipItems.date_shipped).getTimezoneOffset() * 60)).toISOString();
+
                     if (utils.isNullOrEmpty(scope.shipItems.courier) == false) {
                         shipment.courier = scope.shipItems.courier;
                     }
@@ -3620,6 +3624,127 @@ app.directive('imagesSelect', ['ApiService', 'ConfirmService', 'GrowlsService', 
 }]);
 
 
+app.directive('productsSelect', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibModal', function (ApiService, ConfirmService, GrowlsService, $uibModal) {
+    return {
+        restrict: 'A',
+        scope: {
+            products: '=?',
+            error: '=?'
+        },
+        link: function (scope, elem, attrs, ctrl) {
+
+            elem.click(function () {
+
+                scope.productsSelect = {};
+
+                // Specify the max number of products that can be selected / uploaded. 15 if not supplied.
+                scope.productsSelect.limit = attrs.limit || 15;
+
+                scope.productsSelect.params = {};
+                scope.productsSelect.params.show = "product_id,name,date_created,date_modified,price,currency";
+                scope.productsSelect.params.limit = 10; // The number of products to show per page.
+                scope.productsSelect.params.sort_by = "name";
+                scope.productsSelect.params.desc = false;
+
+                var loadProducts = function (url) {
+                    ApiService.getList(url, scope.productsSelect.params).then(function (productList) {
+                        scope.productList = productList;
+                    }, function (error) {
+                        scope.modalError = error;
+                    });
+                }
+
+                // Load the initial list of products
+                loadProducts(ApiService.buildUrl("/products"));
+
+                var productsSelectModal = $uibModal.open({
+                    size: "lg",
+                    templateUrl: "app/modals/product_select.html",
+                    scope: scope 
+                });
+
+                // Handle when the modal is closed or dismissed
+                productsSelectModal.result.then(function () {
+
+                    scope.products = scope.productsSelect.queue;
+                    scope.modalError = null;
+                }, function () {
+
+                    scope.modalError = null;
+                });
+
+                // Put a place to queue products that are being selected
+                scope.productsSelect.queue = [];
+
+                scope.productsSelect.queueToggle = function (product) {
+                    // If it's not in the queue, add. If it is, remove.
+                    if (scope.productsSelect.isQueued(product)) {
+                        scope.productsSelect.dequeueProduct(product);
+                    } else {
+                        scope.productsSelect.queueProduct(product);
+                    }
+                }
+
+                scope.productsSelect.queueProduct = function (product) {
+                    if (scope.productsSelect.queue.length >= scope.productsSelect.limit) {
+                        // Remove the last one from the list.
+                        scope.productsSelect.queue.shift();
+                    }
+                    scope.productsSelect.queue.push(product);
+                }
+
+                scope.productsSelect.dequeueProduct = function (product) {
+                    // If it's not in the queue, add. If it is, remove.
+                    scope.productsSelect.queue = _.reject(scope.productsSelect.queue, { product_id: product.product_id });
+                }
+
+                scope.productsSelect.isQueued = function (product) {
+                    if (_.findWhere(scope.productsSelect.queue, { product_id: product.product_id }) != null) {
+                        return true;
+                    }
+                    return false;
+                }
+
+                // Load any current products into the queue so they show as already selected.
+                _.each(scope.products, function (item) {
+                    scope.productsSelect.queueProduct(item);
+                });
+
+                scope.productsSelect.ok = function (result) {
+                    productsSelectModal.close(result);
+                };
+
+                scope.productsSelect.cancel = function () {
+
+                    productsSelectModal.dismiss();
+
+                };
+
+                scope.productsSelect.search = function () {
+                    scope.productsSelect.params.q = scope.productsSelect.q;
+                    loadProducts(ApiService.buildUrl("/products"));
+                };
+
+                scope.productsSelect.sort = function (sort_by, desc) {
+                    scope.productsSelect.params.sort_by = sort_by;
+                    scope.productsSelect.params.desc = desc;
+                    loadProducts(ApiService.buildUrl("/products"));
+                }
+
+                scope.productsSelect.movePage = function (direction) {
+                    if (direction == "+") {
+                        loadProducts(scope.productList.next_page_url);
+                    } else {
+                        loadProducts(scope.productList.previous_page_url);
+                    }
+                }
+
+            });
+        }
+    };
+}]);
+
+
 app.directive('licenseServiceSelect', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibModal', function (ApiService, ConfirmService, GrowlsService, $uibModal) {
     return {
         restrict: 'A',
@@ -3777,6 +3902,27 @@ app.directive('imageGroup', ['ApiService', 'ConfirmService', 'GrowlsService', '$
 
             scope.removeAll = function () {
                 scope.images = null;
+            }
+
+        }
+    };
+}]);
+
+
+app.directive('productGroup', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibModal', function (ApiService, ConfirmService, GrowlsService, $uibModal) {
+    return {
+        restrict: 'E',
+        templateUrl: "app/templates/product_group.html",
+        scope: {
+            products: '=?'
+        },
+        link: function (scope, elem, attrs, ctrl) {
+
+
+            scope.limit = attrs.limit || 15;
+
+            scope.removeAll = function () {
+                scope.products = null;
             }
 
         }
@@ -4294,7 +4440,7 @@ app.directive('validateOnSubmit', function () {
 });
 
 
-app.directive('prices', function () {
+app.directive('prices', ['gettextCatalog', function (gettextCatalog) {
     return {
         restrict: 'A',
         require: '^form',
@@ -4306,6 +4452,7 @@ app.directive('prices', function () {
         link: function (scope, elem, attrs, ctrl) {
 
             scope.form = ctrl;
+            scope.label = attrs.label || gettextCatalog.getString("Price");
 
             scope.showAddPrice = function () {
                 scope.prices.push({ price: "", currency: "" });
@@ -4317,7 +4464,7 @@ app.directive('prices', function () {
 
         }
     };
-});
+}]);
 
 
 app.directive('metaToHtml', function () {
