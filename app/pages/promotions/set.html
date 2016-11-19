@@ -39,6 +39,18 @@
                     <p class="help-block hidden fadeInDown" translate>Please provide a configuration type.</p>
                 </div>
             </div>
+            <div class="row"></div>
+            <div class="col-xs-12" ng-show="promotion.config.type === 'product'">
+                <div class="form-group">
+                    <div ng-show="!promotion.config.product_ids.length">
+                        <a class="btn btn-info" products-select products="promotion.config.product_ids" translate>Select Products</a>
+                        <p class="help-text" translate>If you do not select products that this promotion applies to, it will apply to all products.</p>
+                    </div>
+                    <div ng-show="promotion.config.product_ids.length > 0">
+                        <product-group products="promotion.config.product_ids"></product-group>
+                    </div>
+                </div>
+            </div>
             <div class="col-md-6 col-xs-12">
                 <div class="form-group" show-errors>
                     <label for="max_uses_per_customer" class="control-label" translate>Max uses, per customer</label>
@@ -54,18 +66,6 @@
                     <input type="tel" class="form-control" name="max_uses_global" ng-model="promotion.config.max_uses_global" placeholder="{{ 'Optional' | translate}}" is-valid-integer allow-empty-value="true">
                     <div>
                         <p class="help-text" translate>The number of times this coupon can be used across all customers. Leave blank for no limit.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="row"></div>
-            <div class="col-xs-12" ng-show="promotion.config.type === 'product'">
-                <div class="form-group">
-                    <label class="control-label clear" translate>Products</label>
-                    <div ng-show="!promotion.config.product_ids.length">
-                        <a class="btn btn-info" products-select products="promotion.config.product_ids" translate>Add products</a>
-                    </div>
-                    <div ng-show="promotion.config.product_ids.length > 0">
-                        <product-group products="promotion.config.product_ids"></product-group>
                     </div>
                 </div>
             </div>
@@ -92,7 +92,7 @@
             </div>
 
             <div ng-if="options.discount_type=='amounts'">
-                <div prices="promotion.config.discount_amount" currencies="currencies"></div>
+                <div prices="promotion.config.discount_amount" currencies="currencies" label="amount"></div>
             </div>
             <div class="row"></div>
 

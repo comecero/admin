@@ -4,7 +4,7 @@
 
         <div class="col-md-6 col-xs-12" ng-class="{ 'has-error': prices.price.$invalid && (prices.price.$dirty || form.$submitted) }" style="margin-bottom:-15px;">
             <div class="form-group">
-                <label for="price" class="control-label" translate>Price</label>
+                <label for="price" class="control-label text-capitalize" translate>{{label}}</label>
                 <div class="input-group">
                     <input type="text" class="form-control" ng-class="{'input-radius': $index == 0}" name="price" ng-model="price.price" ng-model-options="{ updateOn: 'blur' }" is-valid-price allow-empty-price="true" clean-price required>
                     <span class="input-group-addon pointer" ng-if="$index > 0" ng-click="removePrice(prices, $index)"><i class="fa fa-trash pointer text-default" ng-if="$index > 0" title="{{ 'Remove' | translate}}"></i></span>
@@ -28,5 +28,5 @@
 </div>
 
 <div class="col-xs-12" style="margin-top:-5px; margin-bottom:35px;">
-    <a class="btn btn-sm btn-info" ng-click="showAddPrice()" translate>Add a price in another currency</a>
+    <a class="btn btn-sm btn-info" ng-click="showAddPrice()" translate>Add {{label}} in another currency</a>
 </div>

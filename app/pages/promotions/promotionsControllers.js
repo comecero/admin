@@ -96,10 +96,10 @@ app.controller("PromotionsListCtrl", ['$scope', '$routeParams', '$location', '$q
 app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService) {
 
     $scope.promotion = { apply_to_recurring: false, active: false };
-    $scope.promotion.config = { max_uses_per_customer: 1, discount_amount: [{ price: null, currency: null }] };
+    $scope.promotion.config = { max_uses_per_customer: null, discount_amount: [{ price: null, currency: null }] };
     $scope.exception = {};
     $scope.options = {};
-    $scope.options.discount_type = "coupon";
+    $scope.options.discount_type = "percentage";
     $scope.options.coupon_code_type = "";
 
     // Datepicker options
@@ -140,7 +140,7 @@ app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'Gro
                 $scope.promotion.config._discount_percent = $scope.promotion.config.discount_percent * 100;
             }
 
-            if ($scope.promotion.config.type === 'product' && $scope.promotion.config.product_ids.length) {
+            if ($scope.promotion.config.type === 'product' && $scope.promotion.config.product_ids) {
                 $scope.promotion.config.product_ids = _.map($scope.promotion.config.product_ids, function (product) {
                     return { 'product_id': product };
                 });

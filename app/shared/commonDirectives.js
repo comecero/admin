@@ -3230,8 +3230,8 @@ app.directive('productsSelect', ['ApiService', 'ConfirmService', 'GrowlsService'
                 scope.productsSelect.limit = attrs.limit || 15;
 
                 scope.productsSelect.params = {};
-                scope.productsSelect.params.show = "product_id,name,date_created,date_modified";
-                scope.productsSelect.params.limit = 5; // The number of products to show per page.
+                scope.productsSelect.params.show = "product_id,name,date_created,date_modified,price,currency";
+                scope.productsSelect.params.limit = 10; // The number of products to show per page.
                 scope.productsSelect.params.sort_by = "name";
                 scope.productsSelect.params.desc = false;
 
@@ -3243,16 +3243,13 @@ app.directive('productsSelect', ['ApiService', 'ConfirmService', 'GrowlsService'
                     });
                 }
 
-
-
                 // Load the initial list of products
                 loadProducts(ApiService.buildUrl("/products"));
 
                 var productsSelectModal = $uibModal.open({
                     size: "lg",
                     templateUrl: "app/modals/product_select.html",
-                    scope: scope,
-                    backdrop: "static"
+                    scope: scope 
                 });
 
                 // Handle when the modal is closed or dismissed
@@ -3335,6 +3332,7 @@ app.directive('productsSelect', ['ApiService', 'ConfirmService', 'GrowlsService'
         }
     };
 }]);
+
 
 app.directive('licenseServiceSelect', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibModal', function (ApiService, ConfirmService, GrowlsService, $uibModal) {
     return {
@@ -3499,6 +3497,7 @@ app.directive('imageGroup', ['ApiService', 'ConfirmService', 'GrowlsService', '$
     };
 }]);
 
+
 app.directive('productGroup', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibModal', function (ApiService, ConfirmService, GrowlsService, $uibModal) {
     return {
         restrict: 'E',
@@ -3518,6 +3517,7 @@ app.directive('productGroup', ['ApiService', 'ConfirmService', 'GrowlsService', 
         }
     };
 }]);
+
 
 app.directive('fields', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibModal', function (ApiService, ConfirmService, GrowlsService, $uibModal) {
 
@@ -4029,7 +4029,7 @@ app.directive('validateOnSubmit', function () {
 });
 
 
-app.directive('prices', function () {
+app.directive('prices', ['gettextCatalog', function (gettextCatalog) {
     return {
         restrict: 'A',
         require: '^form',
@@ -4041,6 +4041,7 @@ app.directive('prices', function () {
         link: function (scope, elem, attrs, ctrl) {
 
             scope.form = ctrl;
+            scope.label = attrs.label || gettextCatalog.getString("Price");
 
             scope.showAddPrice = function () {
                 scope.prices.push({ price: "", currency: "" });
@@ -4052,7 +4053,7 @@ app.directive('prices', function () {
 
         }
     };
-});
+}]);
 
 
 app.directive('metaToHtml', function () {
