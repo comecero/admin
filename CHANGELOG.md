@@ -1,5 +1,12 @@
 ﻿# Admin Change Log #
 
+<a name="1.3.1"></a>
+# 1.3.1
+
+- Add the ability to view, edit and add promotions (Store> Promotions)
+- Add the ability to view, edit and add pricing settings (Settings> Pricing)
+- Add the ability to manually trigger or retry license requests and view debug details for failed requests
+
 <a name="1.3.0"></a>
 # 1.3.0
 
