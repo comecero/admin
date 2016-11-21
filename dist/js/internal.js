@@ -1375,6 +1375,20 @@ var utils = (function () {
         return (string == "true");
     }
 
+    function decimalToPercent(dec) {
+
+        // Multiply by 100
+        var result = dec * 100;
+
+        // Determine the length of the output percent, which is the length of the original decimal - 2 (since we multipled by 100).
+        var fixed = dec.toString().split(".")[1].length - 2;
+
+        result = result.toFixed(fixed);
+
+        return result;
+
+    }
+
     return {
         setCookie: setCookie,
         getCookie: getCookie,
@@ -1417,7 +1431,8 @@ var utils = (function () {
         getChildrenElements: getChildrenElements,
         getSiblingElements: getSiblingElements,
         jsonToCsvDownload: jsonToCsvDownload,
-        jsonToHtmlTable: jsonToHtmlTable
+        jsonToHtmlTable: jsonToHtmlTable,
+        decimalToPercent: decimalToPercent
     };
 
 })();

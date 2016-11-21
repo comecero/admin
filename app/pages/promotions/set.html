@@ -83,7 +83,7 @@
             <div class="col-xs-12" ng-if="options.discount_type=='percentage'">
                 <div class="form-group" show-errors>
                     <label for="discount_percent" class="control-label" translate>Discount Percentage</label>
-                    <input type="tel" class="form-control" name="discount_percent" ng-model="promotion.config._discount_percent" placeholder="{{ 'Enter a percentage value' | translate}}" is-valid-integer required>
+                    <input type="tel" class="form-control" name="discount_percent" ng-model="promotion.config._discount_percent" placeholder="{{ 'Enter a percentage value' | translate}}" is-valid-number required>
                     <p class="help-block hidden fadeInDown" translate>Please provide a discount percentage.</p>
                     <div>
                         <p class="help-text" translate>The percentage discount to apply. For example, for a 20% discount, enter '20'.</p>
@@ -91,7 +91,7 @@
                 </div>
             </div>
 
-            <div ng-if="options.discount_type=='amounts'">
+            <div ng-if="options.discount_type == 'amounts'">
                 <div prices="promotion.config.discount_amount" currencies="currencies" label="amount"></div>
             </div>
             <div class="row"></div>

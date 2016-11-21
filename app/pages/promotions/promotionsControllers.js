@@ -135,9 +135,9 @@ app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'Gro
 
             $scope.options.discount_type = promotion.config.discount_percent ? 'percentage' : 'amounts';
             $scope.options.coupon_code_type = promotion.config.code ? 'single' : 'unique';
-            $scope.promotion.config.discount_amount = [];
+            $scope.promotion.config.discount_amount = $scope.promotion.config.discount_amount || [];
             if ($scope.promotion.config.discount_percent) {
-                $scope.promotion.config._discount_percent = $scope.promotion.config.discount_percent * 100;
+                $scope.promotion.config._discount_percent = utils.decimalToPercent($scope.promotion.config.discount_percent);
             }
 
             if ($scope.promotion.config.type === 'product' && $scope.promotion.config.product_ids) {
