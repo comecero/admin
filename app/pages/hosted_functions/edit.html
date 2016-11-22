@@ -17,7 +17,7 @@
             <div class="col-xs-12">
                 <div class="form-group">
                     <label class="control-label" translate>Invoke URL</label>
-                    <div class="text-info">{{hostedFunction.invoke_url}}</div>
+                    <div class="text-info"><strong>{{hostedFunction.invoke_url}}</strong></div>
                     <p class="help-text" translate>To invoke your function, you must supply a token in your request that has permission to read, create or update hosted functions.</p>
                 </div>
             </div>
@@ -83,6 +83,40 @@
                     <label class="radio-group-label" translate>Environment</label>
                     <span>{{hostedFunction.environment}}</span>
                 </div>
+            </div>
+
+            <div class="col-xs-12">
+                <label for="description" class="control-label" translate>Environment Variables</label>
+            </div>
+
+            <div ng-repeat="variable in environmentVariables">
+                <ng-form name="variables">
+                    <div class="col-md-6 col-xs-12" style="margin-bottom:-15px;">
+                        <div class="form-group">
+                            <label for="name" class="control-label text-capitalize" translate>Name</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="name" ng-model="variable.name">
+                                <span class="input-group-addon pointer" ng-click="removeVariable(environmentVariables, $index)"><i class="fa fa-trash pointer text-default" title="{{ 'Remove' | translate}}"></i></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-xs-12" style="margin-bottom:-15px;">
+                        <div class="form-group">
+                            <label for="value" class="control-label text-capitalize" translate>Value</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="value" ng-model="variable.value">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row"></div>
+                </ng-form>
+            </div>
+
+            <div class="col-xs-12" style="margin-top:-5px; margin-bottom:35px;">
+                <a class="btn btn-sm btn-info" ng-click="addVariable()" translate>Add environment variable</a>
+                <p class="help-text" translate>Environment variables allow you to pass settings to your function at runtime, making it easier to use the same source code in live and test scenarios. Values provided are encrypted at rest.    </p>
             </div>
 
             <div class="col-xs-12">

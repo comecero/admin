@@ -117,6 +117,7 @@
                         <tr>
                             <th translate>Item</th>
                             <th translate>Item ID</th>
+                            <th class="text-right" translate>Quantity</th>
                             <th class="text-right" translate>Subtotal</th>
                             <th class="text-right" translate>Tax</th>
                             <th class="text-right" translate>Total</th>
@@ -126,6 +127,7 @@
                         <tr ng-repeat="item in report.data">
                             <td><a href="/#/products/{{item.item_id}}/edit">{{item.name}}</a></td>
                             <td>{{item.item_id}}</td>
+                            <td class="text-right">{{item.item_count}}</td>
                             <td class="text-right">{{item.formatted.subtotal}}</td>
                             <td class="text-right">{{item.formatted.tax}}</td>
                             <td class="text-right">{{item.formatted.total}}</td>
