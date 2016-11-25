@@ -87,8 +87,9 @@
 app.controller("HostedFunctionsAddCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
 
     // Set defaults
-    $scope.hostedFunction = {};
+    $scope.hostedFunction = { environment_variables: {}};
     $scope.exception = {};
+    $scope.environmentVariables = [];
 
     $scope.uploadSending = false;
     var uploadSendingListener = $scope.$on('uploadSending', function (event, sending) {
@@ -125,6 +126,29 @@ app.controller("HostedFunctionsAddCtrl", ['$scope', '$routeParams', '$location',
         uploadCompleteListener();
     }
 
+    $scope.addVariable = function () {
+        $scope.environmentVariables.push({ name: null, value: null });
+        $scope.setVariables();
+    }
+
+    $scope.removeVariable = function (variables, index) {
+        variables.splice(index, 1);
+        $scope.setVariables();
+    }
+
+    $scope.setVariables = function () {
+
+        // Loop through all the variables and set any that have both a name and value.
+        var variables = {};
+        $.each($scope.environmentVariables, function (index, item) {
+            if (!utils.isNullOrEmpty(item.name) && !utils.isNullOrEmpty(item.value)) {
+                variables[item.name] = item.value;
+            }
+        });
+
+        $scope.environment_variables_json = JSON.stringify(variables);
+    }
+
     $scope.cancel = function () {
         if ($scope.uploadSending) {
             var confirm = { id: "upload_cancel" };
@@ -147,6 +171,7 @@ app.controller("HostedFunctionsEditCtrl", ['$scope', '$routeParams', '$location'
     // Set defaults
     $scope.hostedFunction = {};
     $scope.exception = {};
+    $scope.environmentVariables = [];
 
     // Set the url for interacting with this item
     $scope.url = ApiService.buildUrl("/hosted_functions/" + $routeParams.id)
@@ -155,6 +180,14 @@ app.controller("HostedFunctionsEditCtrl", ['$scope', '$routeParams', '$location'
     // Load the hostedFunction
     ApiService.getItem($scope.url).then(function (hostedFunction) {
         $scope.hostedFunction = hostedFunction;
+
+        if (hostedFunction.environment_variables) {
+            for (var property in hostedFunction.environment_variables) {
+                if (hostedFunction.environment_variables.hasOwnProperty(property)) {
+                    $scope.environmentVariables.push({ name: property, value: hostedFunction.environment_variables[property] });
+                }
+            }
+        }
 
         // Make a copy of the original for comparision
         $scope.hostedFunction_orig = angular.copy($scope.hostedFunction);
@@ -209,18 +242,32 @@ app.controller("HostedFunctionsEditCtrl", ['$scope', '$routeParams', '$location'
         }
     };
 
+    $scope.addVariable = function () {
+        $scope.environmentVariables.push({ name: null, value: null });
+    }
+
+    $scope.removeVariable = function (variables, index) {
+        variables.splice(index, 1);
+    }
+
     var prepareSubmit = function () {
         // Clear any previous errors
         $scope.exception.error = null;
+
+        // Map variables array to object
+        $scope.hostedFunction.environment_variables = {};
+        for (var variable in $scope.environmentVariables) {
+            if (!utils.isNullOrEmpty($scope.environmentVariables[variable].name) && !utils.isNullOrEmpty($scope.environmentVariables[variable].value))
+            $scope.hostedFunction.environment_variables[$scope.environmentVariables[variable].name] = $scope.environmentVariables[variable].value;
+        }
+        $scope.hostedFunction.environment_variables = JSON.stringify($scope.hostedFunction.environment_variables);
     }
 
     $scope.updateHostedFunction = function () {
 
         prepareSubmit();
 
-        ApiService.multipartForm($scope.hostedFunction, null, $scope.hostedFunction.url, { show: "hosted_function_id,name" })
-        .then(
-        function (hostedFunction) {
+        ApiService.multipartForm($scope.hostedFunction, null, $scope.hostedFunction.url, { show: "hosted_function_id,name" }).then(function (hostedFunction) {
             GrowlsService.addGrowl({ id: "edit_success", name: hostedFunction.name, type: "success", hosted_function_id: hostedFunction.hosted_function_id, url: "#/hosted_functions/" + hostedFunction.hosted_function_id + "/edit" });
             utils.redirect($location, "/hosted_functions");
         },

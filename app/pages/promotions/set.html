@@ -20,14 +20,45 @@
                     <p class="help-block hidden fadeInDown" translate>Please provide a name for this promotion.</p>
                 </div>
             </div>
-          
-            <div class="row"></div>
-            <div class="col-md-6 col-xs-12" ng-show="!add">
+
+            <div class="col-xs-12"  ng-show="options.coupon_code_type == 'single' && update">
                 <div class="form-group">
-                    <label class="control-label" translate>Use count : </label>
-                    <span>{{promotion.use_count}}</span>
+                    <label class="control-label" translate>Promotion Code</label>
+                    <div class="highlight-value">{{promotion.config.code}}</div>
                 </div>
             </div>
+
+            <div class="col-md-6 col-xs-12" ng-show="!add">
+                <div class="form-group">
+                    <label class="control-label" translate>Promotion ID</label>
+                    <div>{{promotion.promotion_id}}</div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xs-12" ng-show="!add">
+                <div class="form-group">
+                    <label class="control-label" translate>Number of Uses</label>
+                    <div>{{promotion.use_count}}</div>
+                </div>
+            </div>
+
+            <div class="col-xs-12" ng-show="update && options.coupon_code_type=='unique'">
+                <div class="form-group" ng-show="!showResend">
+                    <a class="btn btn-info spacer-t5" ng-click="showResend = !showResend" translate>Generate Coupon Codes</a>
+                </div>
+                <div class="form-group" ng-show="showResend">
+                    <label for="generate_number" class="control-label" translate>How many do you want to generate?</label>
+                    <input type="tel" name="generate_number" class="form-control" ng-model="data.generate_number" maxlength="5" style="width:200px" />
+                    <a class="btn btn-default spacer-t5" ng-click="showResend = !showResend" translate>Cancel</a>
+                    <a class="btn btn-success spacer-t5" ng-click="generateCodes(promotion.config.generator_prefix, promotion.config.generator_secret_key, data.generate_number)" validate-on-submit translate>Generate</a>
+                </div>
+            </div>
+
+            <div class="col-xs-12" ng-show="data.codes && showResend">
+                <div class="form-group" show-errors>
+                    <textarea type="text" class="form-control big" name="codes" ng-model="data.codes"></textarea>
+                </div>
+            </div>
+
             <div class="col-xs-12">
                 <div class="form-group" show-errors>
                     <label for="type" class="control-label" translate>What does the discount apply to?</label>
@@ -36,7 +67,7 @@
                         <option value="shipping" translate>Shipping charges</option>
                         <option value="order" translate>An entire order</option>
                     </select>
-                    <p class="help-block hidden fadeInDown" translate>Please provide a configuration type.</p>
+                    <p class="help-block hidden fadeInDown" translate>Please indicate what this discount applies to.</p>
                 </div>
             </div>
             <div class="row"></div>
@@ -51,24 +82,6 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 col-xs-12">
-                <div class="form-group" show-errors>
-                    <label for="max_uses_per_customer" class="control-label" translate>Max uses, per customer</label>
-                    <input type="tel" class="form-control" name="max_uses_per_customer" ng-model="promotion.config.max_uses_per_customer" placeholder="{{ 'Optional' | translate}}" is-valid-integer allow-empty-value="true">
-                    <div>
-                        <p class="help-text" translate>The number of times this coupon can be used by the same customer. Leave blank for no limit.</p>
-                    </div>
-                </div>
-            </div>           
-            <div class="col-md-6 col-xs-12">
-                <div class="form-group" show-errors>
-                    <label for="max_uses_global" class="control-label" translate>Max uses, all customers</label>
-                    <input type="tel" class="form-control" name="max_uses_global" ng-model="promotion.config.max_uses_global" placeholder="{{ 'Optional' | translate}}" is-valid-integer allow-empty-value="true">
-                    <div>
-                        <p class="help-text" translate>The number of times this coupon can be used across all customers. Leave blank for no limit.</p>
-                    </div>
-                </div>
-            </div>
             <div class="col-xs-12" show-errors>
                 <div class="form-group">
                     <label class="radio-group-label" translate>Discount Type</label>
@@ -80,10 +93,10 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xs-12" ng-if="options.discount_type=='percentage'">
+            <div class="col-xs-12" ng-show="options.discount_type == 'percentage'">
                 <div class="form-group" show-errors>
                     <label for="discount_percent" class="control-label" translate>Discount Percentage</label>
-                    <input type="tel" class="form-control" name="discount_percent" ng-model="promotion.config._discount_percent" placeholder="{{ 'Enter a percentage value' | translate}}" is-valid-integer required>
+                    <input type="tel" class="form-control" name="discount_percent" ng-model="promotion.config._discount_percent" placeholder="{{ 'Enter a percentage value' | translate}}" is-valid-number allow-empty-value="true" ng-required="options.discount_type == 'percentage'">
                     <p class="help-block hidden fadeInDown" translate>Please provide a discount percentage.</p>
                     <div>
                         <p class="help-text" translate>The percentage discount to apply. For example, for a 20% discount, enter '20'.</p>
@@ -91,12 +104,12 @@
                 </div>
             </div>
 
-            <div ng-if="options.discount_type=='amounts'">
+            <div ng-if="options.discount_type == 'amounts'">
                 <div prices="promotion.config.discount_amount" currencies="currencies" label="amount"></div>
             </div>
             <div class="row"></div>
 
-            <div class="col-xs-12" show-errors>
+            <div class="col-xs-12" show-errors ng-show="add">
                 <div class="form-group">
                     <label class="radio-group-label" translate>What type of code do you want to create?</label>
                     <div class="radio-group inline">
@@ -105,35 +118,43 @@
                         <input type="radio" id="coupon_code_type-2" class="radio" name="coupon_code_type" ng-model="options.coupon_code_type" value="unique" required>
                         <label for="coupon_code_type-2" class="radio-label">A unique code for each customer</label>
                     </div>
+                    <p class="help-block hidden fadeInDown" style="max-width:300px" translate>Please provide a type</p>
                 </div>
             </div>
-            <div class="col-xs-12" ng-if="options.coupon_code_type=='single'">
+            <div class="col-xs-12" ng-show="options.coupon_code_type == 'single' && add">
                 <div class="form-group" show-errors>
-                    <label for="config_code" class="control-label" translate>Coupon Code</label>
-                    <input type="text" class="form-control" name="config_code" ng-model="promotion.config.code" maxlength="50" required>
-                    <p class="help-block hidden fadeInDown" translate>Please provide coupon code</p>
-                    <div>
-                        <p class="help-text" translate>The code that grants the discount, such as 'special-offer-15'. The value is not case sensitive. Letters, numbers, dashes, underscores and periods are permitted, 50 characters max.</p>
+                    <label for="config_code" class="control-label" ng-class="{ 'required': options.coupon_code_type=='single' }" translate>Coupon Code</label>
+                    <input type="text" class="form-control" name="config_code" ng-model="promotion.config.code" maxlength="50" ng-required="options.coupon_code_type=='single'" placeholder="">
+                    <p class="help-block hidden fadeInDown" translate>Please provide promotion code</p>
+                    <div class="spacer-t5">
+                        <a class="btn btn-sm btn-info" ng-click="generateCode()" translate>Set a random promotion code</a>
+                        <p class="help-text" translate>The code that grants the discount, such as 'special-offer-15'. The value is not case sensitive. Letters, numbers, dashes, underscores and periods are permitted, 50 characters max. You can supply your own or have a random value generated for you.</p>
                     </div>
                 </div>
             </div>
-            <div class="col-xs-12" ng-if="options.coupon_code_type=='unique'">
+            <div class="col-xs-12" ng-show="options.coupon_code_type=='unique' && add">
                 <div class="form-group" show-errors>
-                    <label for="config_generator_prefix" class="control-label" translate>Coupon Prefix</label>
-                    <input type="text" class="form-control" name="config_generator_prefix" ng-model="promotion.config.generator_prefix" required>
+                    <label for="config_generator_prefix" class="control-label" ng-class="{ 'required': options.coupon_code_type=='single' }" translate>Coupon Prefix</label>
+                    <input type="text" class="form-control" name="config_generator_prefix" ng-model="promotion.config.generator_prefix" ng-required="options.coupon_code_type=='unique'" required placeholder="">
                     <p class="help-block hidden fadeInDown" translate>Please provide a coupon prefix</p>
                     <div>
                         <p class="help-text" translate>The prefix determines the first characters for all codes generated for this promotion (all codes will have the same prefix). A prefix can contain letters or numbers, can be between 1 -10 characters long, and is not case sensitive. You can enter any value you wish, but the prefix you enter must be unique across all promotions.</p>
                     </div>
                 </div>
             </div>
+
+            <div class="col-md-6 col-xs-12" ng-show="options.coupon_code_type == 'unique' && !add">
+                <div class="form-group">
+                    <label class="control-label" translate>Coupon generator prefix</label>
+                    <div>{{promotion.config.generator_prefix}}</div>
+                    <p class="help-text" translate>This is the prefix that will be used to generate promotion codes for this promotion. All generated codes will start with this prefix.</p>
+                </div>
+            </div>
             <div class="col-md-6 col-xs-12" ng-show="options.coupon_code_type == 'unique' && !add">
                 <div class="form-group">
                     <label class="control-label" translate>Coupon generator secret key</label>
-                    <span>{{promotion.config.generator_secret_key}}</span>
-                </div>
-                <div>
-                    <p class="help-text" translate>This is the 'secret' used to generate coupon codes for this promotion. It should be kept private and is never given to customers.</p>
+                    <div>{{promotion.config.generator_secret_key}}</div>
+                    <p class="help-text" translate>This is the 'secret' used to generate promotion codes for this promotion. It should be kept private and is never given to customers.</p>
                 </div>
             </div>
 
@@ -154,16 +175,39 @@
                 </div>
             </div>
 
-            <div class="col-md-6 col-xs-12">
-                <label class="control-label">Expires</label>
+            <div class="col-md-6 col-xs-12" show-errors>
+                <label for="expires" class="control-label">Expires</label>
                 <div class="input-group dp">
-                    <input type="text" class="form-control" uib-datepicker-popup="yyyy-MM-dd" ng-model="datepicker.expires" is-open="datepicker.status.expires.opened" datepicker-options="datepicker.options" close-text="Close" />
+                    <input type="text" name="expires" class="form-control" uib-datepicker-popup="yyyy-MM-dd" ng-model="datepicker.expires" is-open="datepicker.status.expires.opened" datepicker-options="datepicker.options" close-text="Close" />
                     <span class="input-group-addon pointer" ng-click="datepicker.open($event, 'expires')"><i class="fa fa-calendar"></i></span>
                 </div>
                 <div>
                     <p class="help-text" translate>Supply a date if you want the promotion to automatically expire, otherwise leave blank.</p>
                 </div>
             </div>
+
+            <div class="row"></div>
+
+            <div class="col-md-6 col-xs-12" ng-show="options.coupon_code_type == 'single'">
+                <div class="form-group" show-errors>
+                    <label for="max_uses_per_customer" class="control-label" translate>Max uses, per customer</label>
+                    <input type="tel" class="form-control" name="max_uses_per_customer" ng-model="promotion.config.max_uses_per_customer" placeholder="{{ 'Optional' | translate}}" is-valid-integer allow-empty-value="true">
+                    <div>
+                        <p class="help-text" translate>The number of times this promotion can be used by the same customer. Leave blank for no limit.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xs-12" ng-show="options.coupon_code_type == 'single'">
+                <div class="form-group" show-errors>
+                    <label for="max_uses_global" class="control-label" translate>Max uses, all customers</label>
+                    <input type="tel" class="form-control" name="max_uses_global" ng-model="promotion.config.max_uses_global" placeholder="{{ 'Optional' | translate}}" is-valid-integer allow-empty-value="true">
+                    <div>
+                        <p class="help-text" translate>The number of times this promotion can be used across all customers. Leave blank for no limit.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row"></div>
 
             <div class="col-xs-12" show-errors>
                 <div class="form-group">
@@ -194,6 +238,12 @@
                 <button ng-if="add" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="addPromotion()" validate-on-submit translate>Add the Promotion</button>
                 <button ng-if="update" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updatePromotion()" validate-on-submit translate>Save Changes</button>
                 <button ng-if="update" type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="confirmCancel()" translate>Cancel</button>
+            </div>
+
+            <div class="row"></div>
+
+            <div ng-if="update" class="panel-footer submenu" resource="products" method="delete">
+                <span class="delete" ng-click="confirmDelete()" ng-if="!product.deleted" translate>Delete this promotion</span>
             </div>
 
         </div>

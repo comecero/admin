@@ -5,9 +5,10 @@
         <span translate translate-n="products.length" translate-plural="{{products.length}} products">{{products.length}} product</span>
     </li>
     <li class="list-group-item overflow-hidden fadeIn animated" ng-show="showProducts">
-        <div class="row spacer-b30" ng-repeat="product in products">
-            <div class="col-md-6 hidden-sm hidden-xs"><a href="/#/products/{{product.product_id}}/edit" target="_blank">{{product.name}}</a> ({{product.product_id}})</div>
+        <div class="col-md-3 col-xs-12 hidden-sm hidden-xs spacer-b15" ng-repeat="product in products">
+            <div><a href="/#/products/{{product.product_id}}/edit" target="_blank">{{product.product_id}}</a></div>
         </div>
+        <div class="row spacer-b15"></div>
         <p class="text-right">
             <a class="btn btn-primary btn-xs btn-danger spacer-t10" ng-click="removeAll()" translate>Remove All</a>
             <a class="btn btn-primary btn-xs spacer-t10" products-select products="products" limit="{{limit}}" translate>Change</a>

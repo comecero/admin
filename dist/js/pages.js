@@ -2532,8 +2532,9 @@ app.controller("HostedFunctionsListCtrl", ['$scope', '$routeParams', '$location'
 app.controller("HostedFunctionsAddCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
 
     // Set defaults
-    $scope.hostedFunction = {};
+    $scope.hostedFunction = { environment_variables: {}};
     $scope.exception = {};
+    $scope.environmentVariables = [];
 
     $scope.uploadSending = false;
     var uploadSendingListener = $scope.$on('uploadSending', function (event, sending) {
@@ -2570,6 +2571,29 @@ app.controller("HostedFunctionsAddCtrl", ['$scope', '$routeParams', '$location',
         uploadCompleteListener();
     }
 
+    $scope.addVariable = function () {
+        $scope.environmentVariables.push({ name: null, value: null });
+        $scope.setVariables();
+    }
+
+    $scope.removeVariable = function (variables, index) {
+        variables.splice(index, 1);
+        $scope.setVariables();
+    }
+
+    $scope.setVariables = function () {
+
+        // Loop through all the variables and set any that have both a name and value.
+        var variables = {};
+        $.each($scope.environmentVariables, function (index, item) {
+            if (!utils.isNullOrEmpty(item.name) && !utils.isNullOrEmpty(item.value)) {
+                variables[item.name] = item.value;
+            }
+        });
+
+        $scope.environment_variables_json = JSON.stringify(variables);
+    }
+
     $scope.cancel = function () {
         if ($scope.uploadSending) {
             var confirm = { id: "upload_cancel" };
@@ -2592,6 +2616,7 @@ app.controller("HostedFunctionsEditCtrl", ['$scope', '$routeParams', '$location'
     // Set defaults
     $scope.hostedFunction = {};
     $scope.exception = {};
+    $scope.environmentVariables = [];
 
     // Set the url for interacting with this item
     $scope.url = ApiService.buildUrl("/hosted_functions/" + $routeParams.id)
@@ -2600,6 +2625,14 @@ app.controller("HostedFunctionsEditCtrl", ['$scope', '$routeParams', '$location'
     // Load the hostedFunction
     ApiService.getItem($scope.url).then(function (hostedFunction) {
         $scope.hostedFunction = hostedFunction;
+
+        if (hostedFunction.environment_variables) {
+            for (var property in hostedFunction.environment_variables) {
+                if (hostedFunction.environment_variables.hasOwnProperty(property)) {
+                    $scope.environmentVariables.push({ name: property, value: hostedFunction.environment_variables[property] });
+                }
+            }
+        }
 
         // Make a copy of the original for comparision
         $scope.hostedFunction_orig = angular.copy($scope.hostedFunction);
@@ -2654,18 +2687,32 @@ app.controller("HostedFunctionsEditCtrl", ['$scope', '$routeParams', '$location'
         }
     };
 
+    $scope.addVariable = function () {
+        $scope.environmentVariables.push({ name: null, value: null });
+    }
+
+    $scope.removeVariable = function (variables, index) {
+        variables.splice(index, 1);
+    }
+
     var prepareSubmit = function () {
         // Clear any previous errors
         $scope.exception.error = null;
+
+        // Map variables array to object
+        $scope.hostedFunction.environment_variables = {};
+        for (var variable in $scope.environmentVariables) {
+            if (!utils.isNullOrEmpty($scope.environmentVariables[variable].name) && !utils.isNullOrEmpty($scope.environmentVariables[variable].value))
+            $scope.hostedFunction.environment_variables[$scope.environmentVariables[variable].name] = $scope.environmentVariables[variable].value;
+        }
+        $scope.hostedFunction.environment_variables = JSON.stringify($scope.hostedFunction.environment_variables);
     }
 
     $scope.updateHostedFunction = function () {
 
         prepareSubmit();
 
-        ApiService.multipartForm($scope.hostedFunction, null, $scope.hostedFunction.url, { show: "hosted_function_id,name" })
-        .then(
-        function (hostedFunction) {
+        ApiService.multipartForm($scope.hostedFunction, null, $scope.hostedFunction.url, { show: "hosted_function_id,name" }).then(function (hostedFunction) {
             GrowlsService.addGrowl({ id: "edit_success", name: hostedFunction.name, type: "success", hosted_function_id: hostedFunction.hosted_function_id, url: "#/hosted_functions/" + hostedFunction.hosted_function_id + "/edit" });
             utils.redirect($location, "/hosted_functions");
         },
@@ -4596,14 +4643,16 @@ app.controller("PromotionsListCtrl", ['$scope', '$routeParams', '$location', '$q
 
 }]);
 
-app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService) {
+app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', 'gettextCatalog', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService, gettextCatalog) {
 
     $scope.promotion = { apply_to_recurring: false, active: false };
     $scope.promotion.config = { max_uses_per_customer: null, discount_amount: [{ price: null, currency: null }] };
     $scope.exception = {};
     $scope.options = {};
     $scope.options.discount_type = "percentage";
-    $scope.options.coupon_code_type = "";
+    $scope.options.coupon_code_type = "single";
+    $scope.data = {};
+    $scope.data.generate_number = 100;
 
     // Datepicker options
     $scope.datepicker = {};
@@ -4638,9 +4687,14 @@ app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'Gro
 
             $scope.options.discount_type = promotion.config.discount_percent ? 'percentage' : 'amounts';
             $scope.options.coupon_code_type = promotion.config.code ? 'single' : 'unique';
-            $scope.promotion.config.discount_amount = [];
+
+            if (promotion.expires) {
+                $scope.datepicker.expires = new Date(promotion.expires);
+            }
+
+            $scope.promotion.config.discount_amount = $scope.promotion.config.discount_amount || [];
             if ($scope.promotion.config.discount_percent) {
-                $scope.promotion.config._discount_percent = $scope.promotion.config.discount_percent * 100;
+                $scope.promotion.config._discount_percent = utils.decimalToPercent($scope.promotion.config.discount_percent);
             }
 
             if ($scope.promotion.config.type === 'product' && $scope.promotion.config.product_ids) {
@@ -4683,6 +4737,7 @@ app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'Gro
         prepareSubmit();
 
         if ($scope.form.$invalid) {
+            $scope.exception = { error: { message: gettextCatalog.getString("Please review and correct the fields highlighted below.") } };
             window.scrollTo(0, 0);
             return;
         }
@@ -4709,10 +4764,8 @@ app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'Gro
 
         $scope.promotion.type = 'coupon';
 
-        ApiService.set($scope.promotion, ApiService.buildUrl("/promotions"), { show: "promotion_id,name" })
-        .then(
-        function (promotion) {
-            GrowlsService.addGrowl({ id: "add_success", name: promotion.promotion_id, type: "success", promotion_id: promotion.promotion_id, url: "#/promotions/" + promotion.promotion_id + "/edit" });
+        ApiService.set($scope.promotion, ApiService.buildUrl("/promotions"), { show: "promotion_id,name" }).then(function (promotion) {
+            GrowlsService.addGrowl({ id: "add_success", name: promotion.name, type: "success", promotion_id: promotion.promotion_id, url: "#/promotions/" + promotion.promotion_id + "/edit" });
             window.location = "#/promotions";
         },
         function (error) {
@@ -4726,6 +4779,8 @@ app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'Gro
         prepareSubmit();
 
         if ($scope.form.$invalid) {
+            $scope.exception = { error: { message: gettextCatalog.getString("Please review and correct the fields highlighted below.") } };
+            window.scrollTo(0, 0);
             return;
         }
 
@@ -4749,10 +4804,8 @@ app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'Gro
             $scope.promotion.config.product_ids = _.pluck($scope.promotion.config.product_ids, 'product_id');
         }
 
-        ApiService.set($scope.promotion, $scope.url, { show: "promotion_id,name" })
-        .then(
-        function (promotion) {
-            GrowlsService.addGrowl({ id: "edit_success", name: promotion.promotion_id, type: "success", promotion_id: promotion.promotion_id, url: "#/promotions/" + promotion.promotion_id + "/edit" });
+        ApiService.set($scope.promotion, $scope.url, { show: "promotion_id,name" }).then(function (promotion) {
+            GrowlsService.addGrowl({ id: "edit_success", name: promotion.name, type: "success", promotion_id: promotion.promotion_id, url: "#/promotions/" + promotion.promotion_id + "/edit" });
             window.location = "#/promotions";
         },
         function (error) {
@@ -4761,18 +4814,58 @@ app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'Gro
         });
     }
 
+    $scope.confirmDelete = function () {
+        var confirm = { id: "delete" };
+        confirm.onConfirm = function () {
+            $scope.delete();
+        }
+        ConfirmService.showConfirm($scope, confirm);
+    }
+
     $scope.delete = function () {
 
-        ApiService.remove($scope.promotion.url)
-        .then(
-        function (promotion) {
-            GrowlsService.addGrowl({ id: "delete_success", name: $scope.promotion.promotion_id, type: "success" });
+        ApiService.remove($scope.promotion.url).then(function (promotion) {
+            GrowlsService.addGrowl({ id: "delete_success", name: $scope.promotion.name, type: "success" });
             utils.redirect($location, "/promotions");
         },
         function (error) {
             window.scrollTo(0, 0);
             $scope.exception.error = error;
         });
+    }
+
+    $scope.generateCode = function (model) {
+
+        // Generate 12 character string without ambigious characters.
+        var possible = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+
+        var code = utils.getRandomString(possible, 12);
+
+        // Insert dashes every four characters
+        var chunks = code.match(/.{1,4}/g);
+        code = chunks.join("-");
+
+        $scope.promotion.config.code = code;
+
+    }
+
+    $scope.generateCodes = function (prefix, secret, num) {
+
+
+        var possible = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+        var codes = [];
+
+        for (var i = num; i > 0; --i) {
+            var shaObj = new jsSHA("SHA-256", "TEXT");
+            shaObj.setHMACKey(secret, "TEXT");
+            var code = prefix.toUpperCase() + "-" + utils.getRandomString(possible, 12);
+            shaObj.update(code);
+            var hmac = shaObj.getHMAC("HEX");
+            codes.push(code + "-" + hmac.substring(0, 7).toUpperCase());
+        }
+
+        $scope.data.codes = codes.join("\n");
+
     }
 
 }]);
@@ -5855,7 +5948,7 @@ app.controller("PricingSettingsCtrl", ['$scope', '$routeParams', '$location', 'G
         });
 
         _.each(settings.currency_markup_rules, function (rule) {
-            rule.markup_percentage_value = rule.markup_percentage * 100;
+            rule.markup_percentage_value = utils.decimalToPercent(rule.markup_percentage);
         });
 
         $scope.settings = settings;

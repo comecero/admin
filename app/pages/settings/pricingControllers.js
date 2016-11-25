@@ -20,7 +20,7 @@ app.controller("PricingSettingsCtrl", ['$scope', '$routeParams', '$location', 'G
         });
 
         _.each(settings.currency_markup_rules, function (rule) {
-            rule.markup_percentage_value = rule.markup_percentage * 100;
+            rule.markup_percentage_value = utils.decimalToPercent(rule.markup_percentage);
         });
 
         $scope.settings = settings;
