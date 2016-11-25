@@ -93,14 +93,16 @@ app.controller("PromotionsListCtrl", ['$scope', '$routeParams', '$location', '$q
 
 }]);
 
-app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService) {
+app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', 'gettextCatalog', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService, gettextCatalog) {
 
     $scope.promotion = { apply_to_recurring: false, active: false };
     $scope.promotion.config = { max_uses_per_customer: null, discount_amount: [{ price: null, currency: null }] };
     $scope.exception = {};
     $scope.options = {};
     $scope.options.discount_type = "percentage";
-    $scope.options.coupon_code_type = "";
+    $scope.options.coupon_code_type = "single";
+    $scope.data = {};
+    $scope.data.generate_number = 100;
 
     // Datepicker options
     $scope.datepicker = {};
@@ -135,6 +137,11 @@ app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'Gro
 
             $scope.options.discount_type = promotion.config.discount_percent ? 'percentage' : 'amounts';
             $scope.options.coupon_code_type = promotion.config.code ? 'single' : 'unique';
+
+            if (promotion.expires) {
+                $scope.datepicker.expires = new Date(promotion.expires);
+            }
+
             $scope.promotion.config.discount_amount = $scope.promotion.config.discount_amount || [];
             if ($scope.promotion.config.discount_percent) {
                 $scope.promotion.config._discount_percent = utils.decimalToPercent($scope.promotion.config.discount_percent);
@@ -180,6 +187,7 @@ app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'Gro
         prepareSubmit();
 
         if ($scope.form.$invalid) {
+            $scope.exception = { error: { message: gettextCatalog.getString("Please review and correct the fields highlighted below.") } };
             window.scrollTo(0, 0);
             return;
         }
@@ -206,10 +214,8 @@ app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'Gro
 
         $scope.promotion.type = 'coupon';
 
-        ApiService.set($scope.promotion, ApiService.buildUrl("/promotions"), { show: "promotion_id,name" })
-        .then(
-        function (promotion) {
-            GrowlsService.addGrowl({ id: "add_success", name: promotion.promotion_id, type: "success", promotion_id: promotion.promotion_id, url: "#/promotions/" + promotion.promotion_id + "/edit" });
+        ApiService.set($scope.promotion, ApiService.buildUrl("/promotions"), { show: "promotion_id,name" }).then(function (promotion) {
+            GrowlsService.addGrowl({ id: "add_success", name: promotion.name, type: "success", promotion_id: promotion.promotion_id, url: "#/promotions/" + promotion.promotion_id + "/edit" });
             window.location = "#/promotions";
         },
         function (error) {
@@ -223,6 +229,8 @@ app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'Gro
         prepareSubmit();
 
         if ($scope.form.$invalid) {
+            $scope.exception = { error: { message: gettextCatalog.getString("Please review and correct the fields highlighted below.") } };
+            window.scrollTo(0, 0);
             return;
         }
 
@@ -246,10 +254,8 @@ app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'Gro
             $scope.promotion.config.product_ids = _.pluck($scope.promotion.config.product_ids, 'product_id');
         }
 
-        ApiService.set($scope.promotion, $scope.url, { show: "promotion_id,name" })
-        .then(
-        function (promotion) {
-            GrowlsService.addGrowl({ id: "edit_success", name: promotion.promotion_id, type: "success", promotion_id: promotion.promotion_id, url: "#/promotions/" + promotion.promotion_id + "/edit" });
+        ApiService.set($scope.promotion, $scope.url, { show: "promotion_id,name" }).then(function (promotion) {
+            GrowlsService.addGrowl({ id: "edit_success", name: promotion.name, type: "success", promotion_id: promotion.promotion_id, url: "#/promotions/" + promotion.promotion_id + "/edit" });
             window.location = "#/promotions";
         },
         function (error) {
@@ -258,18 +264,58 @@ app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'Gro
         });
     }
 
+    $scope.confirmDelete = function () {
+        var confirm = { id: "delete" };
+        confirm.onConfirm = function () {
+            $scope.delete();
+        }
+        ConfirmService.showConfirm($scope, confirm);
+    }
+
     $scope.delete = function () {
 
-        ApiService.remove($scope.promotion.url)
-        .then(
-        function (promotion) {
-            GrowlsService.addGrowl({ id: "delete_success", name: $scope.promotion.promotion_id, type: "success" });
+        ApiService.remove($scope.promotion.url).then(function (promotion) {
+            GrowlsService.addGrowl({ id: "delete_success", name: $scope.promotion.name, type: "success" });
             utils.redirect($location, "/promotions");
         },
         function (error) {
             window.scrollTo(0, 0);
             $scope.exception.error = error;
         });
+    }
+
+    $scope.generateCode = function (model) {
+
+        // Generate 12 character string without ambigious characters.
+        var possible = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+
+        var code = utils.getRandomString(possible, 12);
+
+        // Insert dashes every four characters
+        var chunks = code.match(/.{1,4}/g);
+        code = chunks.join("-");
+
+        $scope.promotion.config.code = code;
+
+    }
+
+    $scope.generateCodes = function (prefix, secret, num) {
+
+
+        var possible = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+        var codes = [];
+
+        for (var i = num; i > 0; --i) {
+            var shaObj = new jsSHA("SHA-256", "TEXT");
+            shaObj.setHMACKey(secret, "TEXT");
+            var code = prefix.toUpperCase() + "-" + utils.getRandomString(possible, 12);
+            shaObj.update(code);
+            var hmac = shaObj.getHMAC("HEX");
+            codes.push(code + "-" + hmac.substring(0, 7).toUpperCase());
+        }
+
+        $scope.data.codes = codes.join("\n");
+
     }
 
 }]);
