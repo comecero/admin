@@ -920,6 +920,14 @@ var utils = (function () {
         return Math.floor((Math.random() * 10000000) + 1);
     }
 
+    function getRandomString(chars, length) {
+
+        var result = "";
+        for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+        return result;
+
+    }
+
     function cleanPrice(price) {
         // Strip everything except numbers and decimals
 
@@ -1375,6 +1383,25 @@ var utils = (function () {
         return (string == "true");
     }
 
+    function decimalToPercent(dec) {
+
+        // Multiply by 100
+        var result = dec * 100;
+
+        // Determine the length of the output percent, which is the length of the original decimal - 2 (since we multipled by 100).
+        var fixed = dec.toString().split(".")[1].length - 2;
+
+        // If fixed is < 0, return
+        if (fixed < 0) {
+            return result;
+        }
+
+        result = result.toFixed(fixed);
+
+        return result;
+
+    }
+
     return {
         setCookie: setCookie,
         getCookie: getCookie,
@@ -1388,6 +1415,7 @@ var utils = (function () {
         isValidNumber: isValidNumber,
         isValidInteger: isValidInteger,
         getRandom: getRandom,
+        getRandomString: getRandomString,
         cleanPrice: cleanPrice,
         hasPermission: hasPermission,
         getLocale: getLocale,
@@ -1417,7 +1445,8 @@ var utils = (function () {
         getChildrenElements: getChildrenElements,
         getSiblingElements: getSiblingElements,
         jsonToCsvDownload: jsonToCsvDownload,
-        jsonToHtmlTable: jsonToHtmlTable
+        jsonToHtmlTable: jsonToHtmlTable,
+        decimalToPercent: decimalToPercent
     };
 
 })();
