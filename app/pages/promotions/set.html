@@ -96,8 +96,8 @@
             <div class="col-xs-12" ng-show="options.discount_type == 'percentage'">
                 <div class="form-group" show-errors>
                     <label for="discount_percent" class="control-label" translate>Discount Percentage</label>
-                    <input type="tel" class="form-control" name="discount_percent" ng-model="promotion.config._discount_percent" placeholder="{{ 'Enter a percentage value' | translate}}" is-valid-number allow-empty-value="true" ng-required="options.discount_type == 'percentage'">
-                    <p class="help-block hidden fadeInDown" translate>Please provide a discount percentage.</p>
+                    <input type="tel" class="form-control" name="discount_percent" ng-model="promotion.config._discount_percent" placeholder="{{ 'Enter a percentage value' | translate}}" is-valid-number less-than-or-equal="100" greater-than="0" allow-empty-value="true" ng-required="options.discount_type == 'percentage'">
+                    <p class="help-block hidden fadeInDown" translate>Please provide a discount percentage greater than 0 and less than or equal to 100.</p>
                     <div>
                         <p class="help-text" translate>The percentage discount to apply. For example, for a 20% discount, enter '20'.</p>
                     </div>
