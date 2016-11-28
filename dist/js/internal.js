@@ -1388,12 +1388,42 @@ var utils = (function () {
         // Multiply by 100
         var result = dec * 100;
 
-        // Determine the length of the output percent, which is the length of the original decimal - 2 (since we multipled by 100).
-        var fixed = dec.toString().split(".")[1].length - 2;
+        // Determine the number of decimal places to use.
+        var fixed = 0;
+        if (parseInt(result) != result) {
+            fixed = dec.toString().split(".")[1].length - 2;
+        }
 
         // If fixed is < 0, return
         if (fixed < 0) {
             return result;
+        }
+
+        if (fixed > 20) {
+            fixed = 20;
+        }
+
+        result = result.toFixed(fixed);
+
+        return result;
+
+    }
+
+    function percentToDecimal(percent) {
+
+        // Divide by 100
+        var result = percent / 100;
+
+        // If no decimal in the supplied percent, the precision is 2
+        var fixed = 2;
+
+        // If a decimal in the supplied percent, the precision is the number of digits after the decimal + 2.
+        if (parseInt(percent) != percent) {
+            fixed = percent.toString().split(".")[1].length + 2;
+        }
+
+        if (fixed > 20) {
+            fixed = 20;
         }
 
         result = result.toFixed(fixed);
@@ -1446,7 +1476,8 @@ var utils = (function () {
         getSiblingElements: getSiblingElements,
         jsonToCsvDownload: jsonToCsvDownload,
         jsonToHtmlTable: jsonToHtmlTable,
-        decimalToPercent: decimalToPercent
+        decimalToPercent: decimalToPercent,
+        percentToDecimal: percentToDecimal
     };
 
 })();

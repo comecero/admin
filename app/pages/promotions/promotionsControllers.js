@@ -195,7 +195,7 @@ app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'Gro
         $scope.promotion.expires = $scope.datepicker.expires;
 
         if ($scope.options.discount_type == 'percentage') {
-            $scope.promotion.config.discount_percent = $scope.promotion.config._discount_percent / 100;
+            $scope.promotion.config.discount_percent = utils.percentToDecimal($scope.promotion.config._discount_percent);
             $scope.promotion.config.discount_amount = undefined;
         } else if ($scope.options.discount_type == 'amounts') {
             $scope.promotion.config.discount_percent = undefined;
@@ -237,7 +237,7 @@ app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'Gro
         $scope.promotion.expires = $scope.datepicker.expires;
 
         if ($scope.options.discount_type == 'percentage') {
-            $scope.promotion.config.discount_percent = $scope.promotion.config._discount_percent / 100;
+            $scope.promotion.config.discount_percent = utils.percentToDecimal($scope.promotion.config._discount_percent);
             $scope.promotion.config.discount_amount = undefined;
         } else if ($scope.options.discount_type == 'amounts') {
             $scope.promotion.config.discount_percent = undefined;
