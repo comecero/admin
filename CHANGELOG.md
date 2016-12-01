@@ -1,5 +1,10 @@
 ﻿# Admin Change Log #
 
+<a name="1.3.2"></a>
+# 1.3.2
+
+- Add the ability to view, edit and add shipping methods (Store> Shipping Methods)
+
 <a name="1.3.1"></a>
 # 1.3.1
 
