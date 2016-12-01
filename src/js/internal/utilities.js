@@ -610,6 +610,55 @@
         return (string == "true");
     }
 
+    function decimalToPercent(dec) {
+
+        // Multiply by 100
+        var result = dec * 100;
+
+        // Determine the number of decimal places to use.
+        var fixed = 0;
+        if (parseInt(result) != result) {
+            fixed = dec.toString().split(".")[1].length - 2;
+        }
+
+        // If fixed is < 0, return
+        if (fixed < 0) {
+            return result;
+        }
+
+        if (fixed > 20) {
+            fixed = 20;
+        }
+
+        result = result.toFixed(fixed);
+
+        return result;
+
+    }
+
+    function percentToDecimal(percent) {
+
+        // Divide by 100
+        var result = percent / 100;
+
+        // If no decimal in the supplied percent, the precision is 2
+        var fixed = 2;
+
+        // If a decimal in the supplied percent, the precision is the number of digits after the decimal + 2.
+        if (parseInt(percent) != percent) {
+            fixed = percent.toString().split(".")[1].length + 2;
+        }
+
+        if (fixed > 20) {
+            fixed = 20;
+        }
+
+        result = result.toFixed(fixed);
+
+        return result;
+
+    }
+
     return {
         setCookie: setCookie,
         getCookie: getCookie,
@@ -652,7 +701,9 @@
         getChildrenElements: getChildrenElements,
         getSiblingElements: getSiblingElements,
         jsonToCsvDownload: jsonToCsvDownload,
-        jsonToHtmlTable: jsonToHtmlTable
+        jsonToHtmlTable: jsonToHtmlTable,
+        decimalToPercent: decimalToPercent,
+        percentToDecimal: percentToDecimal
     };
 
 })();

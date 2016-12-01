@@ -6163,7 +6163,7 @@ app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location',
                 $scope.shipping_method_config_type = 'subtotal';
                 $scope.shippingMethod.quantity_config = { prices_per_quantity: [{ price: null, currency: null }] };
                 $scope.shippingMethod.weight_config = { prices_per_unit: [{ price: null, currency: null }] };
-                $scope.shippingMethod.subtotal_config.percent_of_subtotal *= 100;
+                $scope.shippingMethod.subtotal_config.percent_of_subtotal = utils.decimalToPercent($scope.shippingMethod.subtotal_config.percent_of_subtotal);
             } else if($scope.shippingMethod.quantity_config){
                 $scope.shipping_method_config_type = 'quantity';
                 $scope.shippingMethod.weight_config = { prices_per_unit: [{ price: null, currency: null }] };
@@ -6192,7 +6192,7 @@ app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location',
 
         if (adjustment.percentage) {
             adjustment.adjustment_type = 'percentage';
-            adjustment.percentage *= 100;
+            adjustment.percentage = utils.decimalToPercent(adjustment.percentage);
             adjustment.amounts = [];
         } else if (adjustment.amounts) {
             adjustment.adjustment_type = 'amounts';
@@ -6328,7 +6328,7 @@ app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location',
         if ($scope.shipping_method_config_type == 'subtotal') {
             shippingMethodCopy.quantity_config = null;
             shippingMethodCopy.weight_config = null;
-            shippingMethodCopy.subtotal_config.percent_of_subtotal /= 100;
+            shippingMethodCopy.subtotal_config.percent_of_subtotal = utils.percentToDecimal(shippingMethodCopy.subtotal_config.percent_of_subtotal);
         } else if ($scope.shipping_method_config_type == 'quantity') {
             shippingMethodCopy.subtotal_config = null;
             shippingMethodCopy.weight_config = null;
@@ -6344,7 +6344,7 @@ app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location',
         adjustment.adjustment_type == 'percentage' ? adjustment.amounts = null : adjustment.percentage = null;
         adjustment.regions = _.pluck(adjustment._states, "code");
         if (adjustment.percentage) {
-            adjustment.percentage /= 100;
+            adjustment.percentage = utils.percentToDecimal(adjustment.percentage);
         }
         delete adjustment.adjustment_type;
         return adjustment;

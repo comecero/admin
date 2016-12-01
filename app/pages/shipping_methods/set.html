@@ -75,7 +75,7 @@
                     <div class="form-group" show-errors>
                         <label for="percent_of_subtotal" class="control-label" translate>Percentage of Subtotal</label>
                         <p class="help-text" translate>Indicate the percentage of the subtotal that should be used as the shipping price.</p>
-                        <input type="tel" class="form-control" name="percent_of_subtotal" ng-model="shippingMethod.subtotal_config.percent_of_subtotal" style="width:175px;" is-valid-number required>
+                        <input type="text" class="form-control" name="percent_of_subtotal" ng-model="shippingMethod.subtotal_config.percent_of_subtotal" style="width:175px;" is-valid-number required>
                         <p class="help-block hidden fadeInDown" translate>Please provide a valid number</p>
                     </div>
                 </div>
@@ -320,7 +320,7 @@
                         <div class="col-xs-12" ng-if="adjustment.adjustment_type == 'percentage'">
                             <div class="form-group" show-errors>
                                 <label for="percentage" class="control-label" translate>Percentage</label>
-                                <input type="tel" class="form-control" name="percentage" ng-model="adjustment.percentage" is-valid-number required>
+                                <input type="text" class="form-control" name="percentage" ng-model="adjustment.percentage" style="width:175px;" is-valid-number required>
                                 <p class="help-block hidden fadeInDown" translate>Please provide a valid percentage</p>
                             </div>
                         </div>
