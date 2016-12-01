@@ -38,7 +38,7 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     // Templates
     $routeProvider.when("/templates", { templateUrl: "/app/pages/templates/list.html", reloadOnSearch: false });
     $routeProvider.when("/templates/add", { templateUrl: "/app/pages/templates/set.html", reloadOnSearch: true });
-    $routeProvider.when("/templates/:id/edit", { templateUrl: "/app/pages/templates/set.html", reloadOnSearch: true }); 
+    $routeProvider.when("/templates/:id/edit", { templateUrl: "/app/pages/templates/set.html", reloadOnSearch: true });
     
     // Events
     $routeProvider.when("/events", { templateUrl: "/app/pages/events/list.html", reloadOnSearch: false });
@@ -158,6 +158,11 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     $routeProvider.when("/settings/subscriptions", { templateUrl: "/app/pages/settings/subscriptions.html", reloadOnSearch: false });
     $routeProvider.when("/settings/tax", { templateUrl: "/app/pages/settings/tax.html", reloadOnSearch: false });
     $routeProvider.when("/settings/pricing", { templateUrl: "/app/pages/settings/pricing.html", reloadOnSearch: false });
+
+    // Settings Shipping methods
+    $routeProvider.when("/shipping_methods", { templateUrl: "/app/pages/shipping_methods/list.html", reloadOnSearch: false });
+    $routeProvider.when("/shipping_methods/add", { templateUrl: "/app/pages/shipping_methods/set.html", reloadOnSearch: true });
+    $routeProvider.when("/shipping_methods/:id/edit", { templateUrl: "/app/pages/shipping_methods/set.html", reloadOnSearch: true });
 
     // Users
     $routeProvider.when("/users", { templateUrl: "/app/pages/users/list.html", reloadOnSearch: false });
