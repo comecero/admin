@@ -5,14 +5,14 @@
         <div class="col-md-4 col-xs-12" ng-class="{ 'has-error': ranges.minimum.$invalid && (ranges.minimum.$dirty || form.$submitted) }" style="margin-bottom:15px;">
             <div class="form-group">
                 <label for="minimum" class="control-label" translate>Minimum</label>
-                <input type="tel" class="form-control" ng-class="{'input-radius': $index == 0}" name="minimum" ng-model="range.minimum" ng-model-options="{ updateOn: 'blur' }" required>
+                <input type="tel" class="form-control" ng-class="{'input-radius': $index == 0}" name="minimum" ng-model="range.minimum" ng-model-options="{ updateOn: 'blur' }" is-valid-number required>
                 <p class="help-block fadeInDown" ng-show="ranges.minimum.$invalid && (ranges.minimum.$dirty || form.$submitted)" translate>Please provide a minimum value</p>
             </div>
         </div>
         <div class="col-md-4 col-xs-12" ng-class="{ 'has-error': ranges.maximum.$invalid && (ranges.maximum.$dirty || form.$submitted) }" style="margin-bottom:15px;">
             <div class="form-group">
                 <label for="maximum" class="control-label" translate>Maximum</label>
-                <input type="tel" class="form-control" ng-class="{'input-radius': $index == 0}" name="maximum" ng-model="range.maximum" ng-model-options="{ updateOn: 'blur' }" required>
+                <input type="tel" class="form-control" ng-class="{'input-radius': $index == 0}" name="maximum" ng-model="range.maximum" ng-model-options="{ updateOn: 'blur' }" is-valid-number required>
                 <p class="help-block fadeInDown" ng-show="ranges.maximum.$invalid && (ranges.maximum.$dirty || form.$submitted)" translate>Please provide a maximum value</p>
             </div>
         </div>

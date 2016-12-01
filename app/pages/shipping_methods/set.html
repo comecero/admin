@@ -6,13 +6,13 @@
         <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
     </div>
 
-    <div class="page-header"> 
+    <div class="page-header">
         <h1 ng-if="add" translate>Add a ShippingMethod</h1>
         <h1 ng-if="update" translate>ShippingMethod: {{shippingMethod.shipping_method_id}}</h1>
     </div>
     <form name="form" novalidate>
         <div class="panel panel-body light-shadow">
-            
+
             <div class="col-xs-12">
                 <div class="form-group" show-errors>
                     <label for="description" class="control-label" translate>Description</label>
@@ -66,26 +66,32 @@
 
             <!-- Subtotal config section -->
             <div ng-if="shipping_method_config_type == 'subtotal'">
+
+                <div class="col-xs-12">
+                    <p class="help-text"><span translate>This option allows you to calculate the shipping price based on the order subtotal.</span> <a href="https://docs.comecero.com/more-info/#shipping_methods-subtotal_config" target="_blank">Read more</a>.</p>
+                </div>
+
                 <div class="col-xs-12">
                     <div class="form-group" show-errors>
-                        <label for="percent_of_subtotal" class="control-label" translate>Percent of total</label>
-                        <input type="tel" class="form-control" name="percent_of_subtotal" ng-model="shippingMethod.subtotal_config.percent_of_subtotal" required>
-                        <p class="help-block hidden fadeInDown" translate>Please provide a valid state</p>
-                        <div>
-                            <p class="help-text" translate>INSERT HELP TEXT HERE</p>
-                        </div>
+                        <label for="percent_of_subtotal" class="control-label" translate>Percentage of Subtotal</label>
+                        <p class="help-text" translate>Indicate the percentage of the subtotal that should be used as the shipping price.</p>
+                        <input type="tel" class="form-control" name="percent_of_subtotal" ng-model="shippingMethod.subtotal_config.percent_of_subtotal" style="width:175px;" is-valid-number required>
+                        <p class="help-block hidden fadeInDown" translate>Please provide a valid number</p>
                     </div>
-
                 </div>
+
                 <div class="col-xs-12">
-                    <div class="form-group spacer-b10">
-                        <a class="btn btn-primary" ng-click="addNewRule('subtotal_config')" translate>Add a new subtotal rule</a>
+                    <div class="form-group" style="margin-bottom: 5px">
+                        <label class="control-label" translate>Subtotal Ranges</label>
+                        <p class="help-text" translate>You can optionally provide a range or ranges of subtotals for which a fixed shipping price should be charged. For example: for orders between $0 - $100, charge $10 shipping. Add as many ranges as you need. If the subtotal of the order does not match any provided ranges, the Percentage of Subtotal will be used to calculate the shipping price.</p>
+                        <a class="btn btn-primary" ng-click="addNewRule('subtotal_config', {ranges:[{ minimum: null, maximum: null }]})" translate>Add a subtotal range rule</a>
                     </div>
                 </div>
 
                 <div class="col-xs-12">
                     <hr />
                 </div>
+
                 <div class="col-xs-12" ng-repeat="rule in shippingMethod.subtotal_config.rules">
 
                     <ng-form name="subtotal_config_rules">
@@ -94,11 +100,9 @@
                                 <label for="currency" class="control-label" translate>Currency</label>
                                 <select name="currency" class="form-control" ng-model="rule.currency" ng-options="currency.code as currency.name for currency in currencies"></select>
                                 <p class="help-block hidden fadeInDown" translate>Please select a currency from the list</p>
-                                <div>
-                                    <p class="help-text" translate>INSERT HELP TEXT HERE</p>
-                                </div>
                             </div>
                         </div>
+
                         <div ranges="rule.ranges"></div>
                         <div class="row"></div>
 
@@ -113,63 +117,57 @@
 
             </div>
             <!-- End of Subtotal config section -->
-
             <!-- Quantity config section -->
             <div ng-if="shipping_method_config_type == 'quantity'">
+
+                <div class="col-xs-12">
+                    <p class="help-text"><span translate>This option allows you to calculate the shipping price based on the total quantity of all items in an order.</span> <a href="https://docs.comecero.com/more-info/#shipping_methods-subtotal_config" target="_blank">Read more</a>.</p>
+                </div>
+
                 <div class="col-xs-12">
                     <div class="form-group">
-                        <label class="control-label" translate>Prices per quantity</label>
-                        <div prices="shippingMethod.quantity_config.prices_per_quantity" currencies="currencies" ></div>
-                        <div>
-                            <p class="help-text" translate>INSERT HELP TEXT HERE</p>
-                        </div>
+                        <label class="control-label" translate>Price per Quantity</label>
+                        <p class="help-text" translate>Indicate the price that should be charged per item quantity in an order.</p>
+                        <div prices="shippingMethod.quantity_config.prices_per_quantity" currencies="currencies" style="margin-left:-15px; margin-right:-15px"></div>
                     </div>
-
                 </div>
+
                 <div class="col-xs-12">
-                    <div class="form-group spacer-b10">
-                        <a class="btn btn-primary" ng-click="addNewRule('quantity_config', {prices:[]})" translate>Add a new quantity rule</a>
+                    <div class="form-group" style="margin-bottom: 5px">
+                        <label class="control-label" translate>Quantity Ranges</label>
+                        <p class="help-text" translate>You can optionally provide a range or ranges of quantities for which a fixed shipping price should be charged. For example: for quantities 1-5, charge $10 shipping. Add as many ranges as you need. If the quantity of items ordered does not match any provided ranges, the Price per Quantity will be used to calculate the shipping price.</p>
+                        <a class="btn btn-primary" ng-click="addNewRule('quantity_config', {prices:[{ price: null, currency: null }]})" translate>Add a quantity range rule</a>
                     </div>
                 </div>
 
                 <div class="col-xs-12">
                     <hr />
                 </div>
+
                 <div class="col-xs-12" ng-repeat="rule in shippingMethod.quantity_config.rules">
 
                     <ng-form name="quantity_config_rules">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group" show-errors>
-                                <label for="minimum" class="control-label" translate>Minimum</label>
-                                <input type="tel" class="form-control" name="minimum" ng-model="rule.minimum" required>
+                                <label for="minimum" class="control-label" translate>Minimum Quantity</label>
+                                <input type="tel" class="form-control" name="minimum" ng-model="rule.minimum" is-valid-number required>
                                 <p class="help-block hidden fadeInDown" translate>Please provide a minimum value</p>
-                                <div>
-                                    <p class="help-text" translate>INSERT HELP TEXT HERE</p>
-                                </div>
                             </div>
 
                         </div>
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group" show-errors>
-                                <label for="maximum" class="control-label" translate>Maximum</label>
-                                <input type="tel" class="form-control" name="maximum" ng-model="rule.maximum" required>
+                                <label for="maximum" class="control-label" translate>Maximum Quantity</label>
+                                <input type="tel" class="form-control" name="maximum" ng-model="rule.maximum" is-valid-number required>
                                 <p class="help-block hidden fadeInDown" translate>Please provide a maximum value</p>
-                                <div>
-                                    <p class="help-text" translate>INSERT HELP TEXT HERE</p>
-                                </div>
                             </div>
 
                         </div>
-                        <div class="col-xs-12">
-                            <div class="form-group">
-                                <label class="control-label" translate>Prices</label>
-                                <div prices="rule.prices" currencies="currencies"></div>
-                                <div>
-                                    <p class="help-text" translate>INSERT HELP TEXT HERE</p>
-                                </div>
-                            </div>
 
+                        <div class="form-group">
+                            <div prices="rule.prices" currencies="currencies"></div>
                         </div>
+
                         <div class="row"></div>
 
                         <div class="text-right">
@@ -183,60 +181,55 @@
 
             </div>
             <!-- End of Quantity config section -->
-
             <!-- Weight config section -->
             <div ng-if="shipping_method_config_type == 'weight'">
+
+                <div class="col-xs-12">
+                    <p class="help-text"><span translate>This option allows you to calculate the shipping price based on the total weight of all items in an order.</span> <a href="https://docs.comecero.com/more-info/#shipping_methods-weight_config" target="_blank">Read more</a>.</p>
+                </div>
+
                 <div class="col-xs-12">
                     <div class="form-group" show-errors>
-                        <label for="unit" class="control-label" translate>Unit</label>
+                        <label for="unit" class="control-label" translate>Price per Weight Unit</label>
+                        <p class="help-text" translate>Indicate the price that should be charged per weight unit (pound, ounce, kilogram, gram).</p>
                         <select name="unit" class="form-control" ng-model="shippingMethod.weight_config.unit" ng-options="unit.code as unit.name for unit in units"></select>
                         <p class="help-block hidden fadeInDown" translate>Please provide a valid unit</p>
-                        <div>
-                            <p class="help-text" translate>INSERT HELP TEXT HERE</p>
-                        </div>
                     </div>
                 </div>
                 <div class="col-xs-12">
                     <div class="form-group">
-                        <label class="control-label" translate>Prices per unit</label>
-                        <div prices="shippingMethod.weight_config.prices_per_unit" currencies="currencies"></div>
-                        <div>
-                            <p class="help-text" translate>INSERT HELP TEXT HERE</p>
-                        </div>
+                        <div prices="shippingMethod.weight_config.prices_per_unit" currencies="currencies" style="margin-left:-15px; margin-right:-15px"></div>
                     </div>
-
                 </div>
+
                 <div class="col-xs-12">
-                    <div class="form-group spacer-b10">
-                        <a class="btn btn-primary" ng-click="addNewRule('weight_config', {prices:[]})" translate>Add a new weight rule</a>
+                    <div class="form-group" style="margin-bottom: 5px">
+                        <label class="control-label" translate>Weight Ranges</label>
+                        <p class="help-text" translate>You can optionally provide a range or ranges of weights for which a fixed shipping price should be charged. For example: for weights between 1-5 pounds, charge $10 shipping. Add as many ranges as you need. If the total weight of items ordered does not match any provided ranges, the Price per Weight Unit will be used to calculate the shipping price.</p>
+                        <a class="btn btn-primary" ng-click="addNewRule('weight_config', {prices:[{price: null, currency: null}]})" translate>Add a weight range rule</a>
                     </div>
                 </div>
 
                 <div class="col-xs-12">
                     <hr />
                 </div>
-                <div class="col-xs-12" ng-repeat="rule in shippingMethod.weight_config.rules">
+
+                <div ng-repeat="rule in shippingMethod.weight_config.rules">
 
                     <ng-form name="weight_config_rules">
                         <div class="col-xs-12 col-md-4">
                             <div class="form-group" show-errors>
-                                <label for="minimum" class="control-label" translate>Minimum</label>
-                                <input type="tel" class="form-control" name="minimum" ng-model="rule.minimum"  required>
+                                <label for="minimum" class="control-label" translate>Minimum Weight</label>
+                                <input type="tel" class="form-control" name="minimum" ng-model="rule.minimum" required>
                                 <p class="help-block hidden fadeInDown" translate>Please provide a minimum value</p>
-                                <div>
-                                    <p class="help-text" translate>INSERT HELP TEXT HERE</p>
-                                </div>
                             </div>
 
                         </div>
                         <div class="col-xs-12 col-md-4">
                             <div class="form-group" show-errors>
-                                <label for="maximum" class="control-label" translate>Maximum</label>
+                                <label for="maximum" class="control-label" translate>Maximum Weight</label>
                                 <input type="tel" class="form-control" name="maximum" ng-model="rule.maximum" required>
                                 <p class="help-block hidden fadeInDown" translate>Please provide a maximum value</p>
-                                <div>
-                                    <p class="help-text" translate>INSERT HELP TEXT HERE</p>
-                                </div>
                             </div>
 
                         </div>
@@ -245,21 +238,11 @@
                                 <label for="unit" class="control-label" translate>Unit</label>
                                 <select name="unit" class="form-control" ng-model="rule.unit" ng-options="unit.code as unit.name for unit in units"></select>
                                 <p class="help-block hidden fadeInDown" translate>Please provide a valid unit</p>
-                                <div>
-                                    <p class="help-text" translate>INSERT HELP TEXT HERE</p>
-                                </div>
                             </div>
                         </div>
-                        <div class="col-xs-12">
-                            <div class="form-group">
-                                <label class="control-label" translate>Prices</label>
-                                <div prices="rule.prices" currencies="currencies"></div>
-                                <div>
-                                    <p class="help-text" translate>INSERT HELP TEXT HERE</p>
-                                </div>
-                            </div>
 
-                        </div>
+                        <div prices="rule.prices" currencies="currencies"></div>
+
                         <div class="row"></div>
 
                         <div class="text-right">
@@ -273,9 +256,17 @@
 
             </div>
             <!-- End of Weight config section -->
-
             <!-- Adjustments section -->
             <div ng-if="adjustmentCountries.length">
+
+                <div class="col-xs-12">
+                    <label class="control-label" translate>Adjustments</label>
+                </div>
+
+                <div class="col-xs-12">
+                    <p class="help-text"><span translate>Adjustments allow you to modify the calculated shipping price (either as a percentage or amount) for specified states or provinces in the United States or Canada.</span> <a href="https://docs.comecero.com/more-info/#shipping_methods-adjustments" target="_blank">Read more</a>.</p>
+                </div>
+
                 <div class="col-xs-12">
                     <div class="form-group spacer-b10">
                         <a class="btn btn-primary" ng-click="addNewAdjustment()" translate>Add a new adjustment</a>
@@ -291,9 +282,6 @@
                                 <label for="country" class="control-label" translate>Country</label>
                                 <select name="country" class="form-control" ng-model="adjustment.country" ng-options="country.code as country.name for country in $parent.adjustmentCountries"></select>
                                 <p class="help-block hidden fadeInDown" translate>Please select a country</p>
-                                <div>
-                                    <p class="help-text" translate>INSERT HELP TEXT HERE</p>
-                                </div>
                             </div>
                         </div>
                         <div class="col-xs-12" ng-if="adjustment.country == 'US'">
@@ -308,7 +296,7 @@
                             <div class="form-group" show-errors>
                                 <label for="state_prov" class="control-label" translate>Province</label>
                                 <input type="text" class="form-control" name="state_prov" ng-model="adjustment.typeahead.state_prov" uib-typeahead="state as state.name for state in $parent.ca_provinces | filter:$viewValue | limitTo:8" typeahead-input-formatter="$model.name" typeahead-on-select="$parent.onStateSelect(adjustment, $item, $model, $label)" typeahead-editable="false">
-                                <p class="help-block hidden fadeInDown" translate>Please provide a valid state</p>
+                                <p class="help-block hidden fadeInDown" translate>Please provide a valid privince</p>
                             </div>
                         </div>
                         <div class="col-xs-12">
@@ -320,22 +308,19 @@
                         </div>
                         <div class="col-xs-12">
                             <div class="form-group">
-                                <label class="radio-group-label required" translate>Adjustment Type</label>
+                                <label class="radio-group-label required" translate>What type of adjustment do you want to apply?</label>
                                 <div class="radio-group ">
                                     <input type="radio" id="adjustment_type-1" class="radio" name="adjustment_type_{{$index}}" ng-model="adjustment.adjustment_type" value="percentage" required>
-                                    <label for="adjustment_type-1" class="radio-label" translate>Percentage</label>
+                                    <label for="adjustment_type-1" class="radio-label" translate>A percentage of the calculated shipping price</label>
                                     <input type="radio" id="adjustment_type-2" class="radio" name="adjustment_type_{{$index}}" ng-model="adjustment.adjustment_type" value="amounts" required>
-                                    <label for="adjustment_type-2" class="radio-label" translate>Use amounts I specify</label>
-                                </div>
-                                <div>
-                                    <p class="help-text" translate>INSERT HELP TEXT HERE</p>
+                                    <label for="adjustment_type-2" class="radio-label" translate>A fixed amount</label>
                                 </div>
                             </div>
                         </div>
                         <div class="col-xs-12" ng-if="adjustment.adjustment_type == 'percentage'">
                             <div class="form-group" show-errors>
                                 <label for="percentage" class="control-label" translate>Percentage</label>
-                                <input type="tel" class="form-control" name="percentage" ng-model="adjustment.percentage" required>
+                                <input type="tel" class="form-control" name="percentage" ng-model="adjustment.percentage" is-valid-number required>
                                 <p class="help-block hidden fadeInDown" translate>Please provide a valid percentage</p>
                             </div>
                         </div>

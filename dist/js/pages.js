@@ -6101,8 +6101,8 @@ app.controller("ShippingMethodsListCtrl", ['$scope', '$routeParams', '$location'
 app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', 'GeographiesService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService, GeographiesService) {
 
     $scope.shippingMethod = {
-        quantity_config: { prices_per_quantity: [], rules: [] },
-        weight_config: { prices_per_unit: [], rules: [] },
+        quantity_config: { prices_per_quantity: [{ price: null, currency: null }], rules: [] },
+        weight_config: { prices_per_unit: [{ price: null, currency: null }], rules: [] },
         subtotal_config: { rules: [] },
     };
 
@@ -6114,9 +6114,6 @@ app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location',
     $scope.countries = geographies.countries;
     $scope.us_states = geographies.us_states;
     $scope.ca_provinces = geographies.ca_provinces;
-
-    // Add "EU" as an alias for all EU countries, which the API will accept
-    $scope.countries.push({ code: "EU", name: "European Union" });
 
     // Re-sort
     $scope.countries = _.sortBy($scope.countries, "name");
@@ -6133,8 +6130,7 @@ app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location',
     $scope.models.shipping_method_countries = [];
     $scope.typeahead = {};
     $scope.shipping_method_config_type = null;
-    $scope.units = [{ code: 'lb', name: 'Pound' }, { code: 'oz', name: 'Ounce' }, { code: 'kg', name: 'Kilogram' }, { code: 'g', name: 'Gram' }];
-
+    $scope.units = [{ code: 'lb', name: 'pound' }, { code: 'oz', name: 'ounce' }, { code: 'kg', name: 'kilogram' }, { code: 'g', name: 'gram' }];
 
     if ($routeParams.id != null) {
 
@@ -6156,26 +6152,25 @@ app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location',
                 }
             });
 
-            //Update adjustments creatable countries
+            // Update adjustments creatable countries
             updateAdjustmentCountries('shipping_method_countries');
 
-            //Update adjustments
+            // Update adjustments
             $scope.shippingMethod.adjustments = _.map($scope.shippingMethod.adjustments, mapAdjustments);
 
-            //Set config type
+            // Set config type
             if ($scope.shippingMethod.subtotal_config) {
                 $scope.shipping_method_config_type = 'subtotal';
-                $scope.shippingMethod.quantity_config = { prices_per_quantity: [] } ;
-                $scope.shippingMethod.weight_config = { prices_per_unit: [] };
+                $scope.shippingMethod.quantity_config = { prices_per_quantity: [{ price: null, currency: null }] };
+                $scope.shippingMethod.weight_config = { prices_per_unit: [{ price: null, currency: null }] };
                 $scope.shippingMethod.subtotal_config.percent_of_subtotal *= 100;
-
             } else if($scope.shippingMethod.quantity_config){
                 $scope.shipping_method_config_type = 'quantity';
-                $scope.shippingMethod.weight_config = { prices_per_unit: [] };
+                $scope.shippingMethod.weight_config = { prices_per_unit: [{ price: null, currency: null }] };
                 $scope.shippingMethod.subtotal_config = {};
             } else if ($scope.shippingMethod.weight_config) {
                 $scope.shipping_method_config_type = 'weight';
-                $scope.shippingMethod.quantity_config = { prices_per_quantity: [] };
+                $scope.shippingMethod.quantity_config = { prices_per_quantity: [{ price: null, currency: null }] };
                 $scope.shippingMethod.subtotal_config = {};
             }
 
@@ -6263,7 +6258,7 @@ app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location',
 
      $scope.addNewAdjustment = function () {
          var adjustment = {
-             amounts: [],
+             amounts: [{ price: null, currency: null }],
              _states: [],
              typeahead: {},
          };
