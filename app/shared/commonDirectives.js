@@ -89,6 +89,12 @@ app.directive('isValidNumber', function () {
 
             ctrl.$validators.characters = function (modelValue, viewValue) {
                 var value = modelValue || viewValue;
+
+                // Allows you to turn off the rule by passing false to the attribute. Useful for conditional validation.
+                if (attrs.isValidNumber == "false") {
+                    return true;
+                }
+
                 if (attrs.allowEmptyValue == "true" && (value == "" || value == null)) {
                     return true;
                 }

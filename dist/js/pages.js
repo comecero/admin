@@ -1523,7 +1523,9 @@ app.controller("EventSubscriptionsListCtrl", ['$scope', '$routeParams', '$locati
 app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', 'TimezonesService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService, TimezonesService) {
 
     $scope.eventSubscription = {};
-    $scope.timezones = TimezonesService.getTimezones(); 
+    $scope.timezones = TimezonesService.getTimezones();
+    $scope.environmentVariables = [];
+
     $scope.event_types = [
     { name: "Account Modified", code: "account:modified" },
     { name: "Cart Payment Completed", code: "cart:payment_completed" },
@@ -1584,6 +1586,14 @@ app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$locatio
                 $scope.options.email = $scope.eventSubscription.destination;
             }
 
+            if (eventSubscription.environment_variables) {
+                for (var property in eventSubscription.environment_variables) {
+                    if (eventSubscription.environment_variables.hasOwnProperty(property)) {
+                        $scope.environmentVariables.push({ name: property, value: eventSubscription.environment_variables[property] });
+                    }
+                }
+            }
+
         }, function (error) {
             $scope.exception.error = error;
             window.scrollTo(0, 0);
@@ -1613,6 +1623,22 @@ app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$locatio
             $scope.eventSubscription.destination = $scope.options.email;
         }
 
+        // Map variables array to object
+        $scope.eventSubscription.environment_variables = {};
+        for (var variable in $scope.environmentVariables) {
+            if (!utils.isNullOrEmpty($scope.environmentVariables[variable].name) && !utils.isNullOrEmpty($scope.environmentVariables[variable].value))
+                $scope.eventSubscription.environment_variables[$scope.environmentVariables[variable].name] = $scope.environmentVariables[variable].value;
+        }
+        $scope.eventSubscription.environment_variables = $scope.eventSubscription.environment_variables;
+
+    }
+
+    $scope.addVariable = function () {
+        $scope.environmentVariables.push({ name: null, value: null });
+    }
+
+    $scope.removeVariable = function (variables, index) {
+        variables.splice(index, 1);
     }
 
     $scope.confirmCancel = function () {
@@ -3755,6 +3781,74 @@ app.controller("NotificationsPreviewCtrl", ['$scope', '$routeParams', 'ApiServic
 
 
 
+app.controller("OrdersListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
+
+    // Establish your scope containers
+    $scope.exception = {};
+    $scope.resources = {};
+    $scope.resources.orderListUrl = ApiService.buildUrl("/orders");
+
+}]);
+
+app.controller("OrdersViewCtrl", ['$scope', '$routeParams', 'ApiService', 'ConfirmService', 'GrowlsService', function ($scope, $routeParams, ApiService, ConfirmService, GrowlsService) {
+
+    $scope.order = {};  
+    $scope.payment = {};
+    $scope.exception = {};
+    $scope.count = {};
+    $scope.count.shipments = 0;
+    $scope.resources = {};
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/orders/" + $routeParams.id);
+    $scope.resources.shipmentListUrl = $scope.url + "/shipments";
+    $scope.resources.refundListUrl = $scope.url + "/refunds";
+    $scope.resources.notificationListUrl = $scope.url + "/notifications";
+
+    // Load the order
+    var params = { expand: "customer,payment.response_data,payment.payment_method,payment.gateway,payment.refunds,items.product,items.subscription,items.download.file,items.license.license_service,shipments", hide: "items.product.images,items.license.license_service.configuration", formatted: true };
+    ApiService.getItem($scope.url, params).then(function (order) {
+        $scope.order = order;
+
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+    $scope.$watch('order.fulfilled', function (newvalue, oldvalue) {
+    // If the order changes to fulfilled, indicate that the order will be captured in a moment.
+        if (oldvalue == false && newvalue == true) {
+            if ($scope.order.payment.status == "pending" && $scope.order.payment.payment_method.type == "credit_card") {
+                GrowlsService.addGrowl({ id: "payment_capture_scheduled", type: "success" });
+                $scope.order.hideCapture = true;
+            }
+        }
+
+    });
+
+    $scope.hasPermission = function (resource, method) {
+        return utils.hasPermission(resource, method);
+    }
+
+    $scope.downloadPdf = function () {
+
+        ApiService.getItemPdf($scope.url).then(function (data) {
+
+            var file = new Blob([data], { type: "application/pdf" });
+            saveAs(file, "Order_" + $scope.order.order_id + ".pdf");
+
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+
+    }
+
+}]);
+
+
+
+
 app.controller("NotificationSubscriptionsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
 
     // Establish your scope containers
@@ -3973,74 +4067,6 @@ app.controller("NotificationSubscriptionsSetCtrl", ['$scope', '$routeParams', '$
     }
 
 }]);
-
-
-
-app.controller("OrdersListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
-
-    // Establish your scope containers
-    $scope.exception = {};
-    $scope.resources = {};
-    $scope.resources.orderListUrl = ApiService.buildUrl("/orders");
-
-}]);
-
-app.controller("OrdersViewCtrl", ['$scope', '$routeParams', 'ApiService', 'ConfirmService', 'GrowlsService', function ($scope, $routeParams, ApiService, ConfirmService, GrowlsService) {
-
-    $scope.order = {};  
-    $scope.payment = {};
-    $scope.exception = {};
-    $scope.count = {};
-    $scope.count.shipments = 0;
-    $scope.resources = {};
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/orders/" + $routeParams.id);
-    $scope.resources.shipmentListUrl = $scope.url + "/shipments";
-    $scope.resources.refundListUrl = $scope.url + "/refunds";
-    $scope.resources.notificationListUrl = $scope.url + "/notifications";
-
-    // Load the order
-    var params = { expand: "customer,payment.response_data,payment.payment_method,payment.gateway,payment.refunds,items.product,items.subscription,items.download.file,items.license.license_service,shipments", hide: "items.product.images,items.license.license_service.configuration", formatted: true };
-    ApiService.getItem($scope.url, params).then(function (order) {
-        $scope.order = order;
-
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-    $scope.$watch('order.fulfilled', function (newvalue, oldvalue) {
-    // If the order changes to fulfilled, indicate that the order will be captured in a moment.
-        if (oldvalue == false && newvalue == true) {
-            if ($scope.order.payment.status == "pending" && $scope.order.payment.payment_method.type == "credit_card") {
-                GrowlsService.addGrowl({ id: "payment_capture_scheduled", type: "success" });
-                $scope.order.hideCapture = true;
-            }
-        }
-
-    });
-
-    $scope.hasPermission = function (resource, method) {
-        return utils.hasPermission(resource, method);
-    }
-
-    $scope.downloadPdf = function () {
-
-        ApiService.getItemPdf($scope.url).then(function (data) {
-
-            var file = new Blob([data], { type: "application/pdf" });
-            saveAs(file, "Order_" + $scope.order.order_id + ".pdf");
-
-        }, function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-
-    }
-
-}]);
-
 
 
 
@@ -6608,7 +6634,7 @@ app.controller("ShippingMethodsListCtrl", ['$scope', '$routeParams', '$location'
 
 }]);
 
-app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', 'GeographiesService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService, GeographiesService) {
+app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', 'GeographiesService', 'gettextCatalog', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService, GeographiesService, gettextCatalog) {
 
     $scope.shippingMethod = {
         quantity_config: { prices_per_quantity: [{ price: null, currency: null }], rules: [] },
@@ -6731,7 +6757,6 @@ app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location',
         // Clear any previous errors
         $scope.exception.error = null;
     }
-
 
     //Country handlers
      $scope.onCountrySelect = function (item, model, label, type) {
@@ -6865,6 +6890,7 @@ app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location',
         prepareSubmit();
 
         if ($scope.form.$invalid) {
+            $scope.exception = { error: { message: gettextCatalog.getString("Please review and correct the fields highlighted below.") } };
             window.scrollTo(0, 0);
             return;
         }
@@ -6886,6 +6912,8 @@ app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location',
         prepareSubmit();
 
         if ($scope.form.$invalid) {
+            $scope.exception = { error: { message: gettextCatalog.getString("Please review and correct the fields highlighted below.") } };
+            window.scrollTo(0, 0);
             return;
         }
 

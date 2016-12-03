@@ -96,7 +96,7 @@ app.controller("ShippingMethodsListCtrl", ['$scope', '$routeParams', '$location'
 
 }]);
 
-app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', 'GeographiesService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService, GeographiesService) {
+app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', 'GeographiesService', 'gettextCatalog', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService, GeographiesService, gettextCatalog) {
 
     $scope.shippingMethod = {
         quantity_config: { prices_per_quantity: [{ price: null, currency: null }], rules: [] },
@@ -219,7 +219,6 @@ app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location',
         // Clear any previous errors
         $scope.exception.error = null;
     }
-
 
     //Country handlers
      $scope.onCountrySelect = function (item, model, label, type) {
@@ -353,6 +352,7 @@ app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location',
         prepareSubmit();
 
         if ($scope.form.$invalid) {
+            $scope.exception = { error: { message: gettextCatalog.getString("Please review and correct the fields highlighted below.") } };
             window.scrollTo(0, 0);
             return;
         }
@@ -374,6 +374,8 @@ app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location',
         prepareSubmit();
 
         if ($scope.form.$invalid) {
+            $scope.exception = { error: { message: gettextCatalog.getString("Please review and correct the fields highlighted below.") } };
+            window.scrollTo(0, 0);
             return;
         }
 

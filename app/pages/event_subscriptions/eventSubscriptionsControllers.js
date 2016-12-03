@@ -100,7 +100,9 @@ app.controller("EventSubscriptionsListCtrl", ['$scope', '$routeParams', '$locati
 app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', 'TimezonesService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService, TimezonesService) {
 
     $scope.eventSubscription = {};
-    $scope.timezones = TimezonesService.getTimezones(); 
+    $scope.timezones = TimezonesService.getTimezones();
+    $scope.environmentVariables = [];
+
     $scope.event_types = [
     { name: "Account Modified", code: "account:modified" },
     { name: "Cart Payment Completed", code: "cart:payment_completed" },
@@ -161,6 +163,14 @@ app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$locatio
                 $scope.options.email = $scope.eventSubscription.destination;
             }
 
+            if (eventSubscription.environment_variables) {
+                for (var property in eventSubscription.environment_variables) {
+                    if (eventSubscription.environment_variables.hasOwnProperty(property)) {
+                        $scope.environmentVariables.push({ name: property, value: eventSubscription.environment_variables[property] });
+                    }
+                }
+            }
+
         }, function (error) {
             $scope.exception.error = error;
             window.scrollTo(0, 0);
@@ -190,6 +200,22 @@ app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$locatio
             $scope.eventSubscription.destination = $scope.options.email;
         }
 
+        // Map variables array to object
+        $scope.eventSubscription.environment_variables = {};
+        for (var variable in $scope.environmentVariables) {
+            if (!utils.isNullOrEmpty($scope.environmentVariables[variable].name) && !utils.isNullOrEmpty($scope.environmentVariables[variable].value))
+                $scope.eventSubscription.environment_variables[$scope.environmentVariables[variable].name] = $scope.environmentVariables[variable].value;
+        }
+        $scope.eventSubscription.environment_variables = $scope.eventSubscription.environment_variables;
+
+    }
+
+    $scope.addVariable = function () {
+        $scope.environmentVariables.push({ name: null, value: null });
+    }
+
+    $scope.removeVariable = function (variables, index) {
+        variables.splice(index, 1);
     }
 
     $scope.confirmCancel = function () {
