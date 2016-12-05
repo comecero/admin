@@ -147,6 +147,41 @@
                     </div>
                 </div>
             </div>
+
+            <div class="col-xs-12">
+                <label for="description" class="control-label" translate>Environment Variables</label>
+            </div>
+
+            <div ng-repeat="variable in environmentVariables">
+                <ng-form name="variables">
+                    <div class="col-md-6 col-xs-12" style="margin-bottom:-15px;">
+                        <div class="form-group">
+                            <label for="name" class="control-label text-capitalize" translate>Name</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="name" ng-model="variable.name">
+                                <span class="input-group-addon pointer" ng-click="removeVariable(environmentVariables, $index)"><i class="fa fa-trash pointer text-default" title="{{ 'Remove' | translate}}"></i></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-xs-12" style="margin-bottom:-15px;">
+                        <div class="form-group">
+                            <label for="value" class="control-label text-capitalize" translate>Value</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="value" ng-model="variable.value">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row"></div>
+                </ng-form>
+            </div>
+
+            <div class="col-xs-12" style="margin-top:-5px; margin-bottom:35px;">
+                <a class="btn btn-sm btn-info" ng-click="addVariable()" translate>Add environment variable</a>
+                <p class="help-text" translate>Environment variables allow you to pass settings or configuration valules to your event destination, making it easier to use the same source code in live and test scenarios.</p>
+            </div>
+
             <div class="col-xs-12" show-errors>
                 <div class="form-group">
                     <label class="radio-group-label" translate>Set Active?</label>

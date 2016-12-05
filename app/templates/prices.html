@@ -2,7 +2,7 @@
 
     <ng-form name="prices">
 
-        <div class="col-md-6 col-xs-12" ng-class="{ 'has-error': prices.price.$invalid && (prices.price.$dirty || form.$submitted) }" style="margin-bottom:-15px;">
+        <div class="col-md-6 col-xs-12" ng-class="{ 'has-error': prices.price.$invalid && (prices.price.$dirty || form.$submitted) }" style="margin-bottom:-5px;">
             <div class="form-group">
                 <label for="price" class="control-label text-capitalize" translate>{{label}}</label>
                 <div class="input-group">
@@ -13,7 +13,7 @@
             </div>
         </div>
 
-        <div class="col-md-6 col-xs-12" ng-class="{ 'has-error': prices.currency.$invalid && (prices.currency.$dirty || form.$submitted) }" style="margin-bottom:-15px;">
+        <div class="col-md-6 col-xs-12" ng-class="{ 'has-error': prices.currency.$invalid && (prices.currency.$dirty || form.$submitted) }" style="margin-bottom:-5px;">
             <div class="form-group">
                 <label for="currency" class="control-label" translate>Currency</label>
                 <select class="form-control" name="currency" ng-model="price.currency" ng-options="currency.code as currency.code + ' - ' + currency.name for currency in currencies" required></select>
@@ -27,6 +27,6 @@
 
 </div>
 
-<div class="col-xs-12" style="margin-top:-5px; margin-bottom:35px;">
+<div class="col-xs-12" style="margin-top:-15px; margin-bottom:35px;">
     <a class="btn btn-sm btn-info" ng-click="showAddPrice()" translate>Add {{label}} in another currency</a>
 </div>

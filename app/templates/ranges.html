@@ -1,0 +1,38 @@
+﻿<div ng-repeat="range in ranges">
+
+    <ng-form name="ranges">
+
+        <div class="col-md-4 col-xs-12" ng-class="{ 'has-error': ranges.minimum.$invalid && (ranges.minimum.$dirty || form.$submitted) }" style="margin-bottom:15px;">
+            <div class="form-group">
+                <label for="minimum" class="control-label" translate>Minimum</label>
+                <input type="tel" class="form-control" ng-class="{'input-radius': $index == 0}" name="minimum" ng-model="range.minimum" ng-model-options="{ updateOn: 'blur' }" is-valid-number required>
+                <p class="help-block fadeInDown" ng-show="ranges.minimum.$invalid && (ranges.minimum.$dirty || form.$submitted)" translate>Please provide a minimum value</p>
+            </div>
+        </div>
+        <div class="col-md-4 col-xs-12" ng-class="{ 'has-error': ranges.maximum.$invalid && (ranges.maximum.$dirty || form.$submitted) }" style="margin-bottom:15px;">
+            <div class="form-group">
+                <label for="maximum" class="control-label" translate>Maximum</label>
+                <input type="tel" class="form-control" ng-class="{'input-radius': $index == 0}" name="maximum" ng-model="range.maximum" ng-model-options="{ updateOn: 'blur' }" is-valid-number required>
+                <p class="help-block fadeInDown" ng-show="ranges.maximum.$invalid && (ranges.maximum.$dirty || form.$submitted)" translate>Please provide a maximum value</p>
+            </div>
+        </div>
+        <div class="col-md-4 col-xs-12" ng-class="{ 'has-error': ranges.price.$invalid && (ranges.price.$dirty || form.$submitted) }" style="margin-bottom:15px;">
+            <div class="form-group">
+                <label for="price" class="control-label" translate>Price</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" ng-class="{'input-radius': $index == 0}" name="price" ng-model="range.price" ng-model-options="{ updateOn: 'blur' }" is-valid-price allow-empty-price="false" clean-price required>
+                    <span class="input-group-addon pointer" ng-if="$index > 0" ng-click="removeRange(ranges, $index)"><i class="fa fa-trash pointer text-default" ng-if="$index > 0" title="{{ 'Remove' | translate}}"></i></span>
+                </div>
+                <p class="help-block fadeInDown" ng-show="ranges.price.$invalid && (ranges.price.$dirty || form.$submitted)" translate>Please provide a valid price</p>
+            </div>
+        </div>
+
+        <div class="row"></div>
+
+    </ng-form>
+
+</div>
+
+<div class="col-xs-12" style="margin-top:-5px; margin-bottom:35px;">
+    <a class="btn btn-sm btn-info" ng-click="showAddRange()" translate>Add a range</a>
+</div>

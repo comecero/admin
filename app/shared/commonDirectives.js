@@ -89,6 +89,12 @@ app.directive('isValidNumber', function () {
 
             ctrl.$validators.characters = function (modelValue, viewValue) {
                 var value = modelValue || viewValue;
+
+                // Allows you to turn off the rule by passing false to the attribute. Useful for conditional validation.
+                if (attrs.isValidNumber == "false") {
+                    return true;
+                }
+
                 if (attrs.allowEmptyValue == "true" && (value == "" || value == null)) {
                     return true;
                 }
@@ -4170,6 +4176,33 @@ app.directive('prices', ['gettextCatalog', function (gettextCatalog) {
         }
     };
 }]);
+
+app.directive('ranges', function () {
+    return {
+        restrict: 'A',
+        require: '^form',
+        templateUrl: "app/templates/ranges.html",
+        scope: {
+            ranges: '=?',
+        },
+        link: function (scope, elem, attrs, ctrl) {
+
+            scope.form = ctrl;
+
+            scope.showAddRange = function () {
+                if (!scope.ranges) {
+                    scope.ranges = [];
+                }
+                scope.ranges.push({ minimum: "", maximum: "", price: "" });
+            }
+
+            scope.removeRange = function (ranges, index) {
+                scope.ranges.splice(index, 1);
+            }
+
+        }
+    };
+});
 
 
 app.directive('metaToHtml', function () {

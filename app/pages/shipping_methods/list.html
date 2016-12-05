@@ -1,0 +1,99 @@
+<div ng-controller="ShippingMethodsListCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1>Shipping Methods</h1>
+        <a id="top" href="/#/shipping_methods/add" class="btn btn-primary btn-right" translate resource="shipping_methods" method="create"><span class="hidden-xs" translate>Add New</span><span class="hidden-sm hidden-md hidden-lg"><i class="fa fa-plus"></i></span></a>
+    </div>  
+
+    <div class="panel panel-body light-shadow">
+        <div class="col-sm-12 text-right spacer-b40">
+            <form class="form-inline">
+                <div class="form-group has-feedback">
+                    <input type="text" class="form-control" ng-model="params.q" ng-change="search()" ng-model-options="{ updateOn: 'default blur', debounce: { default: 750, blur: 0 } }" select-on-click placeholder="{{ 'Search' | translate }}...">
+                    <span class="fa fa-search form-control-feedback"></span>
+                </div>
+            </form>
+        </div>
+
+        <div class="gridtable">
+
+            <div class="gridtable-header hidden-xs hidden-sm">
+
+                <div class="col-md-3"><label>ID</label></div>
+                <div class="col-md-5"><label>Description</label></div>
+                <div class="col-md-2 text-right"><label ng-click="sort('date_created', !params.desc)" class="pointer text-primary" translate>Created</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="params.sort_by == 'date_created' && params.desc == true"></i><i class="icon fa fa-caret-up" ng-if="params.sort_by == 'date_created' && params.desc == false"></i></div>
+                <div class="col-md-2 text-right"><label ng-click="sort('date_modified', !params.desc)" class="pointer text-primary" translate>Updated</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="params.sort_by == 'date_modified' && params.desc == true"></i><i class="icon fa fa-caret-up" ng-if="params.sort_by == 'date_modified' && params.desc == false"></i></div>
+
+            </div>
+
+            <div class="col-xs-12 hidden-md hidden-lg padding-l0">
+
+               
+                <div class="btn-group"uib-dropdown>
+                    <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Sort</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown-header">Name</li>
+                        <li ng-click="sort('name', false)" ng-class="{'selected-li': params.sort_by == 'name' && params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                        <li ng-click="sort('name', true)" ng-class="{'selected-li': params.sort_by == 'name' && params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                        <li class="divider"></li>
+                        <li class="dropdown-header">Date Created</li>
+                        <li ng-click="sort('date_created', false)" ng-class="{'selected-li': params.sort_by == 'date_created' && params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                        <li ng-click="sort('date_created', true)" ng-class="{'selected-li': params.sort_by == 'date_created' && params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                        <li class="divider"></li>
+                        <li class="dropdown-header">Date Updated</li>
+                        <li ng-click="sort('date_modified', false)" ng-class="{'selected-li': params.sort_by == 'date_modified' && params.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                        <li ng-click="sort('date_modified', true)" ng-class="{'selected-li': params.sort_by == 'date_modified' && params.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="row spacer-b10 hidden-md hidden-lg"></div> <!--Needed to have the buttons clear-->
+
+            <div class="gridtable-row" ng-repeat="shippingMethod in shippingMethods.shippingMethodList.data">
+
+                <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>ShippingMethod ID</label></div>
+                    <div class="col-xs-7 col-sm-12 col-md-12 value"><a href="#/shipping_methods/{{shippingMethod.shipping_method_id}}/edit">{{shippingMethod.shipping_method_id}}</a></div>
+                </div>
+
+               <div class="col-xs-12 col-sm-6 col-md-5">
+                    <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Description</label></div>
+                    <div class="col-xs-7 col-sm-12 col-md-12 value"><span>{{shippingMethod.description}}</span></div>
+                </div>
+
+                <div class="col-xs-12 col-sm-6 col-md-2">
+                    <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Created</label></div>
+                    <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value"><span>{{shippingMethod.date_created | date:'shortDate'}}</span></div>
+                </div>
+
+                <div class="col-xs-12 col-sm-6 col-md-2">
+                    <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Updated</label></div>
+                    <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value"><span>{{shippingMethod.date_modified | date:'shortDate'}}</span></div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Show pagination if there is at least one page -->
+        <div class="col-sm-12" ng-if="shippingMethods.shippingMethodList.data.length > 0">
+            <ul class="pager">
+                <li class="previous" ng-click="movePage('-')" ng-show="shippingMethods.shippingMethodList.previous_page_offset !== null"><a><i class="fa fa-chevron-circle-left"></i> <span translate>Back</span></a></li>
+                <li class="next" ng-click="movePage('+')" ng-show="shippingMethods.shippingMethodList.next_page_offset !== null"><a><span translate>Next</span> <i class="fa fa-chevron-circle-right"></i></a></li>
+            </ul>
+            <p class="text-right" ng-if="shippingMethods.shippingMethodList">Showing page {{shippingMethods.shippingMethodList.current_page}} of {{shippingMethods.shippingMethodList.total_pages}}</p>
+        </div>
+
+        <!-- Show a "not found" message if no shipping methods were found  -->
+        <div class="col-sm-12" ng-if="shippingMethods.shippingMethodList.data.length == 0">
+            <p class="no-info" translate>No shipping methods found</p>
+        </div>
+    </div>
+
+</div>

@@ -28,6 +28,20 @@
                 <div customer-edit="order.customer" error="exception.error"></div>
 
                 <div class="panel no-heading">
+                    <div class="panel-body panel-embed">
+
+                        <div class="col-xs-12 col-md-6">
+                            <div><span translate>Customer IP Address:</span> <strong>{{order.customer_ip_address}}</strong></div>
+                        </div>
+
+                        <div class="col-xs-12 col-md-6 spacer-b15">
+                            <div><span translate>IP Country:</span> <strong>{{order.customer_ip_country | countryCodeToName}}</strong></div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="panel no-heading">
                     <div class="panel-body panel-embed text-sm">
                         <div class="col-xs-12 col-md-6">
                             <div><span translate>Created:</span> <strong>{{order.date_created | date:'short'}}</strong></div>
