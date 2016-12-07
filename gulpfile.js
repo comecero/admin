@@ -44,6 +44,11 @@ gulp.task("concat-css-libraries", function () {
       .pipe(gulp.dest("./dist/css/"));
 });
 
+gulp.task("copy-fonts", function () {
+    return gulp.src(["./src/fonts/**"])
+      .pipe(gulp.dest("./fonts"));
+});
+
 gulp.task('less-base', function () {
     return gulp.src('./src/css/less/base/base.less')
       .pipe(less({
@@ -62,7 +67,7 @@ gulp.task("compress", function () {
 });
 
 gulp.task('dist', function (done) {
-    sequence('concat-libraries', 'concat-internal', 'concat-angular-pages', 'concat-angular-app', 'concat-angular-shared', 'less-base', 'concat-css-libraries', 'compress', function () {
+    sequence('concat-libraries', 'concat-internal', 'concat-angular-pages', 'concat-angular-app', 'concat-angular-shared', 'less-base', 'concat-css-libraries', 'compress', 'copy-fonts', function () {
         done();
     });
 });

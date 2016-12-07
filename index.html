@@ -9,19 +9,38 @@
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval' https://www.google-analytics.com https://ajax.googleapis.com https://cdnjs.cloudflare.com; connect-src 'self' https://api.comecero.com https://api-staging.comecero.com;"> 
 
     <!-- Favicons -->
-    <link rel="icon" href="images/favicon.png">
+    <link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/images/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="/images/manifest.json">
+    <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="theme-color" content="#ffffff">
 
     <!-- Apple -->
-    <link rel="apple-touch-icon" href="/images/touch-icon-iphone.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/images/touch-icon-ipad.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/images/touch-icon-iphone-retina.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/images/touch-icon-ipad-retina.png">
-    <link rel="apple-touch-startup-image" href="/images/iphone-low-res.png" media="(device-width: 320px)" />
-    <link rel="apple-touch-startup-image" href="/images/iphone-retina.png" media="(device-width: 320px) and (-webkit-device-pixel-ratio: 2)" />
-    <link rel="apple-touch-startup-image" href="/images/ipad-landscape.png" media="(device-width: 768px) and (orientation: landscape)" />
-    <link rel="apple-touch-startup-image" href="/images/ipad-portrait.png" media="(device-width:: 768px) and (orientation: portrait)" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <!-- iPad retina portrait startup image -->
+    <link href="apple-touch-startup-image-1536x2008.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" rel="apple-touch-startup-image">
+    <!-- iPad retina landscape startup image -->
+    <link href="apple-touch-startup-image-1496x2048.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" rel="apple-touch-startup-image">
+    <!-- iPad non-retina portrait startup image -->
+    <link href="apple-touch-startup-image-768x1004.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 1) and (orientation: portrait)" rel="apple-touch-startup-image">
+    <!-- iPad non-retina landscape startup image -->
+    <link href="apple-touch-startup-image-748x1024.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 1) and (orientation: landscape)" rel="apple-touch-startup-image">
+    <!-- iPhone 6 Plus portrait startup image -->
+    <link href="apple-touch-startup-image-1242x2148.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" rel="apple-touch-startup-image">
+    <!-- iPhone 6 Plus landscape startup image -->
+    <link href="apple-touch-startup-image-1182x2208.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" rel="apple-touch-startup-image">
+    <!-- iPhone 6 startup image -->
+    <link href="apple-touch-startup-image-750x1294.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
+    <!-- iPhone 5 startup image -->
+    <link href="apple-touch-startup-image-640x1096.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
+    <!-- iPhone < 5 retina startup image -->
+    <link href="apple-touch-startup-image-640x920.png" media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
+    <!-- iPhone < 5 non-retina startup image -->
+    <link href="apple-touch-startup-image-320x460.png" media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 1)" rel="apple-touch-startup-image">
+
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Comecero">
 
     <!-- Styles from CDNs -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
@@ -61,13 +80,11 @@
             <!-- Logo -->
 
             <a href="/#/" class="logo hidden-sm hidden-md hidden-lg" style="background-color: #2c3e50; text-align:center">
-                <span class="logo-mini"><img src="images/icon_light.png" style="height:46px; margin-left:3px" /></span>
-                <span class="logo-lg"><img src="images/logo.png" style="width:100px" /></span>
+                <span class="logo-lg brand-dark"><img src="images/icon_dark_transparent.png" style="height:46px" />Comecero</span>
             </a>
 
-            <a href="/#/" class="logo hidden-xs">
-                <span class="logo-mini"><img src="images/icon_light.png" style="height:46px; margin-left:3px" /></span>
-                <span class="logo-lg"><img src="images/logo_dark.png" style="width:100px" /></span>
+            <a href="/#/" class="logo hidden-xs" style="padding-left:2px;">
+                <span class="logo-lg brand-light"><img src="images/icon_light_transparent.png" style="height:46px" />Comecero</span>
             </a>
 
             <!-- Header Navbar -->
