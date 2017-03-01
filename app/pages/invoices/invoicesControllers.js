@@ -121,7 +121,6 @@ app.controller("InvoicesSetCtrl", ['$scope', '$routeParams', '$location', 'ApiSe
         return ApiService.set($scope.invoice, $scope.url, $scope.params).then(function (invoice) {
 
             $scope.invoice = invoice;
-            $scope.invoice.autopay = false;
 
             // If the customer in the invoice has payment methods and autopay was previously true, set to true.
             if ($scope.invoice.customer) {

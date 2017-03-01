@@ -177,7 +177,7 @@
 
                                 <div class="col-xs-12 col-sm-2 wide-md" ng-show="!itemPriceEdits[item.item_id]">
                                     <div class="col-xs-5 hidden-sm hidden-md hidden-lg lbl"><label translate>Price</label></div>
-                                    <div class="col-xs-7 col-sm-12 text-right value"><span class="strikethrough" ng-if="item.price_original != item.price">{{item.formatted.price_original}}&nbsp;</span>{{item.formatted.price}}&nbsp;<i class="fa fa-edit text-info pointer" ng-click="editItemPrice(item)" ng-if="invoice.payment_status == 'unpaid'"></i></div>
+                                    <div class="col-xs-7 col-sm-12 text-right value"><span class="strikethrough" ng-if="item.price_original != item.price">{{item.formatted.price_original}}</span>&nbsp;{{item.formatted.price}}&nbsp;<i class="fa fa-edit text-info pointer" ng-click="editItemPrice(item)" ng-if="invoice.payment_status == 'unpaid'"></i></div>
                                 </div>
 
                                 <div class="col-xs-12 col-sm-1 wide-md" ng-show="!itemPriceEdits[item.item_id]">

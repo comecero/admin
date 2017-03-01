@@ -2428,8 +2428,8 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
                     default_sort = "date_created";
                 }
                 if (attrs.type == "subscription") {
-                    baseParams.show = "subscription_id,subscription_plan.name,reference_price,reference_currency,status,item.name,item.product.product_id,date_modified,in_grace_period;";
-                    baseParams.expand = "subscription_plan,item.product";
+                    baseParams.show = "subscription_id,subscription_plan.name,subscription_plan.subscription_plan_id,reference_price,reference_currency,status,item.name,item.product.product_id,date_modified,in_grace_period;";
+                    baseParams.expand = "subscription_plan";
                     default_sort = "date_modified";
                 }
                 if (attrs.type == "payment") {
