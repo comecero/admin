@@ -2188,7 +2188,6 @@ a.stat-cell:hover {
     margin-left: 50px;
   }
 }
-.sidebar-menu,
 .main-sidebar .user-panel,
 .sidebar-menu > li.header {
   white-space: nowrap;
@@ -2358,6 +2357,34 @@ a.stat-cell:hover {
 }
 .sidebar-menu li.highlight > a {
   color: white;
+}
+.sidebar-menu li.selected:not(.treeview) {
+  background-color: dodgerblue;
+}
+.sidebar-menu li.selected:not(.treeview) > a:before {
+  content: '';
+  position: absolute;
+  border: 20px solid dodgerblue;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  border-top-color: transparent;
+  right: -40px;
+  top: 2px;
+}
+.sidebar-menu li.selected:not(.treeview):hover > a {
+  background-color: dodgerblue;
+}
+.sidebar-menu .treeview-menu li.selected > a:before {
+  top: -4px;
+}
+.sidebar-menu li.selected:not(.active) > .treeview-menu {
+  display: block !important;
+}
+.sidebar-menu li.selected:not(.active) > .treeview-menu > li:not(.selected) {
+  display: none;
+}
+.sidebar-menu li.selected > a {
+  color: white !important;
 }
 .sidebar-menu .treeview-menu {
   display: none;

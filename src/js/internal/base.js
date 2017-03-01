@@ -235,6 +235,27 @@ function _init() {
             }
         },
         fixSidebar: function () {
+
+            var locationHash = window.location.hash;
+            var anchors = $(".sidebar").find('a');
+
+            function isMatchingLocation(str) {
+                locationHash.replace('#', '');
+                return locationHash.match(str) && !!locationHash.match(str).length
+            }
+
+            function getHashHead(href) {
+                return href && href.split('#')[1] && href.split('#')[1].split('/')[1];
+            }
+
+            for (var i = 0; i < anchors.length; i++) {
+                var hashHead = getHashHead(anchors[i].href);
+                if (hashHead && isMatchingLocation(hashHead)) {
+                    $(anchors[i]).parents('li').addClass('selected');
+                    break;
+                }
+            }
+
             //Make sure the body tag has the .fixed class
             if (!$("body").hasClass("fixed")) {
                 if (typeof $.fn.slimScroll != 'undefined') {
@@ -257,7 +278,11 @@ function _init() {
                     });
                 }
             }
+
+            
         }
+
+       
     };
 
     /* PushMenu()
@@ -359,7 +384,12 @@ function _init() {
             //Get the clicked link and the next element
             var $this = $(this);
             var checkElement = $this.next();
+            var $parent_lis = $this.parents("li");
+            var $menu = $(menu);
+            var selected_lis = $menu.find('li.selected');
 
+            $menu.find('li').removeClass('selected');
+            
             //Check if the next element is a menu and is visible
             if ((checkElement.is('.treeview-menu')) && (checkElement.is(':visible'))) {
                 //Close the menu
@@ -391,6 +421,13 @@ function _init() {
                     _this.layout.fix();
                 });
             }
+
+            if (!checkElement.length) {
+                $parent_lis.addClass('selected');
+            } else {
+                selected_lis.addClass('selected');
+            }
+
             //if this isn't a link, prevent the page from being redirected
             if (checkElement.is('.treeview-menu')) {
                 e.preventDefault();

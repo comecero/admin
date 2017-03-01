@@ -151,6 +151,40 @@
 
     }
 
+    li.selected:not(.treeview) {
+      background-color: dodgerblue;
+
+        &>a:before {
+            content: '';
+            position: absolute;
+            border: 20px solid dodgerblue;
+            border-right-color: transparent;
+            border-bottom-color: transparent;
+            border-top-color: transparent;
+            right: -40px;
+            top: 2px;
+        }
+        
+    }
+
+    li.selected:not(.treeview):hover > a{
+        background-color: dodgerblue;
+    }
+
+    .treeview-menu li.selected>a:before{
+        top: -4px;
+    }
+
+    li.selected:not(.active)>.treeview-menu{
+        display: block !important;
+        &>li:not(.selected){
+            display:none;
+        }
+    }
+     li.selected > a{
+      color: white !important;
+    }
+
 
     // Tree view menu
     .treeview-menu {
