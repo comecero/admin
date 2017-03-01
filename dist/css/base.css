@@ -2371,6 +2371,11 @@ a.stat-cell:hover {
   right: -40px;
   top: 2px;
 }
+@media (max-width: 767px) {
+  .sidebar-menu li.selected:not(.treeview) > a:before {
+    content: none;
+  }
+}
 .sidebar-menu li.selected:not(.treeview):hover > a {
   background-color: dodgerblue;
 }
