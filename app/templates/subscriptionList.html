@@ -11,7 +11,7 @@
 
     <div class="gridtable-header hidden-xs hidden-sm">
 
-        <div class="col-md-3"><label>Subscription Plan</label></div>
+        <div class="col-md-3"><label>ID</label></div>
         <div class="col-md-2 btn-header">
             <div class="btn-group" uib-dropdown>
                 <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Status</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
@@ -24,7 +24,7 @@
                 </ul>
             </div>
         </div>
-        <div class="col-md-3"><label>Product</label></div>
+        <div class="col-md-3"><label>Plan</label></div>
         <div class="col-md-2 btn-header">
             <div class="btn-group" uib-dropdown>
                 <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Grace Period</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
@@ -71,8 +71,8 @@
     <div class="gridtable-row" ng-repeat="subscription in list.data">
 
         <div class="col-xs-12 col-sm-6 col-md-3">
-            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Subscription Plan</label></div>
-            <div class="col-xs-7 col-sm-12 col-md-12 value"><a href="#/subscriptions/{{subscription.subscription_id}}">{{subscription.subscription_plan.name}}</a></div>
+            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>ID</label></div>
+            <div class="col-xs-7 col-sm-12 col-md-12 value"><a href="#/subscriptions/{{subscription.subscription_id}}">{{subscription.subscription_id}}</a></div>
         </div>
 
         <div class="col-xs-12 col-sm-6 col-md-2">
@@ -86,8 +86,8 @@
         </div>
 
         <div class="col-xs-12 col-sm-6 col-md-3">
-            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Product</label></div>
-            <div class="col-xs-7 col-sm-12 col-md-12 value"><a href="#/products/{{subscription.item.product.product_id}}/edit">{{subscription.item.name}}</a></div>
+            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Plan</label></div>
+            <div class="col-xs-7 col-sm-12 col-md-12 value"><a href="#/subscription_plans/{{subscription.subscription_plan.subscription_plan_id}}/edit">{{subscription.subscription_plan.name}}</a></div>
         </div>
 
         <div class="col-xs-12 col-sm-6 col-md-2">

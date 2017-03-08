@@ -61,8 +61,8 @@
 
                 <div class="col-md-6 col-xs-12">
                     <div class="form-group">
-                        <label class="control-label" translate>Customer</label>
-                        <div><a ng-href="/#/customers/{{notification.customer.customer_id}}">{{notification.customer.customer_id}}</a></div>
+                        <label class="control-label" translate>BCC</label>
+                        <div>{{notification.bcc}}</div>
                     </div>
                 </div>
 
@@ -80,7 +80,14 @@
                     </div>
                 </div>
 
-                <div class="col-xs-12">
+                <div class="col-md-6 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label" translate>Customer</label>
+                        <div><a ng-href="/#/customers/{{notification.customer.customer_id}}">{{notification.customer.customer_id}}</a></div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xs-12">
                     <div class="form-group" ng-show="!showResend">
                         <a class="btn btn-info spacer-t5" ng-click="showResend = !showResend" translate>Resend</a>
                     </div>

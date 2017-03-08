@@ -2613,6 +2613,25 @@ p.help-text {
 body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
+/* Logo font */
+@font-face {
+  font-family: "Montserrat-SemiBold";
+  src: url(/fonts/montserrat/Montserrat-SemiBold.otf) format("opentype");
+}
+.brand-light {
+  font-weight: 600;
+  letter-spacing: .75px;
+  color: #494949;
+  font-family: "Montserrat-SemiBold", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-transform: uppercase;
+}
+.brand-dark {
+  font-weight: 600;
+  letter-spacing: .75px;
+  color: #fff;
+  font-family: "Montserrat-SemiBold", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-transform: uppercase;
+}
 h1,
 h2,
 h3,

@@ -31,7 +31,8 @@
                 </div>
                 <div class="panel-body" ng-if="model.subscription.cancel_at_current_period_end" style="padding-bottom:0px;">
                     <div class="alert alert-warning spacer-b5 text-center">
-                        <div translate>This subscription is scheduled to be cancelled on <strong>{{model.subscription.date_current_period_end | date:'shortDate'}}.</strong>
+                        <div translate>
+                            This subscription is scheduled to be cancelled on <strong>{{model.subscription.date_current_period_end | date:'shortDate'}}.</strong>
                         </div>
                         <div class="spacer-t10"><button class="btn btn-danger" ng-click="uncancel()" translate>Remove Cancellation</button></div>
                     </div>
@@ -113,32 +114,71 @@
                     </div>
 
                     <div class="col-xs-12 col-sm-6 panel-tight-row">
-                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Price</label></div>
-                        <div class="col-xs-12 col-md-8 panel-tight-section"><div>{{model.subscription.item.reference_price | currency: ""}} {{model.subscription.item.reference_currency}}</div></div>
-                    </div>
-
-                    <div class="col-xs-12 col-sm-6 panel-tight-row">
-                        <div class="col-xs-12 col-md-4 panel-tight-section"><label translate>Quantity</label></div>
-                        <div class="col-xs-12 col-md-8 panel-tight-section text-capitalize">{{model.subscription.item.quantity}}</div>
-                    </div>
-
-                    <div class="col-xs-12 col-sm-6 panel-tight-row" ng-if="model.subscription.item.product_id">
-                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Product</label></div>
-                        <div class="col-xs-12 col-md-8 panel-tight-section"><div><a href="/#/products/{{model.subscription.product.product_id}}/edit">{{model.subscription.item.product.name}}</a></div></div>
-                    </div>
-
-                    <div class="col-xs-12 col-sm-6 panel-tight-row" ng-if="!model.subscription.item.product_id">
-                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Item</label></div>
-                        <div class="col-xs-12 col-md-8 panel-tight-section"><div>{{model.subscription.item.name}}</a></div></div>
-                    </div>
-
-                    <div class="col-xs-12 col-sm-6 panel-tight-row">
                         <div class="col-xs-12 col-md-4 panel-tight-section"><label>Payment Currency</label></div>
                         <div class="col-xs-12 col-md-8 panel-tight-section"><div>{{model.subscription.currency}}</div></div>
                     </div>
 
                 </div>
 
+            </div>
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <span class="panel-title">Items</span>
+                </div>
+
+                <div class="gridtable-header hidden-xs">
+                    <div class="col-sm-6"><label translate>Item</label></div>
+                    <div class="col-sm-2 text-right"><label translate>Quantity</label></div>
+                    <div class="col-sm-2 text-right"><label translate>Price</label></div>
+                    <div class="col-sm-2 text-right"><label translate>Currency</label></div>
+                </div>
+
+                <div class="gridtable-row" ng-repeat="item in model.subscription.items">
+
+                    <div class="col-xs-12 col-sm-6 wide-md">
+                        <div class="col-xs-5 hidden-sm hidden-md hidden-lg lbl"><label translate>Item</label></div>
+                        <div class="col-xs-7 col-sm-12 col-md-12 text-right-xs value">
+                            <a ng-if="item.product_id" ng-href="/#/products/{{item.product_id}}/edit">{{item.name}}</a><span ng-if="!item.product_id">{{item.name}}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-2 wide-md">
+                        <div class="col-xs-5 hidden-sm hidden-md hidden-lg lbl"><label translate>Quantity</label></div>
+                        <div class="col-xs-7 col-sm-12 text-right value">{{item.quantity}}</div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-2 wide-md">
+                        <div class="col-xs-5 hidden-sm hidden-md hidden-lg lbl"><label translate>Price</label></div>
+                        <div class="col-xs-7 col-sm-12 text-right value">{{item.formatted.reference_price}}</span></div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-2 wide-md">
+                        <div class="col-xs-5 hidden-sm hidden-md hidden-lg lbl"><label translate>Currency</label></div>
+                        <div class="col-xs-7 col-sm-12 text-right value">{{item.reference_currency}}</div>
+                    </div>
+
+                    <div class="col-xs-12">
+                        <div class="col-xs-12 value text-sm"><em>{{item.subscription_terms.description}}</em></div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="panel" resource="promotions" method="read" ng-show="model.subscription.promotion">
+                <div class="panel-heading">
+                    <span class="panel-title" translate>Promotion</span>
+                </div>
+                <div class="panel-body panel-tight">
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Promotion ID</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section"><div><a ng-href="/#/promotions/{{model.subscription.promotion.promotion_id}}/edit">{{model.subscription.promotion.promotion_id}}</a></div></div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Name</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section">{{model.subscription.promotion.name}}</div>
+                    </div>
+                </div>
             </div>
 
             <div class="panel" resource="customers" method="read">
