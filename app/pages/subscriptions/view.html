@@ -158,6 +158,26 @@
                         <div class="col-xs-7 col-sm-12 text-right value">{{item.reference_currency}}</div>
                     </div>
 
+                    <div class="col-xs-12">
+                        <div class="col-xs-12 value text-sm"><em>{{item.subscription_terms.description}}</em></div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="panel" resource="promotions" method="read" ng-show="model.subscription.promotion">
+                <div class="panel-heading">
+                    <span class="panel-title" translate>Promotion</span>
+                </div>
+                <div class="panel-body panel-tight">
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Promotion ID</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section"><div><a ng-href="/#/promotions/{{model.subscription.promotion.promotion_id}}/edit">{{model.subscription.promotion.promotion_id}}</a></div></div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 panel-tight-row">
+                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Name</label></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section">{{model.subscription.promotion.name}}</div>
+                    </div>
                 </div>
             </div>
 

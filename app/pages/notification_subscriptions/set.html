@@ -52,13 +52,23 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xs-12">
+            <div class="col-xs-12 col-md-6">
                  <div class="form-group" show-errors>
                     <label for="hide" class="control-label" translate>Reply To Email Address</label>
                     <input type="email" class="form-control" name="reply_to" ng-model="notificationSubscription.reply_to" is-valid-email allow-empty-value="true">
                      <p class="help-block hidden fadeInDown" translate>Please enter a valid email address</p>
                     <div>
                         <p class="help-text" translate>The reply-to email address for the notification. If not supplied, the from address (if supplied) or your customer support email address will be used.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label for="hide" class="control-label" translate>BCC Email Address</label>
+                    <input type="text" class="form-control" name="bcc" ng-model="notificationSubscription.bcc">
+                    <p class="help-block hidden fadeInDown" translate>Please enter a valid email address</p>
+                    <div>
+                        <p class="help-text" translate>An email address to add to the notification as a BCC. To send to more than one email address, provide a comma-separated list of email addresses.</p>
                     </div>
                 </div>
             </div>
