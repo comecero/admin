@@ -13,9 +13,9 @@
         <div class="col-md-6 col-xs-12">
             <div class="panel panel-profile panel-success">
                 <div class="panel-heading">
-                    <div class="widget-profile-header">
-                        <a href="/#/products/add?on_complete=/"><i class="fa fa-tags fa-3"></i>&nbsp;</a><br />
-                        <a href="/#/products/add?on_complete=/"><span translate>Add a Product</span></a>
+                    <div class="widget-profile-header" >
+                        <a href="/#/products/add?on_complete=/" ng-click="onNavigate()"><i class="fa fa-tags fa-3"></i>&nbsp;</a><br />
+                        <a href="/#/products/add?on_complete=/" ng-click="onNavigate()"><span translate>Add a Product</span></a>
                     </div>
                 </div>
                 <div class="panel-body">
@@ -30,8 +30,8 @@
             <div class="panel panel-profile panel-info">
                 <div class="panel-heading">
                     <div class="widget-profile-header">
-                        <a ng-href="{{cartUrl}}"><i class="fa fa-shopping-cart fa-3"></i>&nbsp;</a><br />
-                        <a ng-href="{{cartUrl}}"><span translate>View Store</span></a>
+                        <a ng-href="{{cartUrl}}"  ng-click="onNavigate()"><i class="fa fa-shopping-cart fa-3"></i>&nbsp;</a><br />
+                        <a ng-href="{{cartUrl}}"  ng-click="onNavigate()"><span translate>View Store</span></a>
                     </div>
                 </div>
                 <div class="panel-body">
@@ -46,8 +46,8 @@
             <div class="panel panel-profile panel-purple">
                     <div class="panel-heading">
                         <div class="widget-profile-header">
-                            <a href="/#/settings/general"><i class="fa fa-sliders fa-3"></i>&nbsp;</a><br />
-                            <a href="/#/settings/general"><span translate>Configure Preferences</span></a>
+                            <a href="/#/settings/general"  ng-click="onNavigate()"><i class="fa fa-sliders fa-3"></i>&nbsp;</a><br />
+                            <a href="/#/settings/general"  ng-click="onNavigate()"><span translate>Configure Preferences</span></a>
                         </div>
                     </div>
                     <div class="panel-body">
@@ -62,8 +62,8 @@
             <div class="panel panel-profile panel-warning">
                 <div class="panel-heading">
                     <div class="widget-profile-header">
-                        <a href="/#/account/edit"><i class="fa fa-user fa-3"></i>&nbsp;</a><br />
-                        <a href="/#/account/edit"><span translate>Update your Profile</span></a>
+                        <a href="/#/account/edit"  ng-click="onNavigate()"><i class="fa fa-user fa-3"></i>&nbsp;</a><br />
+                        <a href="/#/account/edit"  ng-click="onNavigate()"><span translate>Update your Profile</span></a>
                     </div>
                 </div>
                 <div class="panel-body">
