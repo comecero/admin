@@ -9,6 +9,8 @@
 <a name="1.3.3"></a>
 # 1.3.3
 
+- Add support for multi-item subscriptions
+- Add support for to add BCC to customer notifications
 - Open the main navigation menu to the correct section when linking into a related section
 
 <a name="1.3.2"></a>
