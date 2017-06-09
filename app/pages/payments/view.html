@@ -14,11 +14,11 @@
         <div class="panel-heading">
             <span class="panel-title text-bg text-bold">{{payment.payment_id}}</span>
             <div class="panel-heading-controls">
-                    <span class="badge badge-success" ng-if="payment.status == 'completed'"><i class="fa fa-check-circle"></i>&nbsp;<span translate>Completed</span></span>
-                    <span class="badge badge-pa-purple" ng-if="payment.status == 'pending'"><i class="fa fa-clock-o"></i>&nbsp;&nbsp;<span translate>Pending</span></span>
-                    <span class="badge badge-warning" ng-if="payment.status == 'refunded'"><i class="fa fa-undo"></i>&nbsp;&nbsp;<span translate>Refunded</span></span>
-                    <span class="badge badge-danger" ng-if="payment.status == 'failed'"><i class="fa fa-times-circle"></i>&nbsp;&nbsp;<span translate>Failed</span></span>
-                    <span class="badge badge-danger" ng-if="payment.status == 'cancelled'"><i class="fa fa-ban"></i>&nbsp;&nbsp;<span translate>Cancelled</span></span>
+                <span class="badge badge-success" ng-if="payment.status == 'completed'"><i class="fa fa-check-circle"></i>&nbsp;<span translate>Completed</span></span>
+                <span class="badge badge-pa-purple" ng-if="payment.status == 'pending'"><i class="fa fa-clock-o"></i>&nbsp;&nbsp;<span translate>Pending</span></span>
+                <span class="badge badge-warning" ng-if="payment.status == 'refunded'"><i class="fa fa-undo"></i>&nbsp;&nbsp;<span translate>Refunded</span></span>
+                <span class="badge badge-danger" ng-if="payment.status == 'failed'"><i class="fa fa-times-circle"></i>&nbsp;&nbsp;<span translate>Failed</span></span>
+                <span class="badge badge-primary" ng-if="payment.status == 'initiated'"><i class="fa fa-sign-in"></i>&nbsp;&nbsp;<span translate>Initiated</span></span>
             </div>
         </div>
         <div class="panel-body">

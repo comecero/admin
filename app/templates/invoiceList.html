@@ -19,12 +19,14 @@
                 <ul class="dropdown-menu">
                     <li ng-click="setParam('payment_status', null)" ng-class="{ 'selected-li': userParams.payment_status == null }"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
                     <li ng-click="setParam('payment_status', 'unpaid')" ng-class="{ 'selected-li': userParams.payment_status == 'unpaid' }"><a><i class="dropdown-icon fa fa-minus-circle text-warning"></i>&nbsp;&nbsp;<span translate>Unpaid</span></a></li>
-                    <li ng-click="setParam('payment_status', 'completed')" ng-class="{ 'selected-li': userParams.payment_status == 'completed' }"><a><i class="dropdown-icon fa fa-check-circle text-success"></i>&nbsp;&nbsp;<span translate>Completed</span></a></li>
+                    <li ng-click="setParam('payment_status', 'completed')" ng-class="{ 'selected-li': userParams.payment_status == 'completed' }"><a><i class="dropdown-icon fa fa-sign-in text-primary"></i>&nbsp;&nbsp;<span translate>Initiated</span></a></li>
                     <li ng-click="setParam('payment_status', 'scheduled')" ng-class="{'selected-li': userParams.payment_status == 'scheduled' }"><a><i class="dropdown-icon fa fa-calendar-check-o text-primary"></i>&nbsp;&nbsp;<span translate>Scheduled</span></a></li>
                     <li ng-click="setParam('payment_status', 'pending')" ng-class="{'selected-li': userParams.payment_status == 'pending' }"><a><i class="dropdown-icon fa fa-clock-o text-pa-purple"></i>&nbsp;&nbsp;<span translate>Pending</span></a></li>
-                    <li ng-click="setParam('payment_status', 'refunded')" ng-class="{'selected-li': userParams.payment_status == 'refunded' }"><a><i class="dropdown-icon fa fa-undo text-warning"></i>&nbsp;&nbsp;<span translate>Refunded</span></a></li>
+                    <li ng-click="setParam('payment_status', 'completed')" ng-class="{ 'selected-li': userParams.payment_status == 'completed' }"><a><i class="dropdown-icon fa fa-check-circle text-success"></i>&nbsp;&nbsp;<span translate>Completed</span></a></li>
                     <li ng-click="setParam('payment_status', 'failed')" ng-class="{'selected-li': userParams.payment_status == 'failed' }"><a><i class="dropdown-icon fa fa-times-circle text-danger"></i>&nbsp;&nbsp;<span translate>Failed</span></a></li>
                     <li ng-click="setParam('payment_status', 'cancelled')" ng-class="{'selected-li': userParams.payment_status == 'cancelled' }"><a><i class="dropdown-icon fa fa-ban text-danger"></i>&nbsp;&nbsp;<span translate>Cancelled</span></a></li>
+                    <li ng-click="setParam('payment_status', 'refunded')" ng-class="{'selected-li': userParams.payment_status == 'refunded' }"><a><i class="dropdown-icon fa fa-undo text-warning"></i>&nbsp;&nbsp;<span translate>Refunded</span></a></li>
+                    <li ng-click="setParam('payment_status', 'retry')" ng-class="{'selected-li': userParams.payment_status == 'retry' }"><a><i class="dropdown-icon fa fa-undo fa-flip-horizontal text-warning"></i>&nbsp;&nbsp;<span translate>Retry</span></a></li>
                 </ul>
             </div>
         </div>
@@ -41,12 +43,14 @@
                 <li class="dropdown-header">Status</li>
                 <li ng-click="setParam('payment_status', null)" ng-class="{ 'selected-li': userParams.payment_status == null }"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
                 <li ng-click="setParam('payment_status', 'unpaid')" ng-class="{ 'selected-li': userParams.payment_status == 'unpaid' }"><a><i class="dropdown-icon fa fa-minus-circle text-warning"></i>&nbsp;&nbsp;<span translate>Unpaid</span></a></li>
-                <li ng-click="setParam('payment_status', 'completed')" ng-class="{ 'selected-li': userParams.payment_status == 'completed' }"><a><i class="dropdown-icon fa fa-check-circle text-success"></i>&nbsp;&nbsp;<span translate>Completed</span></a></li>
+                <li ng-click="setParam('payment_status', 'completed')" ng-class="{ 'selected-li': userParams.payment_status == 'completed' }"><a><i class="dropdown-icon fa fa-sign-in text-primary"></i>&nbsp;&nbsp;<span translate>Initiated</span></a></li>
                 <li ng-click="setParam('payment_status', 'scheduled')" ng-class="{'selected-li': userParams.payment_status == 'scheduled' }"><a><i class="dropdown-icon fa fa-calendar-check-o text-primary"></i>&nbsp;&nbsp;<span translate>Scheduled</span></a></li>
                 <li ng-click="setParam('payment_status', 'pending')" ng-class="{'selected-li': userParams.payment_status == 'pending' }"><a><i class="dropdown-icon fa fa-clock-o text-pa-purple"></i>&nbsp;&nbsp;<span translate>Pending</span></a></li>
-                <li ng-click="setParam('payment_status', 'refunded')" ng-class="{'selected-li': userParams.payment_status == 'refunded' }"><a><i class="dropdown-icon fa fa-undo text-undo text-warning"></i>&nbsp;&nbsp;<span translate>Refunded</span></a></li>
+                <li ng-click="setParam('payment_status', 'completed')" ng-class="{ 'selected-li': userParams.payment_status == 'completed' }"><a><i class="dropdown-icon fa fa-check-circle text-success"></i>&nbsp;&nbsp;<span translate>Completed</span></a></li>
                 <li ng-click="setParam('payment_status', 'failed')" ng-class="{'selected-li': userParams.payment_status == 'failed' }"><a><i class="dropdown-icon fa fa-times-circle text-danger"></i>&nbsp;&nbsp;<span translate>Failed</span></a></li>
                 <li ng-click="setParam('payment_status', 'cancelled')" ng-class="{'selected-li': userParams.payment_status == 'cancelled' }"><a><i class="dropdown-icon fa fa-ban text-danger"></i>&nbsp;&nbsp;<span translate>Cancelled</span></a></li>
+                <li ng-click="setParam('payment_status', 'refunded')" ng-class="{'selected-li': userParams.payment_status == 'refunded' }"><a><i class="dropdown-icon fa fa-undo text-warning"></i>&nbsp;&nbsp;<span translate>Refunded</span></a></li>
+                <li ng-click="setParam('payment_status', 'retry')" ng-class="{'selected-li': userParams.payment_status == 'retry' }"><a><i class="dropdown-icon fa fa-undo fa-flip-horizontal text-warning"></i>&nbsp;&nbsp;<span translate>Retry</span></a></li>
             </ul>
         </div>
 
@@ -91,6 +95,8 @@
                 <span ng-if="invoice.payment_status == 'refunded'"><i class="icon fa fa-undo text-warning"></i> <span translate>Refunded</span></span>
                 <span ng-if="invoice.payment_status == 'failed'"><i class="icon fa fa-times-circle text-danger"></i> <span translate>Failed</span></span>
                 <span ng-if="invoice.payment_status == 'cancelled'"><i class="icon fa fa-ban text-danger"></i> <span translate>Cancelled</span></span>
+                <span ng-if="invoice.payment_status == 'retry'"><i class="icon fa fa-undo fa-flip-horizontal text-warning"></i> <span translate>Retry</span></span>
+                <span ng-if="invoice.payment_status == 'initiated'"><i class="icon fa fa-sign-in text-primary"></i> <span translate>Initiated</span></span>
             </div>
         </div>
 

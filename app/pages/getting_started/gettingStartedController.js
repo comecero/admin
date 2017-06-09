@@ -20,7 +20,6 @@
 
     }
     $scope.onNavigate = function GSCtrl_onNavigate() {
-      
         $(window).trigger('openSubMenu');
     };
 

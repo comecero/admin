@@ -1,0 +1,248 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Launch Instance</title>
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+    <style>
+        .spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            z-index: 11;
+            margin-top: -50px;
+            margin-left: -15px;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            z-index: 10;
+            background-color: rgba(0,0,0,0.25);
+        }
+    </style>
+
+    <script>
+
+        function showSpinner() {
+            $(".spinner").fadeIn();
+            $(".overlay").fadeIn();
+        }
+
+        function hideSpinner() {
+            $(".spinner").fadeOut();
+            $(".overlay").fadeOut();
+        }
+
+        function replaceAll(value, find, replace) {
+
+            if (replace === undefined) {
+                return value.toString();
+            }
+
+            return value.split(find).join(replace);
+        };
+
+        $(document).ready(function () {
+
+            $("#launch").click(function () {
+
+                showSpinner();
+                $("#error").hide();
+
+                var body = {
+                    "region": "ap-southeast-1",
+                    "imageId": "ami-4c098f2f",
+                    "instanceType": "t2.micro",
+                    "keyName": "C-Applicants",
+                    "securityGroupId": "sg-f9f0df9e",
+                    "volumeSize": 200,
+                    "subnetId": "subnet-c65701b0",
+                }
+
+                body.accessKeyId = $("#access-key-id").val();
+                body.secretAccessKey = $("#access-key-secret").val();
+                body.name = "ESG-Applicant-PC1-" + replaceAll($("#name").val(), " ", "-");
+
+                // Launch the instance
+                $.ajax({
+                    type: "POST",
+                    beforeSend: function (request) {
+                        request.setRequestHeader("x-api-key", $("#api-key").val());
+                    },
+                    url: "https://9q2fa6z6y2.execute-api.ap-southeast-1.amazonaws.com/prod/launch-ec2/instances",
+                    data: JSON.stringify(body),
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (data) {
+                        hideSpinner();
+                        $("#credentials").slideUp();
+                        $("#launched").fadeIn();
+                        $("#ip").append(data.PublicIpAddress);
+                        $("#instance-id").val(data.InstanceId);
+                    },
+                    error: function (response) {
+                        hideSpinner();
+                        $("#error").show();
+                        if (response.responseJSON) {
+                            $("#error-message").html(JSON.stringify(response.responseJSON));
+                        } else {
+                            $("#error-message").html(response);
+                        }
+                    }
+                });
+
+                //setTimeout(function () {
+                //    hideSpinner();
+                //    $("#credentials").slideUp();
+                //    $("#launched").fadeIn();
+                //    $("#ip").append("127.0.0.1");
+                //}, 3000);
+
+                //setTimeout(function () {
+                //    hideSpinner();
+                //    $("#error").show();
+                //    $("#error-message").html("HERE IS AN ERROR MESSAGE");
+                //}, 3000);
+
+            });
+
+            $("#stop").click(function () {
+
+                var body = { accessKeyId: $("#access-key-id").val(), secretAccessKey: $("#access-key-secret").val() };
+
+                showSpinner();
+                $("#error").hide();
+
+                // Stop the instance
+                $.ajax({
+                    type: "POST",
+                    beforeSend: function (request) {
+                        request.setRequestHeader("x-api-key", $("#api-key").val());
+                    },
+                    url: "https://9q2fa6z6y2.execute-api.ap-southeast-1.amazonaws.com/prod/launch-ec2/instances/" + $("#instance-id").val() + "/stop",
+                    data: JSON.stringify(body),
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function () {
+                        hideSpinner();
+                        $("#launched").slideUp();
+                        $("#stopped").fadeIn();
+                    },
+                    error: function (response) {
+                        $("#error").show();
+                        if (response.responseJSON) {
+                            $("#error-message").html(JSON.stringify(response.responseJSON));
+                        } else {
+                            $("#error-message").html(response);
+                        }
+                    }
+                });
+
+                //setTimeout(function () {
+                //    hideSpinner();
+                //    $("#launched").slideUp();
+                //    $("#stopped").fadeIn();
+                //}, 3000);
+
+                //setTimeout(function () {
+                //    hideSpinner();
+                //    $("#error").show();
+                //    $("#error-message").html("HERE IS AN ERROR MESSAGE");
+                //}, 3000);
+
+            });
+
+        });
+
+    </script>
+
+
+</head>
+<body>
+
+    <div class="container">
+
+        <i class="fa fa-spinner spinner fa-pulse fa-3x fa-fw global-spinner" style="display:none;"></i>
+        <div class="overlay" style="display:none;"></div>
+
+        <h3>Create Instance for Applicant</h3>
+
+        <div class="alert alert-danger" id="error" style="display:none;"><strong>Error</strong> <span id="error-message"></span></div>
+
+        <div id="credentials">
+
+            <div class="col-xs-8">
+                <div class="form-group">
+                    <label for="name" class="control-label">Applicant Name</label>
+                    <input type="text" id="name" class="form-control">
+                </div>
+            </div>
+
+            <div class="col-xs-8">
+                <div class="form-group">
+                    <label for="name" class="control-label">API Password</label>
+                    <input type="text" id="api-key" class="form-control">
+                </div>
+            </div>
+
+            <div class="col-xs-8">
+                <div class="form-group">
+                    <label for="name" class="control-label">Access Key ID</label>
+                    <input type="text" id="access-key-id" class="form-control">
+                </div>
+            </div>
+
+            <div class="col-xs-8">
+                <div class="form-group">
+                    <label for="name" class="control-label">Secret Access Key</label>
+                    <input type="text" id="access-key-secret" class="form-control">
+                </div>
+            </div>
+
+            <div class="col-xs-8">
+                <div class="form-group">
+                    <input type="button" class="btn btn-primary" value="Create" id="launch" />
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row"></div>
+
+        <div id="launched" style="display:none;">
+
+            <div class="alert alert-success">
+                <strong>The IP address of the instance is: <span id="ip"></span></strong><br><br>
+                The applicant can connect to the instance using Remote Desktop after the instance completes its launch, which takes approximately 10 minutes.
+            </div>
+
+            <input type="button" class="btn btn-danger" value="Stop Instance" id="stop" /><br />
+            <em class="text-sm">When the applicant has completed the test, make sure you stop the instance to prevent unnecessary usage charges.</em>
+            <input type="hidden" id="instance-id" />
+
+        </div>
+
+        <div id="stopped" style="display:none;">
+
+            <div class="alert alert-success">
+                <strong>Success</strong> The instance is being stopped<br><br>
+                You can now close this window
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
