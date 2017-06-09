@@ -1,5 +1,16 @@
 ﻿# Admin Change Log #
 
+<a name="1.3.4"></a>
+# 1.3.4
+
+- Multiple small UI fixes and typo corrections
+- Added UI support for stored PayPal and Amazon Pay payment methods
+
+<a name="1.3.3"></a>
+# 1.3.3
+
+- Open the main navigation menu to the correct section when linking into a related section
+
 <a name="1.3.2"></a>
 # 1.3.2
 
