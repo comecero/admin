@@ -205,6 +205,34 @@ function _init() {
                 _this.fix();
                 _this.fixSidebar();
             });
+            $(window).on('openSubMenu', _.delay.bind(_, _this.openSubMenu, 100));
+        },
+        openSubMenu: function () {
+
+            var locationHash = window.location.hash;
+            var anchors = $(".sidebar").find('a');
+
+            function isMatchingLocation(str) {
+                locationHash.replace('#', '');
+                return locationHash.match(str) && !!locationHash.match(str).length
+            }
+
+            function getHashHead(href) {
+                return href && href.split('#')[1] && href.split('#')[1].split('/')[1];
+            }
+
+            for (var i = 0; i < anchors.length; i++) {
+                var hashHead = getHashHead(anchors[i].href);
+                if (hashHead && isMatchingLocation(hashHead)) {
+                    var treeNode = $(anchors[i]).parents('li.treeview');
+                    var isTreeView = treeNode.length;
+                    var isMenuOpen = treeNode.hasClass('active');
+                    if (isTreeView && !isMenuOpen) {
+                        treeNode.children('a').click();
+                    }
+                    break;
+                }
+            }
         },
         fix: function () {
             //Get window height and the wrapper height

@@ -54,7 +54,7 @@
                         </div>
                     </div>
 
-                    <div class="row form-group">
+                    <div class="row">
                         <label class="col-xs-12 control-label" translate>Billing Address</label>
                         <div class="col-xs-12">
                             <span ng-if="item.data.billing_address.address_1">{{item.data.billing_address.address_1}}<br /></span>
@@ -98,7 +98,7 @@
                 </div>
 
                 <div class="row form-group" ng-if="showItem('is_default')">
-                    <label class="col-md-4 control-label" translate>Default Card?</label>
+                    <label class="col-md-4 control-label" translate>Default Method?</label>
                     <div class="col-md-8">
                         <div class="checkbox-group inline">
                             <input type="checkbox" id="is_default" class="checkbox" name="is_default" ng-model="item.is_default" ng-checked="item.is_default">
@@ -163,6 +163,9 @@
                 </div>
             </div>
 
+        </div>
+        <div class="panel-footer text-success" style="padding-left: 10px;" ng-if="!edit && item.is_default">
+            <i class="fa fa-check-square" aria-hidden="true"></i> Default Payment Method
         </div>
     </div>
 

@@ -155,7 +155,7 @@ app.controller("CustomersViewCtrl", ['$scope', '$routeParams', '$location', 'Gro
         return utils.hasPermission(resource, method);
     }
 
-    $scope.refreshCards = function () {
+    $scope.refreshPaymentMethods = function () {
 
         // Refresh the "is_default" parameter of all payment methods since it may have changed when one of the cards was changed.
         ApiService.getList($scope.url + "/payment_methods").then(function (payment_methods) {

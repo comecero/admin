@@ -110,6 +110,9 @@ app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location',
 
     //Load the countries
     $scope.countries = geographies.countries;
+    // Add a wildcard country option
+    $scope.countries.push({ name: "All Countries", code: "*" });
+
     $scope.us_states = geographies.us_states;
     $scope.ca_provinces = geographies.ca_provinces;
 

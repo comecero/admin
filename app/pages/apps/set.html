@@ -251,7 +251,7 @@
             <div class="col-xs-12" ng-show="app.platform_hosted && app.client_side">
                 <div class="form-group" show-errors>
                     <label for="csp_hosts" class="control-label" ng-class="{ 'required': app.is_public }" translate>Content Security Protection Hosts</label>
-                    <textarea class="form-control" name="csp_hosts" ng-model="app.csp_hosts" placeholder="{{ 'Enter one host per line' | translate}}"></textarea>
+                    <textarea class="form-control" name="csp_hosts" ng-model="csp_hosts" placeholder="{{ 'Enter one host per line' | translate}}"></textarea>
                 </div>
                 <p class="maxlength-message" max-length="1000" item="form.csp_hosts"></p>
             </div>

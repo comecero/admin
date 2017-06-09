@@ -38,7 +38,7 @@
                     <label for="shipping_method_countries" class="control-label" translate>Countries</label>
                     <input type="text" class="form-control" name="shipping_method_countries" ng-model="typeahead.shipping_method_countries" uib-typeahead="country as country.name + ' (' + country.code + ')' for country in countries | filter:$viewValue | limitTo:12" typeahead-input-formatter="$model.name" typeahead-on-select="onCountrySelect($item, $model, $label, 'shipping_method_countries')" typeahead-editable="false">
                     <div>
-                        <p class="help-text" translate>The country or countries to which this shipping method applies.</p>
+                        <p class="help-text" translate>The country or countries to which this shipping method applies. You can use the option 'All Countries' to apply this shipping method to all countries that are not used in other shipping methods.</p>
                     </div>
                 </div>
             </div>

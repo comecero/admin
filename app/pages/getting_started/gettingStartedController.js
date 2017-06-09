@@ -19,6 +19,9 @@
         $scope.cartUrl = "/#/app_installations";
 
     }
+    $scope.onNavigate = function GSCtrl_onNavigate() {
+        $(window).trigger('openSubMenu');
+    };
 
     $scope.account_id = localStorage.getItem("account_id");
 

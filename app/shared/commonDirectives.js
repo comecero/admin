@@ -1512,7 +1512,7 @@ app.directive('capture', ['ApiService', 'ConfirmService', 'GrowlsService', '$uib
             // Watch to see if you should show or hide the button
             scope.$watch('payment.status', function () {
                 if (scope.payment) {
-                    if (scope.payment.status == "pending" && scope.payment.payment_method.type == "credit_card") {
+                    if (scope.payment.status == "pending" && (scope.payment.payment_method.type == "credit_card" || scope.payment.payment_method.type == "paypal" || scope.payment.payment_method.type == "amazon_pay")) {
                         elem.show();
                     } else {
                         elem.hide();

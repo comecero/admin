@@ -2933,6 +2933,15 @@ p.no-info {
   background-color: #31b0d5;
   border-color: #31b0d5;
 }
+.badge.badge-primary {
+  background: #337ab7;
+  border: 1px solid #337ab7;
+}
+.badge.badge-primary[href]:hover,
+.badge.badge-primary[href]:focus {
+  background-color: #1b6db5;
+  border-color: #1b6db5;
+}
 /* Error codes in error messages */
 .error-code {
   font-size: 11px;
