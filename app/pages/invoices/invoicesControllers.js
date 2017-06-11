@@ -21,6 +21,7 @@ app.controller("InvoicesSetCtrl", ['$scope', '$routeParams', '$location', 'ApiSe
     $scope.currencies = JSON.parse(localStorage.getItem("payment_currencies"));
     $scope.params = { expand: "customer.payment_methods,options,payments.payment_method,items.subscription_terms,subscription", formatted: true };
     $scope.invoice.currency = localStorage.getItem("default_payment_currency");
+    $scope.suppress_customer_notification = false;
 
     var d = new Date();
     d.setMonth(d.getMonth() + 1);
@@ -247,6 +248,7 @@ app.controller("InvoicesSetCtrl", ['$scope', '$routeParams', '$location', 'ApiSe
         // Set the draft status, based on user input.
         var previousDraft = $scope.invoice.draft;
         $scope.invoice.draft = $scope.draft;
+        $scope.invoice.suppress_customer_notification = $scope.suppress_customer_notification;
 
         ApiService.set($scope.invoice, $scope.url, $scope.params).then(function (invoice) {
             GrowlsService.addGrowl({ id: "edit_success", name: "invoice " + invoice.invoice_id, type: "success", url: "#/invoices/" + invoice.invoice_id });
@@ -328,6 +330,17 @@ app.controller("InvoicesSetCtrl", ['$scope', '$routeParams', '$location', 'ApiSe
             var file = new Blob([data], { type: "application/pdf" });
             saveAs(file, "Invoice_" + $scope.invoice.invoice_id + ".pdf");
 
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+
+    }
+
+    $scope.getInvoiceLink = function () {
+
+        ApiService.set(null, $scope.url + "/links").then(function (link) {
+            $scope.link = link.link_url;
         }, function (error) {
             $scope.exception.error = error;
             window.scrollTo(0, 0);

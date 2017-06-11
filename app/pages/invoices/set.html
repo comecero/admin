@@ -337,16 +337,50 @@
                             <label for="draft-2" class="radio-label">No</label>
                         </div>
                         <div>
-                            <p class="help-text" translate>When you publish an invoice, it will be made available for payment and will be sent to the customer according to your notification settings.</p>
+                            <p class="help-text" translate>When you publish an invoice, it becomes eligible to receive payment.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xs-12" ng-show="invoice.draft && draft == false">
+                    <div class="form-group" show-errors>
+                        <label class="radio-group-label" translate>Send a copy to the customer?</label>
+                        <div class="radio-group inline">
+                            <input type="radio" id="suppress-1" class="radio" name="suppress" ng-model="suppress_customer_notification" ng-value="false" required>
+                            <label for="suppress-1" class="radio-label">Yes</label>
+                            <input type="radio" id="suppress-2" class="radio" name="suppress" ng-model="suppress_customer_notification" ng-value="true" required>
+                            <label for="suppress-2" class="radio-label">No</label>
+                        </div>
+                        <div>
+                            <p class="help-text" translate>Indicates if you want to send a copy of the invoice to the customer when you publish it.</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-xs-12" ng-show="!invoice.draft && invoice.open">
                     <div class="form-group">
-                        <a class="btn btn-success" ng-click="send()">Send Invoice to Customer</a>
+                        <a class="btn btn-success" ng-click="send()"><i class="fa fa-envelope"></i> Send Invoice to Customer</a>
                         <div>
                             <p class="help-text" translate>The invoice is automatically sent to the customer when it is first published. This allows you to re-send the invoice, as necessary.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12" ng-show="!invoice.draft">
+                    <div class="form-group">
+                        <span class="btn btn-purple btn spacer-t5" ng-click="getInvoiceLink()"><i class="fa fa-link"></i> <span translate>Generate Invoice Link</span></span>
+                        <div>
+                            <p class="help-text" translate>Get a link that can be used to access the invoice to make payment.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12" ng-show="link">
+                    <div class="form-group">
+                        <label class="control-label" translate>Invoice Link</label>
+                        <input type="text" class="form-control" ng-model="link" select-on-click />
+                        <div>
+                            <p class="help-text" translate>For security purposes, this link becomes bound to the device that first accesses it. Do not load or access the link if you intend to send to someone.</p>
                         </div>
                     </div>
                 </div>
