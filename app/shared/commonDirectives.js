@@ -4177,6 +4177,7 @@ app.directive('prices', ['gettextCatalog', function (gettextCatalog) {
     };
 }]);
 
+
 app.directive('ranges', function () {
     return {
         restrict: 'A',

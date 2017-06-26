@@ -186,8 +186,8 @@
                     <!-- Show pagination if there is at least one page -->
                     <div class="col-sm-12" ng-if="productList.data.length > 0">
                         <ul class="pager">
-                            <li class="previous" ng-click="movePage('-')" ng-show="productList.previous_page_offset !== null"><a><i class="fa fa-chevron-circle-left"></i> <span translate>Back</span></a></li>
-                            <li class="next" ng-click="movePage('+')" ng-show="productList.next_page_offset !== null"><a><span translate>Next</span> <i class="fa fa-chevron-circle-right"></i></a></li>
+                            <li class="previous" ng-click="itemSelect.movePage('-')" ng-show="productList.previous_page_offset !== null"><a><i class="fa fa-chevron-circle-left"></i> <span translate>Back</span></a></li>
+                            <li class="next" ng-click="itemSelect.movePage('+')" ng-show="productList.next_page_offset !== null"><a><span translate>Next</span> <i class="fa fa-chevron-circle-right"></i></a></li>
                         </ul>
                         <p class="text-right">Showing page {{productList.current_page}} of {{productList.total_pages}}</p>
                     </div>
