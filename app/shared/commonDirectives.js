@@ -2236,7 +2236,7 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
 
             var setPagination = function (list) {
                 scope.userParams.before_item = list.previous_page_before_item;
-                scope.userParams.after_item = list.previous_page_before_item;
+                scope.userParams.after_item = list.previous_page_after_item;
                 scope.previous_page_offset = list.previous_page_offset;
                 scope.next_page_offset = list.next_page_offset;
             }

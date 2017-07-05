@@ -4,6 +4,7 @@
   "description": "Admin Control for Comecero",
   "dependencies": {},
   "devDependencies": {
+    "grunt-angular-gettext": "^2.3.5",
     "gulp": "^3.9.1",
     "gulp-batch": "^1.0.5",
     "gulp-concat": "^2.6.0",
@@ -11,6 +12,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "^2.0.0",
     "gulp-watch": "^4.3.9",
+    "load-grunt-tasks": "^3.5.2",
     "run-sequence": "^1.2.2"
   }
 }
