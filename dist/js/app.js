@@ -116,6 +116,9 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     $routeProvider.when("/app_installations/:id/settings", { templateUrl: "/app/pages/app_installations/settings.html", reloadOnSearch: true });
     $routeProvider.when("/app_installations/:id/style", { templateUrl: "/app/pages/app_installations/style.html", reloadOnSearch: true });
 
+    // App Packages
+    $routeProvider.when("/app_packages/:id/edit", { templateUrl: "/app/pages/app_packages/set.html", reloadOnSearch: true });
+
     // Carts
     $routeProvider.when("/carts", { templateUrl: "/app/pages/carts/list.html", reloadOnSearch: false });
     $routeProvider.when("/carts/:id", { templateUrl: "/app/pages/carts/view.html", reloadOnSearch: true });
