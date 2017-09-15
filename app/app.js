@@ -13,7 +13,7 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     cfpLoadingBarProvider.includeSpinner = false;
 
     // Dynamically load locale files
-    tmhDynamicLocaleProvider.localeLocationPattern("https://cdnjs.cloudflare.com/ajax/libs/angular-i18n/1.4.8/angular-locale_{{locale}}.js");
+    tmhDynamicLocaleProvider.localeLocationPattern("https://cdnjs.cloudflare.com/ajax/libs/angular-i18n/1.5.5/angular-locale_{{locale}}.js");
 
     // Routes
 
@@ -95,6 +95,7 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
 
     // Payments
     $routeProvider.when("/payments", { templateUrl: "/app/pages/payments/list.html", reloadOnSearch: false });
+    $routeProvider.when("/payments/add", { templateUrl: "/app/pages/payments/add.html", reloadOnSearch: false });
     $routeProvider.when("/payments/:id", { templateUrl: "/app/pages/payments/view.html", reloadOnSearch: true });
 
     // Refunds

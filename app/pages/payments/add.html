@@ -1,0 +1,235 @@
+﻿<div ng-controller="PaymentsAddCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1>Process a Payment</h1>
+    </div>
+
+    <form name="form" novalidate>
+
+        <div class="panel panel-body light-shadow">
+
+            <div class="panel">
+                <div class="panel-heading" translate>Transaction Details</div>
+                <div class="panel-body">
+                    <div class="form-horizontal">
+                        <div class="col-xs-12 col-md-6">
+
+                            <div class="col-xs-12">
+                                <div class="form-group" show-errors style="margin-left: -30px;">
+                                    <label for="subtotal" class="col-xs-5 control-label text-left">Subtotal</label>
+                                    <div class="col-xs-7">
+                                        <input type="number" class="form-control" name="subtotal" ng-model="payment.subtotal" ng-model-options="{ updateOn: 'blur' }" is-valid-price clean-price required>
+                                        <p class="help-block hidden fadeInDown" translate>Please provide a subtotal</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-12">
+                                <div class="form-group" show-errors style="margin-left: -30px;">
+                                    <label for="shipping" class="col-xs-5 control-label text-left">Shipping</label>
+                                    <div class="col-xs-7">
+                                        <input type="number" class="form-control" name="shipping" ng-model="payment.shipping" ng-model-options="{ updateOn: 'blur' }" is-valid-price allow-empty-price="true" clean-price>
+                                        <p class="help-block hidden fadeInDown" translate>Please provide a valid shipping amount or leave blank</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-12">
+                                <div class="form-group" show-errors style="margin-left: -30px;">
+                                    <label for="tax" class="col-xs-5 control-label text-left">Tax</label>
+                                    <div class="col-xs-7">
+                                        <input type="number" class="form-control" name="tax" ng-model="payment.tax" ng-model-options="{ updateOn: 'blur' }" is-valid-price allow-empty-price="true" clean-price>
+                                        <p class="help-block hidden fadeInDown" translate>Please provide a valid tax amount or leave blank</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12 col-md-6">
+                            <div class="form-group" show-errors style="margin-left: -15px;">
+                                <label class="col-md-5 col-xs-12 control-label text-left" translate>Currency</label>
+                                <div class="col-md-7 col-xs-12">
+                                    <select class="form-control" name="currency" ng-model="payment.currency" ng-options="currency.code as currency.code + ' - ' + currency.name for currency in currencies" required></select>
+                                    <p class="help-block hidden fadeInDown" translate>Please select a currency</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12 col-md-6">
+                            <div class="form-group" show-errors style="margin-left: -15px;">
+                                <label class="col-md-5 col-xs-12 control-label text-left" translate>Action</label>
+                                <div class="col-md-7 col-xs-12">
+                                    <div class="radio-group">
+                                        <input type="radio" id="capture-1" class="radio" name="capture" ng-model="payment.capture" ng-value="true" required>
+                                        <label for="capture-1" class="radio-label">Capture now</label>
+                                        <input type="radio" id="capture-2" class="radio" name="capture" ng-model="payment.capture" ng-value="false" required>
+                                        <label for="capture-2" class="radio-label">Authorize only</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-xs-12">
+                        <div class="form-group" show-errors style="margin-bottom: 10px;">
+                            <label for="name" class="control-label" translate>Description</label>
+                            <input type="text" class="form-control" name="name" ng-model="payment.description">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <span translate>Customer</span> <span ng-show="payment.customer.customer_id"><a ng-href="#/customers/{{payment.customer.customer_id}}" target="_blank">{{payment.customer.customer_id}}</a></span>
+                    <div class="panel-heading-controls">
+                        <a class="btn btn-sm btn-info" customer-select customer="payment.customer" on-select="functions.onCustomerSelect" translate>Find</a>
+                        <a class="btn btn-sm btn-danger" ng-show="payment.customer.customer_id" ng-click="removeCustomer()" translate>Remove</a>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="col-xs-12 col-md-6">
+                        <div class="form-group" show-errors>
+                            <input type="text" class="form-control" name="name" ng-model="payment.customer.name" placeholder="{{'Name' | translate}}">
+                            <p class="help-block hidden fadeInDown" translate>Please provide a name</p>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6">
+                        <div class="form-group" show-errors>
+                            <input type="text" class="form-control" name="company_name" ng-model="payment.customer.company_name" placeholder="{{'Company Name' | translate}}">
+                            <p class="help-block hidden fadeInDown" translate>Please provide a company name</p>
+                        </div>
+                    </div>
+
+                    <div class="row"></div>
+
+                    <div class="col-xs-12 col-md-6">
+                        <div class="form-group" show-errors>
+                            <input type="text" class="form-control" name="email" ng-model="payment.customer.email" is-valid-email allow-empty-value="true" placeholder="{{'Email' | translate}}">
+                            <p class="help-block hidden fadeInDown" translate>Please provide a valid email</p>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6">
+                        <div class="form-group" show-errors>
+                            <input type="text" class="form-control" name="phone" ng-model="payment.customer.phone" placeholder="{{'Phone' | translate}}">
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12">
+                        <div class="form-group" show-errors>
+                            <input type="text" class="form-control" name="address_1" ng-model="payment.customer.billing_address.address_1" placeholder="{{'Address' | translate}}">
+                            <p class="help-block hidden fadeInDown" translate>Please provide an address</p>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6">
+                        <div class="form-group" show-errors>
+                            <input type="text" class="form-control" name="city" ng-model="payment.customer.billing_address.city" placeholder="{{'City' | translate}}">
+                            <p class="help-block hidden fadeInDown" translate>Please provide a city</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-xs-12">
+                        <div class="form-group" show-errors>
+                            <input type="text" class="form-control" name="postal_code" ng-model="payment.customer.billing_address.postal_code" placeholder="{{'ZIP / Postal Code' | translate}}">
+                            <p class="help-block hidden fadeInDown" translate>Please provide a valid postal or zip code</p>
+                        </div>
+                    </div>
+
+                    <div class="row"></div>
+
+                    <div class="col-xs-12">
+                        <div class="form-group" show-errors>
+                            <input type="text" class="form-control" name="country" ng-model="typeahead.country" uib-typeahead="country as country.name for country in countries | filter:$viewValue | limitTo:12" typeahead-input-formatter="$model.name" typeahead-on-select="onCountrySelect($item, $model, $label)" typeahead-editable="false" placeholder="{{'Country' | translate}}">
+                            <p class="help-block hidden fadeInDown" translate>Please select a country from the list</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-heading" translate>Payment Method</div>
+                <div class="panel-body">
+
+                    <div ng-show="payment_methods.data.length > 0">
+                        <div class="well clearfix" ng-repeat="method in payment_methods.data" ng-show="method.type == 'credit_card'">
+                            <span class="radio-group inline">
+                                <input type="radio" class="radio" name="payment_method" id="payment_method-{{method.payment_method_id}}" ng-checked="payment.payment_method.payment_method_id == method.payment_method_id" ng-click="functions.setPaymentMethod(method)" />
+                                <label for="payment_method-{{method.payment_method_id}}" class="radio-label strong">{{method.data.type}} {{method.data.mask}} (<span>exp.</span> {{method.data.exp_month}}/{{method.data.exp_year}})</label>
+                                <span class="pull-right credit-card-image" credit-card-image="method.data.type"></span>
+                            </span>
+                        </div>
+
+                        <div class="well clearfix">
+                            <span class="radio-group inline">
+                                <input type="radio" class="radio" name="payment_method" id="payment_method-new" ng-click="functions.setPaymentMethod()" />
+                                <label for="payment_method-new" class="radio-label strong" translate>Pay with a new card</label>
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <div ng-show="!payment.payment_method.payment_method_id">
+                        <div class="col-xs-12">
+                            <div class="form-group" show-errors>
+                                <label class="control-label required" for="card_number" translate>Card Number</label>
+                                <input class="form-control" name="card_number" type="tel" ng-model="payment.payment_method.data.number" validate-card ng-required="!payment.payment_method.payment_method_id" placeholder="">
+                                <p class="error-block hidden" translate>Please provide a valid card number</p>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group" show-errors>
+                                <label class="control-label required" for="exp_month" translate>Expiration Month</label>
+                                <input class="form-control" name="exp_month" type="tel" ng-model="payment.payment_method.data.exp_month" placeholder="MM" validate-exp-month ng-required="!payment.payment_method.payment_method_id">
+                                <p class="error-block hidden" translate>Please provide a valid expiration month</p>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group" show-errors>
+                                <label class="control-label required" for="exp_year" translate>Expiration Year</label>
+                                <input class="form-control" name="exp_year" type="tel" ng-model="payment.payment_method.data.exp_year" placeholder="YY" validate-exp-year ng-required="!payment.payment_method.payment_method_id">
+                                <p class="error-block hidden" translate>Please provide a valid expiration year</p>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12 col-sm-4">
+                            <div class="form-group" show-errors>
+                                <label class="control-label" for="cvv" translate>Security Code</label>
+                                <input class="form-control" name="cvv" type="tel" ng-model="payment.payment_method.data.cvv" validate-cvv>
+                                <p class="error-block hidden" translate>Please provide a valid security code</p>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12">
+                            <div class="form-group checkbox-group">
+                                <input type="checkbox" id="save-card" class="checkbox" name="save-card" ng-model="payment.payment_method.save">
+                                <label for="save-card" class="checkbox-label" translate>Save this card to the customer's account</label>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="createPayment()" validate-on-submit translate>Process Payment</button>
+                    <button type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="confirmCancel()" translate>Cancel</button>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>

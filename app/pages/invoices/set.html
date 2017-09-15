@@ -84,7 +84,7 @@
                     </div>
 
                     <div class="col-xs-12 col-md-4">
-                        <div class="form-group" ng-if="(add || invoice.open == true) && invoice.subscription == null" show-errors="mild">
+                        <div class="form-group" ng-show="(add || invoice.open == true) && invoice.subscription == null" show-errors="mild">
                             <label class="control-label">Date Due</label>
                             <div class="input-group dp">
                                 <input type="text" name="date_due" class="form-control" uib-datepicker-popup="yyyy-MM-dd" ng-model="invoice.date_due" is-open="datepicker.status.date_due.opened" datepicker-options="datepicker.options" close-text="Close" required />

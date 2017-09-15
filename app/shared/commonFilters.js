@@ -121,3 +121,11 @@ app.filter('percentage', ['$filter', function ($filter) {
         return $filter('number')(input * 100, decimals) + '%';
     };
 }]);
+
+app.filter('removeUnderscore', function () {
+    return function (str) {
+        if (str != null) {
+            return str.split("_").join(" ");
+        }
+    }
+});

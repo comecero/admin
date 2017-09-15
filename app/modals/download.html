@@ -41,7 +41,7 @@
                 <div class="form-group" show-errors="mild">
                     <label class="control-label">Expiration Date</label>
                     <div class="input-group dp">
-                        <input type="text" name="expires" class="form-control" uib-datepicker-popup="yyyy-MM-dd" ng-model="data.expires" is-open="datepicker.status.expires.opened" datepicker-options="datepicker.options" close-text="Close" required />
+                        <input type="text" name="expires" class="form-control" uib-datepicker-popup="yyyy-MM-dd" ng-model="data.expires" is-open="datepicker.status.expires.opened" datepicker-options="datepicker.options" ng-model-options="{timezone: 'utc'}" close-text="Close" required />
                         <span class="input-group-addon pointer" ng-click="datepicker.open($event, 'expires')"><i class="fa fa-calendar"></i></span>
                         <p class="help-block hidden fadeInDown" translate>Please select a date</p>
                     </div>

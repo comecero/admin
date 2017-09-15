@@ -17,18 +17,32 @@
                 <div class="form-group" show-errors>
                     <label class="radio-group-label" translate>Type</label>
                     <div class="radio-group">
-                        <input type="radio" id="type-1" class="radio" name="type" ng-model="notificationSubscription.type" ng-value="typeValues[0]" required>
-                        <label for="type-1" class="radio-label text-capitalize">{{typeValues[0] | replace: ':':' '}}</label>
-                        <input type="radio" id="type-2" class="radio" name="type" ng-model="notificationSubscription.type" ng-value="typeValues[1]" required>
-                        <label for="type-2" class="radio-label text-capitalize">{{typeValues[1] | replace: ':':' '}}</label>
-                        <input type="radio" id="type-3" class="radio" name="type" ng-model="notificationSubscription.type" ng-value="typeValues[2]" required>
-                        <label for="type-3" class="radio-label text-capitalize">{{typeValues[2] | replace: ':':' '}}</label>
-                        <input type="radio" id="type-4" class="radio" name="type" ng-model="notificationSubscription.type" ng-value="typeValues[3]" required>
-                        <label for="type-4" class="radio-label text-capitalize">{{typeValues[3] | replace: ':':' '}}</label>
+                        <input type="radio" id="type-1" class="radio" name="type" ng-model="notificationSubscription.type" value="order:confirmation" required>
+                        <label for="type-1" class="radio-label text-capitalize">Order Confirmation</label>
+                        <div>
+                            <p class="help-text" translate>Sent to customers who complete a payment for a cart or invoice.</p>
+                        </div>
+                        <input type="radio" id="type-2" class="radio" name="type" ng-model="notificationSubscription.type" value="shipment:confirmation" required>
+                        <label for="type-2" class="radio-label text-capitalize">Shipment Confirmation</label>
+                        <div>
+                            <p class="help-text" translate>Sent to customers when items ship.</p>
+                        </div>
+                        <input type="radio" id="type-3" class="radio" name="type" ng-model="notificationSubscription.type" value="payment:confirmation" required>
+                        <label for="type-3" class="radio-label text-capitalize">Payment Confirmation</label>
+                        <div>
+                            <p class="help-text" translate>Sent to customers when a direct payment is made (a payment that is not associated with a cart or invoice).</p>
+                        </div>
+                        <input type="radio" id="type-4" class="radio" name="type" ng-model="notificationSubscription.type" value="cart:link" required>
+                        <label for="type-4" class="radio-label text-capitalize">Cart Link</label>
+                        <div>
+                            <p class="help-text" translate>Sent to customers to provide a link back to their cart.</p>
+                        </div>
+                        <input type="radio" id="type-4" class="radio" name="type" ng-model="notificationSubscription.type" value="invoice:link" required>
+                        <label for="type-4" class="radio-label text-capitalize">Invoice Link</label>
+                        <div>
+                            <p class="help-text" translate>Sent to customers to provide a link back to their invoice.</p>
+                        </div>
                         <p class="help-block hidden fadeInDown" translate>Please provide subscription type.</p>
-                    </div>
-                    <div>
-                        <p class="help-text" translate>Indicates list of subscriptions types available to create a notification subscription.</p>
                     </div>
                 </div>
             </div>

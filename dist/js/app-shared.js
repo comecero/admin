@@ -1565,7 +1565,7 @@ app.directive('refund', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
                     function (error) {
                         // if the error status is 422, the payment was previously refunded. Get the refunded payment to return it.
                         if (error.status == 422) {
-                            ApiService.getItem(scope.payment_url).then(function (payment) {
+                            ApiService.getItem(scope.payment.url).then(function (payment) {
                                 scope.payment = payment;
                                 refundModal.close();
                             }, function (error) {
@@ -4670,7 +4670,7 @@ app.directive('customerSelect', ['ApiService', 'ConfirmService', 'GrowlsService'
                 scope.customerSelect.params.date_type = "date_created";
                 scope.customerSelect.params.desc = true;
 
-                scope.newCustomer = { tax_exempt: false };
+                scope.newCustomer = { tax_exempt: false, billing_address: {}, shipping_address: {} };
 
                 var loadCustomers = function (url) {
                     ApiService.getList(url, scope.customerSelect.params).then(function (customerList) {
@@ -5236,6 +5236,33 @@ app.directive('license', ['$uibModal', function ($uibModal) {
 }]);
 
 
+app.directive('creditCardImage', [function () {
+
+    return {
+        restrict: 'A',
+        link: function (scope, elem, attrs) {
+
+            scope.$watch(attrs.creditCardImage, function (creditCardImage) {
+
+                var path = "images/";
+                if (attrs.path) {
+                    path = attrs.path;
+                }
+
+                if (creditCardImage) {
+                    var filename = creditCardImage.replace(" ", "").toLowerCase() + ".png";
+                    var image = '<img src="' + path + filename + '" />';
+                    var elemNg = angular.element(elem);
+                    elemNg.empty();
+                    elemNg.html(image);
+                }
+
+            });
+        }
+    }
+}]);
+
+
 app.filter('bytesToMB', function () {
     return function (item) {
         return (item / 1000000).toFixed(2) + " MB";
@@ -5359,6 +5386,14 @@ app.filter('percentage', ['$filter', function ($filter) {
         return $filter('number')(input * 100, decimals) + '%';
     };
 }]);
+
+app.filter('removeUnderscore', function () {
+    return function (str) {
+        if (str != null) {
+            return str.split("_").join(" ");
+        }
+    }
+});
 app.service("GrowlsService", ['$rootScope', function ($rootScope) {
 
     // Return public API.
