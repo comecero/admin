@@ -1,5 +1,15 @@
 ﻿# Admin Change Log #
 
+<a name="1.3.5"></a>
+# 1.3.5
+
+- Add support for viewing and downloading app packages
+- Add multi-language support
+- Add support for wildcard shipping countries
+- Upgrade to latest version of Angular UI for Bootstrap
+- Add support for payment notifications
+- Add virtual terminal UI
+
 <a name="1.3.4"></a>
 # 1.3.4
 

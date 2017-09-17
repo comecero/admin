@@ -13,11 +13,11 @@
         </div>
         <uib-tabset>
             <uib-tab active="imagesSelectTabs[0].active" resource="images" method="create">
-                <tab-heading><i class="fa fa-cloud-upload"></i> <small translate>New</small></tab-heading>
+                <uib-tab-heading><i class="fa fa-cloud-upload"></i> <small translate>New</small></uib-tab-heading>
                 <form class="form-group dropzone" dropzone dropzone-url="/images" dropzone-max-files="{{imagesSelect.limit}}" dropzone-max-size="10000000" dropzone-auto-upload="true" dropzone-filetypes="jpg,jpeg,png,gif,ico" dropzone-image-url-name="link_square" dropzone-template-id="dz-images"></form>
             </uib-tab>
             <uib-tab active="imagesSelectTabs[1].active" class="text-center">
-                <tab-heading><i class="fa fa-files-o"></i> <small translate>Existing Images</small></tab-heading>
+                <uib-tab-heading><i class="fa fa-files-o"></i> <small translate>Existing Images</small></uib-tab-heading>
                 <div class="col-sm-12 text-right spacer-20">
                     <form class="form-inline">
                         <div class="form-group has-feedback">

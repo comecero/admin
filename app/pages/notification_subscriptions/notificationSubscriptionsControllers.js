@@ -97,7 +97,6 @@ app.controller("NotificationSubscriptionsSetCtrl", ['$scope', '$routeParams', '$
 
     $scope.notificationSubscription = {};
     $scope.exception = {};
-    $scope.typeValues = [ "order:confirmation","shipment:confirmation","cart:link","invoice:link"];
     $scope.showTemplate = false;
 
     if ($routeParams.id != null) {

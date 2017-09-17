@@ -1,0 +1,85 @@
+﻿<div ng-controller="AppPackagesCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1>App Package {{app_package.name}}</h1>
+    </div>
+
+    <form name="form" novalidate>
+
+        <div class="panel panel-body light-shadow">
+
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label class="control-label" translate>App Package ID</label>
+                    <div>{{app_package.app_package_id}}</div>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-name>
+                    <label for="merchant_descriptor_contact" class="control-label" translate>Name</label>
+                    <input type="text" class="form-control" name="name" ng-model="app_package.name">
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label for="version" class="control-label" translate>Version</label>
+                    <input type="text" class="form-control" name="version" ng-model="app_package.version">
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label" translate>File Name</label>
+                    <div>{{app_package.filename}}</div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group">
+                    <label class="control-label" translate>File Size</label>
+                    <div>{{app_package.bytes | bytesToMB}} ({{app_package.bytes}} bytes)</div>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="col-xs-12">
+                <div class="panel no-heading">
+                    <div class="panel-body panel-embed">
+
+                        <div class="col-xs-12 col-md-6">
+                            <div><span translate>Created:</span> <strong>{{app_package.date_created | date:'short'}}</strong></div>
+                        </div>
+
+                        <div class="col-xs-12 col-md-6 spacer-b15">
+                            <div><span translate>Updated:</span> <strong>{{app_package.date_modified | date:'short'}}</strong></div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <span class="btn btn-info btn spacer-t5" ng-click="download()"><i class="fa fa-download"></i> <span translate>Download App Package</span></span>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="update()" validate-on-submit translate>Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

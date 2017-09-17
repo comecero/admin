@@ -21,6 +21,7 @@ app.controller("InvoicesSetCtrl", ['$scope', '$routeParams', '$location', 'ApiSe
     $scope.currencies = JSON.parse(localStorage.getItem("payment_currencies"));
     $scope.params = { expand: "customer.payment_methods,options,payments.payment_method,items.subscription_terms,subscription", formatted: true };
     $scope.invoice.currency = localStorage.getItem("default_payment_currency");
+    $scope.suppress_customer_notification = false;
 
     var d = new Date();
     d.setMonth(d.getMonth() + 1);
@@ -69,6 +70,11 @@ app.controller("InvoicesSetCtrl", ['$scope', '$routeParams', '$location', 'ApiSe
         ApiService.getItem($scope.url, $scope.params).then(function (invoice) {
 
             $scope.invoice = invoice;
+            $scope.date_due = Date.parse(invoice.date_due);
+
+            if ($scope.invoice.date_due) {
+                $scope.invoice.date_due = new Date($scope.invoice.date_due);
+            }
 
             // If one of the payments was successful, pluck it.
             $scope.successful_payment = _.findWhere($scope.invoice.payments.data, { success: true });
@@ -122,6 +128,10 @@ app.controller("InvoicesSetCtrl", ['$scope', '$routeParams', '$location', 'ApiSe
 
             $scope.invoice = invoice;
 
+            if ($scope.invoice.date_due) {
+                $scope.invoice.date_due = Date.parse($scope.invoice.date_due);
+            }
+
             // If the customer in the invoice has payment methods and autopay was previously true, set to true.
             if ($scope.invoice.customer) {
                 if ($scope.invoice.customer.payment_methods) {
@@ -135,21 +145,6 @@ app.controller("InvoicesSetCtrl", ['$scope', '$routeParams', '$location', 'ApiSe
             $scope.exception.error = error;
             window.scrollTo(0, 0);
         });
-    }
-
-    $scope.save = function (form) {
-
-        ApiService.set($scope.invoice, $scope.url)
-        .then(
-        function (invoice) {
-            GrowlsService.addGrowl({ id: "edit_success", name: "Invoice " + invoice.invoice_id, type: "success", url: "#/invoices/" + invoice.invoice_id });
-            utils.redirect($location, "/invoices");
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception.error = error;
-        });
-
     }
 
     $scope.editItemPrice = function (item) {
@@ -247,6 +242,7 @@ app.controller("InvoicesSetCtrl", ['$scope', '$routeParams', '$location', 'ApiSe
         // Set the draft status, based on user input.
         var previousDraft = $scope.invoice.draft;
         $scope.invoice.draft = $scope.draft;
+        $scope.invoice.suppress_customer_notification = $scope.suppress_customer_notification;
 
         ApiService.set($scope.invoice, $scope.url, $scope.params).then(function (invoice) {
             GrowlsService.addGrowl({ id: "edit_success", name: "invoice " + invoice.invoice_id, type: "success", url: "#/invoices/" + invoice.invoice_id });
@@ -328,6 +324,17 @@ app.controller("InvoicesSetCtrl", ['$scope', '$routeParams', '$location', 'ApiSe
             var file = new Blob([data], { type: "application/pdf" });
             saveAs(file, "Invoice_" + $scope.invoice.invoice_id + ".pdf");
 
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+
+    }
+
+    $scope.getInvoiceLink = function () {
+
+        ApiService.set(null, $scope.url + "/links").then(function (link) {
+            $scope.link = link.link_url;
         }, function (error) {
             $scope.exception.error = error;
             window.scrollTo(0, 0);

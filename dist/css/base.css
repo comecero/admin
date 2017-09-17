@@ -1011,6 +1011,9 @@ select.form-control-small {
   margin-right: 10px;
   margin-top: 10px;
 }
+.form-horizontal .control-label.text-left {
+  text-align: left;
+}
 /*
  * Component: Main Header
  * ----------------------
@@ -1319,6 +1322,15 @@ select.form-control-small {
 .chart svg,
 .chart canvas {
   width: 100%!important;
+}
+.text-fade {
+  color: #DEDEDE;
+}
+.overflow-auto {
+  overflow: auto;
+}
+.credit-card-image img {
+  max-height: 20px;
 }
 .modal-dialog {
   -webkit-animation-duration: 0.8s;

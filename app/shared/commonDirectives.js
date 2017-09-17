@@ -1270,7 +1270,7 @@ app.directive('refund', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
                     function (error) {
                         // if the error status is 422, the payment was previously refunded. Get the refunded payment to return it.
                         if (error.status == 422) {
-                            ApiService.getItem(scope.payment_url).then(function (payment) {
+                            ApiService.getItem(scope.payment.url).then(function (payment) {
                                 scope.payment = payment;
                                 refundModal.close();
                             }, function (error) {
@@ -2236,7 +2236,7 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
 
             var setPagination = function (list) {
                 scope.userParams.before_item = list.previous_page_before_item;
-                scope.userParams.after_item = list.previous_page_before_item;
+                scope.userParams.after_item = list.previous_page_after_item;
                 scope.previous_page_offset = list.previous_page_offset;
                 scope.next_page_offset = list.next_page_offset;
             }
@@ -4177,6 +4177,7 @@ app.directive('prices', ['gettextCatalog', function (gettextCatalog) {
     };
 }]);
 
+
 app.directive('ranges', function () {
     return {
         restrict: 'A',
@@ -4374,7 +4375,7 @@ app.directive('customerSelect', ['ApiService', 'ConfirmService', 'GrowlsService'
                 scope.customerSelect.params.date_type = "date_created";
                 scope.customerSelect.params.desc = true;
 
-                scope.newCustomer = { tax_exempt: false };
+                scope.newCustomer = { tax_exempt: false, billing_address: {}, shipping_address: {} };
 
                 var loadCustomers = function (url) {
                     ApiService.getList(url, scope.customerSelect.params).then(function (customerList) {
@@ -4937,5 +4938,32 @@ app.directive('license', ['$uibModal', function ($uibModal) {
             });
         }
     };
+}]);
+
+
+app.directive('creditCardImage', [function () {
+
+    return {
+        restrict: 'A',
+        link: function (scope, elem, attrs) {
+
+            scope.$watch(attrs.creditCardImage, function (creditCardImage) {
+
+                var path = "images/";
+                if (attrs.path) {
+                    path = attrs.path;
+                }
+
+                if (creditCardImage) {
+                    var filename = creditCardImage.replace(" ", "").toLowerCase() + ".png";
+                    var image = '<img src="' + path + filename + '" />';
+                    var elemNg = angular.element(elem);
+                    elemNg.empty();
+                    elemNg.html(image);
+                }
+
+            });
+        }
+    }
 }]);
 

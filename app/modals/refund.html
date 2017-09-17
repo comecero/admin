@@ -12,7 +12,7 @@
             </div>
             <uib-tabset>
                 <uib-tab active="refundTabs[0].active" resource="files" method="create" select="refund.clearTotal()" ng-if="showItemsTab">
-                    <tab-heading><i class="fa fa-tags"></i> <small translate>Items</small></tab-heading>
+                    <uib-tab-heading><i class="fa fa-tags"></i> <small translate>Items</small></uib-tab-heading>
 
                     <div class="gridtable">
 
@@ -154,7 +154,7 @@
                 </uib-tab>
 
                 <uib-tab active="refundTabs[1].active" select="refund.clearQuantities()">
-                    <tab-heading><i class="fa fa-dollar"></i> <small translate>Amount</small></tab-heading>
+                    <uib-tab-heading><i class="fa fa-dollar"></i> <small translate>Amount</small></uib-tab-heading>
 
                     <div class="col-xs-12 spacer-t10 spacer-b10"><span class="text-bold">Unrefunded Total: {{refund.getUnrefundedTotal() | currency: ""}}</span></div>
 

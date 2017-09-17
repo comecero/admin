@@ -14,7 +14,7 @@
 
         <uib-tabset>
             <uib-tab active="appPackageSelectTabs[0].active" resource="app_packages" method="create">
-                <tab-heading><i class="fa fa-cloud-upload"></i> <small translate>New</small></tab-heading>
+                <uib-tab-heading><i class="fa fa-cloud-upload"></i> <small translate>New</small></uib-tab-heading>
                 <form class="form-group dropzone" dropzone dropzone-url="/app_packages" dropzone-max-files="1" dropzone-max-size="10000000" dropzone-filetypes="zip" dropzone-template-id="dz-app-package">
                     <div class="row">
                         <div class="col-sm-12">
@@ -39,7 +39,7 @@
                 </form>
             </uib-tab>
             <uib-tab active="appPackageSelectTabs[1].active">
-                <tab-heading><i class="fa fa-files-o"></i> <small translate>Existing App Packages</small></tab-heading>
+                <uib-tab-heading><i class="fa fa-files-o"></i> <small translate>Existing App Packages</small></uib-tab-heading>
                 <div class="col-sm-12 text-right spacer-20">
                     <form class="form-inline">
                         <div class="form-group has-feedback">

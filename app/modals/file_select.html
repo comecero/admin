@@ -11,9 +11,10 @@
                 <br /><small>Error code: {{modalError.reference}}</small>
             </span>
         </div>
+
         <uib-tabset>
             <uib-tab active="fileSelectTabs[0].active" resource="files" method="create">
-                <tab-heading><i class="fa fa-cloud-upload"></i> <small translate>New</small></tab-heading>
+                <uib-tab-heading><i class="fa fa-cloud-upload"></i> <small translate>New</small></uib-tab-heading>
                 <form class="form-group dropzone" dropzone dropzone-url="/files" dropzone-max-files="1" dropzone-max-size="75000000" dropzone-template-id="dz-file" dropzone-hide="options.by_url" novalidate>
                     <div class="row">
                         <div class="col-sm-12">
@@ -93,7 +94,7 @@
                 </form>
             </uib-tab>
             <uib-tab active="fileSelectTabs[1].active">
-                <tab-heading><i class="fa fa-files-o"></i> <small translate>Existing Files</small></tab-heading>
+                <uib-tab-heading><i class="fa fa-files-o"></i> <small translate>Existing Files</small></uib-tab-heading>
                 <div class="col-sm-12 text-right spacer-20">
                     <form class="form-inline">
                         <div class="form-group has-feedback">

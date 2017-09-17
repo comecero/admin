@@ -68,7 +68,7 @@
             <div class="col-lg-3 col-sm-6 col-xs-12 spacer-t10" ng-show="options.dates == 'custom'">
                 <label class="control-label">Begin Date</label>
                 <div class="input-group dp">
-                    <input type="text" class="form-control" uib-datepicker-popup="yyyy-MM-dd" ng-model="datepicker.date_start" is-open="datepicker.status.date_start.opened" datepicker-options="datepicker.options" close-text="Close" />
+                    <input type="text" class="form-control" uib-datepicker-popup="yyyy-MM-dd" ng-model="datepicker.date_start" is-open="datepicker.status.date_start.opened" datepicker-options="datepicker.options" ng-model-options="{timezone: 'utc'}" close-text="Close" />
                     <span class="input-group-addon pointer" ng-click="datepicker.open($event, 'date_start')"><i class="fa fa-calendar"></i></span>
                 </div>
             </div>
@@ -76,7 +76,7 @@
             <div class="col-lg-3 col-sm-6 col-xs-12 spacer-t10" ng-show="options.dates == 'custom'">
                 <label class="control-label">End Date</label>
                 <div class="input-group dp">
-                    <input type="text" class="form-control" uib-datepicker-popup="yyyy-MM-dd" ng-model="datepicker.date_end" is-open="datepicker.status.date_end.opened" datepicker-options="datepicker.options" close-text="Close" />
+                    <input type="text" class="form-control" uib-datepicker-popup="yyyy-MM-dd" ng-model="datepicker.date_end" is-open="datepicker.status.date_end.opened" datepicker-options="datepicker.options" ng-model-options="{timezone: 'utc'}" close-text="Close" />
                     <span class="input-group-addon pointer" ng-click="datepicker.open($event, 'date_end')"><i class="fa fa-calendar"></i></span>
                 </div>
             </div>

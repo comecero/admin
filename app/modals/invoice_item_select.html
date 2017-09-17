@@ -16,7 +16,7 @@
         <form name="modalform" novalidate>
             <uib-tabset>
                 <uib-tab active="customerSelectTabs[0].active" resource="files" method="create">
-                    <tab-heading><i class="fa fa-plus-circle"></i> <small translate>New</small></tab-heading>
+                    <uib-tab-heading><i class="fa fa-plus-circle"></i> <small translate>New</small></uib-tab-heading>
 
                     <div class="col-xs-12 col-md-6">
                         <div class="form-group" show-errors>
@@ -77,7 +77,7 @@
                 </uib-tab>
 
                 <uib-tab active="customerSelectTabs[1].active">
-                    <tab-heading><i class="fa fa-files-o"></i> <small translate>Existing Products</small></tab-heading>
+                    <uib-tab-heading><i class="fa fa-files-o"></i> <small translate>Existing Products</small></uib-tab-heading>
                     <div class="col-xs-12 text-right spacer-20">
                         <div class="form-inline">
                             <div class="form-group has-feedback">
@@ -186,8 +186,8 @@
                     <!-- Show pagination if there is at least one page -->
                     <div class="col-sm-12" ng-if="productList.data.length > 0">
                         <ul class="pager">
-                            <li class="previous" ng-click="movePage('-')" ng-show="productList.previous_page_offset !== null"><a><i class="fa fa-chevron-circle-left"></i> <span translate>Back</span></a></li>
-                            <li class="next" ng-click="movePage('+')" ng-show="productList.next_page_offset !== null"><a><span translate>Next</span> <i class="fa fa-chevron-circle-right"></i></a></li>
+                            <li class="previous" ng-click="itemSelect.movePage('-')" ng-show="productList.previous_page_offset !== null"><a><i class="fa fa-chevron-circle-left"></i> <span translate>Back</span></a></li>
+                            <li class="next" ng-click="itemSelect.movePage('+')" ng-show="productList.next_page_offset !== null"><a><span translate>Next</span> <i class="fa fa-chevron-circle-right"></i></a></li>
                         </ul>
                         <p class="text-right">Showing page {{productList.current_page}} of {{productList.total_pages}}</p>
                     </div>

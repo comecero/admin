@@ -165,7 +165,7 @@ app.controller("UsersSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSe
         ApiService.set($scope.usr, ApiService.buildUrl("/users"), { show: "user_id,name" })
         .then(
         function (usr) {
-            GrowlsService.addGrowl({ id: "add_success", name: usr.name, type: "success", user_id: usr.usr_id, url: "#/users/" + usr.usr_id + "/edit" });
+            GrowlsService.addGrowl({ id: "add_success", name: usr.name, type: "success", user_id: usr.usr_id, url: "#/users/" + usr.user_id + "/edit" });
             utils.redirect($location, "/users");
         },
         function (error) {
@@ -192,7 +192,7 @@ app.controller("UsersSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSe
         ApiService.set($scope.usr, $scope.url, { show: "user_id,name" })
         .then(
         function (usr) {
-            GrowlsService.addGrowl({ id: "edit_success", name: usr.name, type: "success", url: "#/users/" + usr.usr_id + "/edit" });
+            GrowlsService.addGrowl({ id: "edit_success", name: usr.name, type: "success", url: "#/users/" + usr.user_id + "/edit" });
             utils.redirect($location, "/users");
         },
         function (error) {
@@ -206,7 +206,7 @@ app.controller("UsersSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSe
         ApiService.remove($scope.url)
         .then(
         function () {
-            GrowlsService.addGrowl({ id: "delete_success_with_undelete", name: $scope.usr.name, type: "success", url: "#/users/" + $scope.usr.usr_id + "/edit" });
+            GrowlsService.addGrowl({ id: "delete_success_with_undelete", name: $scope.usr.name, type: "success", url: "#/users/" + $scope.usr.user_id + "/edit" });
             utils.redirect($location, "/users");
         },
         function (error) {
