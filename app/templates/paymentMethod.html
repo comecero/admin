@@ -6,12 +6,12 @@
 
         <div class="col-xs-12 col-sm-6 panel-tight-row" ng-if="transaction_type == 'payment' && transaction_id">
             <div class="col-xs-12 col-md-4 panel-tight-section"><label translate>Payment ID</label></div>
-            <div class="col-xs-12 col-md-8 panel-tight-section text-capitalize"><a href="/#/payments/{{transaction_id}}">{{transaction_id}}</a></div>
+            <div class="col-xs-12 col-md-8 panel-tight-section text-capitalize"><a href="#/payments/{{transaction_id}}">{{transaction_id}}</a></div>
         </div>
 
         <div class="col-xs-12 col-sm-6 panel-tight-row" ng-if="transaction_type == 'refund' && transaction_id">
             <div class="col-xs-12 col-md-4 panel-tight-section"><label translate>Refund ID</label></div>
-            <div class="col-xs-12 col-md-8 panel-tight-section text-capitalize"><a href="/#/refunds/{{transaction_id}}">{{transaction_id}}</a></div>
+            <div class="col-xs-12 col-md-8 panel-tight-section text-capitalize"><a href="#/refunds/{{transaction_id}}">{{transaction_id}}</a></div>
         </div>
 
         <div class="row"></div>

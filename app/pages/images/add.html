@@ -14,7 +14,7 @@
 
         <div class="panel panel-body light-shadow">
             <div class="row">
-                <button id="top" href="/#/products/add" class="btn btn-danger btn-right spacer-r10" ng-click="cancel()" ng-if="state.uploadSending"><i class="icon fa fa-times-circle"></i>&nbsp;<span translate>Cancel Upload</span></button>
+                <button id="top" href="#/products/add" class="btn btn-danger btn-right spacer-r10" ng-click="cancel()" ng-if="state.uploadSending"><i class="icon fa fa-times-circle"></i>&nbsp;<span translate>Cancel Upload</span></button>
             </div>
             <div class="row">
                 <form class="form-group dropzone" dropzone dropzone-url="/images" dropzone-max-files="10" dropzone-max-size="10000000" dropzone-auto-upload="true" dropzone-filetypes="jpg,jpeg,png,gif" dropzone-image-url-name="link_square" dropzone-template-id="dz-images" dropzone-show-delete="{{ showDelete }}"></form>
@@ -23,7 +23,7 @@
             <div class="row"></div>
 
             <div class="form-group" ng-show="state.uploadComplete">
-                <a href="/#/images/" class="btn btn-primary btn-right btn-margin-left" translate>Done</a>
+                <a href="#/images/" class="btn btn-primary btn-right btn-margin-left" translate>Done</a>
             </div>
 
         </div>
