@@ -41,12 +41,12 @@
     <div class="gridtable-row" ng-repeat="app_installation in list.data">
 
         <div class="col-xs-12 col-sm-12 col-md-1">
-            <div class="col-xs-12 value"><a ng-href="/launch/app.html#app_installation_id={{app_installation.app_installation_id}}&test={{meta.test}}" target="_blank"><img ng-src="{{app_installation.image_url}}" class="thumbnail" style="width:40px; margin-bottom:0"></a></div>
+            <div class="col-xs-12 value"><a ng-href="launch/app.html#app_installation_id={{app_installation.app_installation_id}}&test={{meta.test}}" target="_blank"><img ng-src="{{app_installation.image_url}}" class="thumbnail" style="width:40px; margin-bottom:0"></a></div>
         </div>
 
         <div class="col-xs-12 col-sm-6 col-md-2">
             <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Name</label></div>
-            <div class="col-xs-7 col-sm-12 col-md-12 value"><a ng-href="/launch/app.html#app_installation_id={{app_installation.app_installation_id}}&test={{meta.test}}" target="_blank">{{app_installation.name}}</a></div>
+            <div class="col-xs-7 col-sm-12 col-md-12 value"><a ng-href="launch/app.html#app_installation_id={{app_installation.app_installation_id}}&test={{meta.test}}" target="_blank">{{app_installation.name}}</a></div>
         </div>
 
         <div class="col-xs-12 col-sm-6 col-md-2">
@@ -68,7 +68,7 @@
             <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Actions</label></div>
             <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg padding-r20 padding-l0 navbar-right">
                 <div class="btn-group" uib-dropdown>
-                    <a ng-href="/launch/app.html#app_installation_id={{app_installation.app_installation_id}}&test={{meta.test}}" target="_blank" class="btn btn-sm btn-success">Launch</a>
+                    <a ng-href="launch/app.html#app_installation_id={{app_installation.app_installation_id}}&test={{meta.test}}" target="_blank" class="btn btn-sm btn-success">Launch</a>
                     <button type="button" class="btn btn-sm btn-success dropdown-toggle" uib-dropdown-toggle><i class="fa fa-caret-down"></i></button>
                     <ul class="dropdown-menu">
                         <li ng-show="app_installation.info_url"><a href="{{app_installation.info_url}}" target="_blank"><i class="dropdown-icon fa fa-wrench"></i>&nbsp;&nbsp;<span translate>Help & Support</span></a></li>
