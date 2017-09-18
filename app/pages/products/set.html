@@ -123,7 +123,7 @@
                             <li class="list-group-item overflow-hidden">
                                 <i class="fa fa-minus-square pointer pull-right text-default" ng-show="showFile" ng-click="showFile = !showFile" style="margin-top:3px">&nbsp;</i>
                                 <i class="fa fa-plus-square pointer pull-right text-default " ng-show="!showFile" ng-click="showFile = !showFile" style="margin-top:3px">&nbsp;</i>
-                                <a href="/#/files/{{data.file.file_id}}/edit" target="_blank">{{data.file.name}}</a>
+                                <a href="#/files/{{data.file.file_id}}/edit" target="_blank">{{data.file.name}}</a>
                             </li>
                             <li class="list-group-item overflow-hidden" ng-show="showFile">
                                 <p><span translate>Filename</span>: <strong>{{data.file.filename}}</strong></p>
@@ -151,7 +151,7 @@
                             <li class="list-group-item overflow-hidden">
                                 <i class="fa fa-minus-square pointer pull-right text-default" ng-show="showLicenseService" ng-click="showLicenseService = !showLicenseService" style="margin-top:3px">&nbsp;</i>
                                 <i class="fa fa-plus-square pointer pull-right text-default" ng-show="!showLicenseService" ng-click="showLicenseService = !showLicenseService" style="margin-top:3px">&nbsp;</i>
-                                <a href="/#/license_services/{{data.license_service.license_service_id}}/edit" target="_blank">{{data.license_service.name}}</a>
+                                <a href="#/license_services/{{data.license_service.license_service_id}}/edit" target="_blank">{{data.license_service.name}}</a>
                             </li>
                             <li class="list-group-item overflow-hidden fadeIn animated" ng-if="showLicenseService">
                                 <p><span translate>Type</span>: <strong><span ng-if="data.license_service.type == 'remote_url'">Remote URL</span><span ng-if="data.license_service.type == 'list'">List</span></strong></p>
@@ -191,7 +191,7 @@
                             <li class="list-group-item overflow-hidden" ng-click="showSubscriptionPlan = !showSubscriptionPlan">
                                 <i class="fa fa-minus-square pointer pull-right text-default" ng-show="showSubscriptionPlan" style="margin-top:3px"></i>
                                 <i class="fa fa-plus-square pointer pull-right text-default" ng-show="!showSubscriptionPlan" style="margin-top:3px"></i>
-                                <a href="/#/subscription_plans/{{data.subscription_plan.subscription_plan_id}}/edit" target="_blank">{{data.subscription_plan.name}}</a>
+                                <a href="#/subscription_plans/{{data.subscription_plan.subscription_plan_id}}/edit" target="_blank">{{data.subscription_plan.name}}</a>
                             </li>
                             <li class="list-group-item overflow-hidden fadeIn animated" ng-show="showSubscriptionPlan">
                                 <p ng-if="data.subscription_plan.version"><span translate>Version</span>: <strong>{data.{subscription_plan.version}}</strong></p>

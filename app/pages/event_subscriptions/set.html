@@ -77,7 +77,7 @@
                     <label for="signature_key" class="control-label" translate>Signature Key</label>
                     <input type="text" class="form-control" name="signature_key" ng-model="eventSubscription.signature_key">
                     <div>
-                        <p class="help-text" translate>For events sent by HTTP, we'll include an HTTP header 'X-Comecero-Signature' that is an <a href="https://en.wikipedia.org/wiki/Hash-based_message_authentication_code" target="_blank">HMAC-SHA256</a> of the request payload, using this value as the key for the hash. If you don't supply a key, the hash will be created using the global signature key provided In your <a href="/#/settings/technical">Technical Settings</a>.</p>
+                        <p class="help-text" translate>For events sent by HTTP, we'll include an HTTP header 'X-Comecero-Signature' that is an <a href="https://en.wikipedia.org/wiki/Hash-based_message_authentication_code" target="_blank">HMAC-SHA256</a> of the request payload, using this value as the key for the hash. If you don't supply a key, the hash will be created using the global signature key provided In your <a href="#/settings/technical">Technical Settings</a>.</p>
                     </div>
                 </div>
             </div>

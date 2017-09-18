@@ -188,7 +188,7 @@
                         <li class="list-group-item overflow-hidden">
                             <i class="fa fa-minus-square pointer pull-right text-default" ng-show="showAppPackage" ng-click="showAppPackage = !showAppPackage" style="margin-top:3px">&nbsp;</i>
                             <i class="fa fa-plus-square pointer pull-right text-default " ng-show="!showAppPackage" ng-click="showAppPackage = !showAppPackage" style="margin-top:3px">&nbsp;</i>
-                            <a href="/#/app_packages/{{app_package.app_package_id}}/edit" target="_blank">{{app_package.name}}</a>
+                            <a href="#/app_packages/{{app_package.app_package_id}}/edit" target="_blank">{{app_package.name}}</a>
                         </li>
                         <li class="list-group-item overflow-hidden fadeIn animated" ng-show="showAppPackage">
                             <p><span translate>Filename</span>: <strong>{{app_package.filename}}</strong></p>
@@ -215,7 +215,7 @@
                         <li class="list-group-item overflow-hidden">
                             <i class="fa fa-minus-square pointer pull-right text-default" ng-show="showSourceAppPackage" ng-click="showSourceAppPackage = !showSourceAppPackage" style="margin-top:3px">&nbsp;</i>
                             <i class="fa fa-plus-square pointer pull-right text-default " ng-show="!showSourceAppPackage" ng-click="showSourceAppPackage = !showSourceAppPackage" style="margin-top:3px">&nbsp;</i>
-                            <a href="/#/app_packages/{{source_app_package.app_package_id}}/edit" target="_blank">{{source_app_package.name}}</a>
+                            <a href="#/app_packages/{{source_app_package.app_package_id}}/edit" target="_blank">{{source_app_package.name}}</a>
                         </li>
                         <li class="list-group-item overflow-hidden fadeIn animated" ng-show="showSourceAppPackage">
                             <p><span translate>Filename</span>: <strong>{{source_app_package.filename}}</strong></p>

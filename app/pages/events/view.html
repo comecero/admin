@@ -38,7 +38,7 @@
         </div>
         <div class="col-xs-12 col-sm-6 panel-tight-row">
             <div class="col-xs-12 col-md-4 panel-tight-section"><label>Subscription ID</label></div>
-            <div class="col-xs-12 col-md-8 panel-tight-section"><a href="/#/event_subscriptions/{{event.event_subscription.event_subscription_id}}/edit">{{event.event_subscription.event_subscription_id}}</a></div>
+            <div class="col-xs-12 col-md-8 panel-tight-section"><a href="#/event_subscriptions/{{event.event_subscription.event_subscription_id}}/edit">{{event.event_subscription.event_subscription_id}}</a></div>
         </div>
         <div class="col-xs-12 panel-tight-row">
             <button type="button" class="btn btn-success btn-xs" ng-if="event.status == 'delivered'" ng-click="retryEvent()" translate>Resend Event</button>

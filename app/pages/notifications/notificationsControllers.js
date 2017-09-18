@@ -21,7 +21,7 @@ app.controller("NotificationsViewCtrl", ['$scope', '$routeParams', 'ApiService',
     var params = { expand: "customer", hide: "data" };
     ApiService.getItem($scope.url, params).then(function (notification) {
         $scope.notification = notification;
-        $scope.previewUrl = $sce.trustAsResourceUrl("/app/pages/notifications/preview/index.html?notification_id=" + notification.notification_id);
+        $scope.previewUrl = $sce.trustAsResourceUrl("app/pages/notifications/preview/index.html?notification_id=" + notification.notification_id);
         $scope.email = notification.customer.email;
     }, function (error) {
         $scope.exception.error = error;

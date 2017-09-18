@@ -12,7 +12,7 @@
         </div>
         <div class="row spacer-b30" ng-repeat="image in images">
             <div class="col-md-2"><img ng-src="{{image.link_square}}" class="img-thumbnail" height="75" width="75" /></div>
-            <div class="col-md-3 hidden-sm hidden-xs"><a href="/#/images/{{image.image_id}}" target="_blank">{{image.filename | truncate: 15}}</a></div>
+            <div class="col-md-3 hidden-sm hidden-xs"><a href="#/images/{{image.image_id}}" target="_blank">{{image.filename | truncate: 15}}</a></div>
             <div class="col-md-7">
                 <div class="input-group input-group-sm spacer-t10">
                     <span class="input-group-addon">Large</span>
