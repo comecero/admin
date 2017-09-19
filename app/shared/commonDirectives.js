@@ -4482,6 +4482,7 @@ app.directive('invoiceItemSelect', ['ApiService', 'ConfirmService', 'GrowlsServi
         restrict: 'A',
         scope: {
             invoice: '=?invoiceItemSelect',
+            dateDue: '=?',
             parameters: '=?',
             error: '=?'
         },
@@ -4547,6 +4548,8 @@ app.directive('invoiceItemSelect', ['ApiService', 'ConfirmService', 'GrowlsServi
                     if (scope.invoice.url == null) {
                         add = true;
                     }
+
+                    scope.invoice.date_due = scope.dateDue;
 
                     return ApiService.set(scope.invoice, url, scope.parameters);
                 }

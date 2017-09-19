@@ -280,7 +280,7 @@ app.controller("LangCtrl", ['$scope', 'gettextCatalog', 'ApiService', 'tmhDynami
 
         // The default language does not need to be loaded (English - it's embedded in the HTML).
         if (language != "en") {
-            gettextCatalog.loadRemote("/languages/" + language + "/" + language + ".json");
+            gettextCatalog.loadRemote("languages/" + language + "/" + language + ".json");
         }
 
         gettextCatalog.setCurrentLanguage(language);
@@ -4777,6 +4777,7 @@ app.directive('invoiceItemSelect', ['ApiService', 'ConfirmService', 'GrowlsServi
         restrict: 'A',
         scope: {
             invoice: '=?invoiceItemSelect',
+            dateDue: '=?',
             parameters: '=?',
             error: '=?'
         },
@@ -4842,6 +4843,8 @@ app.directive('invoiceItemSelect', ['ApiService', 'ConfirmService', 'GrowlsServi
                     if (scope.invoice.url == null) {
                         add = true;
                     }
+
+                    scope.invoice.date_due = scope.dateDue;
 
                     return ApiService.set(scope.invoice, url, scope.parameters);
                 }

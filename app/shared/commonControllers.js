@@ -24,7 +24,7 @@ app.controller("LangCtrl", ['$scope', 'gettextCatalog', 'ApiService', 'tmhDynami
 
         // The default language does not need to be loaded (English - it's embedded in the HTML).
         if (language != "en") {
-            gettextCatalog.loadRemote("/languages/" + language + "/" + language + ".json");
+            gettextCatalog.loadRemote("languages/" + language + "/" + language + ".json");
         }
 
         gettextCatalog.setCurrentLanguage(language);

@@ -82,12 +82,11 @@
                             <div>{{invoice.currency}}</div>
                         </div>
                     </div>
-
                     <div class="col-xs-12 col-md-4">
                         <div class="form-group" ng-show="(add || invoice.open == true) && invoice.subscription == null" show-errors="mild">
                             <label class="control-label">Date Due</label>
                             <div class="input-group dp">
-                                <input type="text" name="date_due" class="form-control" uib-datepicker-popup="yyyy-MM-dd" ng-model="invoice.date_due" is-open="datepicker.status.date_due.opened" datepicker-options="datepicker.options" close-text="Close" required />
+                                <input type="text" name="date_due" class="form-control" uib-datepicker-popup="yyyy-MM-dd" ng-model="data.date_due" is-open="datepicker.status.date_due.opened" datepicker-options="datepicker.options" close-text="Close" required />
                                 <span class="input-group-addon pointer" ng-click="datepicker.open($event, 'date_due')"><i class="fa fa-calendar"></i></span>
                                 <p class="help-block hidden fadeInDown" translate>Please select a date</p>
                             </div>
@@ -223,7 +222,7 @@
 
                             <div class="gridtable-row wide-md no-hover no-border" ng-show="add || invoice.payment_status == 'unpaid'">
                                 <div class="form-group">
-                                    <a class="btn btn-info" invoice-item-select="invoice" parameters="params" error="exception.error" translate>Add Item</a>
+                                    <a class="btn btn-info" invoice-item-select="invoice" date-due="data.date_due" parameters="params" error="exception.error" translate>Add Item</a>
                                 </div>
                             </div>
 

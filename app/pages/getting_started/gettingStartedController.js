@@ -16,7 +16,7 @@
 
     var setCartUrl = function (test) {
 
-        $scope.cartUrl = "/#/app_installations";
+        $scope.cartUrl = "#/app_installations";
 
     }
     $scope.onNavigate = function GSCtrl_onNavigate() {
