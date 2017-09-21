@@ -265,7 +265,7 @@ app.run(['$rootScope', '$route', '$templateCache', '$location', 'ApiService', 'S
 
     // Set the language, don't need to for English since it's embedded in the HTML.
     if (language != "en") {
-        gettextCatalog.loadRemote("/languages/" + language + "/" + language + ".json");
+        gettextCatalog.loadRemote("languages/" + language + "/" + language + ".json");
         gettextCatalog.setCurrentLanguage(language);
     }
 

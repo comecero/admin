@@ -47,13 +47,13 @@ if (hashParameters["access_token"] != undefined) {
         } else {
             // Otherwise, redirect  
             if (hashParameters["state"] == undefined) {
-                window.location = "/";
+                window.location = "../";
             } else {
                 // state should be the path without the hostname. We'll only redirect within the realm of admin.comecero.com.
                 if (utils.left(hashParameters["state"], 7) == "http://" || utils.left(hashParameters["state"], 8) == "https://") {
-                    window.location = "/";
+                    window.location = "../";
                 } else {
-                    window.location = "/" + hashParameters["state"];
+                    window.location = "../" + hashParameters["state"];
                 }
             }
         }

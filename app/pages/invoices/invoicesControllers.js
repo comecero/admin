@@ -22,10 +22,7 @@ app.controller("InvoicesSetCtrl", ['$scope', '$routeParams', '$location', 'ApiSe
     $scope.params = { expand: "customer.payment_methods,options,payments.payment_method,items.subscription_terms,subscription", formatted: true };
     $scope.invoice.currency = localStorage.getItem("default_payment_currency");
     $scope.suppress_customer_notification = false;
-
-    var d = new Date();
-    d.setMonth(d.getMonth() + 1);
-    $scope.invoice.date_due = d;
+    $scope.data = {};
 
     // If only one currency, auto-select it.
     if ($scope.currencies.length == 1) {
@@ -70,10 +67,9 @@ app.controller("InvoicesSetCtrl", ['$scope', '$routeParams', '$location', 'ApiSe
         ApiService.getItem($scope.url, $scope.params).then(function (invoice) {
 
             $scope.invoice = invoice;
-            $scope.date_due = Date.parse(invoice.date_due);
 
             if ($scope.invoice.date_due) {
-                $scope.invoice.date_due = new Date($scope.invoice.date_due);
+                $scope.data.date_due = new Date($scope.invoice.date_due);
             }
 
             // If one of the payments was successful, pluck it.
@@ -100,6 +96,10 @@ app.controller("InvoicesSetCtrl", ['$scope', '$routeParams', '$location', 'ApiSe
         $scope.update = false;
         $scope.add = true;
 
+        var d = new Date();
+        d.setMonth(d.getMonth() + 1);
+        $scope.data.date_due = d;
+
     }
 
     // Watch for a captured payment
@@ -123,6 +123,10 @@ app.controller("InvoicesSetCtrl", ['$scope', '$routeParams', '$location', 'ApiSe
     $scope.backgroundUpdate = function () {
 
         var autopay = $scope.invoice.autopay;
+
+        if ($scope.data.date_due) {
+            $scope.invoice.date_due = $scope.data.date_due;
+        }
 
         return ApiService.set($scope.invoice, $scope.url, $scope.params).then(function (invoice) {
 
@@ -244,6 +248,10 @@ app.controller("InvoicesSetCtrl", ['$scope', '$routeParams', '$location', 'ApiSe
         $scope.invoice.draft = $scope.draft;
         $scope.invoice.suppress_customer_notification = $scope.suppress_customer_notification;
 
+        if ($scope.data.date_due) {
+            $scope.invoice.date_due = $scope.data.date_due;
+        }
+
         ApiService.set($scope.invoice, $scope.url, $scope.params).then(function (invoice) {
             GrowlsService.addGrowl({ id: "edit_success", name: "invoice " + invoice.invoice_id, type: "success", url: "#/invoices/" + invoice.invoice_id });
             utils.redirect($location, "/invoices");
@@ -266,6 +274,10 @@ app.controller("InvoicesSetCtrl", ['$scope', '$routeParams', '$location', 'ApiSe
 
         $scope.draft = false;
         $scope.invoice.draft = false;
+
+        if ($scope.data.date_due) {
+            $scope.invoice.date_due = $scope.data.date_due;
+        }
 
         ApiService.set($scope.invoice, $scope.url, $scope.params).then(function (invoice) {
             GrowlsService.addGrowl({ id: "invoice_published", type: "success" });

@@ -4,3 +4,4 @@
 /Web.Debug.config
 /publish.js
 /node_modules
+*.zip
