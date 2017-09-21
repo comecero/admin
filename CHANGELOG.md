@@ -1,11 +1,15 @@
 ﻿# Admin Change Log #
 
+<a name="1.3.7"></a>
+# 1.3.7
+
+- Add meta data display for customers, payments
+- Bug fix in invoice datepicker
+
 <a name="1.3.6"></a>
 # 1.3.6
 
 - Changes to reference href locations by relative rather than absolute references
-
-- Add support for viewing and downloading app packages
 
 <a name="1.3.5"></a>
 # 1.3.5
