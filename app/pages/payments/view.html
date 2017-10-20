@@ -74,7 +74,12 @@
                         <div class="col-xs-12 col-md-8 panel-tight-section">{{payment.date_modified | date:'short'}}</div>
                     </div>
 
-                    <div class="col-xs-12 panel-tight-row" ng-show="payment.description">
+                    <div class="col-xs-12 col-sm-6 panel-tight-row" ng-show="payment.reference">
+                        <label>Reference</label>
+                        {{payment.reference}}
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 panel-tight-row" ng-show="payment.description">
                         <label>Description</label>
                         {{payment.description}}
                     </div>

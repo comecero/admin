@@ -4699,8 +4699,13 @@ app.directive('customerSelect', ['ApiService', 'ConfirmService', 'GrowlsService'
                 var customerSelectModal = $uibModal.open({
                     size: "lg",
                     templateUrl: "app/modals/customer_select.html",
-                    scope: scope
+                    scope: scope,
+                    backdrop: "static"
                 });
+
+                scope.customerSelect.copyBillingToShipping = function () {
+                    scope.newCustomer.shipping_address = angular.copy(scope.newCustomer.billing_address);
+                }
 
                 // Handle when the modal is closed or dismissed
                 customerSelectModal.result.then(function (customer) {
