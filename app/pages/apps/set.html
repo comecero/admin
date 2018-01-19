@@ -29,6 +29,13 @@
                 </div>
             </div>
 
+            <div class="col-xs-6" ng-if="!update && helperService.isAdmin()">
+                <div class="form-group">
+                    <label class="control-label">App ID</label>
+                    <input type="text" class="form-control" name="name" ng-model="app.app_id" placeholder="Optional">
+                </div>
+            </div>
+
             <div class="col-md-6 col-xs-12" ng-if="update && app.client_secret">
                 <div class="form-group">
                     <label class="control-label">Client Secret</label>
