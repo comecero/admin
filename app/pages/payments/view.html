@@ -54,7 +54,7 @@
                         <div class="col-xs-12 col-md-8 panel-tight-section">{{payment.response_message}}</div>
                     </div>
 
-                    <div ng-if="payment.type='credit_card'">
+                    <div ng-if="payment.type == 'credit_card'">
                         <div class="col-xs-12 col-sm-6 panel-tight-row">
                             <div class="col-xs-12 col-md-4 panel-tight-section"><label>AVS Match?</label></div>
                             <div class="col-xs-12 col-md-8 panel-tight-section text-capitalize">{{payment.response_data.avs_match | humanBool}} (Code: {{payment.response_data.avs_code}})</div>
@@ -87,12 +87,12 @@
                     </div>
 
                     <div class="col-xs-12 col-sm-6 panel-tight-row" ng-show="payment.reference">
-                        <label>Reference</label>
+                        <label translate>Reference</label>
                         {{payment.reference}}
                     </div>
 
                     <div class="col-xs-12 col-sm-6 panel-tight-row" ng-show="payment.description">
-                        <label>Description</label>
+                        <label translate>Description</label>
                         {{payment.description}}
                     </div>
 

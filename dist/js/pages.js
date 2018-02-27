@@ -734,6 +734,260 @@ app.controller("AppPackagesCtrl", ['$scope', '$routeParams', '$location', 'Growl
 
 
 
+
+//#region Auths
+
+app.controller("AuthsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
+
+    // Establish your scope containers
+    $scope.auths = {};
+    $scope.nav = {};
+    $scope.exception = {};
+
+    // Establish your settings from query string parameters
+    $scope.parseParams = function () {
+        $scope.params = ($location.search())
+
+        // Convert any string true/false to bool
+        utils.stringsToBool($scope.params);
+
+        if ($scope.params.sort_by == null) {
+            $scope.params.sort_by = "date_created";
+        }
+
+        if ($scope.params.desc == null) {
+            $scope.params.desc = true;
+        }
+
+    }
+
+    $scope.loadAuths = function () {
+
+        ApiService.getList(ApiService.buildUrl("/auths?show=auth_id,token,comments,expires,date_created&sort_by=" + $scope.params.date_type + "&desc=" + $scope.params.desc), $scope.params).then(function (result) {
+            $scope.auths.authList = result;
+
+            // If instructed, scroll to the top upon completion
+            if ($scope.nav.scrollTop == true) {
+                window.scrollTo(0, 0);
+            }
+            $scope.nav.scrollTop = null;
+
+        },
+        function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
+    $scope.setParam = function (param, value) {
+        $scope.params[param] = value;
+        $scope.params.before_item = null;
+        $scope.params.after_item = null;
+        $scope.nav.scrollTop = true;
+        $location.search($scope.params);
+    }
+
+    $scope.search = function () {
+        if ($scope.params.q != null) {
+
+            // Reset the view to the first page
+            $scope.params.offset = null;
+            $scope.nav.scrollTop = true;
+
+            // If empty, reset to null
+            if ($scope.params.q == "") {
+                $scope.params.q = null;
+            }
+
+            $location.search($scope.params);
+        }
+    }
+
+    $scope.movePage = function (direction) {
+        if (direction == "+") {
+            $scope.params.offset = $scope.auths.authList.next_page_offset;
+        } else {
+            $scope.params.offset = $scope.auths.authList.previous_page_offset;
+        }
+        $scope.nav.scrollTop = true;
+        $location.search($scope.params);
+    }
+
+    $scope.sort = function (sort_by, desc) {
+        $scope.params.sort_by = sort_by;
+        $scope.params.desc = desc;
+        $location.search($scope.params);
+    }
+
+    $scope.$on('$routeUpdate', function (e) {
+        $scope.parseParams();
+        $scope.loadAuths();
+    });
+
+    // Initial load
+    $scope.parseParams();
+    $scope.loadAuths();
+
+}]);
+
+app.controller("AuthsSetCtrl", ['$scope', '$rootScope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', '$http', function ($scope, $rootScope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, $http) {
+
+    $scope.exception = {};
+    $scope.data = {};
+
+    // Set default values
+    $scope.data.type = "secret";
+    $scope.data.test = true;
+
+    if ($routeParams.id != null) {
+
+        // Indicate this is an edit
+        $scope.update = true;
+        $scope.add = false;
+
+        // Set the url for interacting with this item
+        $scope.url = ApiService.buildUrl("/auths/" + $routeParams.id)
+
+        // Load the auth
+        ApiService.getItem($scope.url).then(function (auth) {
+            $scope.auth = auth;
+
+            // Make a copy of the original for comparision
+            $scope.auth_orig = angular.copy($scope.auth);
+
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+
+    } else {
+
+        // Indicate this is an add
+        $scope.update = false;
+        $scope.add = true;
+
+        // Set defaults
+        $scope.auth = {};
+
+    }
+
+    var prepareSubmit = function () {
+        // Clear any previous errors
+        $scope.exception.error = null;
+    }
+
+    $scope.confirmCancel = function () {
+        if (angular.equals($scope.auth, $scope.auth_orig)) {
+            utils.redirect($location, "/auths");
+        } else {
+            var confirm = { id: "changes_lost" };
+            confirm.onConfirm = function () {
+                utils.redirect($location, "/auths");
+            }
+            ConfirmService.showConfirm($scope, confirm);
+        }
+    }
+
+    $scope.confirmDelete = function () {
+        var confirm = { id: "delete" };
+        confirm.onConfirm = function () {
+            $scope.delete();
+        }
+        ConfirmService.showConfirm($scope, confirm);
+    }
+
+    $scope.addAuth = function () {
+
+        prepareSubmit();
+
+        if ($scope.form.$invalid) {
+            return;
+        }
+
+        ApiService.set($scope.auth, ApiService.buildUrl("/auths/secret"), { show: "auth_id,token", test: $rootScope.settings.test })
+        .then(
+        function (auth) {
+            $scope.showToken = true;
+            $scope.auth.token = auth.token;
+        },
+        function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
+    $scope.updateAuth = function () {
+
+        prepareSubmit();
+
+        if ($scope.form.$invalid) {
+            return;
+        }
+
+        // Remove effective_permissions to save bandwidth on the way up
+        delete $scope.auth.effective_permissions;
+
+        ApiService.set($scope.auth, $scope.url, { show: "auth_id,token" })
+        .then(
+        function (auth) {
+            GrowlsService.addGrowl({ id: "edit_success", name: auth.name, type: "success", name: auth.token, url: "#/auths/" + auth.auth_id + "/edit" });
+            utils.redirect($location, "/auths");
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception.error = error;
+        });
+    }
+
+    $scope.delete = function () {
+
+        ApiService.remove($scope.url).then(
+        function (auth) {
+            GrowlsService.addGrowl({ id: "delete_success", name: $scope.auth.token, type: "success" });
+            utils.redirect($location, "/auths");
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception.error = error;
+        });
+    }
+
+    $scope.addLimitedAuth = function (test) {
+
+        prepareSubmit();
+
+        var config = {
+            headers: {
+                "Authorization": "Bearer " + localStorage.getItem("token"),
+                "Accept": "application/json;"
+            }
+        };
+
+        if (test == false) {
+            delete config.headers["Authorization"];
+        }
+
+        var request = $http.post("https://" + $rootScope.apiHost + "/api/v1/auths/limited?account_id=" + localStorage.getItem("account_id") + "&test=" + test, null, config);
+
+        request.success(function (auth) {
+            $scope.showToken = true;
+            $scope.auth.token = auth.token;
+        });
+
+        request.error(function (error) {
+            $scope.exception.error = error.error;
+            window.scrollTo(0, 0);
+        });
+
+    }
+
+}]);
+
+//#endregion Auths
+
+
+
+
 app.controller("CartsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
 
     // Establish your scope containers
@@ -1078,260 +1332,6 @@ app.controller("DashboardViewCtrl", ['$scope', '$routeParams', '$location', '$q'
     $scope.loadDashboard($scope.options.currency);
 
 }]);
-
-//#region Auths
-
-app.controller("AuthsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
-
-    // Establish your scope containers
-    $scope.auths = {};
-    $scope.nav = {};
-    $scope.exception = {};
-
-    // Establish your settings from query string parameters
-    $scope.parseParams = function () {
-        $scope.params = ($location.search())
-
-        // Convert any string true/false to bool
-        utils.stringsToBool($scope.params);
-
-        if ($scope.params.sort_by == null) {
-            $scope.params.sort_by = "date_created";
-        }
-
-        if ($scope.params.desc == null) {
-            $scope.params.desc = true;
-        }
-
-    }
-
-    $scope.loadAuths = function () {
-
-        ApiService.getList(ApiService.buildUrl("/auths?show=auth_id,token,comments,expires,date_created&sort_by=" + $scope.params.date_type + "&desc=" + $scope.params.desc), $scope.params).then(function (result) {
-            $scope.auths.authList = result;
-
-            // If instructed, scroll to the top upon completion
-            if ($scope.nav.scrollTop == true) {
-                window.scrollTo(0, 0);
-            }
-            $scope.nav.scrollTop = null;
-
-        },
-        function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    }
-
-    $scope.setParam = function (param, value) {
-        $scope.params[param] = value;
-        $scope.params.before_item = null;
-        $scope.params.after_item = null;
-        $scope.nav.scrollTop = true;
-        $location.search($scope.params);
-    }
-
-    $scope.search = function () {
-        if ($scope.params.q != null) {
-
-            // Reset the view to the first page
-            $scope.params.offset = null;
-            $scope.nav.scrollTop = true;
-
-            // If empty, reset to null
-            if ($scope.params.q == "") {
-                $scope.params.q = null;
-            }
-
-            $location.search($scope.params);
-        }
-    }
-
-    $scope.movePage = function (direction) {
-        if (direction == "+") {
-            $scope.params.offset = $scope.auths.authList.next_page_offset;
-        } else {
-            $scope.params.offset = $scope.auths.authList.previous_page_offset;
-        }
-        $scope.nav.scrollTop = true;
-        $location.search($scope.params);
-    }
-
-    $scope.sort = function (sort_by, desc) {
-        $scope.params.sort_by = sort_by;
-        $scope.params.desc = desc;
-        $location.search($scope.params);
-    }
-
-    $scope.$on('$routeUpdate', function (e) {
-        $scope.parseParams();
-        $scope.loadAuths();
-    });
-
-    // Initial load
-    $scope.parseParams();
-    $scope.loadAuths();
-
-}]);
-
-app.controller("AuthsSetCtrl", ['$scope', '$rootScope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', '$http', function ($scope, $rootScope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, $http) {
-
-    $scope.exception = {};
-    $scope.data = {};
-
-    // Set default values
-    $scope.data.type = "secret";
-    $scope.data.test = true;
-
-    if ($routeParams.id != null) {
-
-        // Indicate this is an edit
-        $scope.update = true;
-        $scope.add = false;
-
-        // Set the url for interacting with this item
-        $scope.url = ApiService.buildUrl("/auths/" + $routeParams.id)
-
-        // Load the auth
-        ApiService.getItem($scope.url).then(function (auth) {
-            $scope.auth = auth;
-
-            // Make a copy of the original for comparision
-            $scope.auth_orig = angular.copy($scope.auth);
-
-        }, function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-
-    } else {
-
-        // Indicate this is an add
-        $scope.update = false;
-        $scope.add = true;
-
-        // Set defaults
-        $scope.auth = {};
-
-    }
-
-    var prepareSubmit = function () {
-        // Clear any previous errors
-        $scope.exception.error = null;
-    }
-
-    $scope.confirmCancel = function () {
-        if (angular.equals($scope.auth, $scope.auth_orig)) {
-            utils.redirect($location, "/auths");
-        } else {
-            var confirm = { id: "changes_lost" };
-            confirm.onConfirm = function () {
-                utils.redirect($location, "/auths");
-            }
-            ConfirmService.showConfirm($scope, confirm);
-        }
-    }
-
-    $scope.confirmDelete = function () {
-        var confirm = { id: "delete" };
-        confirm.onConfirm = function () {
-            $scope.delete();
-        }
-        ConfirmService.showConfirm($scope, confirm);
-    }
-
-    $scope.addAuth = function () {
-
-        prepareSubmit();
-
-        if ($scope.form.$invalid) {
-            return;
-        }
-
-        ApiService.set($scope.auth, ApiService.buildUrl("/auths/secret"), { show: "auth_id,token", test: $rootScope.settings.test })
-        .then(
-        function (auth) {
-            $scope.showToken = true;
-            $scope.auth.token = auth.token;
-        },
-        function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    }
-
-    $scope.updateAuth = function () {
-
-        prepareSubmit();
-
-        if ($scope.form.$invalid) {
-            return;
-        }
-
-        // Remove effective_permissions to save bandwidth on the way up
-        delete $scope.auth.effective_permissions;
-
-        ApiService.set($scope.auth, $scope.url, { show: "auth_id,token" })
-        .then(
-        function (auth) {
-            GrowlsService.addGrowl({ id: "edit_success", name: auth.name, type: "success", name: auth.token, url: "#/auths/" + auth.auth_id + "/edit" });
-            utils.redirect($location, "/auths");
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception.error = error;
-        });
-    }
-
-    $scope.delete = function () {
-
-        ApiService.remove($scope.url).then(
-        function (auth) {
-            GrowlsService.addGrowl({ id: "delete_success", name: $scope.auth.token, type: "success" });
-            utils.redirect($location, "/auths");
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception.error = error;
-        });
-    }
-
-    $scope.addLimitedAuth = function (test) {
-
-        prepareSubmit();
-
-        var config = {
-            headers: {
-                "Authorization": "Bearer " + localStorage.getItem("token"),
-                "Accept": "application/json;"
-            }
-        };
-
-        if (test == false) {
-            delete config.headers["Authorization"];
-        }
-
-        var request = $http.post("https://" + $rootScope.apiHost + "/api/v1/auths/limited?account_id=" + localStorage.getItem("account_id") + "&test=" + test, null, config);
-
-        request.success(function (auth) {
-            $scope.showToken = true;
-            $scope.auth.token = auth.token;
-        });
-
-        request.error(function (error) {
-            $scope.exception.error = error.error;
-            window.scrollTo(0, 0);
-        });
-
-    }
-
-}]);
-
-//#endregion Auths
-
-
-
-
 
 //#region Events
 
@@ -2532,6 +2532,503 @@ app.controller("GettingStartedViewCtrl", ['$scope', '$q', '$routeParams', 'ApiSe
     setCartUrl(utils.stringToBool(localStorage.getItem("test")));
 
 }]);
+app.controller("HostedFunctionsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
+
+    // Establish your scope containers
+    $scope.hostedFunctions = {};
+    $scope.nav = {};
+    $scope.exception = {};
+
+    // Establish your settings from query string parameters
+    $scope.parseParams = function () {
+        $scope.params = ($location.search())
+
+        // Convert any string true/false to bool
+        utils.stringsToBool($scope.params);
+
+        if ($scope.params.sort_by == null) {
+            $scope.params.sort_by = "name";
+        }
+
+        if ($scope.params.desc == null) {
+            $scope.params.desc = false;
+        }
+
+    }
+
+    $scope.loadHostedFunctions = function () {
+
+        ApiService.getList(ApiService.buildUrl("/hosted_functions?show=hosted_function_id,filename,name,environment,bytes,date_created"), $scope.params).then(function (result) {
+            $scope.hostedFunctions.hostedFunctionList = result;
+
+            // If instructed, scroll to the top upon completion
+            if ($scope.nav.scrollTop == true) {
+                window.scrollTo(0, 0);
+            }
+            $scope.nav.scrollTop = null;
+
+        },
+        function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
+    $scope.search = function () {
+        if ($scope.params.q != null) {
+
+            // Reset the view to the first page
+            $scope.params.offset = null;
+            $scope.nav.scrollTop = true;
+
+            // If empty, reset to null
+            if ($scope.params.q == "") {
+                $scope.params.q = null;
+            }
+
+            $location.search($scope.params);
+        }
+    }
+
+    $scope.movePage = function (direction) {
+        if (direction == "+") {
+            $scope.params.offset = $scope.hostedFunctions.hostedFunctionList.next_page_offset;
+        } else {
+            $scope.params.offset = $scope.hostedFunctions.hostedFunctionList.previous_page_offset;
+        }
+        $scope.nav.scrollTop = true;
+        $location.search($scope.params);
+    }
+
+    $scope.sort = function (sort_by, desc) {
+        $scope.params.sort_by = sort_by;
+        $scope.params.desc = desc;
+        $location.search($scope.params);
+    }
+
+    $scope.$on('$routeUpdate', function (e) {
+        $scope.parseParams();
+        $scope.loadHostedFunctions();
+    });
+
+    // Initial load
+    $scope.parseParams();
+    $scope.loadHostedFunctions();
+
+}]);
+
+
+app.controller("HostedFunctionsAddCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
+
+    // Set defaults
+    $scope.hostedFunction = { environment_variables: {}};
+    $scope.exception = {};
+    $scope.environmentVariables = [];
+
+    $scope.uploadSending = false;
+    var uploadSendingListener = $scope.$on('uploadSending', function (event, sending) {
+        // Set uploadSending to the received value
+        $scope.$apply(function () {
+            $scope.uploadSending = sending;
+        });
+    });
+
+    var uploadDeleteListener = $scope.$on('uploadDelete', function (event, uploadResponse, hostedFunction) {
+
+        var confirm = { id: "delete" };
+        confirm.onConfirm = function () {
+
+            // Let the upload directive know the user deleted the hostedFunction so it can remove the upload preview display
+            $scope.$broadcast("uploadDeleted", hostedFunction);
+
+            ApiService.remove(uploadResponse.url, null, false);
+            utils.redirect($location, "/hosted_functions");
+        }
+        ConfirmService.showConfirm($scope, confirm);
+
+    });
+
+    var uploadCompleteListener = $scope.$on('uploadComplete', function (event, hostedFunction) {
+        GrowlsService.addGrowl({ id: "add_success", name: hostedFunction.name, type: "success", hosted_function_id: hostedFunction.hosted_function_id, url: "#/hosted_functions/" + hostedFunction.hosted_function_id + "/edit" });
+        utils.redirect($location, "/hosted_functions");
+    });
+
+    // TO_DO figure out when to call this. On route change?
+    var cancelListeners = function () {
+        uploadSendingListener();
+        uploadDeleteListener();
+        uploadCompleteListener();
+    }
+
+    $scope.addVariable = function () {
+        $scope.environmentVariables.push({ name: null, value: null });
+        $scope.setVariables();
+    }
+
+    $scope.removeVariable = function (variables, index) {
+        variables.splice(index, 1);
+        $scope.setVariables();
+    }
+
+    $scope.setVariables = function () {
+
+        // Loop through all the variables and set any that have both a name and value.
+        var variables = {};
+        $.each($scope.environmentVariables, function (index, item) {
+            if (!utils.isNullOrEmpty(item.name) && !utils.isNullOrEmpty(item.value)) {
+                variables[item.name] = item.value;
+            }
+        });
+
+        $scope.environment_variables_json = JSON.stringify(variables);
+    }
+
+    $scope.cancel = function () {
+        if ($scope.uploadSending) {
+            var confirm = { id: "upload_cancel" };
+            confirm.onConfirm = function () {
+                // Let the upload directive know the user cancelled the upload so it can stop sending data.
+                $scope.$broadcast("uploadCanceled");
+                utils.redirect($location, "/hosted_functions");
+            }
+            ConfirmService.showConfirm($scope, confirm);
+        } else {
+            utils.redirect($location, "/hosted_functions");
+        }
+    };
+
+}]);
+
+
+app.controller("HostedFunctionsEditCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
+
+    // Set defaults
+    $scope.hostedFunction = {};
+    $scope.exception = {};
+    $scope.environmentVariables = [];
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/hosted_functions/" + $routeParams.id)
+    $scope.uploadUrl = "/hosted_functions/" + $routeParams.id;
+
+    // Load the hostedFunction
+    ApiService.getItem($scope.url).then(function (hostedFunction) {
+        $scope.hostedFunction = hostedFunction;
+
+        if (hostedFunction.environment_variables) {
+            for (var property in hostedFunction.environment_variables) {
+                if (hostedFunction.environment_variables.hasOwnProperty(property)) {
+                    $scope.environmentVariables.push({ name: property, value: hostedFunction.environment_variables[property] });
+                }
+            }
+        }
+
+        // Make a copy of the original for comparision
+        $scope.hostedFunction_orig = angular.copy($scope.hostedFunction);
+
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+    $scope.confirmCancel = function () {
+        if (angular.equals($scope.hostedFunction, $scope.hostedFunction_orig)) {
+            utils.redirect($location, "/hosted_functions");
+        } else {
+            var confirm = { id: "changes_lost" };
+            confirm.onConfirm = function () {
+                utils.redirect($location, "/hosted_functions");
+            }
+            ConfirmService.showConfirm($scope, confirm);
+        }
+    }
+
+    $scope.uploadSending = false;
+    var uploadSendingListener = $scope.$on('uploadSending', function (event, sending) {
+        // Set uploadSending to the received value
+        $scope.$apply(function () {
+            $scope.uploadSending = sending;
+        });
+    });
+
+    var uploadResponseListener = $scope.$on('uploadComplete', function (event, uploadResponse) {
+        $scope.$apply(function () {
+            $scope.hostedFunction = uploadResponse;
+        });
+    });
+
+    // TO_DO figure out when to call this. On route change? NEED TO DO FOR IMAGES AS WELL.
+    var cancelListeners = function () {
+        uploadSendingListener();
+    }
+
+    $scope.cancelUpload = function () {
+        if ($scope.uploadSending) {
+            var confirm = { id: "upload_cancel" };
+            confirm.onConfirm = function () {
+                // Let the upload directive know the user cancelled the upload so it can stop sending data.
+                $scope.$broadcast("uploadCanceled");
+                utils.redirect($location, "/hosted_functions");
+            }
+            ConfirmService.showConfirm($scope, confirm);
+        } else {
+            utils.redirect($location, "/hosted_functions");
+        }
+    };
+
+    $scope.addVariable = function () {
+        $scope.environmentVariables.push({ name: null, value: null });
+    }
+
+    $scope.removeVariable = function (variables, index) {
+        variables.splice(index, 1);
+    }
+
+    var prepareSubmit = function () {
+        // Clear any previous errors
+        $scope.exception.error = null;
+
+        // Map variables array to object
+        $scope.hostedFunction.environment_variables = {};
+        for (var variable in $scope.environmentVariables) {
+            if (!utils.isNullOrEmpty($scope.environmentVariables[variable].name) && !utils.isNullOrEmpty($scope.environmentVariables[variable].value))
+            $scope.hostedFunction.environment_variables[$scope.environmentVariables[variable].name] = $scope.environmentVariables[variable].value;
+        }
+        $scope.hostedFunction.environment_variables = JSON.stringify($scope.hostedFunction.environment_variables);
+    }
+
+    $scope.updateHostedFunction = function () {
+
+        prepareSubmit();
+
+        ApiService.multipartForm($scope.hostedFunction, null, $scope.hostedFunction.url, { show: "hosted_function_id,name" }).then(function (hostedFunction) {
+            GrowlsService.addGrowl({ id: "edit_success", name: hostedFunction.name, type: "success", hosted_function_id: hostedFunction.hosted_function_id, url: "#/hosted_functions/" + hostedFunction.hosted_function_id + "/edit" });
+            utils.redirect($location, "/hosted_functions");
+        },
+        function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
+    $scope.confirmDelete = function () {
+        var confirm = { id: "delete" };
+        confirm.onConfirm = function () {
+            $scope.deleteHostedFunction();
+        }
+        ConfirmService.showConfirm($scope, confirm);
+    }
+
+    $scope.deleteHostedFunction = function () {
+
+        ApiService.remove($scope.hostedFunction.url)
+        .then(
+        function () {
+            GrowlsService.addGrowl({ id: "delete_success", name: $scope.hostedFunction.name, type: "success" });
+            utils.redirect($location, "/hosted_functions");
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception.error = error;
+        });
+    }
+
+}]);
+
+app.controller("ImagesListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
+
+    // Establish your scope containers
+    $scope.images = {};
+    $scope.nav = {};
+    $scope.exception = {};
+
+    // Establish your settings from query string parameters
+    $scope.parseParams = function () {
+        $scope.params = ($location.search())
+
+        // Convert any string true/false to bool
+        utils.stringsToBool($scope.params);
+
+        if ($scope.params.sort_by == null) {
+            $scope.params.sort_by = "date_created";
+        }
+
+        if ($scope.params.desc == null) {
+            $scope.params.desc = false;
+        }
+    }
+
+    $scope.loadImages = function () {
+
+        ApiService.getList(ApiService.buildUrl("/images?show=image_id,filename,link_square,link_large,date_created&sort_by=" + $scope.params.sort_by + "&desc=" + $scope.params.desc), $scope.params).then(function (result) {
+            $scope.images.imageList = result;
+
+            // If instructed, scroll to the top upon completion
+            if ($scope.nav.scrollTop == true) {
+                window.scrollTo(0, 0);
+            }
+            $scope.nav.scrollTop = null;
+
+        },
+        function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
+    $scope.search = function () {
+        if ($scope.params.q != null) {
+
+            // Reset the view to the first page
+            $scope.params.offset = null;
+            $scope.nav.scrollTop = true;
+
+            // If empty, reset to null
+            if ($scope.params.q == "") {
+                $scope.params.q = null;
+            }
+
+            $location.search($scope.params);
+        }
+    }
+
+    $scope.movePage = function (direction) {
+        if (direction == "+") {
+            $scope.params.offset = $scope.images.imageList.next_page_offset;
+        } else {
+            $scope.params.offset = $scope.images.imageList.previous_page_offset;
+        }
+        $scope.nav.scrollTop = true;
+        $location.search($scope.params);
+    }
+
+    $scope.sort = function (sort_by, desc) {
+        $scope.params.sort_by = sort_by;
+        $scope.params.desc = desc;
+        $location.search($scope.params);
+    }
+
+    $scope.$on('$routeUpdate', function (e) {
+        $scope.parseParams();
+        $scope.loadImages();
+    });
+
+    // Initial load
+    $scope.parseParams();
+    $scope.loadImages();
+
+}]);
+
+
+app.controller("ImagesAddCtrl", ['$scope', '$routeParams', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, GrowlsService, ApiService, ConfirmService) {
+
+    // Set defaults
+    $scope.image = {};
+    $scope.exception = {};
+    $scope.state = {};
+
+    $scope.state.uploadSending = false;
+    $scope.state.uploadComplete = false;
+
+    var uploadSendingListener = $scope.$on('uploadSending', function (event, sending) {
+        // Set uploadSending to the received value
+        $scope.$apply(function () {
+            $scope.state.uploadSending = sending;
+        });
+    });
+
+    // If the user has permission, allow the user to delete the file after upload
+    $scope.showDelete = false;
+    if (utils.hasPermission("images", "delete")) {
+        $scope.showDelete = true;
+    }
+
+    var uploadDeleteListener = $scope.$on('uploadDelete', function (event, uploadResponse, file) {
+
+        var confirm = { id: "delete" };
+        confirm.onConfirm = function () {
+
+            // Let the upload directive know the user deleted the file so it can remove the upload preview display
+            $scope.$broadcast("uploadDeleted", file);
+
+            // If the user has permission, delete the file completely
+            if (utils.hasPermission("images", "delete")) {
+                ApiService.remove(uploadResponse.url, null, false);
+            }
+        }
+        ConfirmService.showConfirm($scope, confirm);
+
+    });
+
+    var uploadCompleteListener = $scope.$on('uploadComplete', function (event, file) {
+        $scope.state.uploadComplete = true;
+    });
+
+    // Allow easy cleanup of listeners when modal is closed / dismissed.
+    var cancelListeners = function () {
+        uploadSendingListener();
+        uploadDeleteListener();
+        uploadCompleteListener();
+    }
+
+    $scope.cancel = function () {
+        if ($scope.state.uploadSending) {
+            var confirm = { id: "upload_cancel" };
+            confirm.onConfirm = function () {
+                // Let the upload directive know the user cancelled the upload so it can stop sending data.
+                $scope.$broadcast("uploadCanceled");
+                utils.redirect($location, "/images");
+            }
+            ConfirmService.showConfirm($scope, confirm);
+        } else {
+            utils.redirect($location, "/images");
+        }
+    };
+
+}]);
+
+
+app.controller("ImagesViewCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
+
+    // Set defaults
+    $scope.image = {};
+    $scope.exception = {};
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/images/" + $routeParams.id)
+
+    // Load the image
+    ApiService.getItem($scope.url).then(function (image) {
+        $scope.image = image;
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+    $scope.confirmDelete = function () {
+        var confirm = { id: "delete" };
+        confirm.onConfirm = function () {
+            $scope.deleteImage();
+        }
+        ConfirmService.showConfirm($scope, confirm);
+    }
+
+    $scope.deleteImage = function () {
+
+        ApiService.remove($scope.image.url)
+        .then(
+        function () {
+            GrowlsService.addGrowl({ id: "delete_success", name: $scope.image.filename, type: "success" });
+            utils.redirect($location, "/images");
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception = error;
+        });
+    }
+
+}]);
+
 app.controller("InvoicesListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
 
     // Establish your scope containers
@@ -3058,10 +3555,10 @@ app.controller("LicenseRequestViewCtrl", ['$scope', '$routeParams', '$location',
 
 
 
-app.controller("HostedFunctionsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
+app.controller("LicenseServicesListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
 
     // Establish your scope containers
-    $scope.hostedFunctions = {};
+    $scope.license_services = {};
     $scope.nav = {};
     $scope.exception = {};
 
@@ -3079,13 +3576,12 @@ app.controller("HostedFunctionsListCtrl", ['$scope', '$routeParams', '$location'
         if ($scope.params.desc == null) {
             $scope.params.desc = false;
         }
-
     }
 
-    $scope.loadHostedFunctions = function () {
+    $scope.loadLicenseServices = function () {
 
-        ApiService.getList(ApiService.buildUrl("/hosted_functions?show=hosted_function_id,filename,name,environment,bytes,date_created"), $scope.params).then(function (result) {
-            $scope.hostedFunctions.hostedFunctionList = result;
+        ApiService.getList(ApiService.buildUrl("/license_services?show=license_service_id,name,type,configuration.license_count,configuration.notify_at_count,date_created"), $scope.params).then(function (result) {
+            $scope.license_services.license_serviceList = result;
 
             // If instructed, scroll to the top upon completion
             if ($scope.nav.scrollTop == true) {
@@ -3098,6 +3594,14 @@ app.controller("HostedFunctionsListCtrl", ['$scope', '$routeParams', '$location'
             $scope.exception.error = error;
             window.scrollTo(0, 0);
         });
+    }
+
+    $scope.setParam = function (param, value) {
+        $scope.params[param] = value;
+        $scope.params.before_item = null;
+        $scope.params.after_item = null;
+        $scope.nav.scrollTop = true;
+        $location.search($scope.params);
     }
 
     $scope.search = function () {
@@ -3118,9 +3622,9 @@ app.controller("HostedFunctionsListCtrl", ['$scope', '$routeParams', '$location'
 
     $scope.movePage = function (direction) {
         if (direction == "+") {
-            $scope.params.offset = $scope.hostedFunctions.hostedFunctionList.next_page_offset;
+            $scope.params.offset = $scope.license_services.license_serviceList.next_page_offset;
         } else {
-            $scope.params.offset = $scope.hostedFunctions.hostedFunctionList.previous_page_offset;
+            $scope.params.offset = $scope.license_services.license_serviceList.previous_page_offset;
         }
         $scope.nav.scrollTop = true;
         $location.search($scope.params);
@@ -3134,224 +3638,151 @@ app.controller("HostedFunctionsListCtrl", ['$scope', '$routeParams', '$location'
 
     $scope.$on('$routeUpdate', function (e) {
         $scope.parseParams();
-        $scope.loadHostedFunctions();
+        $scope.loadLicenseServices();
     });
 
     // Initial load
     $scope.parseParams();
-    $scope.loadHostedFunctions();
+    $scope.loadLicenseServices();
 
 }]);
 
 
-app.controller("HostedFunctionsAddCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
+app.controller("LicenseServicesSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
+
+    $scope.licenses = {};
+    $scope.licenses.list = null;
+    $scope.exception = {};
 
     // Set defaults
-    $scope.hostedFunction = { environment_variables: {}};
-    $scope.exception = {};
-    $scope.environmentVariables = [];
+    $scope.license_service = {};
+    $scope.license_service.type = "list";
 
-    $scope.uploadSending = false;
-    var uploadSendingListener = $scope.$on('uploadSending', function (event, sending) {
-        // Set uploadSending to the received value
-        $scope.$apply(function () {
-            $scope.uploadSending = sending;
+    $scope.license_service.configuration = {};
+    $scope.license_service.configuration.format = "json";
+    $scope.license_service.configuration.per_quantity = false;
+    $scope.license_service.configuration.remove_after_use = true;
+    $scope.license_service.configuration.notify_at_count = 100;
+
+    if ($routeParams.id != null) {
+
+        // Indicate this is an edit
+        $scope.update = true;
+        $scope.add = false;
+
+        // Set the url for interacting with this item
+        $scope.url = ApiService.buildUrl("/license_services/" + $routeParams.id)
+
+        // Load the service
+        ApiService.getItem($scope.url).then(function (license_service) {
+            $scope.license_service = license_service;
+
+            if ($scope.license_service.type == "list") {
+                // Split the array into a line-delimited string
+                $scope.licenses.list = utils.arrayToString($scope.license_service.configuration.licenses);
+
+                // Set defaults for remote_url in case they toggle to it.
+                $scope.license_service.configuration.format = "json";
+
+            }
+
+            if ($scope.license_service.type == "remote_url") {
+                // Set defaults for list in case they toggle to it.
+                $scope.license_service.configuration.per_quantity = false;
+                $scope.license_service.configuration.remove_after_use = true;
+                $scope.license_service.configuration.notify_at_count = 100;
+            }
+
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
         });
-    });
+    } else {
 
-    var uploadDeleteListener = $scope.$on('uploadDelete', function (event, uploadResponse, hostedFunction) {
+        // Indicate this is an add
+        $scope.update = false;
+        $scope.add = true;
 
-        var confirm = { id: "delete" };
-        confirm.onConfirm = function () {
-
-            // Let the upload directive know the user deleted the hostedFunction so it can remove the upload preview display
-            $scope.$broadcast("uploadDeleted", hostedFunction);
-
-            ApiService.remove(uploadResponse.url, null, false);
-            utils.redirect($location, "/hosted_functions");
-        }
-        ConfirmService.showConfirm($scope, confirm);
-
-    });
-
-    var uploadCompleteListener = $scope.$on('uploadComplete', function (event, hostedFunction) {
-        GrowlsService.addGrowl({ id: "add_success", name: hostedFunction.name, type: "success", hosted_function_id: hostedFunction.hosted_function_id, url: "#/hosted_functions/" + hostedFunction.hosted_function_id + "/edit" });
-        utils.redirect($location, "/hosted_functions");
-    });
-
-    // TO_DO figure out when to call this. On route change?
-    var cancelListeners = function () {
-        uploadSendingListener();
-        uploadDeleteListener();
-        uploadCompleteListener();
-    }
-
-    $scope.addVariable = function () {
-        $scope.environmentVariables.push({ name: null, value: null });
-        $scope.setVariables();
-    }
-
-    $scope.removeVariable = function (variables, index) {
-        variables.splice(index, 1);
-        $scope.setVariables();
-    }
-
-    $scope.setVariables = function () {
-
-        // Loop through all the variables and set any that have both a name and value.
-        var variables = {};
-        $.each($scope.environmentVariables, function (index, item) {
-            if (!utils.isNullOrEmpty(item.name) && !utils.isNullOrEmpty(item.value)) {
-                variables[item.name] = item.value;
-            }
-        });
-
-        $scope.environment_variables_json = JSON.stringify(variables);
-    }
-
-    $scope.cancel = function () {
-        if ($scope.uploadSending) {
-            var confirm = { id: "upload_cancel" };
-            confirm.onConfirm = function () {
-                // Let the upload directive know the user cancelled the upload so it can stop sending data.
-                $scope.$broadcast("uploadCanceled");
-                utils.redirect($location, "/hosted_functions");
-            }
-            ConfirmService.showConfirm($scope, confirm);
-        } else {
-            utils.redirect($location, "/hosted_functions");
-        }
-    };
-
-}]);
-
-
-app.controller("HostedFunctionsEditCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
-
-    // Set defaults
-    $scope.hostedFunction = {};
-    $scope.exception = {};
-    $scope.environmentVariables = [];
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/hosted_functions/" + $routeParams.id)
-    $scope.uploadUrl = "/hosted_functions/" + $routeParams.id;
-
-    // Load the hostedFunction
-    ApiService.getItem($scope.url).then(function (hostedFunction) {
-        $scope.hostedFunction = hostedFunction;
-
-        if (hostedFunction.environment_variables) {
-            for (var property in hostedFunction.environment_variables) {
-                if (hostedFunction.environment_variables.hasOwnProperty(property)) {
-                    $scope.environmentVariables.push({ name: property, value: hostedFunction.environment_variables[property] });
-                }
-            }
-        }
-
-        // Make a copy of the original for comparision
-        $scope.hostedFunction_orig = angular.copy($scope.hostedFunction);
-
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-    $scope.confirmCancel = function () {
-        if (angular.equals($scope.hostedFunction, $scope.hostedFunction_orig)) {
-            utils.redirect($location, "/hosted_functions");
-        } else {
-            var confirm = { id: "changes_lost" };
-            confirm.onConfirm = function () {
-                utils.redirect($location, "/hosted_functions");
-            }
-            ConfirmService.showConfirm($scope, confirm);
-        }
-    }
-
-    $scope.uploadSending = false;
-    var uploadSendingListener = $scope.$on('uploadSending', function (event, sending) {
-        // Set uploadSending to the received value
-        $scope.$apply(function () {
-            $scope.uploadSending = sending;
-        });
-    });
-
-    var uploadResponseListener = $scope.$on('uploadComplete', function (event, uploadResponse) {
-        $scope.$apply(function () {
-            $scope.hostedFunction = uploadResponse;
-        });
-    });
-
-    // TO_DO figure out when to call this. On route change? NEED TO DO FOR IMAGES AS WELL.
-    var cancelListeners = function () {
-        uploadSendingListener();
-    }
-
-    $scope.cancelUpload = function () {
-        if ($scope.uploadSending) {
-            var confirm = { id: "upload_cancel" };
-            confirm.onConfirm = function () {
-                // Let the upload directive know the user cancelled the upload so it can stop sending data.
-                $scope.$broadcast("uploadCanceled");
-                utils.redirect($location, "/hosted_functions");
-            }
-            ConfirmService.showConfirm($scope, confirm);
-        } else {
-            utils.redirect($location, "/hosted_functions");
-        }
-    };
-
-    $scope.addVariable = function () {
-        $scope.environmentVariables.push({ name: null, value: null });
-    }
-
-    $scope.removeVariable = function (variables, index) {
-        variables.splice(index, 1);
     }
 
     var prepareSubmit = function () {
         // Clear any previous errors
         $scope.exception.error = null;
-
-        // Map variables array to object
-        $scope.hostedFunction.environment_variables = {};
-        for (var variable in $scope.environmentVariables) {
-            if (!utils.isNullOrEmpty($scope.environmentVariables[variable].name) && !utils.isNullOrEmpty($scope.environmentVariables[variable].value))
-            $scope.hostedFunction.environment_variables[$scope.environmentVariables[variable].name] = $scope.environmentVariables[variable].value;
-        }
-        $scope.hostedFunction.environment_variables = JSON.stringify($scope.hostedFunction.environment_variables);
     }
 
-    $scope.updateHostedFunction = function () {
-
-        prepareSubmit();
-
-        ApiService.multipartForm($scope.hostedFunction, null, $scope.hostedFunction.url, { show: "hosted_function_id,name" }).then(function (hostedFunction) {
-            GrowlsService.addGrowl({ id: "edit_success", name: hostedFunction.name, type: "success", hosted_function_id: hostedFunction.hosted_function_id, url: "#/hosted_functions/" + hostedFunction.hosted_function_id + "/edit" });
-            utils.redirect($location, "/hosted_functions");
-        },
-        function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
+    // We don't make a copy and check the copy for changes on this page because the list of licenses may be huge and duplicating it could be expensive.
+    $scope.confirmCancel = function () {
+        var confirm = { id: "changes_lost" };
+        confirm.onConfirm = function () {
+            utils.redirect($location, "/license_services");
+        }
+        ConfirmService.showConfirm($scope, confirm);
     }
 
     $scope.confirmDelete = function () {
         var confirm = { id: "delete" };
         confirm.onConfirm = function () {
-            $scope.deleteHostedFunction();
+            $scope.delete();
         }
         ConfirmService.showConfirm($scope, confirm);
     }
 
-    $scope.deleteHostedFunction = function () {
+    $scope.addLicenseService = function () {
 
-        ApiService.remove($scope.hostedFunction.url)
+        prepareSubmit();
+
+        if ($scope.form.$invalid) {
+            window.scrollTo(0, 0);
+            return;
+        }
+
+        if ($scope.licenses.list != null && $scope.license_service.type == "list") {
+            $scope.license_service.configuration.licenses = utils.stringToArray($scope.licenses.list);
+        }
+
+        ApiService.set($scope.license_service, ApiService.buildUrl("/license_services"), { show: "license_service_id,name" })
         .then(
-        function () {
-            GrowlsService.addGrowl({ id: "delete_success", name: $scope.hostedFunction.name, type: "success" });
-            utils.redirect($location, "/hosted_functions");
+        function (license_service) {
+            GrowlsService.addGrowl({ id: "add_success", name: license_service.name, type: "success", license_service_id: license_service.license_service_id, url: "#/license_services/" + license_service.license_service_id + "/edit" });
+            window.location = "#/license_services";
+        },
+        function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
+    $scope.updateLicenseService = function () {
+
+        prepareSubmit();
+
+        if ($scope.form.$invalid) {
+            return;
+        }
+
+        if ($scope.licenses.list != null && $scope.license_service.type == "list") {
+            $scope.license_service.configuration.licenses = utils.stringToArray($scope.licenses.list);
+        }
+
+        ApiService.set($scope.license_service, $scope.url, { show: "license_service_id,name" })
+        .then(
+        function (license_service) {
+            GrowlsService.addGrowl({ id: "edit_success", name: license_service.name, type: "success", license_service_id: license_service.license_service_id, url: "#/license_services/" + license_service.license_service_id + "/edit" });
+            utils.redirect($location, "/license_services");
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception.error = error;
+        });
+    }
+
+    $scope.delete = function () {
+
+        ApiService.remove($scope.license_service.url)
+        .then(
+        function (license_service) {
+            GrowlsService.addGrowl({ id: "delete_success", name: $scope.license_service.name, type: "success" });
+            utils.redirect($location, "/license_services");
         },
         function (error) {
             window.scrollTo(0, 0);
@@ -3361,199 +3792,75 @@ app.controller("HostedFunctionsEditCtrl", ['$scope', '$routeParams', '$location'
 
 }]);
 
-app.controller("ImagesListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
+app.controller("NotificationsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
 
     // Establish your scope containers
-    $scope.images = {};
-    $scope.nav = {};
     $scope.exception = {};
-
-    // Establish your settings from query string parameters
-    $scope.parseParams = function () {
-        $scope.params = ($location.search())
-
-        // Convert any string true/false to bool
-        utils.stringsToBool($scope.params);
-
-        if ($scope.params.sort_by == null) {
-            $scope.params.sort_by = "date_created";
-        }
-
-        if ($scope.params.desc == null) {
-            $scope.params.desc = false;
-        }
-    }
-
-    $scope.loadImages = function () {
-
-        ApiService.getList(ApiService.buildUrl("/images?show=image_id,filename,link_square,link_large,date_created&sort_by=" + $scope.params.sort_by + "&desc=" + $scope.params.desc), $scope.params).then(function (result) {
-            $scope.images.imageList = result;
-
-            // If instructed, scroll to the top upon completion
-            if ($scope.nav.scrollTop == true) {
-                window.scrollTo(0, 0);
-            }
-            $scope.nav.scrollTop = null;
-
-        },
-        function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    }
-
-    $scope.search = function () {
-        if ($scope.params.q != null) {
-
-            // Reset the view to the first page
-            $scope.params.offset = null;
-            $scope.nav.scrollTop = true;
-
-            // If empty, reset to null
-            if ($scope.params.q == "") {
-                $scope.params.q = null;
-            }
-
-            $location.search($scope.params);
-        }
-    }
-
-    $scope.movePage = function (direction) {
-        if (direction == "+") {
-            $scope.params.offset = $scope.images.imageList.next_page_offset;
-        } else {
-            $scope.params.offset = $scope.images.imageList.previous_page_offset;
-        }
-        $scope.nav.scrollTop = true;
-        $location.search($scope.params);
-    }
-
-    $scope.sort = function (sort_by, desc) {
-        $scope.params.sort_by = sort_by;
-        $scope.params.desc = desc;
-        $location.search($scope.params);
-    }
-
-    $scope.$on('$routeUpdate', function (e) {
-        $scope.parseParams();
-        $scope.loadImages();
-    });
-
-    // Initial load
-    $scope.parseParams();
-    $scope.loadImages();
+    $scope.resources = {};
+    $scope.resources.notificationListUrl = ApiService.buildUrl("/notifications");
 
 }]);
 
+app.controller("NotificationsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'GrowlsService', '$sce', function ($scope, $routeParams, ApiService, GrowlsService, $sce) {
 
-app.controller("ImagesAddCtrl", ['$scope', '$routeParams', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, GrowlsService, ApiService, ConfirmService) {
-
-    // Set defaults
-    $scope.image = {};
-    $scope.exception = {};
-    $scope.state = {};
-
-    $scope.state.uploadSending = false;
-    $scope.state.uploadComplete = false;
-
-    var uploadSendingListener = $scope.$on('uploadSending', function (event, sending) {
-        // Set uploadSending to the received value
-        $scope.$apply(function () {
-            $scope.state.uploadSending = sending;
-        });
-    });
-
-    // If the user has permission, allow the user to delete the file after upload
-    $scope.showDelete = false;
-    if (utils.hasPermission("images", "delete")) {
-        $scope.showDelete = true;
-    }
-
-    var uploadDeleteListener = $scope.$on('uploadDelete', function (event, uploadResponse, file) {
-
-        var confirm = { id: "delete" };
-        confirm.onConfirm = function () {
-
-            // Let the upload directive know the user deleted the file so it can remove the upload preview display
-            $scope.$broadcast("uploadDeleted", file);
-
-            // If the user has permission, delete the file completely
-            if (utils.hasPermission("images", "delete")) {
-                ApiService.remove(uploadResponse.url, null, false);
-            }
-        }
-        ConfirmService.showConfirm($scope, confirm);
-
-    });
-
-    var uploadCompleteListener = $scope.$on('uploadComplete', function (event, file) {
-        $scope.state.uploadComplete = true;
-    });
-
-    // Allow easy cleanup of listeners when modal is closed / dismissed.
-    var cancelListeners = function () {
-        uploadSendingListener();
-        uploadDeleteListener();
-        uploadCompleteListener();
-    }
-
-    $scope.cancel = function () {
-        if ($scope.state.uploadSending) {
-            var confirm = { id: "upload_cancel" };
-            confirm.onConfirm = function () {
-                // Let the upload directive know the user cancelled the upload so it can stop sending data.
-                $scope.$broadcast("uploadCanceled");
-                utils.redirect($location, "/images");
-            }
-            ConfirmService.showConfirm($scope, confirm);
-        } else {
-            utils.redirect($location, "/images");
-        }
-    };
-
-}]);
-
-
-app.controller("ImagesViewCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
-
-    // Set defaults
-    $scope.image = {};
+    $scope.notification = {};
     $scope.exception = {};
 
     // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/images/" + $routeParams.id)
+    $scope.url = ApiService.buildUrl("/notifications/" + $routeParams.id);
+    $scope.previewUrl = null;
+    $scope.showResend = false;
 
-    // Load the image
-    ApiService.getItem($scope.url).then(function (image) {
-        $scope.image = image;
+    // Load the notification
+    var params = { expand: "customer", hide: "data" };
+    ApiService.getItem($scope.url, params).then(function (notification) {
+        $scope.notification = notification;
+        $scope.previewUrl = $sce.trustAsResourceUrl("app/pages/notifications/preview/index.html?notification_id=" + notification.notification_id);
+        $scope.email = notification.customer.email;
     }, function (error) {
         $scope.exception.error = error;
         window.scrollTo(0, 0);
     });
 
-    $scope.confirmDelete = function () {
-        var confirm = { id: "delete" };
-        confirm.onConfirm = function () {
-            $scope.deleteImage();
+    $scope.resend = function (form) {
+
+        if (form.$invalid) {
+            return;
         }
-        ConfirmService.showConfirm($scope, confirm);
-    }
 
-    $scope.deleteImage = function () {
-
-        ApiService.remove($scope.image.url)
-        .then(
-        function () {
-            GrowlsService.addGrowl({ id: "delete_success", name: $scope.image.filename, type: "success" });
-            utils.redirect($location, "/images");
-        },
-        function (error) {
+        var body = { destination: $scope.email };
+        ApiService.set(body, $scope.url + "/resend", { show: "notification_id" } ).then(function (response) {
+            GrowlsService.addGrowl({ id: "notification_resend", email: $scope.email, type: "success" });
+            $scope.showResend = false;
+        }, function (error) {
+            $scope.exception.error = error;
             window.scrollTo(0, 0);
-            $scope.exception = error;
         });
     }
 
 }]);
+
+app.controller("NotificationsPreviewCtrl", ['$scope', '$routeParams', 'ApiService', function ($scope, $routeParams, ApiService) {
+
+    $scope.notification = {};
+    $scope.exception = {};
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/notifications/" + $routeParams.id)
+
+    // Load the notification
+    var params = { show: "body" };
+    ApiService.getItem($scope.url, params).then(function (notification) {
+        $scope.notification = notification;
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+}]);
+
+
+
 
 app.controller("NotificationSubscriptionsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
 
@@ -3920,6 +4227,17 @@ app.controller("PaymentsAddCtrl", ['$scope', '$location', '$routeParams', 'ApiSe
         $scope.payment.payment_method = { type: "credit_card" };
     }
 
+    $scope.calculateTotal = function (payment) {
+
+        var subtotal = payment.subtotal || 0;
+        var shipping = payment.shipping || 0;
+        var tax = payment.tax || 0;
+
+        // If subtotal + shipping + tax is zero, return the supplied total instead.
+        return Number(subtotal) + Number(shipping) + Number(tax) || payment.total;
+
+    }
+
     $scope.functions.onCustomerSelect = function (customer) {
 
         delete $scope.payment.customer_id;
@@ -3947,15 +4265,17 @@ app.controller("PaymentsAddCtrl", ['$scope', '$location', '$routeParams', 'ApiSe
 
     }
 
-    $scope.functions.setPaymentMethod = function (paymentMethod) {
+    $scope.functions.setPaymentMethod = function (id, type) {
 
-        if (paymentMethod) {
-            // Set the supplied payment method
-            $scope.payment.payment_method = paymentMethod;
-        } else {
-            // Set a blank payment method
-            $scope.payment.payment_method = { type: "credit_card" };
-        }
+        // Remove all data from the payment method
+        $scope.payment.payment_method = {};
+
+        // If a payment_method_id or type is provided, set it.
+        if (id)
+            $scope.payment.payment_method.payment_method_id = id;
+
+        if (type)
+            $scope.payment.payment_method.type = type;
 
     }
 
@@ -4827,6 +5147,640 @@ app.controller("RefundsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'Conf
 
 
 
+app.controller("ReportCommissionsController", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'TimezonesService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, TimezonesService) {
+
+    $scope.exception = {};
+
+    // Load the timezones
+    $scope.timezones = TimezonesService.getTimezones();
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/reports/commissions");
+
+    // Set defaults
+    $scope.options = {};
+    $scope.options.category = null;
+    $scope.options.desc = "true";
+    $scope.options.sort_by = "total";
+    $scope.options.timezone = "UTC";
+    $scope.options.dates = "this_month";
+    $scope.options.search_by = "date";
+    $scope.options.accounting_id = null;
+
+    // Set the currencies
+    $scope.options.currencies = ["Actual", localStorage.getItem("reporting_currency_primary"), localStorage.getItem("reporting_currency_secondary")];
+    $scope.options.currency = $scope.options.currencies[0];
+
+    // For scrolling
+    $scope.nav = {};
+
+    // Datepicker options
+    $scope.datepicker = {};
+    $scope.datepicker.status = {};
+    $scope.datepicker.options = {
+        startingDay: 1,
+        showWeeks: false,
+        initDate: new Date(),
+        yearRange: 10
+    };
+
+    $scope.datepicker.status.date_start = {
+        opened: false
+    };
+
+    $scope.datepicker.status.date_end = {
+        opened: false
+    };
+
+    $scope.datepicker.open = function ($event, which) {
+        $scope.datepicker.status[which].opened = true;
+    };
+
+    $scope.run = function (reset) {
+
+        // Clear any previous errors
+        $scope.exception = {};
+
+        if (reset) {
+            $scope.options.offset = "0";
+        }
+
+        // Determine your start date and end date
+        var date_start = $scope.options.dates;
+        date_end = $scope.options.dates;
+
+        // Override if necessary
+        switch($scope.options.dates) {
+            case "last_30":
+                date_start = -29;
+                date_end = 0;
+                break;
+            case "last_7":
+                date_start = -6;
+                date_end = 0;
+                break;
+            case "custom":
+
+                if (!$scope.datepicker.date_end) {
+                    $scope.datepicker.date_end = new Date();
+                }
+
+                if (!$scope.datepicker.date_start) {
+                    $scope.datepicker.date_start = $scope.datepicker.date_end;
+                }
+
+                date_start = $scope.datepicker.date_start.toISOString().substring(0, 10);
+                date_end = $scope.datepicker.date_end.toISOString().substring(0, 10);
+                break;
+        }
+
+        if ($scope.options.search_by == "doc") {
+            date_start = null;
+            date_end = null;
+        }
+
+        var accounting_id = $scope.options.accounting_id;
+        if ($scope.options.search_by == "date") {
+            accounting_id = null;
+        }
+
+        var currency = $scope.options.currency;
+        if (currency == "Actual") {
+            currency = null;
+        }
+
+        ApiService.getItem($scope.url, { category: $scope.options.category, currency: currency, accounting_id: accounting_id, sort_by: $scope.options.sort_by, timezone: $scope.options.timezone, desc: $scope.options.desc, date_start: date_start, date_end: date_end, offset: $scope.options.offset, formatted: true }, true, 90000).then(function (report) {
+
+            $scope.report = report;
+
+            // Trim the data down for the chart.
+            $scope.data = {};
+            _.each(report.data, function (item) {
+                $scope.data[item.currency] = {};
+                $scope.data[item.currency].data = [];
+                $scope.data[item.currency].labels = [];
+                $scope.data[item.currency].values = [];
+                _.each(item.breakdowns, function (breakdown) {
+                    $scope.data[item.currency].data.push(breakdown.total);
+                    $scope.data[item.currency].labels.push(breakdown.type.split("_").join(" "));
+                    $scope.data[item.currency].values.push(breakdown.formatted.total);
+                });
+            });
+
+            // If instructed, scroll to the top upon completion
+            if ($scope.nav.scrollTop == true) {
+                window.scrollTo(0, 0);
+            }
+            $scope.nav.scrollTop = null;
+
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+
+    }
+
+    $scope.getChartData = function (reportGroup) {
+
+        // Trim the data down for the chart.
+        var dataSet = {};
+        var data = [];
+        var labels = [];
+        var values = [];
+
+        _.each(reportGroup.breakdowns, function (item) {
+            data.push(item.total);
+            // Fill the labels for the bar chart
+            labels.push(item.name);
+            values.push(item.formatted.total);
+        });
+
+        dataSet.data = data;
+        dataSet.labels = labels;
+        dataSet.values = values;
+        return dataSet;
+
+    }
+
+    $scope.downloadCsv = function (data, currency) {
+
+        // Determine the filename
+        var category = "all";
+        if ($scope.options.category) {
+            category = $scope.options.category;
+        }
+
+        if ($scope.options.search_by == "doc") {
+            var filename = "commissionss_" + category + "_" + currency + "_" + $scope.options.accounting_id;
+        }
+
+        var accounting_id = $scope.options.accounting_id;
+        if ($scope.options.search_by == "date") {
+            var filename = "commissionss_" + category + "_" + currency + "_" + utils.replaceAll($scope.report.date_start, "-", "").substring(0, 8) + "-" + utils.replaceAll($scope.report.date_end, "-", "").substring(0, 8) + "_" + utils.replaceAll($scope.report.timezone, " ", "_").replace("/", "_");
+        }
+
+        // Slip the currency into the recordset
+        _.each(data, function (item) {
+            item.currency = currency;
+        });
+
+        utils.jsonToCsvDownload(data, filename);
+
+    }
+
+    // Perform the initial load
+    $scope.run();
+
+}]);
+
+app.controller("ReportFeesController", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'TimezonesService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, TimezonesService) {
+
+    $scope.exception = {};
+
+    // Load the timezones
+    $scope.timezones = TimezonesService.getTimezones();
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/reports/fees");
+
+    // Set defaults
+    $scope.options = {};
+    $scope.options.category = null;
+    $scope.options.desc = "true";
+    $scope.options.sort_by = "total";
+    $scope.options.timezone = "UTC";
+    $scope.options.dates = "this_month";
+    $scope.options.search_by = "date";
+    $scope.options.accounting_id = null;
+
+    // Set the currencies
+    $scope.options.currencies = ["Actual", localStorage.getItem("reporting_currency_primary"), localStorage.getItem("reporting_currency_secondary")];
+    $scope.options.currency = $scope.options.currencies[0];
+
+    // For scrolling
+    $scope.nav = {};
+
+    // Datepicker options
+    $scope.datepicker = {};
+    $scope.datepicker.status = {};
+    $scope.datepicker.options = {
+        startingDay: 1,
+        showWeeks: false,
+        initDate: new Date(),
+        yearRange: 10
+    };
+
+    $scope.datepicker.status.date_start = {
+        opened: false
+    };
+
+    $scope.datepicker.status.date_end = {
+        opened: false
+    };
+
+    $scope.datepicker.open = function ($event, which) {
+        $scope.datepicker.status[which].opened = true;
+    };
+
+    $scope.run = function (reset) {
+
+        // Clear any previous errors
+        $scope.exception = {};
+
+        if (reset) {
+            $scope.options.offset = "0";
+        }
+
+        // Determine your start date and end date
+        var date_start = $scope.options.dates;
+        date_end = $scope.options.dates;
+
+        // Override if necessary
+        switch($scope.options.dates) {
+            case "last_30":
+                date_start = -29;
+                date_end = 0;
+                break;
+            case "last_7":
+                date_start = -6;
+                date_end = 0;
+                break;
+            case "custom":
+
+                if (!$scope.datepicker.date_end) {
+                    $scope.datepicker.date_end = new Date();
+                }
+
+                if (!$scope.datepicker.date_start) {
+                    $scope.datepicker.date_start = $scope.datepicker.date_end;
+                }
+
+                date_start = $scope.datepicker.date_start.toISOString().substring(0, 10);
+                date_end = $scope.datepicker.date_end.toISOString().substring(0, 10);
+                break;
+        }
+
+        if ($scope.options.search_by == "doc") {
+            date_start = null;
+            date_end = null;
+        }
+
+        var accounting_id = $scope.options.accounting_id;
+        if ($scope.options.search_by == "date") {
+            accounting_id = null;
+        }
+
+        var currency = $scope.options.currency;
+        if (currency == "Actual") {
+            currency = null;
+        }
+
+        ApiService.getItem($scope.url, { category: $scope.options.category, currency: currency, accounting_id: accounting_id, sort_by: $scope.options.sort_by, timezone: $scope.options.timezone, desc: $scope.options.desc, date_start: date_start, date_end: date_end, offset: $scope.options.offset, formatted: true }, true, 90000).then(function (report) {
+
+            $scope.report = report;
+
+            // Trim the data down for the chart.
+            $scope.data = {};
+            _.each(report.data, function (item) {
+                $scope.data[item.currency] = {};
+                $scope.data[item.currency].data = [];
+                $scope.data[item.currency].labels = [];
+                $scope.data[item.currency].values = [];
+                _.each(item.breakdowns, function (breakdown) {
+                    $scope.data[item.currency].data.push(breakdown.total);
+                    $scope.data[item.currency].labels.push(breakdown.type.split("_").join(" "));
+                    $scope.data[item.currency].values.push(breakdown.formatted.total);
+                });
+            });
+
+            // If instructed, scroll to the top upon completion
+            if ($scope.nav.scrollTop == true) {
+                window.scrollTo(0, 0);
+            }
+            $scope.nav.scrollTop = null;
+
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+
+    }
+
+    $scope.getChartData = function (reportGroup) {
+
+        // Trim the data down for the chart.
+        var dataSet = {};
+        var data = [];
+        var labels = [];
+        var values = [];
+
+        _.each(reportGroup.breakdowns, function (item) {
+            data.push(item.total);
+            // Fill the labels for the bar chart
+            labels.push(item.name);
+            values.push(item.formatted.total);
+        });
+
+        dataSet.data = data;
+        dataSet.labels = labels;
+        dataSet.values = values;
+        return dataSet;
+
+    }
+
+    $scope.downloadCsv = function (data, currency) {
+
+        // Determine the filename
+        var category = "all";
+        if ($scope.options.category) {
+            category = $scope.options.category;
+        }
+
+        if ($scope.options.search_by == "doc") {
+            var filename = "fees_" + category + "_" + currency + "_" + $scope.options.accounting_id;
+        }
+
+        var accounting_id = $scope.options.accounting_id;
+        if ($scope.options.search_by == "date") {
+            var filename = "fees_" + category + "_" + currency + "_" + utils.replaceAll($scope.report.date_start, "-", "").substring(0, 8) + "-" + utils.replaceAll($scope.report.date_end, "-", "").substring(0, 8) + "_" + utils.replaceAll($scope.report.timezone, " ", "_").replace("/", "_");
+        }
+
+        // Slip the currency into the recordset
+        _.each(data, function (item) {
+            item.currency = currency;
+        });
+
+        utils.jsonToCsvDownload(data, filename);
+
+    }
+
+    // Perform the initial load
+    $scope.run();
+
+}]);
+
+app.controller("ReportItemsController", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'TimezonesService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, TimezonesService) {
+
+    $scope.exception = {};
+
+    // Load the timezones
+    $scope.timezones = TimezonesService.getTimezones();
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/reports/items");
+
+    // Set defaults
+    $scope.options = {};
+    $scope.options.type = "combined";
+    $scope.options.desc = "true";
+    $scope.options.sort_by = "subtotal";
+    $scope.options.timezone = "UTC";
+    $scope.options.dates = "yesterday";
+    $scope.options.offset = "0";
+    $scope.options.labels = [];
+    $scope.options.values = [];
+
+    // Set the currencies
+    $scope.options.currencies = [];
+    $scope.options.currencies.push(localStorage.getItem("reporting_currency_primary"));
+    $scope.options.currencies.push(localStorage.getItem("reporting_currency_secondary"));
+    $scope.options.currency = $scope.options.currencies[0];
+
+    // For scrolling
+    $scope.nav = {};
+
+    // Datepicker options
+    $scope.datepicker = {};
+    $scope.datepicker.status = {};
+    $scope.datepicker.options = {
+        startingDay: 1,
+        showWeeks: false,
+        initDate: new Date(),
+        yearRange: 10
+    };
+
+    $scope.datepicker.status.date_start = {
+        opened: false
+    };
+
+    $scope.datepicker.status.date_end = {
+        opened: false
+    };
+
+    $scope.datepicker.open = function ($event, which) {
+        $scope.datepicker.status[which].opened = true;
+    };
+
+    $scope.run = function (reset) {
+
+        // Clear any previous errors
+        $scope.exception = {};
+
+        if (reset) {
+            $scope.options.offset = "0";
+        }
+
+        // Determine your start date and end date
+        var date_start = $scope.options.dates;
+        date_end = $scope.options.dates;
+
+        // Override if necessary
+        switch($scope.options.dates) {
+            case "last_30":
+                date_start = -29;
+                date_end = 0;
+                break;
+            case "last_7":
+                date_start = -6;
+                date_end = 0;
+                break;
+            case "custom":
+
+                if (!$scope.datepicker.date_end) {
+                    $scope.datepicker.date_end = new Date();
+                }
+
+                if (!$scope.datepicker.date_start) {
+                    $scope.datepicker.date_start = $scope.datepicker.date_end;
+                }
+
+                date_start = $scope.datepicker.date_start.toISOString().substring(0, 10);
+                date_end = $scope.datepicker.date_end.toISOString().substring(0, 10);
+                break;
+        }
+
+        ApiService.getItem($scope.url, { type: $scope.options.type, sort_by: $scope.options.sort_by, timezone: $scope.options.timezone, desc: $scope.options.desc, date_start: date_start, date_end: date_end, currency: $scope.options.currency, offset: $scope.options.offset, formatted: true }, true, 90000).then(function (report) {
+
+            $scope.report = report;
+
+            // Trim the data down for the chart.
+            $scope.data = [];
+            $scope.options.labels = [];
+            $scope.options.values = [];
+            _.each(report.data, function (item) {
+                $scope.data.push(item.total);
+
+                // Fill the labels for the bar chart
+                $scope.options.labels.push(item.name);
+                $scope.options.values.push(item.formatted.total);
+            });
+
+            // If instructed, scroll to the top upon completion
+            if ($scope.nav.scrollTop == true) {
+                window.scrollTo(0, 0);
+            }
+            $scope.nav.scrollTop = null;
+
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+
+    }
+
+    $scope.movePage = function (direction) {
+        if (direction == "+") {
+            $scope.options.offset = $scope.report.next_page_offset;
+        } else {
+            $scope.options.offset = $scope.report.previous_page_offset;
+        }
+        $scope.nav.scrollTop = true;
+        $scope.run();
+    }
+
+    $scope.downloadCsv = function (data) {
+
+        // Determine the filename
+        var filename = "sales_by_product_" + $scope.report.type + "_" + utils.replaceAll($scope.report.date_start, "-", "").substring(0, 8) + "-" + utils.replaceAll($scope.report.date_end, "-", "").substring(0, 8) + "_" + utils.replaceAll($scope.report.timezone, " ", "_").replace("/", "_");
+
+        utils.jsonToCsvDownload(data, filename);
+
+    }
+
+    // Perform the initial load
+    $scope.run();
+
+}]);
+
+app.controller("ReportSalesCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'TimezonesService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, TimezonesService) {
+
+    $scope.exception = {};
+
+    // Load the timezones
+    $scope.timezones = TimezonesService.getTimezones();
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/reports/sales");
+
+    // Set defaults
+    $scope.options = {};
+    $scope.options.type = "combined";
+    $scope.options.segment = "all";
+    $scope.options.group_by = "day";
+    $scope.options.timezone = "UTC";
+    $scope.options.dates = "last_30";
+    $scope.options.labels = [];
+    $scope.options.values = [];
+
+    // Set the currencies
+    $scope.options.currencies = [];
+    $scope.options.currencies.push(localStorage.getItem("reporting_currency_primary"));
+    $scope.options.currencies.push(localStorage.getItem("reporting_currency_secondary"));
+    $scope.options.currency = $scope.options.currencies[0];
+
+    // Datepicker options
+    $scope.datepicker = {};
+    $scope.datepicker.status = {};
+    $scope.datepicker.options = {
+        startingDay: 1,
+        showWeeks: false,
+        initDate: new Date(),
+        yearRange: 10
+    };
+
+    $scope.datepicker.status.date_start = {
+        opened: false
+    };
+
+    $scope.datepicker.status.date_end = {
+        opened: false
+    };
+
+    $scope.datepicker.open = function ($event, which) {
+        $scope.datepicker.status[which].opened = true;
+    };
+
+    $scope.run = function () {
+
+        // Clear any previous errors
+        $scope.exception = {};
+
+        // Determine your start date and end date
+        var date_start = $scope.options.dates;
+        date_end = $scope.options.dates;
+
+        // Override if necessary
+        switch($scope.options.dates) {
+            case "last_30":
+                date_start = -29;
+                date_end = 0;
+                break;
+            case "last_7":
+                date_start = -6;
+                date_end = 0;
+                break;
+            case "custom":
+
+                if (!$scope.datepicker.date_end) {
+                    $scope.datepicker.date_end = new Date();
+                }
+
+                if (!$scope.datepicker.date_start) {
+                    $scope.datepicker.date_start = $scope.datepicker.date_end;
+                }
+
+                date_start = $scope.datepicker.date_start.toISOString().substring(0, 10);
+                date_end = $scope.datepicker.date_end.toISOString().substring(0, 10);
+                break;
+        }
+
+        ApiService.getItem($scope.url, { type: $scope.options.type, group_by: $scope.options.group_by, timezone: $scope.options.timezone, segment: $scope.options.segment, date_start: date_start, date_end: date_end, currency: $scope.options.currency, formatted: true }).then(function (report) {
+
+            $scope.report = report;
+
+            // Trim the data down for the chart.
+            $scope.data = [];
+            $scope.options.labels = [];
+            $scope.options.values = [];
+            _.each(report.data, function (item) {
+                $scope.data.push(item.total - item.tax);
+
+                // Fill the labels for the bar chart
+                $scope.options.labels.push(item.total);
+                $scope.options.values.push(item.formatted.total);
+            })
+
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+
+    }
+
+    $scope.downloadCsv = function (data) {
+
+        // Determine the filename
+        var filename = "sales_" + $scope.report.type + "_" + $scope.report.segment + "_" + utils.replaceAll($scope.report.date_start, "-", "").substring(0, 8) + "-" + utils.replaceAll($scope.report.date_end, "-", "").substring(0, 8) + "_" + utils.replaceAll($scope.report.timezone, " ", "_").replace("/", "_");
+
+       utils.jsonToCsvDownload(data, filename);
+
+    }
+
+    // Perform the initial load
+    $scope.run();
+
+}]);
+
 app.controller("AnalyticsSettingsCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
 
     $scope.exception = {};
@@ -5635,6 +6589,151 @@ app.controller("TechnicalSettingsCtrl", ['$scope', '$routeParams', '$location', 
 
 
 
+//#region Shipments
+
+app.controller("ShipmentsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
+
+    // Establish your scope containers
+    $scope.shipments = {};
+    $scope.nav = {};
+    $scope.exception = {};
+
+    // Establish your settings from query string parameters
+    $scope.parseParams = function () {
+        $scope.params = ($location.search())
+
+        // Convert any string true/false to bool
+        utils.stringsToBool($scope.params);
+
+        if ($scope.params.sort_by == null) {
+            $scope.params.sort_by = "date_shipped";
+        }
+
+        if ($scope.params.desc == null) {
+            $scope.params.desc = true;
+        }
+
+    }
+
+    $scope.loadShipments = function () {
+
+        ApiService.getList(ApiService.buildUrl("/shipments"), $scope.params).then(function (result) {
+            $scope.shipments.shipmentList = result;
+            $scope.shipmentsChecked = false;
+
+            // If instructed, scroll to the top upon completion
+            if ($scope.nav.scrollTop == true) {
+                window.scrollTo(0, 0);
+            }
+            $scope.nav.scrollTop = null;
+
+        },
+        function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
+
+    $scope.setParam = function (param, value) {
+        $scope.params[param] = value;
+        $scope.params.before_item = null;
+        $scope.params.after_item = null;
+        $scope.nav.scrollTop = true;
+        $location.search($scope.params);
+    }
+
+    $scope.search = function () {
+        if ($scope.params.q != null) {
+
+            // Reset the view to the first page
+            $scope.params.offset = null;
+            $scope.nav.scrollTop = true;
+
+            // If empty, reset to null
+            if ($scope.params.q == "") {
+                $scope.params.q = null;
+            }
+
+            $location.search($scope.params);
+        }
+    }
+
+    $scope.movePage = function (direction) {
+        if (direction == "+") {
+            $scope.params.offset = $scope.shipments.shipmentList.next_page_offset;
+        } else {
+            $scope.params.offset = $scope.shipments.shipmentList.previous_page_offset;
+        }
+        $scope.nav.scrollTop = true;
+        $location.search($scope.params);
+    }
+
+    $scope.sort = function (sort_by, desc) {
+        $scope.params.sort_by = sort_by;
+        $scope.params.desc = desc;
+        $location.search($scope.params);
+    }
+
+    $scope.$on('$routeUpdate', function (e) {
+        $scope.parseParams();
+        $scope.loadShipments();
+    });
+
+    // Initial load
+    $scope.parseParams();
+    $scope.loadShipments();
+
+}]);
+
+app.controller("ShipmentsViewCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService) {
+
+    $scope.shipment = {};
+    $scope.exception = {};
+    $scope.count = {};
+    $scope.resources = {};
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/shipments/" + $routeParams.id)
+    $scope.resources.notificationListUrl = $scope.url + "/notifications";
+
+    // Load the service
+    ApiService.getItem($scope.url, { expand: "order.customer" }).then(function (shipment) {
+        $scope.shipment = shipment;
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+    $scope.confirmDelete = function () {
+        var confirm = { id: "delete" };
+        confirm.onConfirm = function () {
+            $scope.delete();
+        }
+        ConfirmService.showConfirm($scope, confirm);
+    }
+
+    $scope.delete = function () {
+
+        ApiService.remove($scope.shipment.url).then(
+        function (eventSubscription) {
+            GrowlsService.addGrowl({ id: "delete_success", name: $scope.shipment.shipment_id, type: "success" });
+            utils.redirect($location, "/shipments");
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception.error = error;
+        });
+    }
+
+}]);
+
+//#endregion Products
+
+
+
+
+
 //#region ShippingMethods
 
 app.controller("ShippingMethodsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
@@ -6052,785 +7151,6 @@ app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location',
 
 
 
-
-
-//#region Shipments
-
-app.controller("ShipmentsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
-
-    // Establish your scope containers
-    $scope.shipments = {};
-    $scope.nav = {};
-    $scope.exception = {};
-
-    // Establish your settings from query string parameters
-    $scope.parseParams = function () {
-        $scope.params = ($location.search())
-
-        // Convert any string true/false to bool
-        utils.stringsToBool($scope.params);
-
-        if ($scope.params.sort_by == null) {
-            $scope.params.sort_by = "date_shipped";
-        }
-
-        if ($scope.params.desc == null) {
-            $scope.params.desc = true;
-        }
-
-    }
-
-    $scope.loadShipments = function () {
-
-        ApiService.getList(ApiService.buildUrl("/shipments"), $scope.params).then(function (result) {
-            $scope.shipments.shipmentList = result;
-            $scope.shipmentsChecked = false;
-
-            // If instructed, scroll to the top upon completion
-            if ($scope.nav.scrollTop == true) {
-                window.scrollTo(0, 0);
-            }
-            $scope.nav.scrollTop = null;
-
-        },
-        function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    }
-
-
-    $scope.setParam = function (param, value) {
-        $scope.params[param] = value;
-        $scope.params.before_item = null;
-        $scope.params.after_item = null;
-        $scope.nav.scrollTop = true;
-        $location.search($scope.params);
-    }
-
-    $scope.search = function () {
-        if ($scope.params.q != null) {
-
-            // Reset the view to the first page
-            $scope.params.offset = null;
-            $scope.nav.scrollTop = true;
-
-            // If empty, reset to null
-            if ($scope.params.q == "") {
-                $scope.params.q = null;
-            }
-
-            $location.search($scope.params);
-        }
-    }
-
-    $scope.movePage = function (direction) {
-        if (direction == "+") {
-            $scope.params.offset = $scope.shipments.shipmentList.next_page_offset;
-        } else {
-            $scope.params.offset = $scope.shipments.shipmentList.previous_page_offset;
-        }
-        $scope.nav.scrollTop = true;
-        $location.search($scope.params);
-    }
-
-    $scope.sort = function (sort_by, desc) {
-        $scope.params.sort_by = sort_by;
-        $scope.params.desc = desc;
-        $location.search($scope.params);
-    }
-
-    $scope.$on('$routeUpdate', function (e) {
-        $scope.parseParams();
-        $scope.loadShipments();
-    });
-
-    // Initial load
-    $scope.parseParams();
-    $scope.loadShipments();
-
-}]);
-
-app.controller("ShipmentsViewCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService) {
-
-    $scope.shipment = {};
-    $scope.exception = {};
-    $scope.count = {};
-    $scope.resources = {};
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/shipments/" + $routeParams.id)
-    $scope.resources.notificationListUrl = $scope.url + "/notifications";
-
-    // Load the service
-    ApiService.getItem($scope.url, { expand: "order.customer" }).then(function (shipment) {
-        $scope.shipment = shipment;
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-    $scope.confirmDelete = function () {
-        var confirm = { id: "delete" };
-        confirm.onConfirm = function () {
-            $scope.delete();
-        }
-        ConfirmService.showConfirm($scope, confirm);
-    }
-
-    $scope.delete = function () {
-
-        ApiService.remove($scope.shipment.url).then(
-        function (eventSubscription) {
-            GrowlsService.addGrowl({ id: "delete_success", name: $scope.shipment.shipment_id, type: "success" });
-            utils.redirect($location, "/shipments");
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception.error = error;
-        });
-    }
-
-}]);
-
-//#endregion Products
-
-
-
-
-app.controller("ReportCommissionsController", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'TimezonesService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, TimezonesService) {
-
-    $scope.exception = {};
-
-    // Load the timezones
-    $scope.timezones = TimezonesService.getTimezones();
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/reports/commissions");
-
-    // Set defaults
-    $scope.options = {};
-    $scope.options.category = null;
-    $scope.options.desc = "true";
-    $scope.options.sort_by = "total";
-    $scope.options.timezone = "UTC";
-    $scope.options.dates = "this_month";
-    $scope.options.search_by = "date";
-    $scope.options.accounting_id = null;
-
-    // Set the currencies
-    $scope.options.currencies = ["Actual", localStorage.getItem("reporting_currency_primary"), localStorage.getItem("reporting_currency_secondary")];
-    $scope.options.currency = $scope.options.currencies[0];
-
-    // For scrolling
-    $scope.nav = {};
-
-    // Datepicker options
-    $scope.datepicker = {};
-    $scope.datepicker.status = {};
-    $scope.datepicker.options = {
-        startingDay: 1,
-        showWeeks: false,
-        initDate: new Date(),
-        yearRange: 10
-    };
-
-    $scope.datepicker.status.date_start = {
-        opened: false
-    };
-
-    $scope.datepicker.status.date_end = {
-        opened: false
-    };
-
-    $scope.datepicker.open = function ($event, which) {
-        $scope.datepicker.status[which].opened = true;
-    };
-
-    $scope.run = function (reset) {
-
-        // Clear any previous errors
-        $scope.exception = {};
-
-        if (reset) {
-            $scope.options.offset = "0";
-        }
-
-        // Determine your start date and end date
-        var date_start = $scope.options.dates;
-        date_end = $scope.options.dates;
-
-        // Override if necessary
-        switch($scope.options.dates) {
-            case "last_30":
-                date_start = -29;
-                date_end = 0;
-                break;
-            case "last_7":
-                date_start = -6;
-                date_end = 0;
-                break;
-            case "custom":
-
-                if (!$scope.datepicker.date_end) {
-                    $scope.datepicker.date_end = new Date();
-                }
-
-                if (!$scope.datepicker.date_start) {
-                    $scope.datepicker.date_start = $scope.datepicker.date_end;
-                }
-
-                date_start = $scope.datepicker.date_start.toISOString().substring(0, 10);
-                date_end = $scope.datepicker.date_end.toISOString().substring(0, 10);
-                break;
-        }
-
-        if ($scope.options.search_by == "doc") {
-            date_start = null;
-            date_end = null;
-        }
-
-        var accounting_id = $scope.options.accounting_id;
-        if ($scope.options.search_by == "date") {
-            accounting_id = null;
-        }
-
-        var currency = $scope.options.currency;
-        if (currency == "Actual") {
-            currency = null;
-        }
-
-        ApiService.getItem($scope.url, { category: $scope.options.category, currency: currency, accounting_id: accounting_id, sort_by: $scope.options.sort_by, timezone: $scope.options.timezone, desc: $scope.options.desc, date_start: date_start, date_end: date_end, offset: $scope.options.offset, formatted: true }, true, 90000).then(function (report) {
-
-            $scope.report = report;
-
-            // Trim the data down for the chart.
-            $scope.data = {};
-            _.each(report.data, function (item) {
-                $scope.data[item.currency] = {};
-                $scope.data[item.currency].data = [];
-                $scope.data[item.currency].labels = [];
-                $scope.data[item.currency].values = [];
-                _.each(item.breakdowns, function (breakdown) {
-                    $scope.data[item.currency].data.push(breakdown.total);
-                    $scope.data[item.currency].labels.push(breakdown.type.split("_").join(" "));
-                    $scope.data[item.currency].values.push(breakdown.formatted.total);
-                });
-            });
-
-            // If instructed, scroll to the top upon completion
-            if ($scope.nav.scrollTop == true) {
-                window.scrollTo(0, 0);
-            }
-            $scope.nav.scrollTop = null;
-
-        }, function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-
-    }
-
-    $scope.getChartData = function (reportGroup) {
-
-        // Trim the data down for the chart.
-        var dataSet = {};
-        var data = [];
-        var labels = [];
-        var values = [];
-
-        _.each(reportGroup.breakdowns, function (item) {
-            data.push(item.total);
-            // Fill the labels for the bar chart
-            labels.push(item.name);
-            values.push(item.formatted.total);
-        });
-
-        dataSet.data = data;
-        dataSet.labels = labels;
-        dataSet.values = values;
-        return dataSet;
-
-    }
-
-    $scope.downloadCsv = function (data, currency) {
-
-        // Determine the filename
-        var category = "all";
-        if ($scope.options.category) {
-            category = $scope.options.category;
-        }
-
-        if ($scope.options.search_by == "doc") {
-            var filename = "commissionss_" + category + "_" + currency + "_" + $scope.options.accounting_id;
-        }
-
-        var accounting_id = $scope.options.accounting_id;
-        if ($scope.options.search_by == "date") {
-            var filename = "commissionss_" + category + "_" + currency + "_" + utils.replaceAll($scope.report.date_start, "-", "").substring(0, 8) + "-" + utils.replaceAll($scope.report.date_end, "-", "").substring(0, 8) + "_" + utils.replaceAll($scope.report.timezone, " ", "_").replace("/", "_");
-        }
-
-        // Slip the currency into the recordset
-        _.each(data, function (item) {
-            item.currency = currency;
-        });
-
-        utils.jsonToCsvDownload(data, filename);
-
-    }
-
-    // Perform the initial load
-    $scope.run();
-
-}]);
-
-app.controller("ReportFeesController", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'TimezonesService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, TimezonesService) {
-
-    $scope.exception = {};
-
-    // Load the timezones
-    $scope.timezones = TimezonesService.getTimezones();
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/reports/fees");
-
-    // Set defaults
-    $scope.options = {};
-    $scope.options.category = null;
-    $scope.options.desc = "true";
-    $scope.options.sort_by = "total";
-    $scope.options.timezone = "UTC";
-    $scope.options.dates = "this_month";
-    $scope.options.search_by = "date";
-    $scope.options.accounting_id = null;
-
-    // Set the currencies
-    $scope.options.currencies = ["Actual", localStorage.getItem("reporting_currency_primary"), localStorage.getItem("reporting_currency_secondary")];
-    $scope.options.currency = $scope.options.currencies[0];
-
-    // For scrolling
-    $scope.nav = {};
-
-    // Datepicker options
-    $scope.datepicker = {};
-    $scope.datepicker.status = {};
-    $scope.datepicker.options = {
-        startingDay: 1,
-        showWeeks: false,
-        initDate: new Date(),
-        yearRange: 10
-    };
-
-    $scope.datepicker.status.date_start = {
-        opened: false
-    };
-
-    $scope.datepicker.status.date_end = {
-        opened: false
-    };
-
-    $scope.datepicker.open = function ($event, which) {
-        $scope.datepicker.status[which].opened = true;
-    };
-
-    $scope.run = function (reset) {
-
-        // Clear any previous errors
-        $scope.exception = {};
-
-        if (reset) {
-            $scope.options.offset = "0";
-        }
-
-        // Determine your start date and end date
-        var date_start = $scope.options.dates;
-        date_end = $scope.options.dates;
-
-        // Override if necessary
-        switch($scope.options.dates) {
-            case "last_30":
-                date_start = -29;
-                date_end = 0;
-                break;
-            case "last_7":
-                date_start = -6;
-                date_end = 0;
-                break;
-            case "custom":
-
-                if (!$scope.datepicker.date_end) {
-                    $scope.datepicker.date_end = new Date();
-                }
-
-                if (!$scope.datepicker.date_start) {
-                    $scope.datepicker.date_start = $scope.datepicker.date_end;
-                }
-
-                date_start = $scope.datepicker.date_start.toISOString().substring(0, 10);
-                date_end = $scope.datepicker.date_end.toISOString().substring(0, 10);
-                break;
-        }
-
-        if ($scope.options.search_by == "doc") {
-            date_start = null;
-            date_end = null;
-        }
-
-        var accounting_id = $scope.options.accounting_id;
-        if ($scope.options.search_by == "date") {
-            accounting_id = null;
-        }
-
-        var currency = $scope.options.currency;
-        if (currency == "Actual") {
-            currency = null;
-        }
-
-        ApiService.getItem($scope.url, { category: $scope.options.category, currency: currency, accounting_id: accounting_id, sort_by: $scope.options.sort_by, timezone: $scope.options.timezone, desc: $scope.options.desc, date_start: date_start, date_end: date_end, offset: $scope.options.offset, formatted: true }, true, 90000).then(function (report) {
-
-            $scope.report = report;
-
-            // Trim the data down for the chart.
-            $scope.data = {};
-            _.each(report.data, function (item) {
-                $scope.data[item.currency] = {};
-                $scope.data[item.currency].data = [];
-                $scope.data[item.currency].labels = [];
-                $scope.data[item.currency].values = [];
-                _.each(item.breakdowns, function (breakdown) {
-                    $scope.data[item.currency].data.push(breakdown.total);
-                    $scope.data[item.currency].labels.push(breakdown.type.split("_").join(" "));
-                    $scope.data[item.currency].values.push(breakdown.formatted.total);
-                });
-            });
-
-            // If instructed, scroll to the top upon completion
-            if ($scope.nav.scrollTop == true) {
-                window.scrollTo(0, 0);
-            }
-            $scope.nav.scrollTop = null;
-
-        }, function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-
-    }
-
-    $scope.getChartData = function (reportGroup) {
-
-        // Trim the data down for the chart.
-        var dataSet = {};
-        var data = [];
-        var labels = [];
-        var values = [];
-
-        _.each(reportGroup.breakdowns, function (item) {
-            data.push(item.total);
-            // Fill the labels for the bar chart
-            labels.push(item.name);
-            values.push(item.formatted.total);
-        });
-
-        dataSet.data = data;
-        dataSet.labels = labels;
-        dataSet.values = values;
-        return dataSet;
-
-    }
-
-    $scope.downloadCsv = function (data, currency) {
-
-        // Determine the filename
-        var category = "all";
-        if ($scope.options.category) {
-            category = $scope.options.category;
-        }
-
-        if ($scope.options.search_by == "doc") {
-            var filename = "fees_" + category + "_" + currency + "_" + $scope.options.accounting_id;
-        }
-
-        var accounting_id = $scope.options.accounting_id;
-        if ($scope.options.search_by == "date") {
-            var filename = "fees_" + category + "_" + currency + "_" + utils.replaceAll($scope.report.date_start, "-", "").substring(0, 8) + "-" + utils.replaceAll($scope.report.date_end, "-", "").substring(0, 8) + "_" + utils.replaceAll($scope.report.timezone, " ", "_").replace("/", "_");
-        }
-
-        // Slip the currency into the recordset
-        _.each(data, function (item) {
-            item.currency = currency;
-        });
-
-        utils.jsonToCsvDownload(data, filename);
-
-    }
-
-    // Perform the initial load
-    $scope.run();
-
-}]);
-
-app.controller("ReportItemsController", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'TimezonesService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, TimezonesService) {
-
-    $scope.exception = {};
-
-    // Load the timezones
-    $scope.timezones = TimezonesService.getTimezones();
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/reports/items");
-
-    // Set defaults
-    $scope.options = {};
-    $scope.options.type = "combined";
-    $scope.options.desc = "true";
-    $scope.options.sort_by = "subtotal";
-    $scope.options.timezone = "UTC";
-    $scope.options.dates = "yesterday";
-    $scope.options.offset = "0";
-    $scope.options.labels = [];
-    $scope.options.values = [];
-
-    // Set the currencies
-    $scope.options.currencies = [];
-    $scope.options.currencies.push(localStorage.getItem("reporting_currency_primary"));
-    $scope.options.currencies.push(localStorage.getItem("reporting_currency_secondary"));
-    $scope.options.currency = $scope.options.currencies[0];
-
-    // For scrolling
-    $scope.nav = {};
-
-    // Datepicker options
-    $scope.datepicker = {};
-    $scope.datepicker.status = {};
-    $scope.datepicker.options = {
-        startingDay: 1,
-        showWeeks: false,
-        initDate: new Date(),
-        yearRange: 10
-    };
-
-    $scope.datepicker.status.date_start = {
-        opened: false
-    };
-
-    $scope.datepicker.status.date_end = {
-        opened: false
-    };
-
-    $scope.datepicker.open = function ($event, which) {
-        $scope.datepicker.status[which].opened = true;
-    };
-
-    $scope.run = function (reset) {
-
-        // Clear any previous errors
-        $scope.exception = {};
-
-        if (reset) {
-            $scope.options.offset = "0";
-        }
-
-        // Determine your start date and end date
-        var date_start = $scope.options.dates;
-        date_end = $scope.options.dates;
-
-        // Override if necessary
-        switch($scope.options.dates) {
-            case "last_30":
-                date_start = -29;
-                date_end = 0;
-                break;
-            case "last_7":
-                date_start = -6;
-                date_end = 0;
-                break;
-            case "custom":
-
-                if (!$scope.datepicker.date_end) {
-                    $scope.datepicker.date_end = new Date();
-                }
-
-                if (!$scope.datepicker.date_start) {
-                    $scope.datepicker.date_start = $scope.datepicker.date_end;
-                }
-
-                date_start = $scope.datepicker.date_start.toISOString().substring(0, 10);
-                date_end = $scope.datepicker.date_end.toISOString().substring(0, 10);
-                break;
-        }
-
-        ApiService.getItem($scope.url, { type: $scope.options.type, sort_by: $scope.options.sort_by, timezone: $scope.options.timezone, desc: $scope.options.desc, date_start: date_start, date_end: date_end, currency: $scope.options.currency, offset: $scope.options.offset, formatted: true }, true, 90000).then(function (report) {
-
-            $scope.report = report;
-
-            // Trim the data down for the chart.
-            $scope.data = [];
-            $scope.options.labels = [];
-            $scope.options.values = [];
-            _.each(report.data, function (item) {
-                $scope.data.push(item.total);
-
-                // Fill the labels for the bar chart
-                $scope.options.labels.push(item.name);
-                $scope.options.values.push(item.formatted.total);
-            });
-
-            // If instructed, scroll to the top upon completion
-            if ($scope.nav.scrollTop == true) {
-                window.scrollTo(0, 0);
-            }
-            $scope.nav.scrollTop = null;
-
-        }, function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-
-    }
-
-    $scope.movePage = function (direction) {
-        if (direction == "+") {
-            $scope.options.offset = $scope.report.next_page_offset;
-        } else {
-            $scope.options.offset = $scope.report.previous_page_offset;
-        }
-        $scope.nav.scrollTop = true;
-        $scope.run();
-    }
-
-    $scope.downloadCsv = function (data) {
-
-        // Determine the filename
-        var filename = "sales_by_product_" + $scope.report.type + "_" + utils.replaceAll($scope.report.date_start, "-", "").substring(0, 8) + "-" + utils.replaceAll($scope.report.date_end, "-", "").substring(0, 8) + "_" + utils.replaceAll($scope.report.timezone, " ", "_").replace("/", "_");
-
-        utils.jsonToCsvDownload(data, filename);
-
-    }
-
-    // Perform the initial load
-    $scope.run();
-
-}]);
-
-app.controller("ReportSalesCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'TimezonesService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, TimezonesService) {
-
-    $scope.exception = {};
-
-    // Load the timezones
-    $scope.timezones = TimezonesService.getTimezones();
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/reports/sales");
-
-    // Set defaults
-    $scope.options = {};
-    $scope.options.type = "combined";
-    $scope.options.segment = "all";
-    $scope.options.group_by = "day";
-    $scope.options.timezone = "UTC";
-    $scope.options.dates = "last_30";
-    $scope.options.labels = [];
-    $scope.options.values = [];
-
-    // Set the currencies
-    $scope.options.currencies = [];
-    $scope.options.currencies.push(localStorage.getItem("reporting_currency_primary"));
-    $scope.options.currencies.push(localStorage.getItem("reporting_currency_secondary"));
-    $scope.options.currency = $scope.options.currencies[0];
-
-    // Datepicker options
-    $scope.datepicker = {};
-    $scope.datepicker.status = {};
-    $scope.datepicker.options = {
-        startingDay: 1,
-        showWeeks: false,
-        initDate: new Date(),
-        yearRange: 10
-    };
-
-    $scope.datepicker.status.date_start = {
-        opened: false
-    };
-
-    $scope.datepicker.status.date_end = {
-        opened: false
-    };
-
-    $scope.datepicker.open = function ($event, which) {
-        $scope.datepicker.status[which].opened = true;
-    };
-
-    $scope.run = function () {
-
-        // Clear any previous errors
-        $scope.exception = {};
-
-        // Determine your start date and end date
-        var date_start = $scope.options.dates;
-        date_end = $scope.options.dates;
-
-        // Override if necessary
-        switch($scope.options.dates) {
-            case "last_30":
-                date_start = -29;
-                date_end = 0;
-                break;
-            case "last_7":
-                date_start = -6;
-                date_end = 0;
-                break;
-            case "custom":
-
-                if (!$scope.datepicker.date_end) {
-                    $scope.datepicker.date_end = new Date();
-                }
-
-                if (!$scope.datepicker.date_start) {
-                    $scope.datepicker.date_start = $scope.datepicker.date_end;
-                }
-
-                date_start = $scope.datepicker.date_start.toISOString().substring(0, 10);
-                date_end = $scope.datepicker.date_end.toISOString().substring(0, 10);
-                break;
-        }
-
-        ApiService.getItem($scope.url, { type: $scope.options.type, group_by: $scope.options.group_by, timezone: $scope.options.timezone, segment: $scope.options.segment, date_start: date_start, date_end: date_end, currency: $scope.options.currency, formatted: true }).then(function (report) {
-
-            $scope.report = report;
-
-            // Trim the data down for the chart.
-            $scope.data = [];
-            $scope.options.labels = [];
-            $scope.options.values = [];
-            _.each(report.data, function (item) {
-                $scope.data.push(item.total - item.tax);
-
-                // Fill the labels for the bar chart
-                $scope.options.labels.push(item.total);
-                $scope.options.values.push(item.formatted.total);
-            })
-
-        }, function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-
-    }
-
-    $scope.downloadCsv = function (data) {
-
-        // Determine the filename
-        var filename = "sales_" + $scope.report.type + "_" + $scope.report.segment + "_" + utils.replaceAll($scope.report.date_start, "-", "").substring(0, 8) + "-" + utils.replaceAll($scope.report.date_end, "-", "").substring(0, 8) + "_" + utils.replaceAll($scope.report.timezone, " ", "_").replace("/", "_");
-
-       utils.jsonToCsvDownload(data, filename);
-
-    }
-
-    // Perform the initial load
-    $scope.run();
-
-}]);
 
 
 //#region Subscriptions
@@ -7556,313 +7876,6 @@ app.controller("UsersSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSe
 }]);
 
 
-
-app.controller("NotificationsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
-
-    // Establish your scope containers
-    $scope.exception = {};
-    $scope.resources = {};
-    $scope.resources.notificationListUrl = ApiService.buildUrl("/notifications");
-
-}]);
-
-app.controller("NotificationsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'GrowlsService', '$sce', function ($scope, $routeParams, ApiService, GrowlsService, $sce) {
-
-    $scope.notification = {};
-    $scope.exception = {};
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/notifications/" + $routeParams.id);
-    $scope.previewUrl = null;
-    $scope.showResend = false;
-
-    // Load the notification
-    var params = { expand: "customer", hide: "data" };
-    ApiService.getItem($scope.url, params).then(function (notification) {
-        $scope.notification = notification;
-        $scope.previewUrl = $sce.trustAsResourceUrl("app/pages/notifications/preview/index.html?notification_id=" + notification.notification_id);
-        $scope.email = notification.customer.email;
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-    $scope.resend = function (form) {
-
-        if (form.$invalid) {
-            return;
-        }
-
-        var body = { destination: $scope.email };
-        ApiService.set(body, $scope.url + "/resend", { show: "notification_id" } ).then(function (response) {
-            GrowlsService.addGrowl({ id: "notification_resend", email: $scope.email, type: "success" });
-            $scope.showResend = false;
-        }, function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    }
-
-}]);
-
-app.controller("NotificationsPreviewCtrl", ['$scope', '$routeParams', 'ApiService', function ($scope, $routeParams, ApiService) {
-
-    $scope.notification = {};
-    $scope.exception = {};
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/notifications/" + $routeParams.id)
-
-    // Load the notification
-    var params = { show: "body" };
-    ApiService.getItem($scope.url, params).then(function (notification) {
-        $scope.notification = notification;
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-}]);
-
-
-
-
-app.controller("LicenseServicesListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
-
-    // Establish your scope containers
-    $scope.license_services = {};
-    $scope.nav = {};
-    $scope.exception = {};
-
-    // Establish your settings from query string parameters
-    $scope.parseParams = function () {
-        $scope.params = ($location.search())
-
-        // Convert any string true/false to bool
-        utils.stringsToBool($scope.params);
-
-        if ($scope.params.sort_by == null) {
-            $scope.params.sort_by = "name";
-        }
-
-        if ($scope.params.desc == null) {
-            $scope.params.desc = false;
-        }
-    }
-
-    $scope.loadLicenseServices = function () {
-
-        ApiService.getList(ApiService.buildUrl("/license_services?show=license_service_id,name,type,configuration.license_count,configuration.notify_at_count,date_created"), $scope.params).then(function (result) {
-            $scope.license_services.license_serviceList = result;
-
-            // If instructed, scroll to the top upon completion
-            if ($scope.nav.scrollTop == true) {
-                window.scrollTo(0, 0);
-            }
-            $scope.nav.scrollTop = null;
-
-        },
-        function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    }
-
-    $scope.setParam = function (param, value) {
-        $scope.params[param] = value;
-        $scope.params.before_item = null;
-        $scope.params.after_item = null;
-        $scope.nav.scrollTop = true;
-        $location.search($scope.params);
-    }
-
-    $scope.search = function () {
-        if ($scope.params.q != null) {
-
-            // Reset the view to the first page
-            $scope.params.offset = null;
-            $scope.nav.scrollTop = true;
-
-            // If empty, reset to null
-            if ($scope.params.q == "") {
-                $scope.params.q = null;
-            }
-
-            $location.search($scope.params);
-        }
-    }
-
-    $scope.movePage = function (direction) {
-        if (direction == "+") {
-            $scope.params.offset = $scope.license_services.license_serviceList.next_page_offset;
-        } else {
-            $scope.params.offset = $scope.license_services.license_serviceList.previous_page_offset;
-        }
-        $scope.nav.scrollTop = true;
-        $location.search($scope.params);
-    }
-
-    $scope.sort = function (sort_by, desc) {
-        $scope.params.sort_by = sort_by;
-        $scope.params.desc = desc;
-        $location.search($scope.params);
-    }
-
-    $scope.$on('$routeUpdate', function (e) {
-        $scope.parseParams();
-        $scope.loadLicenseServices();
-    });
-
-    // Initial load
-    $scope.parseParams();
-    $scope.loadLicenseServices();
-
-}]);
-
-
-app.controller("LicenseServicesSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
-
-    $scope.licenses = {};
-    $scope.licenses.list = null;
-    $scope.exception = {};
-
-    // Set defaults
-    $scope.license_service = {};
-    $scope.license_service.type = "list";
-
-    $scope.license_service.configuration = {};
-    $scope.license_service.configuration.format = "json";
-    $scope.license_service.configuration.per_quantity = false;
-    $scope.license_service.configuration.remove_after_use = true;
-    $scope.license_service.configuration.notify_at_count = 100;
-
-    if ($routeParams.id != null) {
-
-        // Indicate this is an edit
-        $scope.update = true;
-        $scope.add = false;
-
-        // Set the url for interacting with this item
-        $scope.url = ApiService.buildUrl("/license_services/" + $routeParams.id)
-
-        // Load the service
-        ApiService.getItem($scope.url).then(function (license_service) {
-            $scope.license_service = license_service;
-
-            if ($scope.license_service.type == "list") {
-                // Split the array into a line-delimited string
-                $scope.licenses.list = utils.arrayToString($scope.license_service.configuration.licenses);
-
-                // Set defaults for remote_url in case they toggle to it.
-                $scope.license_service.configuration.format = "json";
-
-            }
-
-            if ($scope.license_service.type == "remote_url") {
-                // Set defaults for list in case they toggle to it.
-                $scope.license_service.configuration.per_quantity = false;
-                $scope.license_service.configuration.remove_after_use = true;
-                $scope.license_service.configuration.notify_at_count = 100;
-            }
-
-        }, function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    } else {
-
-        // Indicate this is an add
-        $scope.update = false;
-        $scope.add = true;
-
-    }
-
-    var prepareSubmit = function () {
-        // Clear any previous errors
-        $scope.exception.error = null;
-    }
-
-    // We don't make a copy and check the copy for changes on this page because the list of licenses may be huge and duplicating it could be expensive.
-    $scope.confirmCancel = function () {
-        var confirm = { id: "changes_lost" };
-        confirm.onConfirm = function () {
-            utils.redirect($location, "/license_services");
-        }
-        ConfirmService.showConfirm($scope, confirm);
-    }
-
-    $scope.confirmDelete = function () {
-        var confirm = { id: "delete" };
-        confirm.onConfirm = function () {
-            $scope.delete();
-        }
-        ConfirmService.showConfirm($scope, confirm);
-    }
-
-    $scope.addLicenseService = function () {
-
-        prepareSubmit();
-
-        if ($scope.form.$invalid) {
-            window.scrollTo(0, 0);
-            return;
-        }
-
-        if ($scope.licenses.list != null && $scope.license_service.type == "list") {
-            $scope.license_service.configuration.licenses = utils.stringToArray($scope.licenses.list);
-        }
-
-        ApiService.set($scope.license_service, ApiService.buildUrl("/license_services"), { show: "license_service_id,name" })
-        .then(
-        function (license_service) {
-            GrowlsService.addGrowl({ id: "add_success", name: license_service.name, type: "success", license_service_id: license_service.license_service_id, url: "#/license_services/" + license_service.license_service_id + "/edit" });
-            window.location = "#/license_services";
-        },
-        function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    }
-
-    $scope.updateLicenseService = function () {
-
-        prepareSubmit();
-
-        if ($scope.form.$invalid) {
-            return;
-        }
-
-        if ($scope.licenses.list != null && $scope.license_service.type == "list") {
-            $scope.license_service.configuration.licenses = utils.stringToArray($scope.licenses.list);
-        }
-
-        ApiService.set($scope.license_service, $scope.url, { show: "license_service_id,name" })
-        .then(
-        function (license_service) {
-            GrowlsService.addGrowl({ id: "edit_success", name: license_service.name, type: "success", license_service_id: license_service.license_service_id, url: "#/license_services/" + license_service.license_service_id + "/edit" });
-            utils.redirect($location, "/license_services");
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception.error = error;
-        });
-    }
-
-    $scope.delete = function () {
-
-        ApiService.remove($scope.license_service.url)
-        .then(
-        function (license_service) {
-            GrowlsService.addGrowl({ id: "delete_success", name: $scope.license_service.name, type: "success" });
-            utils.redirect($location, "/license_services");
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception.error = error;
-        });
-    }
-
-}]);
 
 $("document").ready(function () {
 
