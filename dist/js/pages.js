@@ -2458,14 +2458,11 @@ app.controller("GatewaysSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
 
     }
 
-    $scope.supportsCreditCard = function (provider_id) {
+    $scope.supportsCreditCard = function (gateway) {
 
-        if (provider_id && $scope.gateway_configs) {
-            var gatewayConfig = _.findWhere($scope.gateway_configs, { provider_id: $scope.gateway.provider_id });
-            if (gatewayConfig) {
-                if (gatewayConfig.payment_method_types.indexOf("credit_card") > -1) {
-                    return true;
-                }
+        if (gateway) {
+            if (gateway.payment_method_type == "credit_card") {
+                return true;
             }
         }
 
