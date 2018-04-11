@@ -1249,14 +1249,12 @@ app.directive('refund', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
                     data.is_chargeback = scope.refund.is_chargeback;
 
                     // Process the refund
-                    ApiService.set(data, scope.payment.url + "/refunds", { expand: "fees,items" })
-                    .then(
-                    function (refund) {
+                    ApiService.set(data, scope.payment.url + "/refunds", { expand: "fees,items" }).then(function (refund) {
                         // Update the payment properties from the new refund and return.
                         scope.payment.refunds.data.push(refund);
 
                         // If the entire amount has been refunded, change the status on payment to refunded.
-                        if (utils.roundCurrency(scope.refund.getUnrefundedTotal()) <= 0) {
+                        if (utils.roundCurrency(scope.refund.getUnrefundedTotal()) <= 0 && refund.status == "completed") {
                             scope.payment.status = 'refunded';
                         }
 
