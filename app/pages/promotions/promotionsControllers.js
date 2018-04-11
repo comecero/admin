@@ -221,6 +221,12 @@ app.controller("PromotionsSetCtrl", ['$scope', '$routeParams', '$location', 'Gro
         function (error) {
             $scope.exception.error = error;
             window.scrollTo(0, 0);
+            // Reset list of product_ids back so we don't munge api call when user fixes an error.
+            if (angular.isArray($scope.promotion.config.product_ids) && $scope.promotion.config.product_ids.length > 0) {
+                $scope.promotion.config.product_ids = _.map($scope.promotion.config.product_ids, function (product) {
+                    return { 'product_id': product };
+                });
+            }
         });
     }
 
