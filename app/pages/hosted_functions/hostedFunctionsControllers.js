@@ -90,6 +90,26 @@ app.controller("HostedFunctionsAddCtrl", ['$scope', '$routeParams', '$location',
     $scope.hostedFunction = { environment_variables: {}};
     $scope.exception = {};
     $scope.environmentVariables = [];
+    
+    // Define the environments: 
+    $scope.environments = [
+        { name: "Node.js 4.3", code: "nodejs4.3", deprecated: true },
+        { name: "Node.js 6.10", code: "nodejs6.10" },
+        { name: "Node.js 8.10", code: "nodejs8.10" },
+        { name: "Java 8", code: "java8" },
+        { name: "Python 2.7", code: "python2.7" },
+        { name: "Python 3.6", code: "python3.6" },
+        { name: ".NET Core 1.0", code: "dotnetcore1.0" },
+        { name: ".NET Core 2.0", code: "dotnetcore2.0" }
+    ]
+
+    $scope.isDeprecated = function (code) {
+        var env = _.find($scope.environments, function (e) { return e.code == code });
+        if (env && env.deprecated) {
+            return true;
+        }
+        return false;
+    }
 
     $scope.uploadSending = false;
     var uploadSendingListener = $scope.$on('uploadSending', function (event, sending) {
@@ -172,6 +192,26 @@ app.controller("HostedFunctionsEditCtrl", ['$scope', '$routeParams', '$location'
     $scope.hostedFunction = {};
     $scope.exception = {};
     $scope.environmentVariables = [];
+
+    // Define the environments: 
+    $scope.environments = [
+        { name: "Node.js 4.3", code: "nodejs4.3", deprecated: true },
+        { name: "Node.js 6.10", code: "nodejs6.10" },
+        { name: "Node.js 8.10", code: "nodejs8.10" },
+        { name: "Java 8", code: "java8" },
+        { name: "Python 2.7", code: "python2.7" },
+        { name: "Python 3.6", code: "python3.6" },
+        { name: ".NET Core 1.0", code: "dotnetcore1.0" },
+        { name: ".NET Core 2.0", code: "dotnetcore2.0" }
+    ]
+
+    $scope.isDeprecated = function (code) {
+        var env = _.find($scope.environments, function (e) { return e.code == code });
+        if (env && env.deprecated) {
+            return true;
+        }
+        return false;
+    }
 
     // Set the url for interacting with this item
     $scope.url = ApiService.buildUrl("/hosted_functions/" + $routeParams.id)

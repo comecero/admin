@@ -80,7 +80,7 @@
 
         }
 
-        var getLaunchUrl = function (app_installation, token) {
+        var getLaunchUrl = function (app_installation, token, redirect_uri) {
 
             var params = [];
             var launch_url = app_installation.launch_url;
@@ -103,12 +103,12 @@
 
                 // Send the target version so the app host environment knows which version to serve.
                 if (app_installation.platform_hosted) {
-
                     params.push("target_version=" + app_installation.version);
                 }
             }
 
-            params.push("redirect_uri=/" + app_installation.alias);
+            // Send to the provided redirect URI, or the root of the app if a redirect URI is not provided.
+            params.push("redirect_uri=/" + (redirect_uri || app_installation.alias));
 
             // Build the parameter string
             var query = "";
@@ -165,8 +165,7 @@
 
             // Get the token, as necessary
             getToken(test, config, app_installation).then(function (token) {
-
-                var launch_url = getLaunchUrl(app_installation, token);
+                var launch_url = getLaunchUrl(app_installation, token, hashParameters["redirect_uri"]);
                 window.location.href = launch_url;
             },
             function (error) {

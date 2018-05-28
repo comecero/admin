@@ -22,8 +22,6 @@
                 </div>
             </div>
 
-            
-
             <div class="col-md-6 col-xs-12">
                 <div class="form-group" show-errors>
                     <label for="handler" class="control-label" translate>Handler</label>
@@ -34,20 +32,20 @@
             </div>
 
             <div class="col-md-6 col-xs-12">
-                <div class="form-group" show-errors>
-                    <label class="radio-group-label required" translate>Runtime Environment</label>
-                    <div class="radio-group">
-                        <input type="radio" id="environment-1" class="radio" name="environment" ng-model="hostedFunction.environment" value="nodejs4.3" required>
-                        <label for="environment-1" class="radio-label">Node.js 4.3</label>
-                        <input type="radio" id="environment-2" class="radio" name="environment" ng-model="hostedFunction.environment" value="java8" required>
-                        <label for="environment-2" class="radio-label">Java 8</label>
-                        <input type="radio" id="environment-3" class="radio" name="environment" ng-model="hostedFunction.environment" value="python2.7" required>
-                        <label for="environment-3" class="radio-label">Python 2.7</label>
-                        <input type="radio" id="environment-3" class="radio" name="environment" ng-model="hostedFunction.environment" value="dotnetcore1.0" required>
-                        <label for="environment-3" class="radio-label">.NET Core 1.0 / C#</label>
-                    </div>
+                <div class="form-group">
+                    <label for="handler" class="control-label" translate>Runtime Environment</label>
+                    <select class="form-control" ng-model="hostedFunction.environment" name="environment" ng-options="environment.code as environment.name for environment in environments" value="{{environment.code}}"></select>
                     <p class="help-block hidden fadeInDown" translate>Please select environment</p>
                     <p class="help-text" translate>The environment that will execute your code</p>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="col-xs-12">
+                <div class="alert alert-warning" ng-show="isDeprecated(hostedFunction.environment)">
+                    <strong><i class="fa fa-warning"></i>&nbsp;<span translate>Please note!</span></strong>
+                    <p translate>The selected runtime environment is deprecated. Please migrate to a later version of the runtime environment to ensure uninterrupted execution of your hosted function.</p>
                 </div>
             </div>
 

@@ -68,10 +68,10 @@
             <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Actions</label></div>
             <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg padding-r20 padding-l0 navbar-right">
                 <div class="btn-group" uib-dropdown>
-                    <a ng-href="launch/app.html#app_installation_id={{app_installation.app_installation_id}}&test={{meta.test}}" target="_blank" class="btn btn-sm btn-success">Launch</a>
+                    <a ng-href="{{functions.getLaunchUrl(app_installation.app_installation_id, meta.test)}}" target="_blank" class="btn btn-sm btn-success">Launch</a>
                     <button type="button" class="btn btn-sm btn-success dropdown-toggle" uib-dropdown-toggle><i class="fa fa-caret-down"></i></button>
                     <ul class="dropdown-menu">
-                        <li ng-show="app_installation.info_url"><a href="{{app_installation.info_url}}" target="_blank"><i class="dropdown-icon fa fa-wrench"></i>&nbsp;&nbsp;<span translate>Help & Support</span></a></li>
+                        <li ng-show="app_installation.info_url"><a ng-href="{{functions.getInfoUrl(app_installation, meta.test)}}" target="_blank"><i class="dropdown-icon fa fa-wrench"></i>&nbsp;&nbsp;<span translate>Help & Support</span></a></li>
                         <li ng-show="app_installation.platform_hosted" resource="app_installations" method="update"><a href="#/app_installations/{{app_installation.app_installation_id}}/settings"><i class="dropdown-icon fa fa-sliders"></i>&nbsp;&nbsp;<span translate>Settings</span></a></li>
                         <li ng-show="app_installation.platform_hosted && app_installation.style_fields" resource="app_installations" method="update"><a href="#/app_installations/{{app_installation.app_installation_id}}/style"><i class="dropdown-icon fa fa-paint-brush"></i>&nbsp;&nbsp;<span translate>Style</span></a></li>
                         <li ng-show="app_installation.is_default_version === false" resource="app_installations" method="update" ng-click="functions.confirmSetDefaultVersion(app_installation.app_installation_id)"><a><i class="dropdown-icon fa fa-arrow-up"></i>&nbsp;&nbsp;<span translate>Set As Default Version</span></a></li>
