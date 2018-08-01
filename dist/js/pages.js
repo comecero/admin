@@ -2827,10 +2827,25 @@ app.controller("HostedFunctionsEditCtrl", ['$scope', '$routeParams', '$location'
 
     $scope.addVariable = function () {
         $scope.environmentVariables.push({ name: null, value: null });
+        $scope.setVariables();
     }
 
     $scope.removeVariable = function (variables, index) {
         variables.splice(index, 1);
+        $scope.setVariables();
+    }
+
+    $scope.setVariables = function () {
+
+        // Loop through all the variables and set any that have both a name and value.
+        var variables = {};
+        $.each($scope.environmentVariables, function (index, item) {
+            if (!utils.isNullOrEmpty(item.name) && !utils.isNullOrEmpty(item.value)) {
+                variables[item.name] = item.value;
+            }
+        });
+
+        $scope.environment_variables_json = JSON.stringify(variables);
     }
 
     var prepareSubmit = function () {
