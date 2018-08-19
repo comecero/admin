@@ -100,7 +100,8 @@ app.controller("HostedFunctionsAddCtrl", ['$scope', '$routeParams', '$location',
         { name: "Python 2.7", code: "python2.7" },
         { name: "Python 3.6", code: "python3.6" },
         { name: ".NET Core 1.0", code: "dotnetcore1.0" },
-        { name: ".NET Core 2.0", code: "dotnetcore2.0" }
+        { name: ".NET Core 2.0", code: "dotnetcore2.0" },
+        { name: "Go 1.x", code: "go1.x" }
     ]
 
     $scope.isDeprecated = function (code) {
@@ -202,7 +203,8 @@ app.controller("HostedFunctionsEditCtrl", ['$scope', '$routeParams', '$location'
         { name: "Python 2.7", code: "python2.7" },
         { name: "Python 3.6", code: "python3.6" },
         { name: ".NET Core 1.0", code: "dotnetcore1.0" },
-        { name: ".NET Core 2.0", code: "dotnetcore2.0" }
+        { name: ".NET Core 2.0", code: "dotnetcore2.0" },
+        { name: "Go 1.x", code: "go1.x" }
     ]
 
     $scope.isDeprecated = function (code) {
