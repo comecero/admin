@@ -2444,7 +2444,7 @@ a.stat-cell:hover {
   background-color: #ffffff;
   color: #fff;
   border-bottom: 0 solid transparent;
-  color: #2c3e50;
+  color: #6c6c6c;
   text-align: left;
 }
 .skin-comecero .main-header .logo:hover {
@@ -2459,15 +2459,15 @@ a.stat-cell:hover {
 .skin-comecero .wrapper,
 .skin-comecero .main-sidebar,
 .skin-comecero .left-side {
-  background-color: #2c3e50;
+  background-color: #6c6c6c;
 }
 .skin-comecero .user-panel > .info,
 .skin-comecero .user-panel > .info > a {
   color: #fff;
 }
 .skin-comecero .sidebar-menu > li.header {
-  color: #507192;
-  background: #253443;
+  color: #9f9f9f;
+  background: #626262;
 }
 .skin-comecero .sidebar-menu > li > a {
   border-left: 3px solid transparent;
@@ -2475,21 +2475,21 @@ a.stat-cell:hover {
 .skin-comecero .sidebar-menu > li:hover > a,
 .skin-comecero .sidebar-menu > li.active > a {
   color: #ffffff;
-  background: #233140;
+  background: #5f5f5f;
   border-left-color: #ecf0f1;
 }
 .skin-comecero .sidebar-menu > li > .treeview-menu {
   margin: 0 1px;
-  background: #354b60;
+  background: #797979;
 }
 .skin-comecero .sidebar a {
-  color: #a8bccf;
+  color: #ffffff;
 }
 .skin-comecero .sidebar a:hover {
   text-decoration: none;
 }
 .skin-comecero .treeview-menu > li > a {
-  color: #a8bccf;
+  color: #ffffff;
 }
 .skin-comecero .treeview-menu > li.active > a,
 .skin-comecero .treeview-menu > li > a:hover {
@@ -2497,7 +2497,7 @@ a.stat-cell:hover {
 }
 .skin-comecero .sidebar-form {
   border-radius: 3px;
-  border: 1px solid #3e5771;
+  border: 1px solid #868686;
   margin: 10px 10px;
 }
 .skin-comecero .sidebar-form input[type="text"],
@@ -2533,12 +2533,12 @@ a.stat-cell:hover {
   border-bottom-left-radius: 0;
 }
 .skin-blue.layout-top-nav .main-header > .logo {
-  background-color: #2c3e50;
+  background-color: #6c6c6c;
   color: #fff;
   border-bottom: 0 solid transparent;
 }
 .skin-blue.layout-top-nav .main-header > .logo:hover {
-  background-color: #2a3b4d;
+  background-color: #696969;
 }
 /* Colors */
 .text-success {
