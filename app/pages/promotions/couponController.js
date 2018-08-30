@@ -74,10 +74,17 @@ app.controller("CouponSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
     $scope.currencies = JSON.parse(localStorage.getItem("payment_currencies"));
 
     var prepareSubmit = function () {
+
         // Clear any previous errors
         $scope.exception.error = null;
-    }
 
+        // If not a product-level discount, reset apply to recurring.
+        if ($scope.promotion.config.type != 'product') {
+            promotion.apply_to_recurring = false;
+            promotion.apply_to_recurring_count = null;
+        }
+
+    }
    
     $scope.confirmCancel = function () {
         var confirm = { id: "changes_lost" };
@@ -120,7 +127,7 @@ app.controller("CouponSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
         $scope.promotion.type = 'coupon';
 
         ApiService.set($scope.promotion, ApiService.buildUrl("/promotions"), { show: "promotion_id,name" }).then(function (promotion) {
-            GrowlsService.addGrowl({ id: "add_success", name: promotion.name, type: "success", promotion_id: promotion.promotion_id, url: "#/promotions/" + promotion.promotion_id + "/edit" });
+            GrowlsService.addGrowl({ id: "add_success", name: promotion.name, type: "success", promotion_id: promotion.promotion_id, url: "#/promotions/coupon/" + promotion.promotion_id + "/edit" });
             window.location = "#/promotions";
         },
         function (error) {
@@ -166,7 +173,7 @@ app.controller("CouponSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
         }
 
         ApiService.set($scope.promotion, $scope.url, { show: "promotion_id,name" }).then(function (promotion) {
-            GrowlsService.addGrowl({ id: "edit_success", name: promotion.name, type: "success", promotion_id: promotion.promotion_id, url: "#/promotions/" + promotion.promotion_id + "/edit" });
+            GrowlsService.addGrowl({ id: "edit_success", name: promotion.name, type: "success", promotion_id: promotion.promotion_id, url: "#/promotions/coupon/" + promotion.promotion_id + "/edit" });
             window.location = "#/promotions";
         },
         function (error) {
