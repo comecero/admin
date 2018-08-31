@@ -3858,6 +3858,76 @@ app.controller("LicenseServicesSetCtrl", ['$scope', '$routeParams', '$location',
 
 }]);
 
+app.controller("NotificationsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
+
+    // Establish your scope containers
+    $scope.exception = {};
+    $scope.resources = {};
+    $scope.resources.notificationListUrl = ApiService.buildUrl("/notifications");
+
+}]);
+
+app.controller("NotificationsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'GrowlsService', '$sce', function ($scope, $routeParams, ApiService, GrowlsService, $sce) {
+
+    $scope.notification = {};
+    $scope.exception = {};
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/notifications/" + $routeParams.id);
+    $scope.previewUrl = null;
+    $scope.showResend = false;
+
+    // Load the notification
+    var params = { expand: "customer", hide: "data" };
+    ApiService.getItem($scope.url, params).then(function (notification) {
+        $scope.notification = notification;
+        $scope.previewUrl = $sce.trustAsResourceUrl("app/pages/notifications/preview/index.html?notification_id=" + notification.notification_id);
+        $scope.email = notification.customer.email;
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+    $scope.resend = function (form) {
+
+        if (form.$invalid) {
+            return;
+        }
+
+        var body = { destination: $scope.email };
+        ApiService.set(body, $scope.url + "/resend", { show: "notification_id" } ).then(function (response) {
+            GrowlsService.addGrowl({ id: "notification_resend", email: $scope.email, type: "success" });
+            $scope.showResend = false;
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
+}]);
+
+app.controller("NotificationsPreviewCtrl", ['$scope', '$routeParams', 'ApiService', function ($scope, $routeParams, ApiService) {
+
+    $scope.notification = {};
+    $scope.exception = {};
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/notifications/" + $routeParams.id)
+
+    // Load the notification
+    var params = { show: "body" };
+    ApiService.getItem($scope.url, params).then(function (notification) {
+        $scope.notification = notification;
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+}]);
+
+
+
+
 app.controller("NotificationSubscriptionsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
 
     // Establish your scope containers
@@ -4075,76 +4145,6 @@ app.controller("NotificationSubscriptionsSetCtrl", ['$scope', '$routeParams', '$
     }
 
 }]);
-
-
-
-app.controller("NotificationsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
-
-    // Establish your scope containers
-    $scope.exception = {};
-    $scope.resources = {};
-    $scope.resources.notificationListUrl = ApiService.buildUrl("/notifications");
-
-}]);
-
-app.controller("NotificationsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'GrowlsService', '$sce', function ($scope, $routeParams, ApiService, GrowlsService, $sce) {
-
-    $scope.notification = {};
-    $scope.exception = {};
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/notifications/" + $routeParams.id);
-    $scope.previewUrl = null;
-    $scope.showResend = false;
-
-    // Load the notification
-    var params = { expand: "customer", hide: "data" };
-    ApiService.getItem($scope.url, params).then(function (notification) {
-        $scope.notification = notification;
-        $scope.previewUrl = $sce.trustAsResourceUrl("app/pages/notifications/preview/index.html?notification_id=" + notification.notification_id);
-        $scope.email = notification.customer.email;
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-    $scope.resend = function (form) {
-
-        if (form.$invalid) {
-            return;
-        }
-
-        var body = { destination: $scope.email };
-        ApiService.set(body, $scope.url + "/resend", { show: "notification_id" } ).then(function (response) {
-            GrowlsService.addGrowl({ id: "notification_resend", email: $scope.email, type: "success" });
-            $scope.showResend = false;
-        }, function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    }
-
-}]);
-
-app.controller("NotificationsPreviewCtrl", ['$scope', '$routeParams', 'ApiService', function ($scope, $routeParams, ApiService) {
-
-    $scope.notification = {};
-    $scope.exception = {};
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/notifications/" + $routeParams.id)
-
-    // Load the notification
-    var params = { show: "body" };
-    ApiService.getItem($scope.url, params).then(function (notification) {
-        $scope.notification = notification;
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-}]);
-
 
 
 
@@ -4380,85 +4380,6 @@ app.controller("PaymentsAddCtrl", ['$scope', '$location', '$routeParams', 'ApiSe
 }]);
 
 //#endregion Payments
-
-
-
-
-app.controller("ProfileUpdateCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
-
-    $scope.exception = {};
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/users/me")
-
-    // Load the user
-    ApiService.getItem($scope.url).then(function (user) {
-        $scope.user = user;
-
-        // Make a copy of the original for comparision
-        $scope.user_orig = angular.copy($scope.user);
-
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-    var prepareSubmit = function () {
-
-        // Clear any previous errors
-        $scope.exception.error = null;
-
-    }
-
-    $scope.confirmCancel = function () {
-        if (angular.equals($scope.user, $scope.user_orig)) {
-            utils.redirect($location, "/");
-        } else {
-            var confirm = { id: "changes_lost" };
-            confirm.onConfirm = function () {
-                utils.redirect($location, "/");
-            }
-            ConfirmService.showConfirm($scope, confirm);
-        }
-    }
-
-    $scope.updateProfile = function (form) {
-
-        prepareSubmit();
-
-        if ($scope.user.password || $scope.user.password2) {
-            if ($scope.user.password != $scope.user.password2) {
-                form.password2.$setValidity("match", false);
-                return;
-            } else {
-                form.password2.$setValidity("match", true);
-            }
-        } else {
-            form.password2.$setValidity("match", true);
-        }
-
-        if ($scope.form.$invalid) {
-            return;
-        }
-
-        if (utils.isNullOrEmpty($scope.user.password)) {
-            delete $scope.user.password;
-            delete $scope.user.password2;
-        }
-
-        ApiService.set($scope.user, $scope.url)
-        .then(
-        function (user) {
-            GrowlsService.addGrowl({ id: "edit_success", name: "your profile", type: "success", url: "#/profile" });
-            utils.redirect($location, "/");
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception.error = error;
-        });
-    }
-
-}]);
 
 
 
@@ -4835,6 +4756,85 @@ app.controller("ProductsSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
 }]);
 
 //#endregion Products
+
+
+
+
+app.controller("ProfileUpdateCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
+
+    $scope.exception = {};
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/users/me")
+
+    // Load the user
+    ApiService.getItem($scope.url).then(function (user) {
+        $scope.user = user;
+
+        // Make a copy of the original for comparision
+        $scope.user_orig = angular.copy($scope.user);
+
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+    var prepareSubmit = function () {
+
+        // Clear any previous errors
+        $scope.exception.error = null;
+
+    }
+
+    $scope.confirmCancel = function () {
+        if (angular.equals($scope.user, $scope.user_orig)) {
+            utils.redirect($location, "/");
+        } else {
+            var confirm = { id: "changes_lost" };
+            confirm.onConfirm = function () {
+                utils.redirect($location, "/");
+            }
+            ConfirmService.showConfirm($scope, confirm);
+        }
+    }
+
+    $scope.updateProfile = function (form) {
+
+        prepareSubmit();
+
+        if ($scope.user.password || $scope.user.password2) {
+            if ($scope.user.password != $scope.user.password2) {
+                form.password2.$setValidity("match", false);
+                return;
+            } else {
+                form.password2.$setValidity("match", true);
+            }
+        } else {
+            form.password2.$setValidity("match", true);
+        }
+
+        if ($scope.form.$invalid) {
+            return;
+        }
+
+        if (utils.isNullOrEmpty($scope.user.password)) {
+            delete $scope.user.password;
+            delete $scope.user.password2;
+        }
+
+        ApiService.set($scope.user, $scope.url)
+        .then(
+        function (user) {
+            GrowlsService.addGrowl({ id: "edit_success", name: "your profile", type: "success", url: "#/profile" });
+            utils.redirect($location, "/");
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception.error = error;
+        });
+    }
+
+}]);
 
 
 
@@ -5422,6 +5422,59 @@ app.controller("PromotionsListCtrl", ['$scope', '$routeParams', '$location', '$q
     $scope.loadPromotions();
 
 }]);
+
+
+
+
+
+//#region Refunds
+
+app.controller("RefundsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
+
+    // Establish your scope containers
+    $scope.exception = {};
+    $scope.resources = {};
+    $scope.resources.refundListUrl = ApiService.buildUrl("/refunds");
+
+}]);
+
+app.controller("RefundsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'ConfirmService', 'GrowlsService', function ($scope, $routeParams, ApiService, ConfirmService, GrowlsService) {
+
+    $scope.refund = {};
+    $scope.exception = {};
+    $scope.fee_currency = null;
+    $scope.items = [];
+    $scope.currencyType = "transaction";
+    $scope.resources = {};
+
+    $scope.prefs = {}
+    $scope.prefs.loadRefundDetails = false;
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/refunds/" + $routeParams.id)
+    $scope.resources.notificationListUrl = $scope.url + "/notifications";
+
+    // Load the refund
+    var params = { expand: "payment,customer,payment_method,gateway,fees,commissions,order,refunds.items" };
+    ApiService.getItem($scope.url, params).then(function (refund) {
+        $scope.refund = refund;
+
+        if (refund.fees.data.length > 0) {
+            $scope.fee_currency = refund.fees.data[0].currency;
+        }
+
+        if (refund.order != null) {
+            $scope.items = refund.order.items;
+        }
+
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+}]);
+
+//#endregion Refunds
 
 
 
@@ -6059,59 +6112,6 @@ app.controller("ReportSalesCtrl", ['$scope', '$routeParams', '$location', 'Growl
     $scope.run();
 
 }]);
-
-
-//#region Refunds
-
-app.controller("RefundsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
-
-    // Establish your scope containers
-    $scope.exception = {};
-    $scope.resources = {};
-    $scope.resources.refundListUrl = ApiService.buildUrl("/refunds");
-
-}]);
-
-app.controller("RefundsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'ConfirmService', 'GrowlsService', function ($scope, $routeParams, ApiService, ConfirmService, GrowlsService) {
-
-    $scope.refund = {};
-    $scope.exception = {};
-    $scope.fee_currency = null;
-    $scope.items = [];
-    $scope.currencyType = "transaction";
-    $scope.resources = {};
-
-    $scope.prefs = {}
-    $scope.prefs.loadRefundDetails = false;
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/refunds/" + $routeParams.id)
-    $scope.resources.notificationListUrl = $scope.url + "/notifications";
-
-    // Load the refund
-    var params = { expand: "payment,customer,payment_method,gateway,fees,commissions,order,refunds.items" };
-    ApiService.getItem($scope.url, params).then(function (refund) {
-        $scope.refund = refund;
-
-        if (refund.fees.data.length > 0) {
-            $scope.fee_currency = refund.fees.data[0].currency;
-        }
-
-        if (refund.order != null) {
-            $scope.items = refund.order.items;
-        }
-
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-}]);
-
-//#endregion Refunds
-
-
-
 
 
 //#region Shipments
@@ -8082,7 +8082,7 @@ app.controller("UsersListCtrl", ['$scope', '$routeParams', '$location', '$q', 'G
 
 }]);
 
-app.controller("UsersSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
+app.controller("UsersSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'HelperService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, HelperService) {
 
     $scope.exception = {};
     $scope.data = {}
@@ -8097,7 +8097,7 @@ app.controller("UsersSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSe
         $scope.url = ApiService.buildUrl("/users/" + $routeParams.id)
 
         // Load the user
-        ApiService.getItem($scope.url).then(function (user) {
+        ApiService.getItem($scope.url, { account_id: localStorage.getItem("account_id") }).then(function (user) {
             $scope.usr = user;
 
             // Make a copy of the original for comparision
@@ -8179,9 +8179,7 @@ app.controller("UsersSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSe
             delete $scope.usr.password;
         }
 
-        ApiService.set($scope.usr, $scope.url, { show: "user_id,name" })
-        .then(
-        function (usr) {
+        ApiService.set($scope.usr, $scope.url, { show: "user_id,name", account_id: localStorage.getItem("account_id") }) .then(function (usr) {
             GrowlsService.addGrowl({ id: "edit_success", name: usr.name, type: "success", url: "#/users/" + usr.user_id + "/edit" });
             utils.redirect($location, "/users");
         },
@@ -8203,6 +8201,21 @@ app.controller("UsersSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSe
             $scope.exception.error = error;
             window.scrollTo(0, 0);
         });
+    }
+
+    // Determine if the user is an account owner
+    if (HelperService.isAdmin() == false) {
+        ApiService.getItem(ApiService.buildUrl("/users/me"), { show: "is_account_owner" }).then(function (usr) {
+            if (usr.is_account_owner) {
+                $scope.isAccountOwner = true;
+            }
+        },
+        function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    } else {
+        $scope.isAccountOwner = true;
     }
 
 }]);

@@ -92,7 +92,7 @@ app.controller("UsersListCtrl", ['$scope', '$routeParams', '$location', '$q', 'G
 
 }]);
 
-app.controller("UsersSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
+app.controller("UsersSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'HelperService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, HelperService) {
 
     $scope.exception = {};
     $scope.data = {}
@@ -107,7 +107,7 @@ app.controller("UsersSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSe
         $scope.url = ApiService.buildUrl("/users/" + $routeParams.id)
 
         // Load the user
-        ApiService.getItem($scope.url).then(function (user) {
+        ApiService.getItem($scope.url, { account_id: localStorage.getItem("account_id") }).then(function (user) {
             $scope.usr = user;
 
             // Make a copy of the original for comparision
@@ -189,9 +189,7 @@ app.controller("UsersSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSe
             delete $scope.usr.password;
         }
 
-        ApiService.set($scope.usr, $scope.url, { show: "user_id,name" })
-        .then(
-        function (usr) {
+        ApiService.set($scope.usr, $scope.url, { show: "user_id,name", account_id: localStorage.getItem("account_id") }) .then(function (usr) {
             GrowlsService.addGrowl({ id: "edit_success", name: usr.name, type: "success", url: "#/users/" + usr.user_id + "/edit" });
             utils.redirect($location, "/users");
         },
@@ -213,6 +211,21 @@ app.controller("UsersSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSe
             $scope.exception.error = error;
             window.scrollTo(0, 0);
         });
+    }
+
+    // Determine if the user is an account owner
+    if (HelperService.isAdmin() == false) {
+        ApiService.getItem(ApiService.buildUrl("/users/me"), { show: "is_account_owner" }).then(function (usr) {
+            if (usr.is_account_owner) {
+                $scope.isAccountOwner = true;
+            }
+        },
+        function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    } else {
+        $scope.isAccountOwner = true;
     }
 
 }]);
