@@ -1537,6 +1537,11 @@ app.directive('refund', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
                         data.total = total;
                     }
 
+                    // If the items list is empty, remove it.
+                    if (data.items && data.items.length == 0) {
+                        delete data.items;
+                    }
+
                     // Set the reason
                     data.reason = scope.refund.reason;
 
