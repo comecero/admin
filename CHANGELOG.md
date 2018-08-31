@@ -1,5 +1,19 @@
 ﻿# Admin Change Log #
 
+<a name="1.4.0"></a>
+# 1.4.0
+
+- Add support to create and edit cross-sells as a promotion
+- Add support to configure refund notifications to customers
+- Add AVS and CVV results to payment details page
+- Add option to view / edit account signin alias
+- Allow admin to choose to ingore bad AVS results when processing a payment in the virtual terminal
+- See which app processed a payment
+
+
+- Add meta data display for customers, payments
+- Bug fix in invoice datepicker
+
 <a name="1.3.7"></a>
 # 1.3.7
 
