@@ -17,12 +17,14 @@ app.controller("RefundsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'Conf
     $scope.fee_currency = null;
     $scope.items = [];
     $scope.currencyType = "transaction";
+    $scope.resources = {};
 
     $scope.prefs = {}
     $scope.prefs.loadRefundDetails = false;
 
     // Set the url for interacting with this item
     $scope.url = ApiService.buildUrl("/refunds/" + $routeParams.id)
+    $scope.resources.notificationListUrl = $scope.url + "/notifications";
 
     // Load the refund
     var params = { expand: "payment,customer,payment_method,gateway,fees,commissions,order,refunds.items" };

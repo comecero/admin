@@ -90,6 +90,27 @@ app.controller("HostedFunctionsAddCtrl", ['$scope', '$routeParams', '$location',
     $scope.hostedFunction = { environment_variables: {}};
     $scope.exception = {};
     $scope.environmentVariables = [];
+    
+    // Define the environments: 
+    $scope.environments = [
+        { name: "Node.js 4.3", code: "nodejs4.3", deprecated: true },
+        { name: "Node.js 6.10", code: "nodejs6.10" },
+        { name: "Node.js 8.10", code: "nodejs8.10" },
+        { name: "Java 8", code: "java8" },
+        { name: "Python 2.7", code: "python2.7" },
+        { name: "Python 3.6", code: "python3.6" },
+        { name: ".NET Core 1.0", code: "dotnetcore1.0" },
+        { name: ".NET Core 2.0", code: "dotnetcore2.0" },
+        { name: "Go 1.x", code: "go1.x" }
+    ]
+
+    $scope.isDeprecated = function (code) {
+        var env = _.find($scope.environments, function (e) { return e.code == code });
+        if (env && env.deprecated) {
+            return true;
+        }
+        return false;
+    }
 
     $scope.uploadSending = false;
     var uploadSendingListener = $scope.$on('uploadSending', function (event, sending) {
@@ -173,6 +194,27 @@ app.controller("HostedFunctionsEditCtrl", ['$scope', '$routeParams', '$location'
     $scope.exception = {};
     $scope.environmentVariables = [];
 
+    // Define the environments: 
+    $scope.environments = [
+        { name: "Node.js 4.3", code: "nodejs4.3", deprecated: true },
+        { name: "Node.js 6.10", code: "nodejs6.10" },
+        { name: "Node.js 8.10", code: "nodejs8.10" },
+        { name: "Java 8", code: "java8" },
+        { name: "Python 2.7", code: "python2.7" },
+        { name: "Python 3.6", code: "python3.6" },
+        { name: ".NET Core 1.0", code: "dotnetcore1.0" },
+        { name: ".NET Core 2.0", code: "dotnetcore2.0" },
+        { name: "Go 1.x", code: "go1.x" }
+    ]
+
+    $scope.isDeprecated = function (code) {
+        var env = _.find($scope.environments, function (e) { return e.code == code });
+        if (env && env.deprecated) {
+            return true;
+        }
+        return false;
+    }
+
     // Set the url for interacting with this item
     $scope.url = ApiService.buildUrl("/hosted_functions/" + $routeParams.id)
     $scope.uploadUrl = "/hosted_functions/" + $routeParams.id;
@@ -244,10 +286,25 @@ app.controller("HostedFunctionsEditCtrl", ['$scope', '$routeParams', '$location'
 
     $scope.addVariable = function () {
         $scope.environmentVariables.push({ name: null, value: null });
+        $scope.setVariables();
     }
 
     $scope.removeVariable = function (variables, index) {
         variables.splice(index, 1);
+        $scope.setVariables();
+    }
+
+    $scope.setVariables = function () {
+
+        // Loop through all the variables and set any that have both a name and value.
+        var variables = {};
+        $.each($scope.environmentVariables, function (index, item) {
+            if (!utils.isNullOrEmpty(item.name) && !utils.isNullOrEmpty(item.value)) {
+                variables[item.name] = item.value;
+            }
+        });
+
+        $scope.environment_variables_json = JSON.stringify(variables);
     }
 
     var prepareSubmit = function () {

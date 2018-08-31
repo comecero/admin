@@ -1,4 +1,4 @@
-<div ng-controller="PromotionsSetCtrl" class="content container">
+<div ng-controller="CouponSetCtrl" class="content container">
 
     <div class="callout callout-danger" ng-if="exception.error">
         <h4 translate>Oops! We had a problem.</h4>
@@ -7,8 +7,8 @@
     </div>
 
     <div class="page-header">
-        <h1 ng-if="add" translate>Add a Promotion</h1>
-        <h1 ng-if="update" translate>Promotion: {{promotion.name}}</h1>
+        <h1 ng-if="add" translate>Add a Coupon</h1>
+        <h1 ng-if="update" translate>Coupon: {{promotion.name}}</h1>
     </div>
     <form name="form" novalidate>
         <div class="panel panel-body light-shadow">
@@ -61,7 +61,7 @@
 
             <div class="col-xs-12">
                 <div class="form-group" show-errors>
-                    <label for="type" class="control-label" translate>What does the discount apply to?</label>
+                    <label for="type" class="control-label" translate>What does the coupon apply to?</label>
                     <select class="form-control" name="type" ng-model="promotion.config.type" required>
                         <option value="product" translate>A product or products</option>
                         <option value="shipping" translate>Shipping charges</option>
@@ -160,7 +160,7 @@
 
             <div class="row"></div>
 
-            <div class="col-md-6 col-xs-12" show-errors>
+            <div class="col-md-6 col-xs-12" ng-show="promotion.config.type == 'product'" show-errors>
                 <div class="form-group">
                     <label class="radio-group-label" translate>Apply to recurring subscription payments?</label>
                     <div class="radio-group inline">
@@ -170,19 +170,18 @@
                         <label for="apply_to_recurring-2" class="radio-label">No</label>
                     </div>
                     <div>
-                        <p class="help-text" translate>'No' discounts the initial payment only, 'Yes' discounts the initial payment and all recurring payments in a subscription.</p>
+                        <p class="help-text" translate>'No' discounts the initial payment only, 'Yes' discounts the initial payment and the number of recurring payments you specify.</p>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-6 col-xs-12" show-errors>
-                <label for="expires" class="control-label">Expires</label>
-                <div class="input-group dp">
-                    <input type="text" name="expires" class="form-control" uib-datepicker-popup="yyyy-MM-dd" ng-model="datepicker.expires" is-open="datepicker.status.expires.opened" datepicker-options="datepicker.options" ng-model-options="{timezone: 'utc'}" close-text="Close" />
-                    <span class="input-group-addon pointer" ng-click="datepicker.open($event, 'expires')"><i class="fa fa-calendar"></i></span>
-                </div>
-                <div>
-                    <p class="help-text" translate>Supply a date if you want the promotion to automatically expire, otherwise leave blank.</p>
+            <div class="col-md-6 col-xs-12" ng-show="promotion.apply_to_recurring && promotion.config.type == 'product'">
+                <div class="form-group" show-errors>
+                    <label for="apply_to_recurring_count" class="control-label" translate>How many recurring payments?</label>
+                    <input type="tel" class="form-control" name="apply_to_recurring_count" ng-model="promotion.apply_to_recurring_count" placeholder="{{ 'Optional' | translate}}" is-valid-integer allow-empty-value="true">
+                    <div>
+                        <p class="help-text" translate>The number of recurring payments this promotion should apply to. If blank the promotion will apply to all recurring payments.</p>
+                    </div>
                 </div>
             </div>
 
@@ -209,7 +208,18 @@
 
             <div class="row"></div>
 
-            <div class="col-xs-12" show-errors>
+            <div class="col-md-6 col-xs-12" show-errors>
+                <label for="expires" class="control-label">Expires</label>
+                <div class="input-group dp">
+                    <input type="text" name="expires" class="form-control" uib-datepicker-popup="yyyy-MM-dd" ng-model="datepicker.expires" is-open="datepicker.status.expires.opened" datepicker-options="datepicker.options" ng-model-options="{timezone: 'utc'}" close-text="Close" />
+                    <span class="input-group-addon pointer" ng-click="datepicker.open($event, 'expires')"><i class="fa fa-calendar"></i></span>
+                </div>
+                <div>
+                    <p class="help-text" translate>Supply a date if you want the promotion to automatically expire, otherwise leave blank.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" show-errors>
                 <div class="form-group">
                     <label class="radio-group-label" translate>Set as Active?</label>
                     <div class="radio-group inline">
@@ -223,6 +233,8 @@
                     </div>
                 </div>
             </div>
+
+            <div class="row"></div>
 
             <div class="col-xs-12">
                 <div class="form-group" show-errors>

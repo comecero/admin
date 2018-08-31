@@ -50,7 +50,7 @@
                 </div>
             </div>
 
-            <div class="col-xs-12" ng-show="supportsCreditCard(gateway.provider_id)">
+            <div class="col-xs-12" ng-show="supportsCreditCard(gateway)">
                 <div class="form-group spacer-b10" show-errors>
                     <label for="card_type" class="control-label required" translate>Card Types</label>
                     <input type="text" class="form-control" name="card_type" ng-model="typeahead.card_type" uib-typeahead="card_type as card_type for card_type in card_types | filter:$viewValue | limitTo:12" typeahead-input-formatter="$model.name" typeahead-on-select="onCardTypeSelect($item, $model, $label)" typeahead-editable="false">

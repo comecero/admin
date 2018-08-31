@@ -1537,6 +1537,11 @@ app.directive('refund', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
                         data.total = total;
                     }
 
+                    // If the items list is empty, remove it.
+                    if (data.items && data.items.length == 0) {
+                        delete data.items;
+                    }
+
                     // Set the reason
                     data.reason = scope.refund.reason;
 
@@ -1544,14 +1549,12 @@ app.directive('refund', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
                     data.is_chargeback = scope.refund.is_chargeback;
 
                     // Process the refund
-                    ApiService.set(data, scope.payment.url + "/refunds", { expand: "fees,items" })
-                    .then(
-                    function (refund) {
+                    ApiService.set(data, scope.payment.url + "/refunds", { expand: "fees,items" }).then(function (refund) {
                         // Update the payment properties from the new refund and return.
                         scope.payment.refunds.data.push(refund);
 
                         // If the entire amount has been refunded, change the status on payment to refunded.
-                        if (utils.roundCurrency(scope.refund.getUnrefundedTotal()) <= 0) {
+                        if (utils.roundCurrency(scope.refund.getUnrefundedTotal()) <= 0 && refund.status == "completed") {
                             scope.payment.status = 'refunded';
                         }
 
@@ -2458,7 +2461,7 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
                     default_sort = "date_created";
                 }
                 if (attrs.type == "app_installation") {
-                    baseParams.show = "name,app_installation_id,date_created,image_url,short_description,info_url,launch_url,settings_fields,style_fields,version,is_default_version,updated_version_available,install_url,platform_hosted";
+                    baseParams.show = "name,app_installation_id,alias,client_side,location_url,date_created,image_url,short_description,info_url,launch_url,settings_fields,style_fields,version,is_default_version,updated_version_available,install_url,platform_hosted";
                     baseParams.expand = "images";
                     default_sort = "name";
                     scope.userParams.desc = false;
@@ -4699,8 +4702,13 @@ app.directive('customerSelect', ['ApiService', 'ConfirmService', 'GrowlsService'
                 var customerSelectModal = $uibModal.open({
                     size: "lg",
                     templateUrl: "app/modals/customer_select.html",
-                    scope: scope
+                    scope: scope,
+                    backdrop: "static"
                 });
+
+                scope.customerSelect.copyBillingToShipping = function () {
+                    scope.newCustomer.shipping_address = angular.copy(scope.newCustomer.billing_address);
+                }
 
                 // Handle when the modal is closed or dismissed
                 customerSelectModal.result.then(function (customer) {
@@ -5580,7 +5588,8 @@ app.service("GeographiesService", [function () {
     // Return public API.
     return ({
         getGeographies: getGeographies,
-        isEuCountry: isEuCountry
+        isEuCountry: isEuCountry,
+        getCurrencySymbol: getCurrencySymbol
     });
 
     function getGeographies(insertblanks) {
@@ -5607,6 +5616,13 @@ app.service("GeographiesService", [function () {
             return true;
         }
         return false;
+    }
+
+    function getCurrencySymbol(code) {
+
+        var currencies = { "AED": "د.إ", "AFN": "؋", "ALL": "L", "AMD": "֏", "ANG": "ƒ", "AOA": "Kz", "ARS": "$", "AUD": "$", "AWG": "ƒ", "AZN": "ман", "BAM": "KM", "BBD": "$", "BDT": "৳", "BGN": "лв", "BHD": ".د.ب", "BIF": "FBu", "BMD": "$", "BND": "$", "BOB": "$b", "BRL": "R$", "BSD": "$", "BTC": "฿", "BTN": "Nu.", "BWP": "P", "BYR": "p.", "BZD": "BZ$", "CAD": "$", "CDF": "FC", "CHF": "CHF", "CLP": "$", "CNY": "¥", "COP": "$", "CRC": "₡", "CUC": "$", "CUP": "₱", "CVE": "$", "CZK": "Kč", "DJF": "Fdj", "DKK": "kr", "DOP": "RD$", "DZD": "دج", "EEK": "kr", "EGP": "£", "ERN": "Nfk", "ETB": "Br", "ETH": "Ξ", "EUR": "€", "FJD": "$", "FKP": "£", "GBP": "£", "GEL": "₾", "GGP": "£", "GHC": "₵", "GHS": "GH₵", "GIP": "£", "GMD": "D", "GNF": "FG", "GTQ": "Q", "GYD": "$", "HKD": "$", "HNL": "L", "HRK": "kn", "HTG": "G", "HUF": "Ft", "IDR": "Rp", "ILS": "₪", "IMP": "£", "INR": "₹", "IQD": "ع.د", "IRR": "﷼", "ISK": "kr", "JEP": "£", "JMD": "J$", "JOD": "JD", "JPY": "¥", "KES": "KSh", "KGS": "лв", "KHR": "៛", "KMF": "CF", "KPW": "₩", "KRW": "₩", "KWD": "KD", "KYD": "$", "KZT": "лв", "LAK": "₭", "LBP": "£", "LKR": "₨", "LRD": "$", "LSL": "M", "LTC": "Ł", "LTL": "Lt", "LVL": "Ls", "LYD": "LD", "MAD": "MAD", "MDL": "lei", "MGA": "Ar", "MKD": "ден", "MMK": "K", "MNT": "₮", "MOP": "MOP$", "MRO": "UM", "MUR": "₨", "MVR": "Rf", "MWK": "MK", "MXN": "$", "MYR": "RM", "MZN": "MT", "NAD": "$", "NGN": "₦", "NIO": "C$", "NOK": "kr", "NPR": "₨", "NZD": "$", "OMR": "﷼", "PAB": "B/.", "PEN": "S/.", "PGK": "K", "PHP": "₱", "PKR": "₨", "PLN": "zł", "PYG": "Gs", "QAR": "﷼", "RMB": "￥", "RON": "lei", "RSD": "Дин.", "RUB": "₽", "RWF": "R₣", "SAR": "﷼", "SBD": "$", "SCR": "₨", "SDG": "ج.س.", "SEK": "kr", "SGD": "$", "SHP": "£", "SLL": "Le", "SOS": "S", "SRD": "$", "SSP": "£", "STD": "Db", "SVC": "$", "SYP": "£", "SZL": "E", "THB": "฿", "TJS": "SM", "TMT": "T", "TND": "د.ت", "TOP": "T$", "TRL": "₤", "TRY": "₺", "TTD": "TT$", "TVD": "$", "TWD": "NT$", "TZS": "TSh", "UAH": "₴", "UGX": "USh", "USD": "$", "UYU": "$U", "UZS": "лв", "VEF": "Bs", "VND": "₫", "VUV": "VT", "WST": "WS$", "XAF": "FCFA", "XBT": "Ƀ", "XCD": "$", "XOF": "CFA", "XPF": "₣", "YER": "﷼", "ZAR": "R", "ZWD": "Z$" }
+
+        return currencies[code] || "";
     }
 
 }

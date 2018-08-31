@@ -1242,6 +1242,11 @@ app.directive('refund', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
                         data.total = total;
                     }
 
+                    // If the items list is empty, remove it.
+                    if (data.items && data.items.length == 0) {
+                        delete data.items;
+                    }
+
                     // Set the reason
                     data.reason = scope.refund.reason;
 
@@ -1249,14 +1254,12 @@ app.directive('refund', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
                     data.is_chargeback = scope.refund.is_chargeback;
 
                     // Process the refund
-                    ApiService.set(data, scope.payment.url + "/refunds", { expand: "fees,items" })
-                    .then(
-                    function (refund) {
+                    ApiService.set(data, scope.payment.url + "/refunds", { expand: "fees,items" }).then(function (refund) {
                         // Update the payment properties from the new refund and return.
                         scope.payment.refunds.data.push(refund);
 
                         // If the entire amount has been refunded, change the status on payment to refunded.
-                        if (utils.roundCurrency(scope.refund.getUnrefundedTotal()) <= 0) {
+                        if (utils.roundCurrency(scope.refund.getUnrefundedTotal()) <= 0 && refund.status == "completed") {
                             scope.payment.status = 'refunded';
                         }
 
@@ -2163,7 +2166,7 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
                     default_sort = "date_created";
                 }
                 if (attrs.type == "app_installation") {
-                    baseParams.show = "name,app_installation_id,date_created,image_url,short_description,info_url,launch_url,settings_fields,style_fields,version,is_default_version,updated_version_available,install_url,platform_hosted";
+                    baseParams.show = "name,app_installation_id,alias,client_side,location_url,date_created,image_url,short_description,info_url,launch_url,settings_fields,style_fields,version,is_default_version,updated_version_available,install_url,platform_hosted";
                     baseParams.expand = "images";
                     default_sort = "name";
                     scope.userParams.desc = false;
@@ -4404,8 +4407,13 @@ app.directive('customerSelect', ['ApiService', 'ConfirmService', 'GrowlsService'
                 var customerSelectModal = $uibModal.open({
                     size: "lg",
                     templateUrl: "app/modals/customer_select.html",
-                    scope: scope
+                    scope: scope,
+                    backdrop: "static"
                 });
+
+                scope.customerSelect.copyBillingToShipping = function () {
+                    scope.newCustomer.shipping_address = angular.copy(scope.newCustomer.billing_address);
+                }
 
                 // Handle when the modal is closed or dismissed
                 customerSelectModal.result.then(function (customer) {

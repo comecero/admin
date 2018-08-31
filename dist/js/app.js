@@ -13,7 +13,7 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     cfpLoadingBarProvider.includeSpinner = false;
 
     // Dynamically load locale files
-    tmhDynamicLocaleProvider.localeLocationPattern("https://cdnjs.cloudflare.com/ajax/libs/angular-i18n/1.5.5/angular-locale_{{locale}}.js");
+    tmhDynamicLocaleProvider.localeLocationPattern("https://static.comecero.com/libraries/angularjs/1.5.5/i18n/angular-locale_{{locale}}.js");
 
     // Routes
 
@@ -27,8 +27,11 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
 
     // Promotions
     $routeProvider.when("/promotions", { templateUrl: "app/pages/promotions/list.html", reloadOnSearch: false });
-    $routeProvider.when("/promotions/add", { templateUrl: "app/pages/promotions/set.html", reloadOnSearch: true });
-    $routeProvider.when("/promotions/:id/edit", { templateUrl: "app/pages/promotions/set.html", reloadOnSearch: true });
+    $routeProvider.when("/promotions/add", { templateUrl: "app/pages/promotions/add.html", reloadOnSearch: true });
+    $routeProvider.when("/promotions/coupon/add", { templateUrl: "app/pages/promotions/coupon.html", reloadOnSearch: true });
+    $routeProvider.when("/promotions/coupon/:id/edit", { templateUrl: "app/pages/promotions/coupon.html", reloadOnSearch: true });
+    $routeProvider.when("/promotions/cross-sell/add", { templateUrl: "app/pages/promotions/crossSell.html", reloadOnSearch: true });
+    $routeProvider.when("/promotions/cross-sell/:id/edit", { templateUrl: "app/pages/promotions/crossSell.html", reloadOnSearch: true });
 
     // Gateways
     $routeProvider.when("/gateways", { templateUrl: "app/pages/gateways/list.html", reloadOnSearch: false });

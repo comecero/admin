@@ -74,6 +74,22 @@ app.controller("AppInstallationsListCtrl", ['$scope', '$routeParams', '$location
         ConfirmService.showConfirm($scope, confirm);
     }
 
+    $scope.functions.getLaunchUrl = function (app_installation_id, test) {
+        return "launch/app.html#app_installation_id=" + app_installation_id + "&test=" + test;
+    }
+
+    $scope.functions.getInfoUrl = function (app_installation, test) {
+
+        // If client side and the info URL is within the app, run the info URL through the app launcher to inject an API token for use within the info pages.
+        if (app_installation.client_side) {
+            if (utils.left(app_installation.info_url, app_installation.location_url.length) == app_installation.location_url) {
+                // The info URL is within the app. Set the redirect URI as a relative path.
+                return $scope.functions.getLaunchUrl(app_installation.app_installation_id, test) + "&redirect_uri=" + app_installation.alias + "/" + app_installation.info_url.substring(app_installation.location_url.length);
+            }
+        }
+        return app_installation.info_url;
+    }
+
 }]);
 
 app.controller("AppInstallationsSettingsCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
@@ -213,6 +229,3 @@ app.controller("AppInstallationsStyleCtrl", ['$scope', '$routeParams', '$locatio
 }]);
 
 //#endregion AppInstallations
-
-
-

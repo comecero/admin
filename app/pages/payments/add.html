@@ -75,6 +75,15 @@
                             </div>
                         </div>
 
+                        <div class="col-xs-12 col-md-6">
+                            <div class="form-group" style="margin-left: -15px;">
+                                <label class="col-md-5 col-xs-12 control-label text-left" translate>Total</label>
+                                <div class="col-md-7 col-xs-12">
+                                    <span class="highlight-value">{{calculateTotal(payment) | currency: geoService.getCurrencySymbol(payment.currency)}}</span> <span ng-show="payment.total || payment.subtotal">{{payment.currency}}</span>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
                     <div class="col-xs-12">
@@ -162,17 +171,29 @@
                 <div class="panel-body">
 
                     <div ng-show="payment_methods.data.length > 0">
-                        <div class="well clearfix" ng-repeat="method in payment_methods.data" ng-show="method.type == 'credit_card'">
-                            <span class="radio-group inline">
-                                <input type="radio" class="radio" name="payment_method" id="payment_method-{{method.payment_method_id}}" ng-checked="payment.payment_method.payment_method_id == method.payment_method_id" ng-click="functions.setPaymentMethod(method)" />
+                        <div class="well clearfix" ng-repeat="method in payment_methods.data" ng-show="method.type == 'credit_card' || method.type == 'paypal' || method.type == 'amazon_pay'">
+
+                            <span class="radio-group inline" ng-if="method.type == 'credit_card'">
+                                <input type="radio" class="radio" name="payment_method" id="payment_method-{{method.payment_method_id}}" ng-checked="payment.payment_method.payment_method_id == method.payment_method_id" ng-click="functions.setPaymentMethod(method.payment_method_id, method.type)" />
                                 <label for="payment_method-{{method.payment_method_id}}" class="radio-label strong">{{method.data.type}} {{method.data.mask}} (<span>exp.</span> {{method.data.exp_month}}/{{method.data.exp_year}})</label>
                                 <span class="pull-right credit-card-image" credit-card-image="method.data.type"></span>
                             </span>
+
+                            <span class="radio-group inline" ng-if="method.type != 'credit_card'">
+                                <input type="radio" class="radio" name="payment_method" id="payment_method-{{method.payment_method_id}}" ng-model="payment.payment_method.payment_method_id" value="{{method.payment_method_id}}" ng-checked="payment.payment_method.payment_method_id == method.payment_method_id" ng-click="functions.setPaymentMethod(method.payment_method_id, method.type)" />
+                                <label for="payment_method-{{method.payment_method_id}}" class="radio-label strong">
+                                    <span ng-show="method.type == 'paypal'">PayPal</span>
+                                    <span ng-show="method.type == 'amazon_pay'">Amazon Pay</span>
+                                </label>
+                                <span class="pull-right credit-card-image" credit-card-image="'paypal'" ng-show="method.type == 'paypal'"></span>
+                                <span class="pull-right credit-card-image" credit-card-image="'amazon_pay'" ng-show="method.type == 'amazon_pay'"></span>
+                            </span>
+
                         </div>
 
                         <div class="well clearfix">
                             <span class="radio-group inline">
-                                <input type="radio" class="radio" name="payment_method" id="payment_method-new" ng-click="functions.setPaymentMethod()" />
+                                <input type="radio" class="radio" name="payment_method" id="payment_method-new" ng-click="functions.setPaymentMethod(null, 'credit_card')" />
                                 <label for="payment_method-new" class="radio-label strong" translate>Pay with a new card</label>
                             </span>
                         </div>
@@ -216,6 +237,13 @@
                             <div class="form-group checkbox-group">
                                 <input type="checkbox" id="save-card" class="checkbox" name="save-card" ng-model="payment.payment_method.save">
                                 <label for="save-card" class="checkbox-label" translate>Save this card to the customer's account</label>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12">
+                            <div class="form-group checkbox-group">
+                                <input type="checkbox" id="ignore_bad_avs" class="checkbox" name="ignore_bad_avs" ng-model="payment.ignore_bad_avs">
+                                <label for="ignore_bad_avs" class="checkbox-label" translate>Process the payment even if the customer's address does not match the bank's records</label>
                             </div>
                         </div>
 

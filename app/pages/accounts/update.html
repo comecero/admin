@@ -154,6 +154,16 @@
                     </div>
                 </div>
 
+                <div class="col-xs-12">
+                    <div class="form-group" show-errors>
+                        <label for="alias" class="control-label" translate>Administration Sign-in Alias</label>
+                        <div class="input-group">
+                            <span class="input-group-addon">https://</span> <input type="text" name="alias" ng-class="alias" class="form-control" ng-model="account.alias" required> <span class="input-group-addon">.auth.comecero.com</span>
+                            <p class="help-block hidden fadeInDown" translate>Please provide a sign-in alias</p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="form-group" resource="accounts" method="update">
                     <div class="col-sm-offset-2 col-sm-10">
                         <button type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updateAccount()" validate-on-submit translate>Save Changes</button>
@@ -161,7 +171,10 @@
                     </div>
                 </div>
 
-                <span class="btn btn-info btn spacer-t5" ng-click="downloadContractPdf()" ng-show="account.live"><i class="fa fa-download"></i> <span translate>Download Account Contract</span></span>
+                <div class="col-xs-12">
+                    <span class="btn btn-info btn spacer-t5" ng-click="downloadContractPdf()" ng-show="account.live"><i class="fa fa-download"></i> <span translate>Download Account Contract</span></span>
+                </div>
+
 
             </div>
 

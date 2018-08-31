@@ -16,12 +16,14 @@ app.controller("PaymentsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'Con
     $scope.exception = {};
     $scope.fee_currency = null;
     $scope.currencyType = "transaction";
+    $scope.resources = {};
 
     $scope.prefs = {}
     $scope.prefs.loadRefundDetails = false;
 
     // Set the url for interacting with this item
     $scope.url = ApiService.buildUrl("/payments/" + $routeParams.id)
+    $scope.resources.notificationListUrl = $scope.url + "/notifications";
 
     // Set the url for pulling the full refund details
     $scope.refundListUrl = $scope.url + "/refunds";
@@ -75,6 +77,17 @@ app.controller("PaymentsAddCtrl", ['$scope', '$location', '$routeParams', 'ApiSe
         $scope.payment.payment_method = { type: "credit_card" };
     }
 
+    $scope.calculateTotal = function (payment) {
+
+        var subtotal = payment.subtotal || 0;
+        var shipping = payment.shipping || 0;
+        var tax = payment.tax || 0;
+
+        // If subtotal + shipping + tax is zero, return the supplied total instead.
+        return Number(subtotal) + Number(shipping) + Number(tax) || payment.total;
+
+    }
+
     $scope.functions.onCustomerSelect = function (customer) {
 
         delete $scope.payment.customer_id;
@@ -102,15 +115,17 @@ app.controller("PaymentsAddCtrl", ['$scope', '$location', '$routeParams', 'ApiSe
 
     }
 
-    $scope.functions.setPaymentMethod = function (paymentMethod) {
+    $scope.functions.setPaymentMethod = function (id, type) {
 
-        if (paymentMethod) {
-            // Set the supplied payment method
-            $scope.payment.payment_method = paymentMethod;
-        } else {
-            // Set a blank payment method
-            $scope.payment.payment_method = { type: "credit_card" };
-        }
+        // Remove all data from the payment method
+        $scope.payment.payment_method = {};
+
+        // If a payment_method_id or type is provided, set it.
+        if (id)
+            $scope.payment.payment_method.payment_method_id = id;
+
+        if (type)
+            $scope.payment.payment_method.type = type;
 
     }
 
