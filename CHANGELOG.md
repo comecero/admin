@@ -1,5 +1,10 @@
 ﻿# Admin Change Log #
 
+<a name="1.4.1"></a>
+# 1.4.1
+
+- Allow an account owner to designate other users as account owners and undelegate self
+
 <a name="1.4.0"></a>
 # 1.4.0
 
