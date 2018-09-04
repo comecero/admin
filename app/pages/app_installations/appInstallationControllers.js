@@ -19,8 +19,6 @@ app.controller("AppInstallationsListCtrl", ['$scope', '$routeParams', '$location
         host = host.replace(".auth.comecero.com", ".auth-staging.comecero.com");
     }
 
-    $scope.meta.app_install_url_base = "https://" + host + "/oauth/callback/#access_token=" + localStorage.getItem("token") + "&test=" + $scope.meta.test + "&redirect_uri=";
-
     $scope.functions = {};
 
     $scope.functions.uninstall = function (app_installation_id, app_name) {
@@ -74,8 +72,26 @@ app.controller("AppInstallationsListCtrl", ['$scope', '$routeParams', '$location
         ConfirmService.showConfirm($scope, confirm);
     }
 
-    $scope.functions.getLaunchUrl = function (app_installation_id, test) {
-        return "launch/app.html#app_installation_id=" + app_installation_id + "&test=" + test;
+    $scope.functions.getLaunchUrl = function (app_installation) {
+        if (app_installation) {
+            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
+            var redirect = app_installation.launch_url;
+            if (app_installation.version)
+                redirect += "&target_version=" + app_installation.version;
+            url += encodeURIComponent(redirect);
+            return url;
+        }
+    }
+
+    $scope.functions.getInstallUrl = function (app_installation) {
+        if (app_installation) {
+            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
+            var redirect = app_installation.install_url;
+            if (app_installation.updated_version_available)
+                redirect += "&target_version=" + app_installation.current_app_version;
+            url += encodeURIComponent(redirect);
+            return url;
+        }
     }
 
     $scope.functions.getInfoUrl = function (app_installation, test) {

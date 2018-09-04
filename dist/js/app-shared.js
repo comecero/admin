@@ -2461,7 +2461,7 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
                     default_sort = "date_created";
                 }
                 if (attrs.type == "app_installation") {
-                    baseParams.show = "name,app_installation_id,alias,client_side,location_url,date_created,image_url,short_description,info_url,launch_url,settings_fields,style_fields,version,is_default_version,updated_version_available,install_url,platform_hosted";
+                    baseParams.show = "name,app_installation_id,alias,client_side,date_created,image_url,short_description,info_url,launch_url,settings_fields,style_fields,version,is_default_version,updated_version_available,current_app_version,install_url,platform_hosted";
                     baseParams.expand = "images";
                     default_sort = "name";
                     scope.userParams.desc = false;
@@ -5489,12 +5489,12 @@ app.service("SettingsService", ['$rootScope', "$q", "ApiService", function ($roo
             localStorage.setItem("payment_currencies", JSON.stringify(account.payment_currencies));
             $rootScope.account.default_payment_currency = account.default_payment_currency;
             localStorage.setItem("default_payment_currency", account.default_payment_currency);
+            localStorage.setItem("oauth_authorize_url", account.oauth_authorize_url);
+            localStorage.setItem("oauth_callback_url", account.oauth_callback_url);
+            localStorage.setItem("contract_select_url", account.contract_select_url);
 
-            // Set the contract select URL
-            $rootScope.plan_select_url = "https://" + account.alias + ".auth.comecero.com/plan/select";
-            if (window.location.hostname.indexOf("admin-staging.") > -1) {
-                $rootScope.plan_select_url = $rootScope.plan_select_url.replace(".auth.comecero.com", ".auth-staging.comecero.com");
-            }
+            // Set the contract select URL on the root scope.
+            $rootScope.contract_select_url = account.contract_select_url;
 
         });
     }
