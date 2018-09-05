@@ -221,7 +221,7 @@
     }
 
     function buildUrl(endpoint) {
-        return "https://" + $rootScope.apiHost + "/api/v1" + endpoint;
+        return "/api/v1" + endpoint;
     }
 
     function onError(response) {

@@ -13,13 +13,8 @@ if (hashParameters["access_token"] != undefined) {
     // Save in localstorage. The server keeps track of how long the token is valid, if it expires the application will receive a 401 and prompt the user to log in.
     localStorage.setItem("token", token);
 
-    var host = "api.comecero.com";
-    if (window.location.hostname.indexOf("admin-staging.") > -1) {
-        host = "api-staging.comecero.com";
-    }
-
     // Get the account_id from the user object and save in storage.
-    var tokenResponse = executeURL("https://" + host + "/api/v1/users/me", null, "GET", token);
+    var tokenResponse = executeURL("/api/v1/users/me", null, "GET", token);
 
     // Define what happens if the call succeeds
     tokenResponse.success(function (data) {
@@ -50,7 +45,7 @@ if (hashParameters["access_token"] != undefined) {
             if (hashParameters["state"] == undefined) {
                 window.location = "/";
             } else {
-                // state should be the path without the hostname. We'll only redirect within the realm of admin.comecero.com.
+                // state should be the path without the hostname. We'll only redirect within the realm of the app (self).
                 if (utils.left(hashParameters["state"], 7) == "http://" || utils.left(hashParameters["state"], 8) == "https://") {
                     window.location = "/";
                 } else {

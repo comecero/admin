@@ -239,14 +239,6 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
 
 app.run(['$rootScope', '$route', '$templateCache', '$location', 'ApiService', 'SettingsService', 'GrowlsService', 'gettextCatalog', 'tmhDynamicLocale', function ($rootScope, $route, $templateCache, $location, ApiService, SettingsService, GrowlsService, gettextCatalog, tmhDynamicLocale) {
 
-    // Define the API and auth hosts
-    var apiHost = "api.comecero.com";
-    var hostPrefix = window.location.hostname.split();
-    if (hostPrefix.indexOf("-staging.") > -1) {
-        apiHost = "api-staging.comecero.com";
-    }
-    $rootScope.apiHost = apiHost;
-
     // Define default language
     var language = "en";
 

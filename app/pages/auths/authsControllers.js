@@ -231,7 +231,7 @@ app.controller("AuthsSetCtrl", ['$scope', '$rootScope', '$routeParams', '$locati
             delete config.headers["Authorization"];
         }
 
-        var request = $http.post("https://" + $rootScope.apiHost + "/api/v1/auths/limited?account_id=" + localStorage.getItem("account_id") + "&test=" + test, null, config);
+        var request = $http.post("/api/v1/auths/limited?account_id=" + localStorage.getItem("account_id") + "&test=" + test, null, config);
 
         request.success(function (auth) {
             $scope.showToken = true;

@@ -69,7 +69,7 @@ app.service("SettingsService", ['$rootScope', "$q", "ApiService", function ($roo
         $rootScope.account = {};
         $rootScope.account.account_id = localStorage.getItem("account_id");
 
-        return ApiService.getItem(ApiService.buildUrl("/accounts/" + $rootScope.account.account_id + "/meta")).then(function (account) {
+        return ApiService.getItem(ApiService.buildUrl("/accounts/" + $rootScope.account.account_id + "/account_meta")).then(function (account) {
             $rootScope.account.alias = account.alias;
             localStorage.setItem("alias", account.alias);
             $rootScope.account.live = account.live;
