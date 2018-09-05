@@ -2467,7 +2467,7 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
                     default_sort = "date_created";
                 }
                 if (attrs.type == "app_installation") {
-                    baseParams.show = "name,app_installation_id,alias,client_side,date_created,image_url,short_description,info_url,launch_url,settings_fields,style_fields,version,is_default_version,updated_version_available,current_app_version,install_url,platform_hosted";
+                    baseParams.show = "name,app_installation_id,alias,platform_hosted,date_created,image_url,short_description,info_url,launch_url,settings_fields,style_fields,version,is_default_version,updated_version_available,current_app_version,install_url,platform_hosted,location_url";
                     baseParams.expand = "images";
                     default_sort = "name";
                     scope.userParams.desc = false;

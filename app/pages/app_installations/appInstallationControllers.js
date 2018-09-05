@@ -11,14 +11,6 @@ app.controller("AppInstallationsListCtrl", ['$scope', '$routeParams', '$location
 
     $scope.meta.test = localStorage.getItem("test");
 
-    // Set the app installation url
-    var alias = localStorage.getItem("alias");
-    var host = alias + ".auth.comecero.com";
-
-    if (window.location.hostname.indexOf("admin-staging.") > -1) {
-        host = host.replace(".auth.comecero.com", ".auth-staging.comecero.com");
-    }
-
     $scope.functions = {};
 
     $scope.functions.uninstall = function (app_installation_id, app_name) {
@@ -97,10 +89,11 @@ app.controller("AppInstallationsListCtrl", ['$scope', '$routeParams', '$location
     $scope.functions.getInfoUrl = function (app_installation, test) {
 
         // If client side and the info URL is within the app, run the info URL through the app launcher to inject an API token for use within the info pages.
-        if (app_installation.client_side) {
+        if (app_installation.platform_hosted && app_installation.info_url) {
             if (utils.left(app_installation.info_url, app_installation.location_url.length) == app_installation.location_url) {
                 // The info URL is within the app. Set the redirect URI as a relative path.
-                return $scope.functions.getLaunchUrl(app_installation.app_installation_id, test) + "&redirect_uri=" + app_installation.alias + "/" + app_installation.info_url.substring(app_installation.location_url.length);
+                var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
+                return url + "&redirect_uri=" + encodeURIComponent(app_installation.info_url);
             }
         }
         return app_installation.info_url;
