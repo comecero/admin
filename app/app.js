@@ -241,21 +241,11 @@ app.run(['$rootScope', '$route', '$templateCache', '$location', 'ApiService', 'S
 
     // Define the API and auth hosts
     var apiHost = "api.comecero.com";
-    if (window.location.hostname.indexOf("admin-staging.") > -1) {
+    var hostPrefix = window.location.hostname.split();
+    if (hostPrefix.indexOf("-staging.") > -1) {
         apiHost = "api-staging.comecero.com";
     }
     $rootScope.apiHost = apiHost;
-
-    var authHost = "signin.comecero.com"; // Just the default, uncommon that this would be actually used.
-    if (localStorage.getItem("alias") != null) {
-        var authHost = localStorage.getItem("alias") + ".auth.comecero.com";
-
-        if (window.location.hostname.indexOf("admin-staging.") > -1) {
-            authHost = localStorage.getItem("alias") + ".auth-staging.comecero.com";
-        }
-
-    }
-    $rootScope.authHost = authHost;
 
     // Define default language
     var language = "en";

@@ -448,7 +448,17 @@ app.directive('login', ['$uibModal', 'authService', 'SettingsService', '$sce', '
         restrict: 'A',
         link: function (scope, elem, attrs, ctrl) {
 
+            scope.getLoginUrl = function () {
+                return $sce.trustAsResourceUrl(localStorage.getItem("signin_url") + "?iframe=true&msg=true&test=" + $rootScope.settings.test);
+            }
+
             scope.$on("event:auth-loginRequired", function (event) {
+
+                // If there is no signin URL in the local storage, redirect to the global signin page.
+                if (!localStorage.getItem("signin_url")) {
+                    window.location = "https://signin.comecero.com";
+                    return;
+                }
 
                 // Only show if a modal is not already displayed
                 if (scope.openLogin == null) {
@@ -463,10 +473,6 @@ app.directive('login', ['$uibModal', 'authService', 'SettingsService', '$sce', '
                     var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
                     var eventer = window[eventMethod];
                     var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
-
-                    scope.getLoginUrl = function () {
-                        return $sce.trustAsResourceUrl("https://" + $rootScope.authHost + "/?iframe=true&msg=true&test=" + $rootScope.settings.test);
-                    }
 
                     // Listen to message from child window
                     eventer(messageEvent, function (e) {

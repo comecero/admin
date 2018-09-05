@@ -85,6 +85,7 @@ app.service("SettingsService", ['$rootScope', "$q", "ApiService", function ($roo
             localStorage.setItem("oauth_authorize_url", account.oauth_authorize_url);
             localStorage.setItem("oauth_callback_url", account.oauth_callback_url);
             localStorage.setItem("contract_select_url", account.contract_select_url);
+            localStorage.setItem("signin_url", account.signin_url);
 
             // Set the contract select URL on the root scope.
             $rootScope.contract_select_url = account.contract_select_url;
