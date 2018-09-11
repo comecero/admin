@@ -133,8 +133,9 @@ app.service("SettingsService", ['$rootScope', "$q", "ApiService", function ($roo
             }
 
             var complete = function () {
+                var signinUrl = localStorage.getItem("signin_url");
                 localStorage.clear();
-                window.location.href = "https://" + alias + ".auth.comecero.com/?logout=1";
+                window.location.href = (signinUrl + "?logout=1");
             }
 
         }
