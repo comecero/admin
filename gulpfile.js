@@ -6,16 +6,9 @@ var rename = require("gulp-rename");
 var less = require("gulp-less");
 var sequence = require("run-sequence");
 
-// Concat JavaScript files in src
-gulp.task("concat-libraries", function () {
-    return gulp.src(["./src/js/libraries/*.js"])
-      .pipe(concat("libraries.js"))
-      .pipe(gulp.dest("./dist/js/"));
-});
-
-gulp.task("concat-internal", function () {
-    return gulp.src(["./src/js/internal/*.js"])
-      .pipe(concat("internal.js"))
+gulp.task("concat-files", function () {
+    return gulp.src(["./app/shared/*.js", "./src/js/libraries/*.js", "./src/js/internal/*.js"])
+      .pipe(concat("admin-kit.js"))
       .pipe(gulp.dest("./dist/js/"));
 });
 
@@ -31,9 +24,9 @@ gulp.task("concat-angular-app", function () {
       .pipe(gulp.dest("./dist/js/"));
 });
 
-gulp.task("concat-angular-shared", function () {
-    return gulp.src(["./app/shared/*.js"])
-      .pipe(concat("app-shared.js"))
+gulp.task("concat-ui", function () {
+    return gulp.src(["./src/js/ui/*.js"])
+      .pipe(concat("ui.js"))
       .pipe(gulp.dest("./dist/js/"));
 });
 
@@ -42,6 +35,7 @@ gulp.task("concat-css-libraries", function () {
       .pipe(concat("libraries.css"))
       .pipe(gulp.dest("./dist/css/"));
 });
+
 
 gulp.task("copy-fonts", function () {
     return gulp.src(["./src/fonts/**"])
@@ -66,7 +60,7 @@ gulp.task("compress", function () {
 });
 
 gulp.task('dist', function (done) {
-    sequence('concat-libraries', 'concat-internal', 'concat-angular-pages', 'concat-angular-app', 'concat-angular-shared', 'less-base', 'concat-css-libraries', 'compress', 'copy-fonts', function () {
+    sequence('concat-files', 'concat-angular-pages', 'concat-angular-app', 'concat-ui', 'concat-css-libraries', 'less-base', 'compress', 'copy-fonts', function () {
         done();
     });
 });

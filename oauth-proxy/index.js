@@ -1,6 +1,6 @@
 // Get the token from the url hash
-var hashParameters = utils.getPageHashParameters();
-var queryParameters = utils.getPageQueryParameters();
+var hashParameters = getHashParameters(window.location.href);
+var queryParameters = getQueryParameters(window.location.href);
 
 if (hashParameters["access_token"] != undefined) {
 
@@ -46,7 +46,7 @@ if (hashParameters["access_token"] != undefined) {
                 window.location = "/";
             } else {
                 // state should be the path without the hostname. We'll only redirect within the realm of the app (self).
-                if (utils.left(hashParameters["state"], 7) == "http://" || utils.left(hashParameters["state"], 8) == "https://") {
+                if (left(hashParameters["state"], 7) == "http://" || left(hashParameters["state"], 8) == "https://") {
                     window.location = "/";
                 } else {
                     window.location = "/" + hashParameters["state"];
@@ -89,4 +89,70 @@ function executeURL(url, data, method, bearer) {
             }
         }
     });
+}
+
+function getHashParameters(url) {
+
+    var hashParameters = {};
+
+    if (url.indexOf("#") == -1) {
+        return hashParameters;
+    }
+
+    var e,
+        a = /\+/g,  // Regex for replacing addition symbol with a space
+        r = /([^&;=]+)=?([^&;]*)/g,
+        d = function (s) { return decodeURIComponent(s.replace(a, " ")); },
+        q = url.substring(url.indexOf("#") + 1);
+
+    while (e = r.exec(q))
+        hashParameters[d(e[1])] = d(e[2]);
+
+    return hashParameters;
+}
+
+function getQueryParameters(url) {
+
+    if (url.indexOf("?") == -1) {
+        return {};
+    }
+
+    q = url.substring(url.indexOf("?") + 1);
+
+    // Strip off any hash parameters
+    if (q.indexOf("#") > 0) {
+        q = q.substring(0, q.indexOf("#"));
+    }
+
+    return parseQueryParameters(q);
+}
+
+function parseQueryParameters(query) {
+
+    var queryParameters = {};
+
+    if (isNullOrEmpty(query)) {
+        return queryParameters;
+    }
+
+    var e,
+    a = /\+/g,  // Regex for replacing addition symbol with a space
+    r = /([^&;=]+)=?([^&;]*)/g,
+    d = function (s) { return decodeURIComponent(s.replace(a, " ")); }
+    var queryParameters = {};
+
+    while (e = r.exec(query))
+        queryParameters[d(e[1])] = d(e[2]);
+
+    return queryParameters;
+
+}
+
+function left(str, n) {
+    if (n <= 0)
+        return "";
+    else if (n > String(str).length)
+        return str;
+    else
+        return String(str).substring(0, n);
 }
