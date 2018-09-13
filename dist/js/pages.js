@@ -118,20 +118,27 @@ app.controller("AppsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'Gr
     // Establish your scope containers
     $scope.exception = {};
     $scope.resources = {};
+    $scope.functions = {};
     $scope.resources.appListUrl = ApiService.buildUrl("/apps");
     $scope.meta = {};
 
-    // Set the app installation url
-    var alias = localStorage.getItem("alias");
-    var host = alias + ".auth.comecero.com";
-
-    if (window.location.hostname.indexOf("admin-staging.") > -1) {
-        host = host.replace(".auth.comecero.com", ".auth-staging.comecero.com");
+    $scope.functions.getLaunchUrl = function (app) {
+        if (app) {
+            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
+            var redirect = app.app_installation.launch_url;
+            url += encodeURIComponent(redirect);
+            return url;
+        }
     }
 
-    $scope.meta.app_install_url_base = "https://" + host + "/oauth/callback/#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
-
-    $scope.meta.test = localStorage.getItem("test");
+    $scope.functions.getInstallUrl = function (app) {
+        if (app) {
+            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
+            var redirect = app.install_url;
+            url += encodeURIComponent(redirect);
+            return url;
+        }
+    }
 
 }]);
 
@@ -445,7 +452,7 @@ app.controller("AppsSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSer
         });
     }
 
-    $scope.stringify = function(obj) {
+    $scope.stringify = function (obj) {
         return Json.stringify(obj);
     }
 
@@ -468,16 +475,6 @@ app.controller("AppInstallationsListCtrl", ['$scope', '$routeParams', '$location
     $scope.meta = {};
 
     $scope.meta.test = localStorage.getItem("test");
-
-    // Set the app installation url
-    var alias = localStorage.getItem("alias");
-    var host = alias + ".auth.comecero.com";
-
-    if (window.location.hostname.indexOf("admin-staging.") > -1) {
-        host = host.replace(".auth.comecero.com", ".auth-staging.comecero.com");
-    }
-
-    $scope.meta.app_install_url_base = "https://" + host + "/oauth/callback/#access_token=" + localStorage.getItem("token") + "&test=" + $scope.meta.test + "&redirect_uri=";
 
     $scope.functions = {};
 
@@ -532,17 +529,36 @@ app.controller("AppInstallationsListCtrl", ['$scope', '$routeParams', '$location
         ConfirmService.showConfirm($scope, confirm);
     }
 
-    $scope.functions.getLaunchUrl = function (app_installation_id, test) {
-        return "launch/app.html#app_installation_id=" + app_installation_id + "&test=" + test;
+    $scope.functions.getLaunchUrl = function (app_installation) {
+        if (app_installation) {
+            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
+            var redirect = app_installation.launch_url;
+            if (app_installation.version)
+                redirect += "&target_version=" + app_installation.version;
+            url += encodeURIComponent(redirect);
+            return url;
+        }
+    }
+
+    $scope.functions.getInstallUrl = function (app_installation) {
+        if (app_installation) {
+            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
+            var redirect = app_installation.install_url;
+            if (app_installation.updated_version_available)
+                redirect += "&target_version=" + app_installation.current_app_version;
+            url += encodeURIComponent(redirect);
+            return url;
+        }
     }
 
     $scope.functions.getInfoUrl = function (app_installation, test) {
 
         // If client side and the info URL is within the app, run the info URL through the app launcher to inject an API token for use within the info pages.
-        if (app_installation.client_side) {
+        if (app_installation.platform_hosted && app_installation.info_url) {
             if (utils.left(app_installation.info_url, app_installation.location_url.length) == app_installation.location_url) {
                 // The info URL is within the app. Set the redirect URI as a relative path.
-                return $scope.functions.getLaunchUrl(app_installation.app_installation_id, test) + "&redirect_uri=" + app_installation.alias + "/" + app_installation.info_url.substring(app_installation.location_url.length);
+                var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
+                return url + "&redirect_uri=" + encodeURIComponent(app_installation.info_url);
             }
         }
         return app_installation.info_url;
@@ -979,7 +995,7 @@ app.controller("AuthsSetCtrl", ['$scope', '$rootScope', '$routeParams', '$locati
             delete config.headers["Authorization"];
         }
 
-        var request = $http.post("https://" + $rootScope.apiHost + "/api/v1/auths/limited?account_id=" + localStorage.getItem("account_id") + "&test=" + test, null, config);
+        var request = $http.post("/api/v1/auths/limited?account_id=" + localStorage.getItem("account_id") + "&test=" + test, null, config);
 
         request.success(function (auth) {
             $scope.showToken = true;
@@ -4921,8 +4937,8 @@ app.controller("CouponSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
 
         // If not a product-level discount, reset apply to recurring.
         if ($scope.promotion.config.type != 'product') {
-            promotion.apply_to_recurring = false;
-            promotion.apply_to_recurring_count = null;
+            $scope.promotion.apply_to_recurring = false;
+            $scope.promotion.apply_to_recurring_count = null;
         }
 
     }
@@ -8113,6 +8129,7 @@ app.controller("UsersSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSe
         // Indicate this is an add
         $scope.update = false;
         $scope.add = true;
+        $scope.usr = { is_account_owner: false };
 
     }
 
@@ -8227,17 +8244,11 @@ $("document").ready(function () {
     // Get the token
     var token = localStorage.getItem("token");
 
-    // Define the host
-    var host = "api.comecero.com";
-    if (window.location.hostname.indexOf("admin-staging.") > -1) {
-        host = "api-staging.comecero.com";
-    }
-
     // Get the query parameters
     var params = utils.getPageQueryParameters();
 
     // Define the URL
-    var url = "https://" + host + "/api/v1/notifications/" + params["notification_id"] + "?show=body";
+    var url = "/api/v1/notifications/" + params["notification_id"] + "?show=body";
 
     // Make a request to get the notification body
     if (params["notification_id"]) {

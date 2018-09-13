@@ -123,6 +123,7 @@ app.controller("UsersSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSe
         // Indicate this is an add
         $scope.update = false;
         $scope.add = true;
+        $scope.usr = { is_account_owner: false };
 
     }
 

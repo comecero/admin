@@ -69,7 +69,7 @@ app.service("SettingsService", ['$rootScope', "$q", "ApiService", function ($roo
         $rootScope.account = {};
         $rootScope.account.account_id = localStorage.getItem("account_id");
 
-        return ApiService.getItem(ApiService.buildUrl("/accounts/" + $rootScope.account.account_id + "/meta")).then(function (account) {
+        return ApiService.getItem(ApiService.buildUrl("/accounts/" + $rootScope.account.account_id + "/account_meta")).then(function (account) {
             $rootScope.account.alias = account.alias;
             localStorage.setItem("alias", account.alias);
             $rootScope.account.live = account.live;
@@ -82,12 +82,13 @@ app.service("SettingsService", ['$rootScope', "$q", "ApiService", function ($roo
             localStorage.setItem("payment_currencies", JSON.stringify(account.payment_currencies));
             $rootScope.account.default_payment_currency = account.default_payment_currency;
             localStorage.setItem("default_payment_currency", account.default_payment_currency);
+            localStorage.setItem("oauth_authorize_url", account.oauth_authorize_url);
+            localStorage.setItem("oauth_callback_url", account.oauth_callback_url);
+            localStorage.setItem("contract_select_url", account.contract_select_url);
+            localStorage.setItem("signin_url", account.signin_url);
 
-            // Set the contract select URL
-            $rootScope.plan_select_url = "https://" + account.alias + ".auth.comecero.com/plan/select";
-            if (window.location.hostname.indexOf("admin-staging.") > -1) {
-                $rootScope.plan_select_url = $rootScope.plan_select_url.replace(".auth.comecero.com", ".auth-staging.comecero.com");
-            }
+            // Set the contract select URL on the root scope.
+            $rootScope.contract_select_url = account.contract_select_url;
 
         });
     }
@@ -132,8 +133,9 @@ app.service("SettingsService", ['$rootScope', "$q", "ApiService", function ($roo
             }
 
             var complete = function () {
+                var signinUrl = localStorage.getItem("signin_url");
                 localStorage.clear();
-                window.location.href = "https://" + alias + ".auth.comecero.com/?logout=1";
+                window.location.href = (signinUrl + "?logout=1");
             }
 
         }
