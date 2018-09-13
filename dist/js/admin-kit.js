@@ -751,7 +751,17 @@ app.directive('login', ['$uibModal', 'authService', 'SettingsService', '$sce', '
 
                 // If there is no signin URL in the local storage, redirect to the global signin page.
                 if (!localStorage.getItem("signin_url")) {
-                    window.location = "https://signin.comecero.com";
+
+                    var parts = window.location.hostname.split(".");
+                    domain = parts.slice(parts.length - 2).join(".");
+
+                    // Get the environment
+                    var segment = parts.slice(0, 1)[0];
+                    var environment = "";
+                    if (segment.indexOf("-") > -1)
+                        environment = segment.substring(segment.indexOf("-"));
+
+                    window.location = "https://signin" + environment + "." + domain;
                     return;
                 }
 

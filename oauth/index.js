@@ -155,3 +155,23 @@ function left(str, n) {
     else
         return String(str).substring(0, n);
 }
+
+function isNullOrEmpty(string) {
+
+    if (string == null || string == undefined) {
+        return true;
+    }
+
+    // The string could in fact be numeric, convert to string before you do the tests below.
+
+    if (string.toString() == "") {
+        return true;
+    }
+
+    if (string.toString().replace(/ /g, '') == null) {
+        return true;
+    }
+
+    return false;
+
+}
