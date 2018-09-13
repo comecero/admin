@@ -8113,7 +8113,7 @@ app.controller("UsersSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSe
         $scope.url = ApiService.buildUrl("/users/" + $routeParams.id)
 
         // Load the user
-        ApiService.getItem($scope.url, { account_id: localStorage.getItem("account_id") }).then(function (user) {
+        ApiService.getItem($scope.url).then(function (user) {
             $scope.usr = user;
 
             // Make a copy of the original for comparision
@@ -8196,7 +8196,7 @@ app.controller("UsersSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSe
             delete $scope.usr.password;
         }
 
-        ApiService.set($scope.usr, $scope.url, { show: "user_id,name", account_id: localStorage.getItem("account_id") }) .then(function (usr) {
+        ApiService.set($scope.usr, $scope.url, { show: "user_id,name" }) .then(function (usr) {
             GrowlsService.addGrowl({ id: "edit_success", name: usr.name, type: "success", url: "#/users/" + usr.user_id + "/edit" });
             utils.redirect($location, "/users");
         },

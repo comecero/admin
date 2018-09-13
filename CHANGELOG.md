@@ -1,5 +1,13 @@
 ﻿# Admin Change Log #
 
+<a name="1.4.1"></a>
+# 1.4.1
+
+- Allow an account owner to designate other users as account owners and undelegate self
+- Preparations to allow for custom hostnames
+- Remove dependency on CORS for API calls to increase performance
+- Create admin-kit.js which allows common admin tools to be ported into other admin apps
+
 <a name="1.4.0"></a>
 # 1.4.0
 
