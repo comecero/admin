@@ -80,8 +80,8 @@ app.controller("CouponSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
 
         // If not a product-level discount, reset apply to recurring.
         if ($scope.promotion.config.type != 'product') {
-            promotion.apply_to_recurring = false;
-            promotion.apply_to_recurring_count = null;
+            $scope.promotion.apply_to_recurring = false;
+            $scope.promotion.apply_to_recurring_count = null;
         }
 
     }

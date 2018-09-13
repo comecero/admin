@@ -11,16 +11,6 @@ app.controller("AppInstallationsListCtrl", ['$scope', '$routeParams', '$location
 
     $scope.meta.test = localStorage.getItem("test");
 
-    // Set the app installation url
-    var alias = localStorage.getItem("alias");
-    var host = alias + ".auth.comecero.com";
-
-    if (window.location.hostname.indexOf("admin-staging.") > -1) {
-        host = host.replace(".auth.comecero.com", ".auth-staging.comecero.com");
-    }
-
-    $scope.meta.app_install_url_base = "https://" + host + "/oauth/callback/#access_token=" + localStorage.getItem("token") + "&test=" + $scope.meta.test + "&redirect_uri=";
-
     $scope.functions = {};
 
     $scope.functions.uninstall = function (app_installation_id, app_name) {
@@ -74,17 +64,36 @@ app.controller("AppInstallationsListCtrl", ['$scope', '$routeParams', '$location
         ConfirmService.showConfirm($scope, confirm);
     }
 
-    $scope.functions.getLaunchUrl = function (app_installation_id, test) {
-        return "launch/app.html#app_installation_id=" + app_installation_id + "&test=" + test;
+    $scope.functions.getLaunchUrl = function (app_installation) {
+        if (app_installation) {
+            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
+            var redirect = app_installation.launch_url;
+            if (app_installation.version)
+                redirect += "&target_version=" + app_installation.version;
+            url += encodeURIComponent(redirect);
+            return url;
+        }
+    }
+
+    $scope.functions.getInstallUrl = function (app_installation) {
+        if (app_installation) {
+            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
+            var redirect = app_installation.install_url;
+            if (app_installation.updated_version_available)
+                redirect += "&target_version=" + app_installation.current_app_version;
+            url += encodeURIComponent(redirect);
+            return url;
+        }
     }
 
     $scope.functions.getInfoUrl = function (app_installation, test) {
 
         // If client side and the info URL is within the app, run the info URL through the app launcher to inject an API token for use within the info pages.
-        if (app_installation.client_side) {
+        if (app_installation.platform_hosted && app_installation.info_url) {
             if (utils.left(app_installation.info_url, app_installation.location_url.length) == app_installation.location_url) {
                 // The info URL is within the app. Set the redirect URI as a relative path.
-                return $scope.functions.getLaunchUrl(app_installation.app_installation_id, test) + "&redirect_uri=" + app_installation.alias + "/" + app_installation.info_url.substring(app_installation.location_url.length);
+                var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
+                return url + "&redirect_uri=" + encodeURIComponent(app_installation.info_url);
             }
         }
         return app_installation.info_url;
