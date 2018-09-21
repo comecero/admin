@@ -169,6 +169,18 @@
 
             </div>
 
+            <div class="panel">
+                <div class="panel-heading">
+                    <span class="panel-title" translate>Notifications</span>
+                    <div class="panel-heading-controls">
+                        <span class="badge badge-danger">{{count.notifications}}</span>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div object-list type="notification" url="{{resources.notificationListUrl}}" template-url="app/templates/notificationList.html" embedded="true" page="offset" limit="5" search="false" error="exception.error" count="count.notifications"></div>
+                </div>
+            </div>
+
             <ledger-items items="payment.fees.data" description-property="type" panel-title="{{'Fees' | translate}}" no-items-message="{{'No fees for this payment' | translate}}" resource="fees" method="read"></ledger-items>
 
             <ledger-items items="payment.commissions.data" description-property="type" panel-title="{{'Commissions' | translate}}" no-items-message="{{'No commissions for this payment' | translate}}" resource="commissions" method="read"></ledger-items>

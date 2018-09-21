@@ -118,20 +118,27 @@ app.controller("AppsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'Gr
     // Establish your scope containers
     $scope.exception = {};
     $scope.resources = {};
+    $scope.functions = {};
     $scope.resources.appListUrl = ApiService.buildUrl("/apps");
     $scope.meta = {};
 
-    // Set the app installation url
-    var alias = localStorage.getItem("alias");
-    var host = alias + ".auth.comecero.com";
-
-    if (window.location.hostname.indexOf("admin-staging.") > -1) {
-        host = host.replace(".auth.comecero.com", ".auth-staging.comecero.com");
+    $scope.functions.getLaunchUrl = function (app) {
+        if (app) {
+            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
+            var redirect = app.app_installation.launch_url;
+            url += encodeURIComponent(redirect);
+            return url;
+        }
     }
 
-    $scope.meta.app_install_url_base = "https://" + host + "/oauth/callback/#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
-
-    $scope.meta.test = localStorage.getItem("test");
+    $scope.functions.getInstallUrl = function (app) {
+        if (app) {
+            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
+            var redirect = app.install_url;
+            url += encodeURIComponent(redirect);
+            return url;
+        }
+    }
 
 }]);
 
@@ -445,7 +452,7 @@ app.controller("AppsSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSer
         });
     }
 
-    $scope.stringify = function(obj) {
+    $scope.stringify = function (obj) {
         return Json.stringify(obj);
     }
 
@@ -468,16 +475,6 @@ app.controller("AppInstallationsListCtrl", ['$scope', '$routeParams', '$location
     $scope.meta = {};
 
     $scope.meta.test = localStorage.getItem("test");
-
-    // Set the app installation url
-    var alias = localStorage.getItem("alias");
-    var host = alias + ".auth.comecero.com";
-
-    if (window.location.hostname.indexOf("admin-staging.") > -1) {
-        host = host.replace(".auth.comecero.com", ".auth-staging.comecero.com");
-    }
-
-    $scope.meta.app_install_url_base = "https://" + host + "/oauth/callback/#access_token=" + localStorage.getItem("token") + "&test=" + $scope.meta.test + "&redirect_uri=";
 
     $scope.functions = {};
 
@@ -532,17 +529,36 @@ app.controller("AppInstallationsListCtrl", ['$scope', '$routeParams', '$location
         ConfirmService.showConfirm($scope, confirm);
     }
 
-    $scope.functions.getLaunchUrl = function (app_installation_id, test) {
-        return "launch/app.html#app_installation_id=" + app_installation_id + "&test=" + test;
+    $scope.functions.getLaunchUrl = function (app_installation) {
+        if (app_installation) {
+            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
+            var redirect = app_installation.launch_url;
+            if (app_installation.version)
+                redirect += "&target_version=" + app_installation.version;
+            url += encodeURIComponent(redirect);
+            return url;
+        }
+    }
+
+    $scope.functions.getInstallUrl = function (app_installation) {
+        if (app_installation) {
+            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
+            var redirect = app_installation.install_url;
+            if (app_installation.updated_version_available)
+                redirect += "&target_version=" + app_installation.current_app_version;
+            url += encodeURIComponent(redirect);
+            return url;
+        }
     }
 
     $scope.functions.getInfoUrl = function (app_installation, test) {
 
         // If client side and the info URL is within the app, run the info URL through the app launcher to inject an API token for use within the info pages.
-        if (app_installation.client_side) {
+        if (app_installation.platform_hosted && app_installation.info_url) {
             if (utils.left(app_installation.info_url, app_installation.location_url.length) == app_installation.location_url) {
                 // The info URL is within the app. Set the redirect URI as a relative path.
-                return $scope.functions.getLaunchUrl(app_installation.app_installation_id, test) + "&redirect_uri=" + app_installation.alias + "/" + app_installation.info_url.substring(app_installation.location_url.length);
+                var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
+                return url + "&redirect_uri=" + encodeURIComponent(app_installation.info_url);
             }
         }
         return app_installation.info_url;
@@ -920,7 +936,7 @@ app.controller("AuthsSetCtrl", ['$scope', '$rootScope', '$routeParams', '$locati
             delete config.headers["Authorization"];
         }
 
-        var request = $http.post("https://" + $rootScope.apiHost + "/api/v1/auths/limited?account_id=" + localStorage.getItem("account_id") + "&test=" + test, null, config);
+        var request = $http.post("/api/v1/auths/limited?account_id=" + localStorage.getItem("account_id") + "&test=" + test, null, config);
 
         request.success(function (auth) {
             $scope.showToken = true;
@@ -4234,12 +4250,14 @@ app.controller("PaymentsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'Con
     $scope.exception = {};
     $scope.fee_currency = null;
     $scope.currencyType = "transaction";
+    $scope.resources = {};
 
     $scope.prefs = {}
     $scope.prefs.loadRefundDetails = false;
 
     // Set the url for interacting with this item
     $scope.url = ApiService.buildUrl("/payments/" + $routeParams.id)
+    $scope.resources.notificationListUrl = $scope.url + "/notifications";
 
     // Set the url for pulling the full refund details
     $scope.refundListUrl = $scope.url + "/refunds";
@@ -4913,10 +4931,17 @@ app.controller("CouponSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
     $scope.currencies = JSON.parse(localStorage.getItem("payment_currencies"));
 
     var prepareSubmit = function () {
+
         // Clear any previous errors
         $scope.exception.error = null;
-    }
 
+        // If not a product-level discount, reset apply to recurring.
+        if ($scope.promotion.config.type != 'product') {
+            $scope.promotion.apply_to_recurring = false;
+            $scope.promotion.apply_to_recurring_count = null;
+        }
+
+    }
    
     $scope.confirmCancel = function () {
         var confirm = { id: "changes_lost" };
@@ -4959,7 +4984,7 @@ app.controller("CouponSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
         $scope.promotion.type = 'coupon';
 
         ApiService.set($scope.promotion, ApiService.buildUrl("/promotions"), { show: "promotion_id,name" }).then(function (promotion) {
-            GrowlsService.addGrowl({ id: "add_success", name: promotion.name, type: "success", promotion_id: promotion.promotion_id, url: "#/promotions/" + promotion.promotion_id + "/edit" });
+            GrowlsService.addGrowl({ id: "add_success", name: promotion.name, type: "success", promotion_id: promotion.promotion_id, url: "#/promotions/coupon/" + promotion.promotion_id + "/edit" });
             window.location = "#/promotions";
         },
         function (error) {
@@ -5005,7 +5030,7 @@ app.controller("CouponSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
         }
 
         ApiService.set($scope.promotion, $scope.url, { show: "promotion_id,name" }).then(function (promotion) {
-            GrowlsService.addGrowl({ id: "edit_success", name: promotion.name, type: "success", promotion_id: promotion.promotion_id, url: "#/promotions/" + promotion.promotion_id + "/edit" });
+            GrowlsService.addGrowl({ id: "edit_success", name: promotion.name, type: "success", promotion_id: promotion.promotion_id, url: "#/promotions/coupon/" + promotion.promotion_id + "/edit" });
             window.location = "#/promotions";
         },
         function (error) {
@@ -5128,6 +5153,11 @@ app.controller("CrossSellSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
                 return { 'product_id': product };
             });
 
+            if ($scope.promotion.config.offer_with_product_ids.indexOf("*") > -1) {
+                $scope.options.offer_with_products = null;
+                $scope.options.qualifies = "any";
+            }
+
             // Get the product from the product_id
             ApiService.getItem(ApiService.buildUrl("/products/" + promotion.config.product_id), { show: "name,product_id" }).then(function (product) {
                 $scope.options.product = [product];
@@ -5203,6 +5233,10 @@ app.controller("CrossSellSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
             $scope.promotion.config.offer_with_product_ids = _.reject($scope.promotion.config.offer_with_product_ids, function (i) { return i == $scope.promotion.config.product_id });
         }
 
+        if ($scope.options.qualifies == "any") {
+            $scope.promotion.config.offer_with_product_ids = ["*"];
+        }
+
         $scope.promotion.type = 'cross_sell';
 
         ApiService.set($scope.promotion, ApiService.buildUrl("/promotions"), { show: "promotion_id,name" }).then(function (promotion) {
@@ -5243,6 +5277,10 @@ app.controller("CrossSellSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
 
             // Remove product_id from offer_with_product_ids.
             $scope.promotion.config.offer_with_product_ids = _.reject($scope.promotion.config.offer_with_product_ids, function (i) { return i == $scope.promotion.config.product_id });
+        }
+
+        if ($scope.options.qualifies == "any") {
+            $scope.promotion.config.offer_with_product_ids = ["*"];
         }
 
         ApiService.set($scope.promotion, $scope.url, { show: "promotion_id,name" }).then(function (promotion) {
@@ -5423,12 +5461,14 @@ app.controller("RefundsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'Conf
     $scope.fee_currency = null;
     $scope.items = [];
     $scope.currencyType = "transaction";
+    $scope.resources = {};
 
     $scope.prefs = {}
     $scope.prefs.loadRefundDetails = false;
 
     // Set the url for interacting with this item
     $scope.url = ApiService.buildUrl("/refunds/" + $routeParams.id)
+    $scope.resources.notificationListUrl = $scope.url + "/notifications";
 
     // Load the refund
     var params = { expand: "payment,customer,payment_method,gateway,fees,commissions,order,refunds.items" };
@@ -8058,7 +8098,7 @@ app.controller("UsersListCtrl", ['$scope', '$routeParams', '$location', '$q', 'G
 
 }]);
 
-app.controller("UsersSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
+app.controller("UsersSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'HelperService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, HelperService) {
 
     $scope.exception = {};
     $scope.data = {}
@@ -8089,6 +8129,7 @@ app.controller("UsersSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSe
         // Indicate this is an add
         $scope.update = false;
         $scope.add = true;
+        $scope.usr = { is_account_owner: false };
 
     }
 
@@ -8155,9 +8196,7 @@ app.controller("UsersSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSe
             delete $scope.usr.password;
         }
 
-        ApiService.set($scope.usr, $scope.url, { show: "user_id,name" })
-        .then(
-        function (usr) {
+        ApiService.set($scope.usr, $scope.url, { show: "user_id,name" }) .then(function (usr) {
             GrowlsService.addGrowl({ id: "edit_success", name: usr.name, type: "success", url: "#/users/" + usr.user_id + "/edit" });
             utils.redirect($location, "/users");
         },
@@ -8181,6 +8220,21 @@ app.controller("UsersSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSe
         });
     }
 
+    // Determine if the user is an account owner
+    if (HelperService.isAdmin() == false) {
+        ApiService.getItem(ApiService.buildUrl("/users/me"), { show: "is_account_owner" }).then(function (usr) {
+            if (usr.is_account_owner) {
+                $scope.isAccountOwner = true;
+            }
+        },
+        function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    } else {
+        $scope.isAccountOwner = true;
+    }
+
 }]);
 
 
@@ -8190,17 +8244,11 @@ $("document").ready(function () {
     // Get the token
     var token = localStorage.getItem("token");
 
-    // Define the host
-    var host = "api.comecero.com";
-    if (window.location.hostname.indexOf("admin-staging.") > -1) {
-        host = "api-staging.comecero.com";
-    }
-
     // Get the query parameters
     var params = utils.getPageQueryParameters();
 
     // Define the URL
-    var url = "https://" + host + "/api/v1/notifications/" + params["notification_id"] + "?show=body";
+    var url = "/api/v1/notifications/" + params["notification_id"] + "?show=body";
 
     // Make a request to get the notification body
     if (params["notification_id"]) {

@@ -53,6 +53,11 @@ app.controller("CrossSellSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
                 return { 'product_id': product };
             });
 
+            if ($scope.promotion.config.offer_with_product_ids.indexOf("*") > -1) {
+                $scope.options.offer_with_products = null;
+                $scope.options.qualifies = "any";
+            }
+
             // Get the product from the product_id
             ApiService.getItem(ApiService.buildUrl("/products/" + promotion.config.product_id), { show: "name,product_id" }).then(function (product) {
                 $scope.options.product = [product];
@@ -128,6 +133,10 @@ app.controller("CrossSellSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
             $scope.promotion.config.offer_with_product_ids = _.reject($scope.promotion.config.offer_with_product_ids, function (i) { return i == $scope.promotion.config.product_id });
         }
 
+        if ($scope.options.qualifies == "any") {
+            $scope.promotion.config.offer_with_product_ids = ["*"];
+        }
+
         $scope.promotion.type = 'cross_sell';
 
         ApiService.set($scope.promotion, ApiService.buildUrl("/promotions"), { show: "promotion_id,name" }).then(function (promotion) {
@@ -168,6 +177,10 @@ app.controller("CrossSellSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
 
             // Remove product_id from offer_with_product_ids.
             $scope.promotion.config.offer_with_product_ids = _.reject($scope.promotion.config.offer_with_product_ids, function (i) { return i == $scope.promotion.config.product_id });
+        }
+
+        if ($scope.options.qualifies == "any") {
+            $scope.promotion.config.offer_with_product_ids = ["*"];
         }
 
         ApiService.set($scope.promotion, $scope.url, { show: "promotion_id,name" }).then(function (promotion) {

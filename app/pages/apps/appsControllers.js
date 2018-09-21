@@ -6,20 +6,27 @@ app.controller("AppsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'Gr
     // Establish your scope containers
     $scope.exception = {};
     $scope.resources = {};
+    $scope.functions = {};
     $scope.resources.appListUrl = ApiService.buildUrl("/apps");
     $scope.meta = {};
 
-    // Set the app installation url
-    var alias = localStorage.getItem("alias");
-    var host = alias + ".auth.comecero.com";
-
-    if (window.location.hostname.indexOf("admin-staging.") > -1) {
-        host = host.replace(".auth.comecero.com", ".auth-staging.comecero.com");
+    $scope.functions.getLaunchUrl = function (app) {
+        if (app) {
+            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
+            var redirect = app.app_installation.launch_url;
+            url += encodeURIComponent(redirect);
+            return url;
+        }
     }
 
-    $scope.meta.app_install_url_base = "https://" + host + "/oauth/callback/#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
-
-    $scope.meta.test = localStorage.getItem("test");
+    $scope.functions.getInstallUrl = function (app) {
+        if (app) {
+            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
+            var redirect = app.install_url;
+            url += encodeURIComponent(redirect);
+            return url;
+        }
+    }
 
 }]);
 
@@ -333,7 +340,7 @@ app.controller("AppsSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSer
         });
     }
 
-    $scope.stringify = function(obj) {
+    $scope.stringify = function (obj) {
         return Json.stringify(obj);
     }
 

@@ -448,7 +448,27 @@ app.directive('login', ['$uibModal', 'authService', 'SettingsService', '$sce', '
         restrict: 'A',
         link: function (scope, elem, attrs, ctrl) {
 
+            scope.getLoginUrl = function () {
+                return $sce.trustAsResourceUrl(localStorage.getItem("signin_url") + "?iframe=true&msg=true&test=" + $rootScope.settings.test);
+            }
+
             scope.$on("event:auth-loginRequired", function (event) {
+
+                // If there is no signin URL in the local storage, redirect to the global signin page.
+                if (!localStorage.getItem("signin_url")) {
+
+                    var parts = window.location.hostname.split(".");
+                    domain = parts.slice(parts.length - 2).join(".");
+
+                    // Get the environment
+                    var segment = parts.slice(0, 1)[0];
+                    var environment = "";
+                    if (segment.indexOf("-") > -1)
+                        environment = segment.substring(segment.indexOf("-"));
+
+                    window.location = "https://signin" + environment + "." + domain;
+                    return;
+                }
 
                 // Only show if a modal is not already displayed
                 if (scope.openLogin == null) {
@@ -463,10 +483,6 @@ app.directive('login', ['$uibModal', 'authService', 'SettingsService', '$sce', '
                     var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
                     var eventer = window[eventMethod];
                     var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
-
-                    scope.getLoginUrl = function () {
-                        return $sce.trustAsResourceUrl("https://" + $rootScope.authHost + "/?iframe=true&msg=true&test=" + $rootScope.settings.test);
-                    }
 
                     // Listen to message from child window
                     eventer(messageEvent, function (e) {
@@ -1240,6 +1256,11 @@ app.directive('refund', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
                     } else {
                         // If there are no items, use the total
                         data.total = total;
+                    }
+
+                    // If the items list is empty, remove it.
+                    if (data.items && data.items.length == 0) {
+                        delete data.items;
                     }
 
                     // Set the reason
@@ -2161,7 +2182,7 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
                     default_sort = "date_created";
                 }
                 if (attrs.type == "app_installation") {
-                    baseParams.show = "name,app_installation_id,alias,client_side,location_url,date_created,image_url,short_description,info_url,launch_url,settings_fields,style_fields,version,is_default_version,updated_version_available,install_url,platform_hosted";
+                    baseParams.show = "name,app_installation_id,alias,platform_hosted,date_created,image_url,short_description,info_url,launch_url,settings_fields,style_fields,version,is_default_version,updated_version_available,current_app_version,install_url,platform_hosted,location_url";
                     baseParams.expand = "images";
                     default_sort = "name";
                     scope.userParams.desc = false;

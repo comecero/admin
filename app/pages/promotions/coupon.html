@@ -160,7 +160,7 @@
 
             <div class="row"></div>
 
-            <div class="col-md-6 col-xs-12" show-errors>
+            <div class="col-md-6 col-xs-12" ng-show="promotion.config.type == 'product'" show-errors>
                 <div class="form-group">
                     <label class="radio-group-label" translate>Apply to recurring subscription payments?</label>
                     <div class="radio-group inline">
@@ -175,7 +175,7 @@
                 </div>
             </div>
 
-            <div class="col-md-6 col-xs-12" ng-show="promotion.apply_to_recurring">
+            <div class="col-md-6 col-xs-12" ng-show="promotion.apply_to_recurring && promotion.config.type == 'product'">
                 <div class="form-group" show-errors>
                     <label for="apply_to_recurring_count" class="control-label" translate>How many recurring payments?</label>
                     <input type="tel" class="form-control" name="apply_to_recurring_count" ng-model="promotion.apply_to_recurring_count" placeholder="{{ 'Optional' | translate}}" is-valid-integer allow-empty-value="true">

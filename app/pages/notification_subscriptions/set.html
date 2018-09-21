@@ -32,6 +32,11 @@
                         <div>
                             <p class="help-text" translate>Sent to customers when a direct payment is made (a payment that is not associated with a cart or invoice).</p>
                         </div>
+                        <input type="radio" id="type-3" class="radio" name="type" ng-model="notificationSubscription.type" value="refund:confirmation" required>
+                        <label for="type-3" class="radio-label text-capitalize">Refund Confirmation</label>
+                        <div>
+                            <p class="help-text" translate>Sent to customers when a refund is processed.</p>
+                        </div>
                         <input type="radio" id="type-4" class="radio" name="type" ng-model="notificationSubscription.type" value="cart:link" required>
                         <label for="type-4" class="radio-label text-capitalize">Cart Link</label>
                         <div>
