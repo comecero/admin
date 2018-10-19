@@ -128,15 +128,16 @@
                 </div>
 
                 <div class="gridtable-header hidden-xs">
-                    <div class="col-sm-6"><label translate>Item</label></div>
+                    <div class="col-sm-4"><label translate>Item</label></div>
                     <div class="col-sm-2 text-right"><label translate>Quantity</label></div>
                     <div class="col-sm-2 text-right"><label translate>Price</label></div>
+                    <div class="col-sm-2 text-right"><label translate>Discount</label></div>
                     <div class="col-sm-2 text-right"><label translate>Currency</label></div>
                 </div>
 
                 <div class="gridtable-row" ng-repeat="item in model.subscription.items">
 
-                    <div class="col-xs-12 col-sm-6 wide-md">
+                    <div class="col-xs-12 col-sm-4 wide-md">
                         <div class="col-xs-5 hidden-sm hidden-md hidden-lg lbl"><label translate>Item</label></div>
                         <div class="col-xs-7 col-sm-12 col-md-12 text-right-xs value">
                             <a ng-if="item.product_id" ng-href="#/products/{{item.product_id}}/edit">{{item.name}}</a><span ng-if="!item.product_id">{{item.name}}</span>
@@ -150,7 +151,12 @@
 
                     <div class="col-xs-12 col-sm-2 wide-md">
                         <div class="col-xs-5 hidden-sm hidden-md hidden-lg lbl"><label translate>Price</label></div>
-                        <div class="col-xs-7 col-sm-12 text-right value">{{item.formatted.reference_price}}</span></div>
+                        <div class="col-xs-7 col-sm-12 text-right value">{{item.formatted.reference_price}}</div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-2 wide-md">
+                        <div class="col-xs-5 hidden-sm hidden-md hidden-lg lbl"><label translate>Discount</label></div>
+                        <div class="col-xs-7 col-sm-12 text-right value">{{item.formatted.reference_discount}}</div>
                     </div>
 
                     <div class="col-xs-12 col-sm-2 wide-md">
