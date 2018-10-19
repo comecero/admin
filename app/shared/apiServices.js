@@ -221,7 +221,7 @@
     }
 
     function buildUrl(endpoint) {
-        return "/api/v1" + endpoint;
+        return "https://api.comecero.com/api/v1" + endpoint;
     }
 
     function onError(response) {

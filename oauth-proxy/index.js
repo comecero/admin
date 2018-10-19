@@ -14,7 +14,7 @@ if (hashParameters["access_token"] != undefined) {
     localStorage.setItem("token", token);
 
     // Get the account_id from the user object and save in storage.
-    var tokenResponse = executeURL("/api/v1/users/me", null, "GET", token);
+    var tokenResponse = executeURL("https://api.comecero.com/api/v1/users/me", null, "GET", token);
 
     // Define what happens if the call succeeds
     tokenResponse.success(function (data) {
