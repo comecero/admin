@@ -4,8 +4,6 @@ app.controller("CrossSellSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
     $scope.promotion.config = { discount_amount: [{ price: null, currency: null }], apply_to_recurring_count: null, weight: 1    };
     $scope.exception = {};
     $scope.options = {};
-    $scope.options.discount_type = "percentage";
-    $scope.options.qualifies = "selected";
 
     // Datepicker options
     $scope.datepicker = {};
@@ -38,7 +36,11 @@ app.controller("CrossSellSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
         ApiService.getItem($scope.url, { expand: "config.product_ids" }).then(function (promotion) {
             $scope.promotion = promotion;
 
-            $scope.options.discount_type = promotion.config.discount_percent ? 'percentage' : 'amounts';
+            if (promotion.config.discount_percent || promotion.config.discount_amount) {
+                $scope.options.discount_type = promotion.config.discount_percent ? "percentage" : "amounts";
+            } else {
+                $scope.options.discount_type = "none";
+            }
 
             if (promotion.expires) {
                 $scope.datepicker.expires = new Date(promotion.expires);
@@ -75,6 +77,8 @@ app.controller("CrossSellSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
         // Indicate this is an add
         $scope.update = false;
         $scope.add = true;
+        $scope.options.discount_type = "percentage";
+        $scope.options.qualifies = "selected";
 
     }
 
