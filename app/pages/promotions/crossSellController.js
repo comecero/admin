@@ -58,6 +58,8 @@ app.controller("CrossSellSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
             if ($scope.promotion.config.offer_with_product_ids.indexOf("*") > -1) {
                 $scope.options.offer_with_products = null;
                 $scope.options.qualifies = "any";
+            } else {
+                $scope.options.qualifies = "selected";
             }
 
             // Get the product from the product_id

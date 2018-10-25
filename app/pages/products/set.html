@@ -69,6 +69,17 @@
 
             <div class="col-xs-12">
                 <div class="form-group" show-errors>
+                    <label for="headline" class="control-label" translate>Headline</label>
+                    <input type="text" class="form-control" name="headline" ng-model="product.headline" maxlength="100">
+                    <div>
+                        <p class="help-text">A brief description of the product</p>
+                        <p class="maxlength-message" max-length="100" item="form.headline"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
                     <label for="description" class="control-label" translate>Description</label>
                     <div>
                         <textarea class="form-control" id="description" name="description" ng-model="product.description"></textarea>
@@ -78,6 +89,57 @@
             </div>
 
             <div prices="product.prices" currencies="currencies"></div>
+
+            <div class="col-xs-12" show-errors>
+                <div class="form-group">
+                    <label class="radio-group-label" translate>Offer Volume Discounts?</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="offer_volume_discounts-1" class="radio" name="offer_volume_discounts" ng-model="data.offer_volume_discounts" ng-value="true" required>
+                        <label for="offer_volume_discounts-1" class="radio-label">Yes</label>
+                        <input type="radio" id="offer_volume_discounts-2" class="radio" name="offer_volume_discounts" ng-model="data.offer_volume_discounts" ng-value="false" required>
+                        <label for="offer_volume_discounts-2" class="radio-label">No</label>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-if="data.offer_volume_discounts">
+                <div class="col-xs-12">
+                    <div class="form-group" style="margin-bottom: 5px">
+                        <label class="control-label" translate>Volume Price Ranges</label>
+                        <p class="help-text" translate>Provide a minimum quantity to receive a particular discount. You can define the discount currency in as many currencies as you wish. The discount price for currencies you do not provide will be calculated automatically based on current exchange rates.</p>
+                    </div>
+                </div>
+
+                <div class="col-xs-12">
+                    <hr />
+                </div>
+
+                <div ng-repeat="rule in product.volume_prices">
+                    <ng-form name="volume_prices">
+                        <div class="col-xs-6">
+                            <div class="form-group" show-errors>
+                                <label for="minimum" class="control-label" translate>Minimum Quantity Required for this Price</label>
+                                <div class="input-group">
+                                    <input type="tel" class="form-control" name="minimum" ng-model="rule.low" required>
+                                    <span class="input-group-addon pointer" ng-click="removeVolumeDiscountRange(product.volume_prices, $index)"><i class="fa fa-trash pointer text-default" title="{{ 'Remove' | translate}}"></i></span>
+                                </div>
+                                <p class="help-block hidden fadeInDown" translate>Please provide a minimum quantity</p>
+                            </div>
+                        </div>
+                        <div class="row"></div>
+                        <div prices="rule.prices" currencies="currencies"></div>
+                        <div class="row"></div>
+                    </ng-form>
+                </div>
+
+                <div class="col-xs-12">
+                    <a class="btn btn-primary" ng-click="addVolumePriceRange()" translate>Add Volume Discount Range</a>
+
+                </div>
+                <div class="row"></div>
+                <hr />
+                <div class="row"></div>
+            </div>
 
             <div class="col-xs-12" show-errors>
                 <div class="form-group">
