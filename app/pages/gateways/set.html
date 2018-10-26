@@ -108,7 +108,7 @@
 
             </div>
 
-            <div class="col-xs-12" show-errors>
+            <div class="col-md-6 col-xs-12" show-errors>
                 <div class="form-group">
                     <label class="radio-group-label" translate>Set as Active?</label>
                     <div class="radio-group inline">
@@ -116,6 +116,17 @@
                         <label for="active-1" class="radio-label">Yes</label>
                         <input type="radio" id="active-2" class="radio" name="active" ng-model="gateway.active" ng-value="false" required>
                         <label for="active-2" class="radio-label">No</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="comments" class="control-label" translate>Weight</label>
+                    <input type="tel" class="form-control" name="discount_percent" ng-model="gateway.weight" placeholder="{{ 'Enter a number' | translate}}" is-valid-integer greater-than-or-equal="0" required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a weight for this gateway.</p>
+                    <div>
+                        <p class="help-text" translate>The weight determines how often a gateway will be selected for use when more than one gateway is available to process a payment. <a href="https://docs.comecero.com/more-info/#gateway-weight" target="_blank">Read more</a>.</p>
                     </div>
                 </div>
             </div>

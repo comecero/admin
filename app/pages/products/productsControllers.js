@@ -216,6 +216,7 @@ app.controller("ProductsSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
 
         // Add one blank price to the prices array.
         $scope.product.prices.push({ price: "", currency: "" });
+        $scope.product.volume_prices = [];
         $scope.product.volume_prices.push({ low: "", prices: [{ price: "", currency: "" }] });
 
     }

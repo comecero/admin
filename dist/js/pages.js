@@ -2125,6 +2125,36 @@ app.controller("FilesEditCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
 
 }]);
 
+app.controller("GettingStartedViewCtrl", ['$scope', '$q', '$routeParams', 'ApiService', 'GrowlsService', function ($scope, $q, $routeParams, ApiService, GrowlsService) {
+
+    var getLimitedAuth = function (test) {
+
+        return $q(function (resolve, reject) {
+            ApiService.set(null, ApiService.buildUrl("/auths/limited"), { test: test })
+            .then(
+            function (auth) {
+                resolve(auth);
+            },
+            function (error) {
+                reject(error);
+            });
+        });
+    }
+
+    var setCartUrl = function (test) {
+
+        $scope.cartUrl = "#/app_installations";
+
+    }
+    $scope.onNavigate = function GSCtrl_onNavigate() {
+        $(window).trigger('openSubMenu');
+    };
+
+    $scope.account_id = localStorage.getItem("account_id");
+
+    setCartUrl(utils.stringToBool(localStorage.getItem("test")));
+
+}]);
 
 //#region Gateways
 
@@ -2339,7 +2369,7 @@ app.controller("GatewaysSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
         $scope.add = true;
 
         // Set defaults
-        $scope.gateway = { active: false, payment_method_type: "credit_card", currencies: [], card_types: [], fields: {} };
+        $scope.gateway = { active: false, currencies: [], card_types: [], fields: {} };
 
         // Get the gateway options object
         ApiService.getItem(ApiService.buildUrl("/gateways/options")).then(function (gatewayOptions) {
@@ -2527,36 +2557,6 @@ app.controller("GatewaysSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
 
 
 
-app.controller("GettingStartedViewCtrl", ['$scope', '$q', '$routeParams', 'ApiService', 'GrowlsService', function ($scope, $q, $routeParams, ApiService, GrowlsService) {
-
-    var getLimitedAuth = function (test) {
-
-        return $q(function (resolve, reject) {
-            ApiService.set(null, ApiService.buildUrl("/auths/limited"), { test: test })
-            .then(
-            function (auth) {
-                resolve(auth);
-            },
-            function (error) {
-                reject(error);
-            });
-        });
-    }
-
-    var setCartUrl = function (test) {
-
-        $scope.cartUrl = "#/app_installations";
-
-    }
-    $scope.onNavigate = function GSCtrl_onNavigate() {
-        $(window).trigger('openSubMenu');
-    };
-
-    $scope.account_id = localStorage.getItem("account_id");
-
-    setCartUrl(utils.stringToBool(localStorage.getItem("test")));
-
-}]);
 app.controller("HostedFunctionsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
 
     // Establish your scope containers
@@ -4232,174 +4232,6 @@ app.controller("OrdersViewCtrl", ['$scope', '$routeParams', 'ApiService', 'Confi
 
 
 
-
-//#region Payments
-
-app.controller("PaymentsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
-
-    // Establish your scope containers
-    $scope.exception = {};
-    $scope.resources = {};
-    $scope.resources.paymentListUrl = ApiService.buildUrl("/payments");
-
-}]);
-
-app.controller("PaymentsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'ConfirmService', 'GrowlsService', function ($scope, $routeParams, ApiService, ConfirmService, GrowlsService) {
-
-    $scope.payment = {};
-    $scope.exception = {};
-    $scope.fee_currency = null;
-    $scope.currencyType = "transaction";
-    $scope.resources = {};
-
-    $scope.prefs = {}
-    $scope.prefs.loadRefundDetails = false;
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/payments/" + $routeParams.id)
-    $scope.resources.notificationListUrl = $scope.url + "/notifications";
-
-    // Set the url for pulling the full refund details
-    $scope.refundListUrl = $scope.url + "/refunds";
-
-    // Load the payment
-    var params = { expand: "customer,payment_method,response_data,gateway,fees,commissions,order,refunds.items" };
-    ApiService.getItem($scope.url, params).then(function (payment) {
-        $scope.payment = payment;
-
-        if (payment.fees.data.length > 0) {
-            $scope.fee_currency = payment.fees.data[0].currency;
-        }
-
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-}]);
-
-app.controller("PaymentsAddCtrl", ['$scope', '$location', '$routeParams', 'ApiService', 'ConfirmService', 'GrowlsService', 'GeographiesService', function ($scope, $location, $routeParams, ApiService, ConfirmService, GrowlsService, GeographiesService) {
-
-    $scope.payment = { payment_method: { type: "credit_card" }, capture: true };
-    $scope.exception = {};
-    $scope.functions = {};
-    $scope.data = {};
-    $scope.currencies = JSON.parse(localStorage.getItem("payment_currencies"));
-
-    var geo = GeographiesService.getGeographies(false);
-    $scope.countries = geo.countries;
-
-    $scope.typeahead = {};
-    $scope.typeahead.country = {};
-
-    // Pre-select USD if a valid currency
-    if (_.find($scope.currencies, function (currency) { return currency.code == "USD" }) != null) {
-        $scope.payment.currency = "USD";
-    } else {
-        // Select the top currency
-        $scope.payment.currency = $scope.currencies[0].code;
-    }
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/payments")
-
-    $scope.removeCustomer = function () {
-        delete $scope.payment.customer;
-        delete $scope.payment.customer_id;
-        delete $scope.payment.payment_method;
-        $scope.payment_methods = null;
-        $scope.payment.payment_method = { type: "credit_card" };
-    }
-
-    $scope.calculateTotal = function (payment) {
-
-        var subtotal = payment.subtotal || 0;
-        var shipping = payment.shipping || 0;
-        var tax = payment.tax || 0;
-
-        // If subtotal + shipping + tax is zero, return the supplied total instead.
-        return Number(subtotal) + Number(shipping) + Number(tax) || payment.total;
-
-    }
-
-    $scope.functions.onCustomerSelect = function (customer) {
-
-        delete $scope.payment.customer_id;
-        $scope.payment.payment_method = { type: "credit_card", capture: $scope.capture };
-
-        if (customer.billing_address && customer.billing_address.country) {
-            var country = _.find($scope.countries, function (c) { return c.code == customer.billing_address.country });
-            $scope.typeahead.country = country;
-        }
-
-        // Get the payment methods for the customer
-        ApiService.getItem(customer.payment_methods).then(function (paymentMethods) {
-
-            $scope.payment_methods = paymentMethods;
-
-            // Define the default
-            if (paymentMethods.data.length) {
-                $scope.payment.payment_method = _.find(paymentMethods.data, function (i) { return i.is_default == true });
-            }
-
-        }, function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-
-    }
-
-    $scope.functions.setPaymentMethod = function (id, type) {
-
-        // Remove all data from the payment method
-        $scope.payment.payment_method = {};
-
-        // If a payment_method_id or type is provided, set it.
-        if (id)
-            $scope.payment.payment_method.payment_method_id = id;
-
-        if (type)
-            $scope.payment.payment_method.type = type;
-
-    }
-
-    $scope.createPayment = function () {
-
-        $scope.exception = {};
-
-        // Remove the username property
-        if ($scope.payment.customer) {
-            delete $scope.payment.customer.username;
-            if ($scope.payment.customer.billing_address) {
-                $scope.payment.customer.billing_address.country = $scope.typeahead.country.code;
-            }
-        }
-
-        // If missing, set it to explicitly false.
-        if (!$scope.payment.payment_method.save) {
-            $scope.payment.payment_method.save = false;
-        }
-
-        // Get the payment methods for the customer
-        ApiService.set($scope.payment, $scope.url, { formatted: true }).then(function (payment) {
-            
-            GrowlsService.addGrowl({ id: "payment_created_success", "payment_id": payment.payment_id, url: "#/payments/" + payment.payment_id, amount: payment.formatted.total, currency: payment.currency, type: "success" });
-            utils.redirect($location, "/payments/" + payment.payment_id);
-
-        }, function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-
-    }
-
-}]);
-
-//#endregion Payments
-
-
-
-
 app.controller("ProductsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
 
     // Establish your scope containers
@@ -4618,6 +4450,7 @@ app.controller("ProductsSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
 
         // Add one blank price to the prices array.
         $scope.product.prices.push({ price: "", currency: "" });
+        $scope.product.volume_prices = [];
         $scope.product.volume_prices.push({ low: "", prices: [{ price: "", currency: "" }] });
 
     }
@@ -4812,6 +4645,174 @@ app.controller("ProductsSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
 }]);
 
 //#endregion Products
+
+
+
+
+
+//#region Payments
+
+app.controller("PaymentsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
+
+    // Establish your scope containers
+    $scope.exception = {};
+    $scope.resources = {};
+    $scope.resources.paymentListUrl = ApiService.buildUrl("/payments");
+
+}]);
+
+app.controller("PaymentsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'ConfirmService', 'GrowlsService', function ($scope, $routeParams, ApiService, ConfirmService, GrowlsService) {
+
+    $scope.payment = {};
+    $scope.exception = {};
+    $scope.fee_currency = null;
+    $scope.currencyType = "transaction";
+    $scope.resources = {};
+
+    $scope.prefs = {}
+    $scope.prefs.loadRefundDetails = false;
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/payments/" + $routeParams.id)
+    $scope.resources.notificationListUrl = $scope.url + "/notifications";
+
+    // Set the url for pulling the full refund details
+    $scope.refundListUrl = $scope.url + "/refunds";
+
+    // Load the payment
+    var params = { expand: "customer,payment_method,response_data,gateway,fees,commissions,order,refunds.items" };
+    ApiService.getItem($scope.url, params).then(function (payment) {
+        $scope.payment = payment;
+
+        if (payment.fees.data.length > 0) {
+            $scope.fee_currency = payment.fees.data[0].currency;
+        }
+
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+}]);
+
+app.controller("PaymentsAddCtrl", ['$scope', '$location', '$routeParams', 'ApiService', 'ConfirmService', 'GrowlsService', 'GeographiesService', function ($scope, $location, $routeParams, ApiService, ConfirmService, GrowlsService, GeographiesService) {
+
+    $scope.payment = { payment_method: { type: "credit_card" }, capture: true };
+    $scope.exception = {};
+    $scope.functions = {};
+    $scope.data = {};
+    $scope.currencies = JSON.parse(localStorage.getItem("payment_currencies"));
+
+    var geo = GeographiesService.getGeographies(false);
+    $scope.countries = geo.countries;
+
+    $scope.typeahead = {};
+    $scope.typeahead.country = {};
+
+    // Pre-select USD if a valid currency
+    if (_.find($scope.currencies, function (currency) { return currency.code == "USD" }) != null) {
+        $scope.payment.currency = "USD";
+    } else {
+        // Select the top currency
+        $scope.payment.currency = $scope.currencies[0].code;
+    }
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/payments")
+
+    $scope.removeCustomer = function () {
+        delete $scope.payment.customer;
+        delete $scope.payment.customer_id;
+        delete $scope.payment.payment_method;
+        $scope.payment_methods = null;
+        $scope.payment.payment_method = { type: "credit_card" };
+    }
+
+    $scope.calculateTotal = function (payment) {
+
+        var subtotal = payment.subtotal || 0;
+        var shipping = payment.shipping || 0;
+        var tax = payment.tax || 0;
+
+        // If subtotal + shipping + tax is zero, return the supplied total instead.
+        return Number(subtotal) + Number(shipping) + Number(tax) || payment.total;
+
+    }
+
+    $scope.functions.onCustomerSelect = function (customer) {
+
+        delete $scope.payment.customer_id;
+        $scope.payment.payment_method = { type: "credit_card", capture: $scope.capture };
+
+        if (customer.billing_address && customer.billing_address.country) {
+            var country = _.find($scope.countries, function (c) { return c.code == customer.billing_address.country });
+            $scope.typeahead.country = country;
+        }
+
+        // Get the payment methods for the customer
+        ApiService.getItem(customer.payment_methods).then(function (paymentMethods) {
+
+            $scope.payment_methods = paymentMethods;
+
+            // Define the default
+            if (paymentMethods.data.length) {
+                $scope.payment.payment_method = _.find(paymentMethods.data, function (i) { return i.is_default == true });
+            }
+
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+
+    }
+
+    $scope.functions.setPaymentMethod = function (id, type) {
+
+        // Remove all data from the payment method
+        $scope.payment.payment_method = {};
+
+        // If a payment_method_id or type is provided, set it.
+        if (id)
+            $scope.payment.payment_method.payment_method_id = id;
+
+        if (type)
+            $scope.payment.payment_method.type = type;
+
+    }
+
+    $scope.createPayment = function () {
+
+        $scope.exception = {};
+
+        // Remove the username property
+        if ($scope.payment.customer) {
+            delete $scope.payment.customer.username;
+            if ($scope.payment.customer.billing_address) {
+                $scope.payment.customer.billing_address.country = $scope.typeahead.country.code;
+            }
+        }
+
+        // If missing, set it to explicitly false.
+        if (!$scope.payment.payment_method.save) {
+            $scope.payment.payment_method.save = false;
+        }
+
+        // Get the payment methods for the customer
+        ApiService.set($scope.payment, $scope.url, { formatted: true }).then(function (payment) {
+            
+            GrowlsService.addGrowl({ id: "payment_created_success", "payment_id": payment.payment_id, url: "#/payments/" + payment.payment_id, amount: payment.formatted.total, currency: payment.currency, type: "success" });
+            utils.redirect($location, "/payments/" + payment.payment_id);
+
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+
+    }
+
+}]);
+
+//#endregion Payments
 
 
 

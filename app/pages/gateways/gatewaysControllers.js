@@ -212,7 +212,7 @@ app.controller("GatewaysSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
         $scope.add = true;
 
         // Set defaults
-        $scope.gateway = { active: false, payment_method_type: "credit_card", currencies: [], card_types: [], fields: {} };
+        $scope.gateway = { active: false, currencies: [], card_types: [], fields: {} };
 
         // Get the gateway options object
         ApiService.getItem(ApiService.buildUrl("/gateways/options")).then(function (gatewayOptions) {
