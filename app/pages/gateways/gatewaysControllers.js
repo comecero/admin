@@ -212,7 +212,7 @@ app.controller("GatewaysSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
         $scope.add = true;
 
         // Set defaults
-        $scope.gateway = { active: false, currencies: [], card_types: [], fields: {} };
+        $scope.gateway = { active: false, currencies: [], card_types: [], fields: {}, weight: 1 };
 
         // Get the gateway options object
         ApiService.getItem(ApiService.buildUrl("/gateways/options")).then(function (gatewayOptions) {
@@ -285,9 +285,7 @@ app.controller("GatewaysSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
             return;
         }
 
-        ApiService.set($scope.gateway, $scope.url, { show: "gateway_id,name" })
-        .then(
-        function (gateway) {
+        ApiService.set($scope.gateway, $scope.url, { show: "gateway_id,name" }).then(function (gateway) {
             GrowlsService.addGrowl({ id: "edit_success", name: gateway.name, type: "success", url: "#/gateways/" + gateway.gateway_id + "/edit" });
 
             // Refresh the account meta since a gateway currency may have changed
