@@ -2246,7 +2246,7 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
             scope.userParams = {};
             scope.settings = {};
             var default_sort = null;
-            var default_desc = false;
+            var default_desc = true;
 
             // Establish what you need in your response based on the object type. If not configured things will still work but your response payload will be much heavier than necessary.
             var baseParams = scope.params || {};
@@ -2380,12 +2380,12 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
                     }
                 }
 
-                if (scope.userParams.desc == null) {
+                if (scope.userParams.desc === null || scope.userParams.desc === undefined) {
                     scope.userParams.desc = default_desc;
                 }
 
                 // If still null
-                if (scope.userParams.desc == null) {
+                if (scope.userParams.desc === null || scope.userParams.desc === undefined) {
                     scope.userParams.desc = true;
                 }
 

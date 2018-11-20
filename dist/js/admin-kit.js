@@ -2541,7 +2541,7 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
             scope.userParams = {};
             scope.settings = {};
             var default_sort = null;
-            var default_desc = false;
+            var default_desc = true;
 
             // Establish what you need in your response based on the object type. If not configured things will still work but your response payload will be much heavier than necessary.
             var baseParams = scope.params || {};
@@ -2587,7 +2587,7 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
                     baseParams.show = "name,app_installation_id,alias,platform_hosted,date_created,image_url,short_description,info_url,launch_url,settings_fields,style_fields,version,is_default_version,updated_version_available,current_app_version,install_url,platform_hosted,location_url";
                     baseParams.expand = "images";
                     default_sort = "name";
-                    scope.userParams.desc = false;
+                    default_desc = false;
                 }
                 if (attrs.type == "notification") {
                     baseParams.show = "notification_id,date_created,type,status";
@@ -2675,12 +2675,12 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
                     }
                 }
 
-                if (scope.userParams.desc == null) {
+                if (scope.userParams.desc === null || scope.userParams.desc === undefined) {
                     scope.userParams.desc = default_desc;
                 }
 
                 // If still null
-                if (scope.userParams.desc == null) {
+                if (scope.userParams.desc === null || scope.userParams.desc === undefined) {
                     scope.userParams.desc = true;
                 }
 
