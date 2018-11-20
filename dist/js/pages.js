@@ -1647,6 +1647,7 @@ app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$locatio
     { name: "Shipment Deleted", code: "shipment:deleted" },
     { name: "Subscription Created", code: "subscription:created" },
     { name: "Subscription Cancelled", code: "subscription:cancelled" },
+    { name: "Subscription Item Cancelled", code: "subscription_item:cancelled" },
     { name: "Subscription Completed", code: "subscription:completed" },
     { name: "Subscription Converted", code: "subscription:converted" },
     { name: "Subscription Renewal Success", code: "subscription:renewal_success" },
@@ -7575,7 +7576,7 @@ app.controller("SubscriptionsViewCtrl", ['$scope', '$routeParams', '$location', 
     $scope.resources.invoiceListUrl = $scope.url + "/invoices";
 
     // Load the subscription
-    ApiService.getItem($scope.url, { expand: "subscription_plan,customer.payment_methods,items.subscription_terms,promotion", hide: "product.images", formatted: true }, {formatted: true}).then(function (subscription) {
+    ApiService.getItem($scope.url, { expand: "subscription_plan,customer.payment_methods,items.subscription_terms", formatted: true }, {formatted: true}).then(function (subscription) {
         $scope.model.subscription = subscription;
     }, function (error) {
         $scope.exception.error = error;
@@ -7586,8 +7587,21 @@ app.controller("SubscriptionsViewCtrl", ['$scope', '$routeParams', '$location', 
 
         var data = { cancel_at_current_period_end: false };
 
-        ApiService.set(data, $scope.url, { expand: "subscription_plan,customer.cards,product", hide: "product.images" }).then(function (subscription) {
+        ApiService.set(data, $scope.url, { expand: "subscription_plan,customer.payment_methods,items.subscription_terms", formatted: true }).then(function (subscription) {
             $scope.model.subscription = subscription;
+
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
+    $scope.uncancelItem = function (item) {
+
+        var data = { cancel_at_current_period_end: false };
+
+        ApiService.set(data, item.url, { expand: "subscription.subscription_plan,subscription.customer.payment_methods,subscription.items.subscription_terms", formatted: true }).then(function (item) {
+            $scope.model.subscription = item.subscription;
 
         }, function (error) {
             $scope.exception.error = error;

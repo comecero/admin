@@ -136,6 +136,7 @@ app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$locatio
     { name: "Shipment Deleted", code: "shipment:deleted" },
     { name: "Subscription Created", code: "subscription:created" },
     { name: "Subscription Cancelled", code: "subscription:cancelled" },
+    { name: "Subscription Item Cancelled", code: "subscription_item:cancelled" },
     { name: "Subscription Completed", code: "subscription:completed" },
     { name: "Subscription Converted", code: "subscription:converted" },
     { name: "Subscription Renewal Success", code: "subscription:renewal_success" },

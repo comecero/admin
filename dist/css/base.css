@@ -3227,3 +3227,6 @@ table.data th {
 table.data th {
   font-weight: bold;
 }
+.strike {
+  text-decoration: line-through;
+}

@@ -2077,11 +2077,116 @@ app.directive('cancelSubscription', ['ApiService', 'ConfirmService', 'GrowlsServ
                         request.status = "cancelled";
                     }
 
+                    request.cancellation_reason = scope.subscription_cancel.request.cancellation_reason;
+
                     // Cancel the subscription
-                    ApiService.set(request, scope.subscription.url, { expand: "subscription_plan,customer,product" })
+                    ApiService.set(request, scope.subscription.url, { expand: "subscription_plan,customer.payment_methods,items.subscription_terms", formatted: true })
                     .then(
                     function (subscription) {
                         scope.subscription = subscription;
+                        subscriptionModal.dismiss();
+                        GrowlsService.addGrowl({ id: "subscription_cancel_success", type: "success" });
+                    },
+                    function (error) {
+                        window.scrollTo(0, 0);
+                        scope.modalError = error;
+                    });
+                }
+
+                scope.subscription_cancel.cancel = function () {
+                    subscriptionModal.dismiss();
+                };
+
+            });
+        }
+    };
+}]);
+
+
+app.directive('cancelSubscriptionItem', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibModal', function (ApiService, ConfirmService, GrowlsService, $uibModal) {
+    return {
+        restrict: 'A',
+        scope: {
+            subscription: '=?',
+            item: '=?'
+        },
+        link: function (scope, elem, attrs, ctrl) {
+
+            // Hide by default
+            elem.hide();
+
+            // Watch to see if you should show or hide the button
+            scope.$watch('item', function () {
+                if (scope.item) {
+                    if (scope.item.cancelled == false && scope.item.cancel_at_current_period_end == false) {
+                        elem.show();
+                    } else {
+                        elem.hide();
+                    }
+                }
+            }, true);
+
+            elem.click(function () {
+
+                // Set defaults
+                scope.subscription_cancel = {};
+                scope.subscription_cancel.request = {};
+                scope.subscription_cancel.request.cancel_at_current_period_end = true;
+                scope.subscription_cancel.request.cancellation_reason = null;
+                scope.cancellation_reasons = [];
+
+                // Get the subscription cancellation reasons
+                ApiService.getItem(ApiService.buildUrl("/subscriptions/options")).then(function (data) {
+                    scope.cancellation_reasons = data.cancellation_reasons;
+                },
+                function (error) {
+                    window.scrollTo(0, 0);
+                    scope.modalError = error;
+                });
+
+                var subscriptionModal = $uibModal.open({
+                    size: "lg",
+                    templateUrl: "app/modals/cancel_subscription_item.html",
+                    scope: scope
+                });
+
+                // Handle when the modal is closed or dismissed
+                subscriptionModal.result.then(function (result) {
+                    // Clear out any error messasges
+                    scope.modalError = null;
+                }, function () {
+                    scope.modalError = null;
+                });
+
+                scope.subscription_cancel.ok = function (form) {
+
+                    // Clear any previous errors
+                    scope.modalError = null;
+
+                    var confirm = { id: "cancel_subscription_item" };
+                    confirm.onConfirm = function () {
+                        execute();
+                    }
+
+                    ConfirmService.showConfirm(scope, confirm);
+
+                };
+
+                var execute = function () {
+
+                    // If cancel at period end is false, set the status to cancelled.
+                    var request = {};
+                    if (scope.subscription_cancel.request.cancel_at_current_period_end == true) {
+                        request.cancel_at_current_period_end = true;
+                    } else {
+                        request.cancelled = true;
+                    }
+
+                    request.cancellation_reason = scope.subscription_cancel.request.cancellation_reason;
+
+                    // Cancel the subscription item.
+                    ApiService.set(request, scope.item.url, { expand: "subscription.subscription_plan,subscription.customer.payment_methods,subscription.items.subscription_terms", formatted: true }).then(function (item) {
+                        scope.subscription = item.subscription;
                         subscriptionModal.dismiss();
                         GrowlsService.addGrowl({ id: "subscription_cancel_success", type: "success" });
                     },
