@@ -11,7 +11,7 @@
 
     <div class="gridtable-header hidden-xs hidden-sm">
 
-        <div class="col-md-3"><label>ID</label></div>
+        <div class="col-md-2"><label>ID</label></div>
         <div class="col-md-2 btn-header">
             <div class="btn-group" uib-dropdown>
                 <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Status</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
@@ -24,7 +24,7 @@
                 </ul>
             </div>
         </div>
-        <div class="col-md-3"><label>Plan</label></div>
+        <div class="col-md-2"><label>Plan</label></div>
         <div class="col-md-2 btn-header">
             <div class="btn-group" uib-dropdown>
                 <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Grace Period</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
@@ -35,7 +35,8 @@
                 </ul>
             </div>
         </div>
-        <div class="col-md-2 text-right"><label ng-click="sort('date_modified', !userParams.desc)" class="pointer text-primary" translate>Updated</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="getSortValue() == 'date_modified' && userParams.desc == true"></i><i class="icon fa fa-caret-up" ng-if="getSortValue() == 'date_modified' && userParams.desc == false"></i></div>
+        <div class="col-md-2 text-right"><label ng-click="sort('date_current_period_start', !userParams.desc)" class="pointer text-primary" translate>Last Billing</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="getSortValue() == 'date_current_period_start' && userParams.desc == true"></i><i class="icon fa fa-caret-up" ng-if="getSortValue() == 'date_current_period_start' && userParams.desc == false"></i></div>
+        <div class="col-md-2 text-right"><label ng-click="sort('date_current_period_end', !userParams.desc)" class="pointer text-primary" translate>Next Renewal</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="getSortValue() == 'date_current_period_end' && userParams.desc == true"></i><i class="icon fa fa-caret-up" ng-if="getSortValue() == 'date_current_period_end' && userParams.desc == false"></i></div>
     </div>
 
     <div class="col-xs-12 hidden-md hidden-lg padding-l0">
@@ -59,9 +60,12 @@
         <div class="btn-group" uib-dropdown>
             <button type="button" class="btn btn-default btn-header uib-dropdown-toggle" uib-dropdown-toggle><span translate>Sort</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
             <ul class="dropdown-menu">
-                <li class="dropdown-header">Updated</li>
-                <li ng-click="sort('date_modified', false)" ng-class="{'selected-li': getSortValue() == 'date_modified' && userParams.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
-                <li ng-click="sort('date_modified', true)" ng-class="{'selected-li': getSortValue() == 'date_modified' && userParams.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                <li class="dropdown-header">Next Renewal</li>
+                <li ng-click="sort('date_current_period_end', false)" ng-class="{'selected-li': getSortValue() == 'date_current_period_end' && userParams.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                <li ng-click="sort('date_current_period_end', true)" ng-class="{'selected-li': getSortValue() == 'date_current_period_end' && userParams.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                <li class="dropdown-header">Last Billing</li>
+                <li ng-click="sort('date_current_period_start', false)" ng-class="{'selected-li': getSortValue() == 'date_current_period_start' && userParams.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                <li ng-click="sort('date_current_period_start', true)" ng-class="{'selected-li': getSortValue() == 'date_current_period_start' && userParams.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
             </ul>
         </div>
     </div>
@@ -70,9 +74,9 @@
 
     <div class="gridtable-row" ng-repeat="subscription in list.data">
 
-        <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="col-xs-12 col-sm-6 col-md-2">
             <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>ID</label></div>
-            <div class="col-xs-7 col-sm-12 col-md-12 value"><a href="#/subscriptions/{{subscription.subscription_id}}">{{subscription.subscription_id}}</a></div>
+            <div class="col-xs-7 col-sm-12 col-md-12 value text-xs"><a href="#/subscriptions/{{subscription.subscription_id}}">{{subscription.subscription_id}}</a></div>
         </div>
 
         <div class="col-xs-12 col-sm-6 col-md-2">
@@ -85,7 +89,7 @@
             </div>
         </div>
 
-        <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="col-xs-12 col-sm-6 col-md-2">
             <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Plan</label></div>
             <div class="col-xs-7 col-sm-12 col-md-12 value"><a href="#/subscription_plans/{{subscription.subscription_plan.subscription_plan_id}}/edit">{{subscription.subscription_plan.name}}</a></div>
         </div>
@@ -99,8 +103,13 @@
         </div>
 
         <div class="col-xs-12 col-sm-6 col-md-2">
-            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Updated</label></div>
-            <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value"><span>{{subscription.date_modified | date:'shortDate'}}</span></div>
+            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Last Billing</label></div>
+            <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value"><span>{{subscription.date_current_period_start | date:'shortDate'}}</span></div>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-2">
+            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Next Renewal</label></div>
+            <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value"><span>{{subscription.date_current_period_end | date:'shortDate'}}</span></div>
         </div>
     </div>
 

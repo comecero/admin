@@ -2541,6 +2541,7 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
             scope.userParams = {};
             scope.settings = {};
             var default_sort = null;
+            var default_desc = false;
 
             // Establish what you need in your response based on the object type. If not configured things will still work but your response payload will be much heavier than necessary.
             var baseParams = scope.params || {};
@@ -2552,9 +2553,10 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
                     default_sort = "date_created";
                 }
                 if (attrs.type == "subscription") {
-                    baseParams.show = "subscription_id,subscription_plan.name,subscription_plan.subscription_plan_id,reference_price,reference_currency,status,item.name,item.product.product_id,date_modified,in_grace_period;";
+                    baseParams.show = "subscription_id,subscription_plan.name,subscription_plan.subscription_plan_id,reference_price,reference_currency,status,item.name,item.product.product_id,date_current_period_start,date_current_period_end,in_grace_period;";
                     baseParams.expand = "subscription_plan";
-                    default_sort = "date_modified";
+                    default_sort = "date_current_period_end";
+                    default_desc = false;
                 }
                 if (attrs.type == "payment") {
                     baseParams.show = "payment_id,date_created,date_modified,status,success,total,currency";
@@ -2673,6 +2675,11 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
                     }
                 }
 
+                if (scope.userParams.desc == null) {
+                    scope.userParams.desc = default_desc;
+                }
+
+                // If still null
                 if (scope.userParams.desc == null) {
                     scope.userParams.desc = true;
                 }
