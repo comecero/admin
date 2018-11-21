@@ -4646,6 +4646,8 @@ app.controller("ProductsSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
                 }
                 $scope.product.image_ids.push(item.image_id);
             })
+        } else {
+            $scope.product.image_ids = [];
         }
 
         if ($scope.data.subscription_plan != null) {
