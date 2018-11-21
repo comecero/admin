@@ -43,43 +43,29 @@ app.controller("ProductsListCtrl", ['$scope', '$routeParams', '$location', '$q',
 
     $scope.setActive = function (active) {
 
+        $scope.exception = {};
+
         // Find the checked items
         var items = _.where($scope.products.productList.data, { checked: true });
 
-        // Keep track of the items that succeed and fail
-        $scope.successItems = [];
-        $scope.failItems = [];
+        var max = 15;
+        if (items.length > max) {
+            $scope.exception = { error: { message: "You can select a maximum of " + max + " items to bulk update." } };
+            return;
+        }
 
-        // Loop through the checked ones and update.
-        var defer = $q.defer();
-        var promises = [];
-
-        _.each(items, function (product) {
-            // We slim the request by trimming the resource since we're only modifying a couple properties.
-            promises.push(ApiService.set({ product_id: product.product_id, active: active }, product.url).then(function (data) {
-                product.deleted = data.deleted;
-                product.active = data.active;
-                $scope.successItems.push(product);
-            }, function (error) {
-                $scope.failItems.push(product);
-                GrowlsService.addGrowl({ id: "active_change_failure", "name": product.name, type: "danger" });
-            }));
+        var chain = $q.when();
+        _.each(items, function (item) {
+            chain = chain.then(function () {
+                return ApiService.set({ active: active }, item.url).then(function (data) {
+                    item.deleted = data.deleted;
+                    item.active = data.active;
+                }, function (error) {
+                    GrowlsService.addGrowl({ id: "active_change_failure", "name": item.name, type: "danger" });
+                });
+            });
         });
 
-        $q.all(promises).then(complete);
-
-        function complete() {
-
-            if ($scope.successItems.length > 0) {
-                if (active == true) {
-                    GrowlsService.addGrowl({ id: "activate_success", count: $scope.successItems.length });
-
-                } else {
-            GrowlsService.addGrowl({ id: "inactivate_success", count: $scope.successItems.length });
-        }
-    }
-
-}
     }
 
     $scope.setParam = function (param, value) {

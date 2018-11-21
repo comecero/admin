@@ -313,9 +313,9 @@
 
             <div class="row"></div>
 
-            <div ng-if="update" class="panel-footer submenu" resource="products" method="delete">
+            <div ng-if="product && update" class="panel-footer submenu" resource="products" method="delete">
                 <span class="delete" ng-click="confirmDelete()" ng-if="!product.deleted" translate>Delete this product</span>
-                <span class="undelete" ng-click="undelete()" ng-if="product.deleted" resource="products" method="update" translate>Undelete this product</span>
+                <span class="btn btn-sm btn-success" ng-click="undelete()" ng-if="product.deleted" resource="products" method="update" translate>Undelete this product</span>
             </div>
 
         </div>
