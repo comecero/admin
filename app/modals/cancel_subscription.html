@@ -16,15 +16,14 @@
             <div class="col-xs-12">
                 <div class="form-group" show-errors>
                     <label for="cancellation_reason" class="control-label" translate>Reason</label>
-                    <div ng-show="cancellation_reasons.length > 0">
+                    <div ng-if="cancellation_reasons.length > 0">
                         <select class="form-control" ng-model="subscription_cancel.request.cancellation_reason" name="cancellation_reason" ng-options="cancellation_reason for cancellation_reason in cancellation_reasons" required></select>
                     </div>
-                    <input ng-show="cancellation_reasons.length == 0" type="text" class="form-control" name="cancellation_reason" ng-model="subscription_cancel.request.cancellation_reason" placeholder="{{ 'Optional' | translate}}">
+                    <input ng-if="cancellation_reasons.length == 0" type="text" class="form-control" name="cancellation_reason" ng-model="subscription_cancel.request.cancellation_reason" placeholder="{{ 'Optional' | translate}}">
                     <p class="help-block hidden fadeInDown" translate>Please provide a reason</p>
                 </div>
             </div>
-
-
+            
             <div class="col-xs-12">
                 <div class="form-group">
                     <label class="radio-group-label" translate>When?</label>
@@ -46,7 +45,7 @@
         <button type="button" class="btn btn-default" ng-click="subscription_cancel.cancel()">
             <span translate>Cancel</span>
         </button>
-        <button type="button" class="btn btn-primary" ng-click="subscription_cancel.ok()">
+        <button type="button" class="btn btn-primary" ng-click="subscription_cancel.ok(form)">
             <span translate>Cancel Subscription</span>
         </button>
     </div>

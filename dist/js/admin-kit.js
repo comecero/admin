@@ -2353,6 +2353,11 @@ app.directive('cancelSubscription', ['ApiService', 'ConfirmService', 'GrowlsServ
                     // Clear any previous errors
                     scope.modalError = null;
 
+                    if (form.$invalid) {
+                        scope.modalError = { message: "Please select a reason" };
+                        return;
+                    }
+
                     var confirm = { id: "cancel_subscription" };
                     confirm.onConfirm = function () {
                         execute();
@@ -2458,6 +2463,11 @@ app.directive('cancelSubscriptionItem', ['ApiService', 'ConfirmService', 'Growls
                     // Clear any previous errors
                     scope.modalError = null;
 
+                    if (form.$invalid) {
+                        scope.modalError = { message: "Please select a reason" };
+                        return;
+                    }
+
                     var confirm = { id: "cancel_subscription_item" };
                     confirm.onConfirm = function () {
                         execute();
@@ -2483,7 +2493,7 @@ app.directive('cancelSubscriptionItem', ['ApiService', 'ConfirmService', 'Growls
                     ApiService.set(request, scope.item.url, { expand: "subscription.subscription_plan,subscription.customer.payment_methods,subscription.items.subscription_terms", formatted: true }).then(function (item) {
                         scope.subscription = item.subscription;
                         subscriptionModal.dismiss();
-                        GrowlsService.addGrowl({ id: "subscription_cancel_success", type: "success" });
+                        GrowlsService.addGrowl({ id: "subscription_item_cancel_success", type: "success", name: item.name });
                     },
                     function (error) {
                         window.scrollTo(0, 0);
@@ -2553,10 +2563,9 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
                     default_sort = "date_created";
                 }
                 if (attrs.type == "subscription") {
-                    baseParams.show = "subscription_id,subscription_plan.name,subscription_plan.subscription_plan_id,reference_price,reference_currency,status,item.name,item.product.product_id,date_current_period_start,date_current_period_end,in_grace_period;";
+                    baseParams.show = "subscription_id,subscription_plan.name,subscription_plan.subscription_plan_id,status,date_current_period_start,date_current_period_end,date_created,date_modified,date_ended,in_grace_period;";
                     baseParams.expand = "subscription_plan";
-                    default_sort = "date_current_period_end";
-                    default_desc = false;
+                    default_sort = "date_created";
                 }
                 if (attrs.type == "payment") {
                     baseParams.show = "payment_id,date_created,date_modified,status,success,total,currency";
@@ -2729,6 +2738,29 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
 
                 // Set this param
                 scope.userParams[param] = value;
+
+                // Set defaults for unpopulated userParams
+                setDefaultParams();
+
+                // If embedded, don't mess with the parent's query string parameters.
+                if (attrs.embedded == false) {
+                    $location.search(scope.userParams);
+                } else {
+                    refresh(false);
+                }
+
+            }
+
+            scope.setParams = function (kvp) {
+
+                // Reset all userParams
+                resetParams();
+
+                for (var property in kvp) {
+                    if (kvp.hasOwnProperty(property)) {
+                        scope.userParams[property] = kvp[property];
+                    }
+                }
 
                 // Set defaults for unpopulated userParams
                 setDefaultParams();

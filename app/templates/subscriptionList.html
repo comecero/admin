@@ -16,27 +16,32 @@
             <div class="btn-group" uib-dropdown>
                 <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Status</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
                 <ul class="dropdown-menu">
-                    <li ng-click="setParam('status', null)" ng-class="{ 'selected-li': userParams.status == null }"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
-                    <li ng-click="setParam('status', 'active')" ng-class="{ 'selected-li': userParams.status == 'active' }"><a><i class="dropdown-icon fa fa-refresh text-success"></i>&nbsp;&nbsp;<span translate>Active</span></a></li>
-                    <li ng-click="setParam('status', 'trial')" ng-class="{'selected-li': userParams.status == 'trial' }"><a><i class="dropdown-icon fa fa-history fa-flip-horizontal text-pa-purple"></i>&nbsp;&nbsp;<span translate>Trial</span></a></li>
-                    <li ng-click="setParam('status', 'completed')" ng-class="{'selected-li': userParams.status == 'completed' }"><a><i class="dropdown-icon fa fa-flag-checkered text-default"></i>&nbsp;&nbsp;<span translate>Completed</span></a></li>
-                    <li ng-click="setParam('status', 'cancelled')" ng-class="{'selected-li': userParams.status == 'cancelled' }"><a><i class="dropdown-icon fa fa-ban text-danger"></i>&nbsp;&nbsp;<span translate>Cancelled</span></a></li>
+                    <li ng-click="setParams({'status': null, 'date_type': 'date_created', 'desc': true})" ng-class="{ 'selected-li': userParams.status == null && userParams.terminated == null }"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
+                    <li ng-click="setParams({'status': 'active', 'date_type': 'date_current_period_end', 'desc': false, 'in_grace_period': userParams.in_grace_period})" ng-class="{ 'selected-li': userParams.status == 'active' }"><a><i class="dropdown-icon fa fa-refresh text-success"></i>&nbsp;&nbsp;<span translate>Active</span></a></li>
+                    <li ng-click="setParams({'status': 'trial', 'date_type': 'date_current_period_end', 'desc': false, 'in_grace_period': userParams.in_grace_period})" ng-class="{'selected-li': userParams.status == 'trial' }"><a><i class="dropdown-icon fa fa-history fa-flip-horizontal text-pa-purple"></i>&nbsp;&nbsp;<span translate>Trial</span></a></li>
+                    <li ng-click="setParams({'terminated': true, 'date_type': 'date_ended', 'desc': true})" ng-class="{'selected-li': userParams.terminated == true }"><a><i class="dropdown-icon fa fa-ban text-danger"></i>&nbsp;&nbsp;<span translate>Terminated</span></a></li>
                 </ul>
             </div>
         </div>
         <div class="col-md-2"><label>Plan</label></div>
-        <div class="col-md-2 btn-header">
+        <div class="col-md-2 btn-header" ng-if="userParams.terminated != true">
             <div class="btn-group" uib-dropdown>
                 <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Grace Period</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
                 <ul class="dropdown-menu">
                     <li ng-click="setParam('in_grace_period', null)" ng-class="{ 'selected-li': userParams.in_grace_period == null }"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
-                    <li ng-click="setParam('in_grace_period', true)" ng-class="{ 'selected-li': userParams.in_grace_period == true }"><a><i class="dropdown-icon fa fa-check text-danger"></i>&nbsp;&nbsp;<span translate>Yes</span></a></li>
-                    <li ng-click="setParam('in_grace_period', false)" ng-class="{'selected-li': userParams.in_grace_period == false }"><a><i class="dropdown-icon fa fa-minus text-success"></i>&nbsp;&nbsp;<span translate>No</span></a></li>
+                    <li ng-click="setParams({'in_grace_period': true, 'date_type': 'date_current_period_end', 'desc': true, 'status': 'active'})" ng-class="{ 'selected-li': userParams.in_grace_period == true }"><a><i class="dropdown-icon fa fa-check text-danger"></i>&nbsp;&nbsp;<span translate>Yes</span></a></li>
+                    <li ng-click="setParams({'in_grace_period': false, 'date_type': 'date_current_period_end', 'desc': true, 'status': 'active'})" ng-class="{ 'selected-li': userParams.in_grace_period == false }"><a><i class="dropdown-icon fa fa-minus text-success"></i>&nbsp;&nbsp;<span translate>No</span></a></li>
                 </ul>
             </div>
         </div>
-        <div class="col-md-2 text-right"><label ng-click="sort('date_current_period_start', !userParams.desc)" class="pointer text-primary" translate>Last Billing</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="getSortValue() == 'date_current_period_start' && userParams.desc == true"></i><i class="icon fa fa-caret-up" ng-if="getSortValue() == 'date_current_period_start' && userParams.desc == false"></i></div>
-        <div class="col-md-2 text-right"><label ng-click="sort('date_current_period_end', !userParams.desc)" class="pointer text-primary" translate>Next Renewal</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="getSortValue() == 'date_current_period_end' && userParams.desc == true"></i><i class="icon fa fa-caret-up" ng-if="getSortValue() == 'date_current_period_end' && userParams.desc == false"></i></div>
+
+        <div class="col-md-2 text-right" ng-if="userParams.status == 'active' || userParams.status == 'trial'"><label ng-click="sort('date_current_period_start', !userParams.desc)" class="pointer text-primary" translate>Last Billing</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="getSortValue() == 'date_current_period_start' && userParams.desc == true"></i><i class="icon fa fa-caret-up" ng-if="getSortValue() == 'date_current_period_start' && userParams.desc == false"></i></div>
+        <div class="col-md-2 text-right" ng-if="userParams.status == 'active' || userParams.status == 'trial'"><label ng-click="sort('date_current_period_end', !userParams.desc)" class="pointer text-primary" translate>Next Renewal</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="getSortValue() == 'date_current_period_end' && userParams.desc == true"></i><i class="icon fa fa-caret-up" ng-if="getSortValue() == 'date_current_period_end' && userParams.desc == false"></i></div>
+
+        <div class="col-md-2 text-right" ng-if="userParams.status == null"><label ng-click="sort('date_created', !userParams.desc)" class="pointer text-primary" translate>Created</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="getSortValue() == 'date_created' && userParams.desc == true"></i><i class="icon fa fa-caret-up" ng-if="getSortValue() == 'date_created' && userParams.desc == false"></i></div>
+        <div class="col-md-2 text-right" ng-if="userParams.status == null"><label ng-click="sort('date_modified', !userParams.desc)" class="pointer text-primary" translate>Updated</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="getSortValue() == 'date_modified' && userParams.desc == true"></i><i class="icon fa fa-caret-up" ng-if="getSortValue() == 'date_modified' && userParams.desc == false"></i></div>
+        <div class="col-md-2 text-right" ng-if="userParams.terminated == true"><label ng-click="sort('date_ended', !userParams.desc)" class="pointer text-primary" translate>Ended</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="getSortValue() == 'date_ended' && userParams.desc == true"></i><i class="icon fa fa-caret-up" ng-if="getSortValue() == 'date_ended' && userParams.desc == false"></i></div>
+
     </div>
 
     <div class="col-xs-12 hidden-md hidden-lg padding-l0">
@@ -45,27 +50,37 @@
             <button type="button" class="btn btn-default btn-header uib-dropdown-toggle" uib-dropdown-toggle><span translate>Filter</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
             <ul class="dropdown-menu">
                 <li class="dropdown-header">Status</li>
-                <li ng-click="setParam('status', null)" ng-class="{ 'selected-li': userParams.status == null }"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
-                <li ng-click="setParam('status', 'active')" ng-class="{ 'selected-li': userParams.status == 'active' }"><a><i class="dropdown-icon fa fa-refresh text-success"></i>&nbsp;&nbsp;<span translate>Active</span></a></li>
-                <li ng-click="setParam('status', 'trial')" ng-class="{'selected-li': userParams.status == 'trial' }"><a><i class="dropdown-icon fa fa-history fa-flip-horizontal text-pa-purple"></i>&nbsp;&nbsp;<span translate>Trial</span></a></li>
-                <li ng-click="setParam('status', 'completed')" ng-class="{'selected-li': userParams.status == 'completed' }"><a><i class="dropdown-icon fa fa-flag-checkered text-default"></i>&nbsp;&nbsp;<span translate>Completed</span></a></li>
-                <li ng-click="setParam('status', 'cancelled')" ng-class="{'selected-li': userParams.status == 'cancelled' }"><a><i class="dropdown-icon fa fa-ban text-danger"></i>&nbsp;&nbsp;<span translate>Cancelled</span></a></li>
-                <li class="dropdown-header">Grace Period</li>
-                <li ng-click="setParam('in_grace_period', null)" ng-class="{ 'selected-li': userParams.in_grace_period == null }"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
-                <li ng-click="setParam('in_grace_period', true)" ng-class="{ 'selected-li': userParams.in_grace_period == true }"><a><i class="dropdown-icon fa fa-check text-danger"></i>&nbsp;&nbsp;<span translate>Yes</span></a></li>
-                <li ng-click="setParam('in_grace_period', false)" ng-class="{'selected-li': userParams.in_grace_period == false }"><a><i class="dropdown-icon fa fa-minus text-success"></i>&nbsp;&nbsp;<span translate>No</span></a></li>
+                <li ng-click="setParams({'status': null, 'date_type': 'date_created', 'desc': true})" ng-class="{ 'selected-li': userParams.status == null && userParams.terminated == null }"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
+                <li ng-click="setParams({'status': 'active', 'date_type': 'date_current_period_end', 'desc': false, 'in_grace_period': userParams.in_grace_period })" ng-class="{ 'selected-li': userParams.status == 'active' }"><a><i class="dropdown-icon fa fa-refresh text-success"></i>&nbsp;&nbsp;<span translate>Active</span></a></li>
+                <li ng-click="setParams({'status': 'trial', 'date_type': 'date_current_period_end', 'desc': false, 'in_grace_period': userParams.in_grace_period })" ng-class="{'selected-li': userParams.status == 'trial' }"><a><i class="dropdown-icon fa fa-history fa-flip-horizontal text-pa-purple"></i>&nbsp;&nbsp;<span translate>Trial</span></a></li>
+                <li ng-click="setParams({'terminated': true, 'date_type': 'date_ended', 'desc': true})" ng-class="{'selected-li': userParams.terminated == true }"><a><i class="dropdown-icon fa fa-ban text-danger"></i>&nbsp;&nbsp;<span translate>Terminated</span></a></li>
+                <li class="dropdown-header" ng-if="userParams.terminated != true">Grace Period</li>
+                <li ng-if="userParams.terminated != true" ng-click="setParam('in_grace_period', null)" ng-class="{ 'selected-li': userParams.in_grace_period == null }"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
+                <li ng-if="userParams.terminated != true" ng-click="setParams({'in_grace_period': true, 'date_type': 'date_current_period_end', 'desc': true, 'status': 'active'})" ng-class="{ 'selected-li': userParams.in_grace_period == true }"><a><i class="dropdown-icon fa fa-check text-danger"></i>&nbsp;&nbsp;<span translate>Yes</span></a></li>
+                <li ng-if="userParams.terminated != true" ng-click="setParams({'in_grace_period': false, 'date_type': 'date_current_period_end', 'desc': true, 'status': 'active'})" ng-class="{ 'selected-li': userParams.in_grace_period == false }"><a><i class="dropdown-icon fa fa-minus text-success"></i>&nbsp;&nbsp;<span translate>No</span></a></li>
             </ul>
         </div>
 
         <div class="btn-group" uib-dropdown>
             <button type="button" class="btn btn-default btn-header uib-dropdown-toggle" uib-dropdown-toggle><span translate>Sort</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
             <ul class="dropdown-menu">
-                <li class="dropdown-header">Next Renewal</li>
-                <li ng-click="sort('date_current_period_end', false)" ng-class="{'selected-li': getSortValue() == 'date_current_period_end' && userParams.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
-                <li ng-click="sort('date_current_period_end', true)" ng-class="{'selected-li': getSortValue() == 'date_current_period_end' && userParams.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
-                <li class="dropdown-header">Last Billing</li>
-                <li ng-click="sort('date_current_period_start', false)" ng-class="{'selected-li': getSortValue() == 'date_current_period_start' && userParams.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
-                <li ng-click="sort('date_current_period_start', true)" ng-class="{'selected-li': getSortValue() == 'date_current_period_start' && userParams.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+
+                <li class="dropdown-header">Created</li>
+                <li ng-click="sort('date_created', false)" ng-class="{'selected-li': getSortValue() == 'date_created' && userParams.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                <li ng-click="sort('date_created', true)" ng-class="{'selected-li': getSortValue() == 'date_created' && userParams.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+
+                <li class="dropdown-header">Updated</li>
+                <li ng-click="sort('date_modified', false)" ng-class="{'selected-li': getSortValue() == 'date_modified' && userParams.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                <li ng-click="sort('date_modified', true)" ng-class="{'selected-li': getSortValue() == 'date_modified' && userParams.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+
+                <li ng-if="userParams.status == 'active' || userParams.status == 'trial'" class="dropdown-header">Last Billing</li>
+                <li ng-if="userParams.status == 'active' || userParams.status == 'trial'" ng-click="sort('date_current_period_start', false)" ng-class="{'selected-li': getSortValue() == 'date_current_period_start' && userParams.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                <li ng-if="userParams.status == 'active' || userParams.status == 'trial'" ng-click="sort('date_current_period_start', true)" ng-class="{'selected-li': getSortValue() == 'date_current_period_start' && userParams.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+
+                <li ng-if="userParams.status == 'active' || userParams.status == 'trial'" class="dropdown-header">Next Renewal</li>
+                <li ng-if="userParams.status == 'active' || userParams.status == 'trial'" ng-click="sort('date_current_period_end', false)" ng-class="{'selected-li': getSortValue() == 'date_current_period_end' && userParams.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                <li ng-if="userParams.status == 'active' || userParams.status == 'trial'" ng-click="sort('date_current_period_end', true)" ng-class="{'selected-li': getSortValue() == 'date_current_period_end' && userParams.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+
             </ul>
         </div>
     </div>
@@ -94,23 +109,39 @@
             <div class="col-xs-7 col-sm-12 col-md-12 value"><a href="#/subscription_plans/{{subscription.subscription_plan.subscription_plan_id}}/edit">{{subscription.subscription_plan.name}}</a></div>
         </div>
 
-        <div class="col-xs-12 col-sm-6 col-md-2">
+        <div class="col-xs-12 col-sm-6 col-md-2" ng-if="userParams.terminated != true">
             <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>In Grace Period?</label></div>
             <div class="col-xs-7 col-sm-12 col-md-12 text-center-md text-center-lg hidden-xs hidden-sm value">
-                <span ng-show="subscription.in_grace_period" class="text-danger"><i class="icon fa fa-check text-danger">&nbsp;</i>Yes</span>
-                <span ng-show="!subscription.in_grace_period"><i class="icon fa fa-minus text-success">&nbsp;</i>No</span>
+                <span ng-show="subscription.in_grace_period && subscription.status != 'cancelled' && subscription.status != 'completed'" class="text-danger"><i class="icon fa fa-check text-danger">&nbsp;</i>Yes</span>
+                <span ng-show="!subscription.in_grace_period && subscription.status != 'cancelled' && subscription.status != 'completed'"><i class="icon fa fa-minus text-success">&nbsp;</i>No</span>
             </div>
         </div>
 
-        <div class="col-xs-12 col-sm-6 col-md-2">
+        <div class="col-xs-12 col-sm-6 col-md-2" ng-if="userParams.status == 'active' || userParams.status == 'trial'">
             <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Last Billing</label></div>
             <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value"><span>{{subscription.date_current_period_start | date:'shortDate'}}</span></div>
         </div>
 
-        <div class="col-xs-12 col-sm-6 col-md-2">
+        <div class="col-xs-12 col-sm-6 col-md-2" ng-if="userParams.status == 'active' || userParams.status == 'trial'">
             <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Next Renewal</label></div>
             <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value"><span>{{subscription.date_current_period_end | date:'shortDate'}}</span></div>
         </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-2" ng-if="userParams.terminated == true || userParams.status == null">
+            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Created</label></div>
+            <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value"><span>{{subscription.date_created | date:'shortDate'}}</span></div>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-2" ng-if="userParams.terminated == true || userParams.status == null">
+            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Updated</label></div>
+            <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value"><span>{{subscription.date_modified | date:'shortDate'}}</span></div>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-2" ng-if="userParams.terminated == true">
+            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Ended</label></div>
+            <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value"><span>{{subscription.date_ended | date:'shortDate'}}</span></div>
+        </div>
+
     </div>
 
 </div>

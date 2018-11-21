@@ -172,7 +172,7 @@
                             <li><a href="#/orders">Orders</a></li>
                             <li><a href="#/payments">Payments</a></li>
                             <li><a href="#/refunds">Refunds</a></li>
-                            <li><a href="#/subscriptions?status=active">Subscriptions</a></li>
+                            <li><a href="#/subscriptions">Subscriptions</a></li>
                             <li><a href="#/carts">Carts</a></li>
                             <li><a href="#/shipments">Shipments</a></li>
                         </ul>
@@ -285,6 +285,7 @@
             <span ng-if="growl.id == 'void_success'" translate>You have successfully cancelled the payment.</span>
 
             <span ng-if="growl.id == 'subscription_cancel_success'" translate>You have successfully cancelled the subscription.</span>
+            <span ng-if="growl.id == 'subscription_item_cancel_success'" translate>You have successfully cancelled {{growl.name}}.</span>
 
             <span ng-if="growl.id == 'switch_test_failure'" translate>We were unable to switch you to test mode.</span>
 
