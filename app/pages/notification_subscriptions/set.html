@@ -47,6 +47,13 @@
                         <div>
                             <p class="help-text" translate>Sent to customers to provide a link back to their invoice.</p>
                         </div>
+
+                        <input type="radio" id="type-4" class="radio" name="type" ng-model="notificationSubscription.type" value="customer:link" required>
+                        <label for="type-4" class="radio-label text-capitalize">Customer Link</label>
+                        <div>
+                            <p class="help-text" translate>Sent to customers to provide a link to view and manage their account, past orders, subscriptions, etc.</p>
+                        </div>
+
                         <p class="help-block hidden fadeInDown" translate>Please provide subscription type.</p>
                     </div>
                 </div>

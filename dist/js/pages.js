@@ -1,115 +1,3 @@
-app.controller("AccountsUpdateCtrl", ['$scope', '$location', 'ApiService', 'ConfirmService', 'GrowlsService', 'GeographiesService', function ($scope, $location, ApiService, ConfirmService, GrowlsService, GeographiesService) {
-
-    $scope.exception = {};
-
-    var prepareSubmit = function () {
-        // Clear any previous errors
-        $scope.exception.error = null;
-    }
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/accounts/" + localStorage.getItem("account_id"));
-
-    $scope.confirmCancel = function () {
-        if (angular.equals($scope.account, $scope.account_orig)) {
-            utils.redirect($location, "/");
-        } else {
-            var confirm = { id: "changes_lost" };
-            confirm.onConfirm = function () {
-                utils.redirect($location, "/");
-            }
-            ConfirmService.showConfirm($scope, confirm);
-        }
-    }
-
-    var geo = GeographiesService.getGeographies(false);
-    $scope.countries = geo.countries;
-    $scope.us_states = geo.us_states;
-    $scope.ca_provinces = geo.ca_provinces;
-    $scope.au_states = geo.au_states;
-
-    // Load the account info
-    if (utils.inTestMode() == false) {
-        ApiService.getItem($scope.url).then(function (account) {
-            $scope.account = account;
-
-            // Make a copy of the original for comparision
-            $scope.account_orig = angular.copy($scope.account);
-
-            $scope.typeahead = {};
-            $scope.typeahead.country = {};
-            $scope.typeahead.state_prov = {};
-
-            if ($scope.account.country != null) {
-                $scope.typeahead.country = _.find($scope.countries, { code: $scope.account.country });
-            }
-
-            if ($scope.account.state_prov != null) {
-
-                if ($scope.account.country == "US") {
-                    $scope.typeahead.state_prov = _.find($scope.us_states, { code: $scope.account.state_prov });
-                }
-
-                if ($scope.account.country == "CA") {
-                    $scope.typeahead.state_prov = _.find($scope.ca_provinces, { code: $scope.account.state_prov });
-                }
-
-                if ($scope.account.country == "AU") {
-                    $scope.typeahead.state_prov = _.find($scope.au_states, { code: $scope.account.state_prov });
-                }
-
-            }
-
-        }, function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    }
-
-    $scope.onCountrySelect = function (item, model, label) {
-        $scope.account.country = model.code;
-    }
-
-    $scope.onStateSelect = function (item, model, label) {
-        $scope.account.state_prov = model.code;
-    }
-
-    $scope.updateAccount = function () {
-
-        prepareSubmit();
-
-        if ($scope.form.$invalid) {
-            return;
-        }
-
-        ApiService.set($scope.account, $scope.url)
-        .then(
-        function (account) {
-            GrowlsService.addGrowl({ id: "edit_success_no_link", type: "success" });
-            utils.redirect($location, "/");
-        },
-        function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    }
-
-    $scope.downloadContractPdf = function () {
-
-        // Get the current contract
-        ApiService.getItemPdf(ApiService.buildUrl("/contracts/current")).then(function (data) {
-
-            var file = new Blob([data], { type: "application/pdf" });
-            saveAs(file, "Contract_" + localStorage.getItem("account_id") + ".pdf");
-
-        }, function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-
-    }
-
-}]);
 
 //#region Apps
 
@@ -463,6 +351,118 @@ app.controller("AppsSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSer
 
 
 
+app.controller("AccountsUpdateCtrl", ['$scope', '$location', 'ApiService', 'ConfirmService', 'GrowlsService', 'GeographiesService', function ($scope, $location, ApiService, ConfirmService, GrowlsService, GeographiesService) {
+
+    $scope.exception = {};
+
+    var prepareSubmit = function () {
+        // Clear any previous errors
+        $scope.exception.error = null;
+    }
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/accounts/" + localStorage.getItem("account_id"));
+
+    $scope.confirmCancel = function () {
+        if (angular.equals($scope.account, $scope.account_orig)) {
+            utils.redirect($location, "/");
+        } else {
+            var confirm = { id: "changes_lost" };
+            confirm.onConfirm = function () {
+                utils.redirect($location, "/");
+            }
+            ConfirmService.showConfirm($scope, confirm);
+        }
+    }
+
+    var geo = GeographiesService.getGeographies(false);
+    $scope.countries = geo.countries;
+    $scope.us_states = geo.us_states;
+    $scope.ca_provinces = geo.ca_provinces;
+    $scope.au_states = geo.au_states;
+
+    // Load the account info
+    if (utils.inTestMode() == false) {
+        ApiService.getItem($scope.url).then(function (account) {
+            $scope.account = account;
+
+            // Make a copy of the original for comparision
+            $scope.account_orig = angular.copy($scope.account);
+
+            $scope.typeahead = {};
+            $scope.typeahead.country = {};
+            $scope.typeahead.state_prov = {};
+
+            if ($scope.account.country != null) {
+                $scope.typeahead.country = _.find($scope.countries, { code: $scope.account.country });
+            }
+
+            if ($scope.account.state_prov != null) {
+
+                if ($scope.account.country == "US") {
+                    $scope.typeahead.state_prov = _.find($scope.us_states, { code: $scope.account.state_prov });
+                }
+
+                if ($scope.account.country == "CA") {
+                    $scope.typeahead.state_prov = _.find($scope.ca_provinces, { code: $scope.account.state_prov });
+                }
+
+                if ($scope.account.country == "AU") {
+                    $scope.typeahead.state_prov = _.find($scope.au_states, { code: $scope.account.state_prov });
+                }
+
+            }
+
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
+    $scope.onCountrySelect = function (item, model, label) {
+        $scope.account.country = model.code;
+    }
+
+    $scope.onStateSelect = function (item, model, label) {
+        $scope.account.state_prov = model.code;
+    }
+
+    $scope.updateAccount = function () {
+
+        prepareSubmit();
+
+        if ($scope.form.$invalid) {
+            return;
+        }
+
+        ApiService.set($scope.account, $scope.url)
+        .then(
+        function (account) {
+            GrowlsService.addGrowl({ id: "edit_success_no_link", type: "success" });
+            utils.redirect($location, "/");
+        },
+        function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
+    $scope.downloadContractPdf = function () {
+
+        // Get the current contract
+        ApiService.getItemPdf(ApiService.buildUrl("/contracts/current")).then(function (data) {
+
+            var file = new Blob([data], { type: "application/pdf" });
+            saveAs(file, "Contract_" + localStorage.getItem("account_id") + ".pdf");
+
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+
+    }
+
+}]);
 
 //#region App_Installations
 
@@ -3929,6 +3929,74 @@ app.controller("NotificationsPreviewCtrl", ['$scope', '$routeParams', 'ApiServic
 
 
 
+app.controller("OrdersListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
+
+    // Establish your scope containers
+    $scope.exception = {};
+    $scope.resources = {};
+    $scope.resources.orderListUrl = ApiService.buildUrl("/orders");
+
+}]);
+
+app.controller("OrdersViewCtrl", ['$scope', '$routeParams', 'ApiService', 'ConfirmService', 'GrowlsService', function ($scope, $routeParams, ApiService, ConfirmService, GrowlsService) {
+
+    $scope.order = {};  
+    $scope.payment = {};
+    $scope.exception = {};
+    $scope.count = {};
+    $scope.count.shipments = 0;
+    $scope.resources = {};
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/orders/" + $routeParams.id);
+    $scope.resources.shipmentListUrl = $scope.url + "/shipments";
+    $scope.resources.refundListUrl = $scope.url + "/refunds";
+    $scope.resources.notificationListUrl = $scope.url + "/notifications";
+
+    // Load the order
+    var params = { expand: "customer,payment.response_data,payment.payment_method,payment.gateway,payment.refunds.items,items.product,items.subscription,items.download.file,items.license.license_service,shipments", hide: "items.product.images,items.license.license_service.configuration", formatted: true };
+    ApiService.getItem($scope.url, params).then(function (order) {
+        $scope.order = order;
+
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+    $scope.$watch('order.fulfilled', function (newvalue, oldvalue) {
+    // If the order changes to fulfilled, indicate that the order will be captured in a moment.
+        if (oldvalue == false && newvalue == true) {
+            if ($scope.order.payment.status == "pending" && $scope.order.payment.payment_method.type == "credit_card") {
+                GrowlsService.addGrowl({ id: "payment_capture_scheduled", type: "success" });
+                $scope.order.hideCapture = true;
+            }
+        }
+
+    });
+
+    $scope.hasPermission = function (resource, method) {
+        return utils.hasPermission(resource, method);
+    }
+
+    $scope.downloadPdf = function () {
+
+        ApiService.getItemPdf($scope.url).then(function (data) {
+
+            var file = new Blob([data], { type: "application/pdf" });
+            saveAs(file, "Order_" + $scope.order.order_id + ".pdf");
+
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+
+    }
+
+}]);
+
+
+
+
 app.controller("NotificationSubscriptionsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
 
     // Establish your scope containers
@@ -4149,74 +4217,6 @@ app.controller("NotificationSubscriptionsSetCtrl", ['$scope', '$routeParams', '$
 
 
 
-app.controller("OrdersListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
-
-    // Establish your scope containers
-    $scope.exception = {};
-    $scope.resources = {};
-    $scope.resources.orderListUrl = ApiService.buildUrl("/orders");
-
-}]);
-
-app.controller("OrdersViewCtrl", ['$scope', '$routeParams', 'ApiService', 'ConfirmService', 'GrowlsService', function ($scope, $routeParams, ApiService, ConfirmService, GrowlsService) {
-
-    $scope.order = {};  
-    $scope.payment = {};
-    $scope.exception = {};
-    $scope.count = {};
-    $scope.count.shipments = 0;
-    $scope.resources = {};
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/orders/" + $routeParams.id);
-    $scope.resources.shipmentListUrl = $scope.url + "/shipments";
-    $scope.resources.refundListUrl = $scope.url + "/refunds";
-    $scope.resources.notificationListUrl = $scope.url + "/notifications";
-
-    // Load the order
-    var params = { expand: "customer,payment.response_data,payment.payment_method,payment.gateway,payment.refunds.items,items.product,items.subscription,items.download.file,items.license.license_service,shipments", hide: "items.product.images,items.license.license_service.configuration", formatted: true };
-    ApiService.getItem($scope.url, params).then(function (order) {
-        $scope.order = order;
-
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-    $scope.$watch('order.fulfilled', function (newvalue, oldvalue) {
-    // If the order changes to fulfilled, indicate that the order will be captured in a moment.
-        if (oldvalue == false && newvalue == true) {
-            if ($scope.order.payment.status == "pending" && $scope.order.payment.payment_method.type == "credit_card") {
-                GrowlsService.addGrowl({ id: "payment_capture_scheduled", type: "success" });
-                $scope.order.hideCapture = true;
-            }
-        }
-
-    });
-
-    $scope.hasPermission = function (resource, method) {
-        return utils.hasPermission(resource, method);
-    }
-
-    $scope.downloadPdf = function () {
-
-        ApiService.getItemPdf($scope.url).then(function (data) {
-
-            var file = new Blob([data], { type: "application/pdf" });
-            saveAs(file, "Order_" + $scope.order.order_id + ".pdf");
-
-        }, function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-
-    }
-
-}]);
-
-
-
-
 
 //#region Payments
 
@@ -4411,7 +4411,7 @@ app.controller("ProductsListCtrl", ['$scope', '$routeParams', '$location', '$q',
 
     $scope.loadProducts = function () {
 
-        ApiService.getList(ApiService.buildUrl("/products?show=product_id,name,active,price,currency,deleted,date_created&sort_by=" + $scope.params.sort_by + "&desc=" + $scope.params.desc), $scope.params).then(function (result) {
+        ApiService.getList(ApiService.buildUrl("/products?show=product_id,name,headline,active,price,currency,deleted,date_created,subscription_plan.billing_interval_description,subscription_plan.trial_interval_description&expand=subscription_plan&sort_by=" + $scope.params.sort_by + "&desc=" + $scope.params.desc), $scope.params).then(function (result) {
             $scope.products.productList = result;
             $scope.productsChecked = false;
 
@@ -4513,6 +4513,24 @@ app.controller("ProductsListCtrl", ['$scope', '$routeParams', '$location', '$q',
             product.checked = true;
             $scope.productsChecked = true;
         }
+    }
+
+    $scope.getTitle = function(product) {
+        if (product.headline) {
+            return product.name + " - " + product.headline;
+        }
+        return null;
+    }
+
+    $scope.getSubscriptionInfo = function (product) {
+        if (product.subscription_plan) {
+            var description = product.subscription_plan.billing_interval_description;
+            if (product.subscription_plan.trial_interval_description) {
+                description += " (with trial)";
+            }
+            return description;
+        }
+        return null;
     }
 
     // Initial load

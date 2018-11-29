@@ -24,7 +24,7 @@ app.controller("ProductsListCtrl", ['$scope', '$routeParams', '$location', '$q',
 
     $scope.loadProducts = function () {
 
-        ApiService.getList(ApiService.buildUrl("/products?show=product_id,name,active,price,currency,deleted,date_created&sort_by=" + $scope.params.sort_by + "&desc=" + $scope.params.desc), $scope.params).then(function (result) {
+        ApiService.getList(ApiService.buildUrl("/products?show=product_id,name,headline,active,price,currency,deleted,date_created,subscription_plan.billing_interval_description,subscription_plan.trial_interval_description&expand=subscription_plan&sort_by=" + $scope.params.sort_by + "&desc=" + $scope.params.desc), $scope.params).then(function (result) {
             $scope.products.productList = result;
             $scope.productsChecked = false;
 
@@ -126,6 +126,24 @@ app.controller("ProductsListCtrl", ['$scope', '$routeParams', '$location', '$q',
             product.checked = true;
             $scope.productsChecked = true;
         }
+    }
+
+    $scope.getTitle = function(product) {
+        if (product.headline) {
+            return product.name + " - " + product.headline;
+        }
+        return null;
+    }
+
+    $scope.getSubscriptionInfo = function (product) {
+        if (product.subscription_plan) {
+            var description = product.subscription_plan.billing_interval_description;
+            if (product.subscription_plan.trial_interval_description) {
+                description += " (with trial)";
+            }
+            return description;
+        }
+        return null;
     }
 
     // Initial load
