@@ -50,9 +50,7 @@ app.controller("SubscriptionsViewCtrl", ['$scope', '$routeParams', '$location', 
 
     $scope.uncancelItem = function (item) {
 
-        var data = { cancel_at_current_period_end: false };
-
-        ApiService.set(data, item.url, { expand: "subscription.subscription_plan,subscription.customer.payment_methods,subscription.items.subscription_terms", formatted: true }).then(function (item) {
+        ApiService.set(null, item.url + "/uncancel", { expand: "subscription.subscription_plan,subscription.customer.payment_methods,subscription.items.subscription_terms", formatted: true }).then(function (item) {
             $scope.model.subscription = item.subscription;
 
         }, function (error) {
