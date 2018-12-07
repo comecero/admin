@@ -5310,6 +5310,8 @@ app.controller("CrossSellSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
             $scope.promotion.config.discount_percent = undefined;
         }
 
+        $scope.promotion.config.product_id = $scope.options.product[0].product_id;
+
         if ($scope.options.qualifies === "selected") {
             $scope.promotion.config.offer_with_product_ids = _.pluck($scope.options.offer_with_products, 'product_id');
 
