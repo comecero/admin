@@ -66,6 +66,21 @@
                 </div>
             </div>
 
+            <div class="col-xs-12" ng-show="!settings.test">
+                <div class="form-group" show-errors>
+                    <label class="radio-group-label" translate>Allow Public Test Orders</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="allow_public_limited_test_tokens-1" class="radio" name="allow_public_limited_test_tokens" ng-model="settings.allow_public_limited_test_tokens" ng-value="true" required>
+                        <label for="allow_public_limited_test_tokens-1" class="radio-label">Yes</label>
+                        <input type="radio" id="allow_public_limited_test_tokens-2" class="radio" name="allow_public_limited_test_tokens" ng-model="settings.allow_public_limited_test_tokens" ng-value="false" required>
+                        <label for="allow_public_limited_test_tokens-2" class="radio-label">No</label>
+                    </div>
+                    <div>
+                        <p class="help-text" translate>Indicates if you want anonymous users to be able to place test orders for your account. Otherwise only account users who have signed in will be able to place test orders.</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="col-sm-12">
                 <div class="form-group" show-errors>
                     <label for="signature_key" class="control-label" translate>Signature Key</label>
