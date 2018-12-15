@@ -1441,10 +1441,7 @@ app.directive('refund', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
                 });
 
                 // Determine the active tab
-                scope.refundTabs = [
-                  { active: true },
-                  { active: false }
-                ];
+                scope.activeTab = 0;
                 scope.showItemsTab = true;
 
                 // We will derive our refund items from the order items.
@@ -1462,10 +1459,7 @@ app.directive('refund', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
                     scope.refund.items.push(item);
 
                     if (scope.refund.items.length == 0) {
-                        scope.refundTabs = [
-                          { active: false },
-                          { active: true }
-                        ];
+                        scope.activeTab = 1;
                         scope.showItemsTab = false;
                     };
 
@@ -1735,10 +1729,7 @@ app.directive('refund', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
                 });
 
                 if (itemLessThan == false) {
-                    scope.refundTabs = [
-                      { active: false },
-                      { active: true }
-                    ];
+                    scope.activeTab = 1;
                     scope.showItemsTab = false;
                 }
 

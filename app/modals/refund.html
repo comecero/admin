@@ -10,8 +10,8 @@
                 <p>{{modalError.message}}</p>
                 <br /><small>Error code: {{modalError.reference}}</small>
             </div>
-            <uib-tabset>
-                <uib-tab active="refundTabs[0].active" resource="files" method="create" select="refund.clearTotal()" ng-if="showItemsTab">
+            <uib-tabset active="activeTab">
+                <uib-tab index="0" resource="files" method="create" select="refund.clearTotal()" ng-if="showItemsTab">
                     <uib-tab-heading><i class="fa fa-tags"></i> <small translate>Items</small></uib-tab-heading>
 
                     <div class="gridtable">
@@ -37,7 +37,7 @@
                                                 <span style="min-width:42px" class="input-group-addon text-info pointer" ng-if="!item.quantity" ng-click="item.quantity = refund.getUnrefundedQuantity(item)" title="{{ 'Load quantity' | translate}}"><i class="fa fa-arrow-right fadeIn"></i></span>
                                                 <span style="min-width:42px" class="input-group-addon pointer text-success" ng-if="item.quantity && item.quantity == refund.getUnrefundedQuantity(item)" ng-click="item.quantity = null" title="{{ 'Click to reset' | translate}}"><i class="fa fa-check fadeIn"></i></span>
                                                 <span style="min-width:42px" class="input-group-addon pointer text-warning" ng-if="item.quantity && item.quantity < refund.getUnrefundedQuantity(item)" ng-click="item.quantity = null" title="{{ 'Partial refund. Click to reset.' | translate}}"><i class="fa fa-check fadeIn"></i></span>
-                                                <input style="max-width:100px;" type="tel" name="quantity" ng-model="item.quantity" ng-model-options="{ updateOn: 'blur' }" class="form-control" is-valid-integer allow-empty-value="true" less-than-or-equal="{{refund.getUnrefundedQuantity(item)}}">
+                                                <input style="max-width:100px;" type="tel" name="quantity" ng-model="item.quantity" ng-model-options="{ updateOn: 'blur' }" class="form-control" is-valid-number allow-empty-value="true" less-than-or-equal="{{refund.getUnrefundedQuantity(item)}}">
                                             </div>
                                             <p class="help-block fadeInDown" ng-show="items.quantity.$invalid && (items.quantity.$dirty || form.$submitted)" translate>Please enter a valid quantity</p>
                                         </div>
@@ -153,10 +153,10 @@
 
                 </uib-tab>
 
-                <uib-tab active="refundTabs[1].active" select="refund.clearQuantities()">
+                <uib-tab index="1" select="refund.clearQuantities()">
                     <uib-tab-heading><i class="fa fa-dollar"></i> <small translate>Amount</small></uib-tab-heading>
 
-                    <div class="col-xs-12 spacer-t10 spacer-b10"><span class="text-bold">Unrefunded Total: {{refund.getUnrefundedTotal() | currency: ""}}</span></div>
+                    <div class="col-xs-12 spacer-t10 spacer-b10"><span class="text-bold">Amount not refunded: {{refund.getUnrefundedTotal() | currency: ""}}</span></div>
 
                     <div class="gridtable">
 
