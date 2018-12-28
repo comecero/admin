@@ -19,7 +19,7 @@ app.controller("InvoicesSetCtrl", ['$scope', '$routeParams', '$location', 'ApiSe
     $scope.resources = {};
     $scope.functions = {};
     $scope.currencies = JSON.parse(localStorage.getItem("payment_currencies"));
-    $scope.params = { expand: "customer.payment_methods,options,payments.payment_method,items.subscription_terms,subscription", formatted: true };
+    $scope.params = { expand: "customer.payment_methods,options,payments.payment_method,items.subscription_terms,subscription,order", formatted: true };
     $scope.invoice.currency = localStorage.getItem("default_payment_currency");
     $scope.suppress_customer_notification = false;
     $scope.data = {};

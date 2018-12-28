@@ -26,7 +26,7 @@
                 duration = 5;
                 break;
             case "warning":
-                duration = 10;
+                duration = 20;
                 break;
             case "danger":
                 duration = -1; // Until user dismisses it
@@ -72,6 +72,7 @@ app.service("SettingsService", ['$rootScope', "$q", "ApiService", function ($roo
         return ApiService.getItem(ApiService.buildUrl("/accounts/" + $rootScope.account.account_id + "/account_meta")).then(function (account) {
             $rootScope.account.alias = account.alias;
             localStorage.setItem("alias", account.alias);
+            localStorage.setItem("model", account.model);
             $rootScope.account.live = account.live;
             localStorage.setItem("live", account.live);
             $rootScope.account.reporting_currency_primary = account.reporting_currency_primary;
@@ -275,11 +276,13 @@ app.service("TimezonesService", [function () {
 }]);
 
 
-app.service("HelperService", [function () {
+app.service("HelperService", ['SettingsService', function (SettingsService) {
 
     // Return public API.
     return ({
         isAdmin: isAdmin,
+        isReseller: isReseller,
+        isAgent: isAgent,
     });
 
     function isAdmin() {
@@ -291,6 +294,18 @@ app.service("HelperService", [function () {
             }
         }
         return false;
+    }
+
+    function isReseller() {
+        var model = localStorage.getItem("model");
+        if (model && model == "reseller") {
+            return true;
+        }
+        return false;
+    }
+
+    function isAgent() {
+        return !isReseller();
     }
 
 }]);

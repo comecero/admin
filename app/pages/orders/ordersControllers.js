@@ -15,18 +15,24 @@ app.controller("OrdersViewCtrl", ['$scope', '$routeParams', 'ApiService', 'Confi
     $scope.count = {};
     $scope.count.shipments = 0;
     $scope.resources = {};
+    $scope.data = { refunds: [] };
+    $scope.refundParams = { show: "refund_id,date_created,date_modified,status,success,total,currency,shipping,tax,items.*", expand: "items" };
 
     // Set the url for interacting with this item
     $scope.url = ApiService.buildUrl("/orders/" + $routeParams.id);
     $scope.resources.shipmentListUrl = $scope.url + "/shipments";
+    $scope.resources.paymentListUrl = $scope.url + "/payments";
     $scope.resources.refundListUrl = $scope.url + "/refunds";
     $scope.resources.notificationListUrl = $scope.url + "/notifications";
 
     // Load the order
-    var params = { expand: "customer,payment.response_data,payment.payment_method,payment.gateway,payment.refunds.items,items.product,items.subscription,items.download.file,items.license.license_service,shipments", hide: "items.product.images,items.license.license_service.configuration", formatted: true };
+    var params = { expand: "customer,payments.response_data,payments.payment_method,refunds,items.product,items.subscription,items.download.file,items.license.license_service,shipments", hide: "items.product.images,items.license.license_service.configuration", formatted: true };
     ApiService.getItem($scope.url, params).then(function (order) {
         $scope.order = order;
-
+        $scope.payment = order.payments.data[0];
+        if (order.payment_status == "completed") {
+            $scope.order.hideCapture = true;
+        }
     }, function (error) {
         $scope.exception.error = error;
         window.scrollTo(0, 0);

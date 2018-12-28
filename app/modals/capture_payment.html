@@ -12,8 +12,8 @@
             </span>
         </div>
         <form name="form" novalidate>
-            <uib-tabset>
-                <uib-tab active="capturePaymentTabs[0].active" resource="files" method="create" select="capturePayment.clearTotal()" ng-if="showItemsTab">
+            <uib-tabset active="activeTab">
+                <uib-tab index="0" resource="files" method="create" select="capturePayment.clearTotal()" ng-if="showItemsTab">
                     <uib-tab-heading><i class="fa fa-tags"></i> <small translate>Items</small></uib-tab-heading>
 
                     <div class="gridtable">
@@ -128,7 +128,7 @@
                     </div>
 
                 </uib-tab>
-                <uib-tab active="capturePaymentTabs[1].active" select="capturePayment.clearQuantities()">
+                <uib-tab index="1" select="capturePayment.clearQuantities()">
                     <uib-tab-heading><i class="fa fa-dollar"></i> <small translate>Amount</small></uib-tab-heading>
 
                     <div class="gridtable">
