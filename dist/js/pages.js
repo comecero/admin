@@ -1624,6 +1624,7 @@ app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$locatio
     { name: "Event Subscription Deleted", code: "event_subscription:deleted" },
     { name: "License Service Low Licenses", code: "license_service:low_licenses" },
     { name: "Invoice Created", code: "invoice:created" },
+    { name: "Invoice Paid", code: "invoice:paid" },
     { name: "Invoice Payment Completed", code: "invoice:payment_completed" },
     { name: "Order Created", code: "order:created" },
     { name: "Order Licenses Assigned", code: "order:licenses_assigned" },
@@ -4168,6 +4169,7 @@ app.controller("OrdersViewCtrl", ['$scope', '$routeParams', 'ApiService', 'Confi
     $scope.resources = {};
     $scope.data = { refunds: [] };
     $scope.refundParams = { show: "refund_id,date_created,date_modified,status,success,total,currency,shipping,tax,items.*", expand: "items" };
+    $scope.hideCapture = true;
 
     // Set the url for interacting with this item
     $scope.url = ApiService.buildUrl("/orders/" + $routeParams.id);
@@ -4181,8 +4183,8 @@ app.controller("OrdersViewCtrl", ['$scope', '$routeParams', 'ApiService', 'Confi
     ApiService.getItem($scope.url, params).then(function (order) {
         $scope.order = order;
         $scope.payment = order.payments.data[0];
-        if (order.payment_status == "completed") {
-            $scope.order.hideCapture = true;
+        if (order.payment_status == "pending") {
+            $scope.hideCapture = false;
         }
     }, function (error) {
         $scope.exception.error = error;
@@ -4217,6 +4219,14 @@ app.controller("OrdersViewCtrl", ['$scope', '$routeParams', 'ApiService', 'Confi
         });
 
     }
+
+    $scope.$watch("order.payment_status", function (newVal, oldVal) {
+        if (newVal) {
+            if (newVal != "pending") {
+                $scope.hideCapture = true;
+            }
+        }
+    });
 
 }]);
 
