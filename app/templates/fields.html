@@ -78,7 +78,7 @@
             <div class="form-group">
                 <label class="radio-group-label" ng-required="item.required">{{item.label}}</label>
                 <select name="{{item.name}}" class="form-control" ng-model="selections[item.name]">
-                    <option ng-repeat="option in item.options" value="{{option.value}}">{{option.display}}</option>
+                    <option ng-repeat="option in item.options" value="{{option.value || option.display}}">{{option.display || option.value}}</option>
                 </select>
                 <p class="help-block" ng-bind-html="item.description"></p>
             </div>

@@ -4,8 +4,6 @@ app.controller("CrossSellSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
     $scope.promotion.config = { discount_amount: [{ price: null, currency: null }], apply_to_recurring_count: null, weight: 1    };
     $scope.exception = {};
     $scope.options = {};
-    $scope.options.discount_type = "percentage";
-    $scope.options.qualifies = "selected";
 
     // Datepicker options
     $scope.datepicker = {};
@@ -38,7 +36,11 @@ app.controller("CrossSellSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
         ApiService.getItem($scope.url, { expand: "config.product_ids" }).then(function (promotion) {
             $scope.promotion = promotion;
 
-            $scope.options.discount_type = promotion.config.discount_percent ? 'percentage' : 'amounts';
+            if (promotion.config.discount_percent || promotion.config.discount_amount) {
+                $scope.options.discount_type = promotion.config.discount_percent ? "percentage" : "amounts";
+            } else {
+                $scope.options.discount_type = "none";
+            }
 
             if (promotion.expires) {
                 $scope.datepicker.expires = new Date(promotion.expires);
@@ -56,6 +58,8 @@ app.controller("CrossSellSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
             if ($scope.promotion.config.offer_with_product_ids.indexOf("*") > -1) {
                 $scope.options.offer_with_products = null;
                 $scope.options.qualifies = "any";
+            } else {
+                $scope.options.qualifies = "selected";
             }
 
             // Get the product from the product_id
@@ -75,6 +79,8 @@ app.controller("CrossSellSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
         // Indicate this is an add
         $scope.update = false;
         $scope.add = true;
+        $scope.options.discount_type = "percentage";
+        $scope.options.qualifies = "selected";
 
     }
 
@@ -171,6 +177,8 @@ app.controller("CrossSellSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
         } else if ($scope.options.discount_type == 'amounts') {
             $scope.promotion.config.discount_percent = undefined;
         }
+
+        $scope.promotion.config.product_id = $scope.options.product[0].product_id;
 
         if ($scope.options.qualifies === "selected") {
             $scope.promotion.config.offer_with_product_ids = _.pluck($scope.options.offer_with_products, 'product_id');

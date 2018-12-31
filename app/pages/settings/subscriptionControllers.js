@@ -53,7 +53,7 @@ app.controller("SubscriptionsSettingsCtrl", ['$scope', '$routeParams', '$locatio
         ApiService.set($scope.settings, $scope.url)
         .then(
         function (settings) {
-            GrowlsService.addGrowl({ id: "edit_success", name: "Subscription Settings", type: "success", url: "#/settings/subscription" });
+            GrowlsService.addGrowl({ id: "edit_success", name: "Subscription Settings", type: "success", url: "#/settings/subscriptions" });
         },
         function (error) {
             window.scrollTo(0, 0);

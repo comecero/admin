@@ -24,7 +24,7 @@ app.controller("ProductsListCtrl", ['$scope', '$routeParams', '$location', '$q',
 
     $scope.loadProducts = function () {
 
-        ApiService.getList(ApiService.buildUrl("/products?show=product_id,name,active,price,currency,deleted,date_created&sort_by=" + $scope.params.sort_by + "&desc=" + $scope.params.desc), $scope.params).then(function (result) {
+        ApiService.getList(ApiService.buildUrl("/products?show=product_id,name,headline,active,price,currency,deleted,date_created,subscription_plan.billing_interval_description,subscription_plan.trial_interval_description&expand=subscription_plan&sort_by=" + $scope.params.sort_by + "&desc=" + $scope.params.desc), $scope.params).then(function (result) {
             $scope.products.productList = result;
             $scope.productsChecked = false;
 
@@ -43,43 +43,29 @@ app.controller("ProductsListCtrl", ['$scope', '$routeParams', '$location', '$q',
 
     $scope.setActive = function (active) {
 
+        $scope.exception = {};
+
         // Find the checked items
         var items = _.where($scope.products.productList.data, { checked: true });
 
-        // Keep track of the items that succeed and fail
-        $scope.successItems = [];
-        $scope.failItems = [];
+        var max = 15;
+        if (items.length > max) {
+            $scope.exception = { error: { message: "You can select a maximum of " + max + " items to bulk update." } };
+            return;
+        }
 
-        // Loop through the checked ones and update.
-        var defer = $q.defer();
-        var promises = [];
-
-        _.each(items, function (product) {
-            // We slim the request by trimming the resource since we're only modifying a couple properties.
-            promises.push(ApiService.set({ product_id: product.product_id, active: active }, product.url).then(function (data) {
-                product.deleted = data.deleted;
-                product.active = data.active;
-                $scope.successItems.push(product);
-            }, function (error) {
-                $scope.failItems.push(product);
-                GrowlsService.addGrowl({ id: "active_change_failure", "name": product.name, type: "danger" });
-            }));
+        var chain = $q.when();
+        _.each(items, function (item) {
+            chain = chain.then(function () {
+                return ApiService.set({ active: active }, item.url).then(function (data) {
+                    item.deleted = data.deleted;
+                    item.active = data.active;
+                }, function (error) {
+                    GrowlsService.addGrowl({ id: "active_change_failure", "name": item.name, type: "danger" });
+                });
+            });
         });
 
-        $q.all(promises).then(complete);
-
-        function complete() {
-
-            if ($scope.successItems.length > 0) {
-                if (active == true) {
-                    GrowlsService.addGrowl({ id: "activate_success", count: $scope.successItems.length });
-
-                } else {
-            GrowlsService.addGrowl({ id: "inactivate_success", count: $scope.successItems.length });
-        }
-    }
-
-}
     }
 
     $scope.setParam = function (param, value) {
@@ -142,16 +128,35 @@ app.controller("ProductsListCtrl", ['$scope', '$routeParams', '$location', '$q',
         }
     }
 
+    $scope.getTitle = function(product) {
+        if (product.headline) {
+            return product.name + " - " + product.headline;
+        }
+        return null;
+    }
+
+    $scope.getSubscriptionInfo = function (product) {
+        if (product.subscription_plan) {
+            var description = product.subscription_plan.billing_interval_description;
+            if (product.subscription_plan.trial_interval_description) {
+                description += " (with trial)";
+            }
+            return description;
+        }
+        return null;
+    }
+
     // Initial load
     $scope.parseParams();
     $scope.loadProducts();
 
 }]);
 
-app.controller("ProductsSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
+app.controller("ProductsSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'gettextCatalog', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, gettextCatalog) {
 
     $scope.exception = {};
     $scope.data = {}
+    $scope.data.offer_volume_discounts = false;
 
     if ($routeParams.id != null) {
 
@@ -186,6 +191,11 @@ app.controller("ProductsSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
                 $scope.product.prices[i].price = utils.cleanPrice($scope.product.prices[i].price);
             }
 
+            $scope.data.offer_volume_discounts = product.volume_prices.length > 0;
+            if (product.volume_prices.length == 0) {
+                $scope.product.volume_prices.push({ low: "", prices: [{ price: "", currency: "" }] });
+            }
+
             // Make a copy of the original for comparision
             $scope.product_orig = angular.copy($scope.product);
 
@@ -210,6 +220,8 @@ app.controller("ProductsSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
 
         // Add one blank price to the prices array.
         $scope.product.prices.push({ price: "", currency: "" });
+        $scope.product.volume_prices = [];
+        $scope.product.volume_prices.push({ low: "", prices: [{ price: "", currency: "" }] });
 
     }
 
@@ -265,6 +277,8 @@ app.controller("ProductsSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
                 }
                 $scope.product.image_ids.push(item.image_id);
             })
+        } else {
+            $scope.product.image_ids = [];
         }
 
         if ($scope.data.subscription_plan != null) {
@@ -274,6 +288,8 @@ app.controller("ProductsSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
         if ($scope.data.license_service != null) {
             $scope.product.license_service_id = $scope.data.license_service.license_service_id;
         }
+
+        cleanVolumePrices();
 
     }
 
@@ -289,6 +305,14 @@ app.controller("ProductsSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
         }
     }
 
+    $scope.removeVolumeDiscountRange = function(ranges, index) {
+        ranges.splice(index, 1);
+    }
+
+    $scope.addVolumePriceRange = function () {
+        $scope.product.volume_prices.push({ low: "", prices: [{ price: "", currency: "" }] });
+    };
+
     $scope.confirmDelete = function () {
         var confirm = { id: "delete" };
         confirm.onConfirm = function () {
@@ -301,14 +325,16 @@ app.controller("ProductsSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
 
         prepareSubmit();
 
-        if ($scope.form.$invalid) {
-            window.scrollTo(0, 0);
-            return;
-        }
+        // The timeout prevents the form from showing as invalid after cleaning volume prices
+        setTimeout(function () {
+            if ($scope.form.$invalid) {
+                $scope.exception = { error: { message: gettextCatalog.getString("Please review and correct the fields highlighted below.") } };
+                window.scrollTo(0, 0);
+                return;
+            }
+        }, 1);
 
-        ApiService.set($scope.product, ApiService.buildUrl("/products"), { show: "product_id,name" })
-        .then(
-        function (product) {
+        ApiService.set($scope.product, ApiService.buildUrl("/products"), { show: "product_id,name" }).then(function (product) {
             GrowlsService.addGrowl({ id: "add_success", name: product.name, type: "success", product_id: product.product_id, url: "#/products/" + product.product_id + "/edit" });
             utils.redirect($location, "/products");
         },
@@ -322,14 +348,16 @@ app.controller("ProductsSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
 
         prepareSubmit();
 
-        if ($scope.form.$invalid) {
-            window.scrollTo(0, 0);
-            return;
-        }
+        // The timeout prevents the form from showing as invalid after cleaning volume prices
+        setTimeout(function () {
+            if ($scope.form.$invalid) {
+                $scope.exception = { error: { message: gettextCatalog.getString("Please review and correct the fields highlighted below.") } };
+                window.scrollTo(0, 0);
+                return;
+            }
+        }, 1);
 
-        ApiService.set($scope.product, $scope.url, { show: "product_id,name" })
-        .then(
-        function (product) {
+        ApiService.set($scope.product, $scope.url, { show: "product_id,name" }).then(function (product) {
             GrowlsService.addGrowl({ id: "edit_success", name: product.name, type: "success", url: "#/products/" + product.product_id + "/edit" });
             utils.redirect($location, "/products");
         },
@@ -337,6 +365,25 @@ app.controller("ProductsSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
             window.scrollTo(0, 0);
             $scope.exception.error = error;
         });
+    }
+
+    function cleanVolumePrices() {
+
+        // If offer_volume_discounts is not selected, remove any volume prices
+        if ($scope.data.offer_volume_discounts == false) {
+            $scope.product.volume_prices = [];
+        }
+
+        // Remove any volume prices that are completely empty.
+        _.each($scope.product.volume_prices, function (range) {
+            range.prices = utils.removeEmptyPrices(range.prices);
+        });
+
+        // Remove any that have no values
+        $scope.product.volume_prices = _.reject($scope.product.volume_prices, function (i) {
+            return !i.low || i.prices.length == 0;
+        });
+
     }
 
     $scope.delete = function () {

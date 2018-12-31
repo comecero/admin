@@ -157,6 +157,20 @@
 
             <div class="row"></div>
 
+            <div class="col-md-6">
+                <div class="form-group" show-errors>
+                    <label for="max_gateway_attempts" class="control-label" translate>Maximum Gateway Attempts</label>
+                    <input type="tel" class="form-control" name="max_gateway_attempts" ng-model="settings.max_gateway_attempts" maxlength="3">
+                    <div>
+                        <p class="help-text" translate>
+                            If more than one gateway is able to process a particular payment, this field indicates how many gateways should attempt to process a payment in the event of a payment failure or decline. If you do not provide a value, all matching gateways will be attempted until a payment succeeds or all gateways have been attempted.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
             <div class="col-sm-12">
                 <div class="form-group">
                     <label class="checkbox-group-label" translate>Required Customer Fields</label>

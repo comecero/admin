@@ -65,6 +65,7 @@
                     <div class="col-xs-12 col-sm-6 panel-tight-row">
                         <div class="col-xs-12 col-md-4 panel-tight-section"><label translate>Billing Interval</label></div>
                         <div class="col-xs-12 col-md-8 panel-tight-section">
+                            <span ng-if="model.subscription.billing_interval_unit == 'minute'" translate translate-n="model.subscription.billing_interval" translate-plural="{{model.subscription.billing_interval}} minutes">{{model.subscription.billing_interval}} minute</span>
                             <span ng-if="model.subscription.billing_interval_unit == 'hour'" translate translate-n="model.subscription.billing_interval" translate-plural="{{model.subscription.billing_interval}} hours">{{model.subscription.billing_interval}} hour</span>
                             <span ng-if="model.subscription.billing_interval_unit == 'day'" translate translate-n="model.subscription.billing_interval" translate-plural="{{model.subscription.billing_interval}} days">{{model.subscription.billing_interval}} day</span>
                             <span ng-if="model.subscription.billing_interval_unit == 'month'" translate translate-n="model.subscription.billing_interval" translate-plural="{{model.subscription.billing_interval}} months">{{model.subscription.billing_interval}} month</span>
@@ -75,6 +76,7 @@
                     <div class="col-xs-12 col-sm-6 panel-tight-row">
                         <div class="col-xs-12 col-md-4 panel-tight-section"><label translate>Trial Interval</label></div>
                         <div class="col-xs-12 col-md-8 panel-tight-section">
+                            <span ng-if="model.subscription.trial_interval_unit == 'minute'" translate translate-n="model.subscription.trial_interval" translate-plural="{{model.subscription.trial_interval}} minute">{{model.subscription.trial_interval}} minute</span>
                             <span ng-if="model.subscription.trial_interval_unit == 'hour'" translate translate-n="model.subscription.trial_interval" translate-plural="{{model.subscription.trial_interval}} hours">{{model.subscription.trial_interval}} hour</span>
                             <span ng-if="model.subscription.trial_interval_unit == 'day'" translate translate-n="model.subscription.trial_interval" translate-plural="{{model.subscription.trial_interval}} days">{{model.subscription.trial_interval}} day</span>
                             <span ng-if="model.subscription.trial_interval_unit == 'month'" translate translate-n="model.subscription.trial_interval" translate-plural="{{model.subscription.trial_interval}} months">{{model.subscription.trial_interval}} month</span>
@@ -128,56 +130,69 @@
                 </div>
 
                 <div class="gridtable-header hidden-xs">
-                    <div class="col-sm-6"><label translate>Item</label></div>
+                    <div class="col-sm-4"><label translate>Item</label></div>
                     <div class="col-sm-2 text-right"><label translate>Quantity</label></div>
                     <div class="col-sm-2 text-right"><label translate>Price</label></div>
+                    <div class="col-sm-2 text-right"><label translate>Discount</label></div>
                     <div class="col-sm-2 text-right"><label translate>Currency</label></div>
                 </div>
 
                 <div class="gridtable-row" ng-repeat="item in model.subscription.items">
 
-                    <div class="col-xs-12 col-sm-6 wide-md">
+                    <div class="col-xs-12 col-sm-4 wide-md">
                         <div class="col-xs-5 hidden-sm hidden-md hidden-lg lbl"><label translate>Item</label></div>
-                        <div class="col-xs-7 col-sm-12 col-md-12 text-right-xs value">
+                        <div class="col-xs-7 col-sm-12 col-md-12 text-right-xs value" ng-class="{strike: item.cancelled}">
                             <a ng-if="item.product_id" ng-href="#/products/{{item.product_id}}/edit">{{item.name}}</a><span ng-if="!item.product_id">{{item.name}}</span>
                         </div>
                     </div>
 
                     <div class="col-xs-12 col-sm-2 wide-md">
                         <div class="col-xs-5 hidden-sm hidden-md hidden-lg lbl"><label translate>Quantity</label></div>
-                        <div class="col-xs-7 col-sm-12 text-right value">{{item.quantity}}</div>
+                        <div class="col-xs-7 col-sm-12 text-right value" ng-class="{strike: item.cancelled}">{{item.quantity}}</div>
                     </div>
 
                     <div class="col-xs-12 col-sm-2 wide-md">
                         <div class="col-xs-5 hidden-sm hidden-md hidden-lg lbl"><label translate>Price</label></div>
-                        <div class="col-xs-7 col-sm-12 text-right value">{{item.formatted.reference_price}}</span></div>
+                        <div class="col-xs-7 col-sm-12 text-right value" ng-class="{strike: item.cancelled}">{{item.formatted.reference_price}}</div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-2 wide-md">
+                        <div class="col-xs-5 hidden-sm hidden-md hidden-lg lbl"><label translate>Discount</label></div>
+                        <div class="col-xs-7 col-sm-12 text-right value" ng-class="{strike: item.cancelled}">{{item.formatted.reference_discount}}</div>
                     </div>
 
                     <div class="col-xs-12 col-sm-2 wide-md">
                         <div class="col-xs-5 hidden-sm hidden-md hidden-lg lbl"><label translate>Currency</label></div>
-                        <div class="col-xs-7 col-sm-12 text-right value">{{item.reference_currency}}</div>
+                        <div class="col-xs-7 col-sm-12 text-right value" ng-class="{strike: item.cancelled}">{{item.reference_currency}}</div>
                     </div>
 
-                    <div class="col-xs-12">
-                        <div class="col-xs-12 value text-sm"><em>{{item.subscription_terms.description}}</em></div>
+                    <div class="col-xs-12" style="padding-top: 5px">
+                        <div class="col-xs-12 value text-sm" ng-class="{strike: item.cancelled}"><em>{{item.subscription_terms.description}}</em></div>
                     </div>
 
-                </div>
-            </div>
+                    <div class="col-xs-12" style="padding-top: 0" ng-if="item.cancelled">
+                        <div class="col-xs-12 value text-sm">
+                            <em>This item was cancelled on {{item.date_ended | date:'shortDate'}}. </em>
+                            <em ng-if="item.cancellation_reason">Reason: {{item.cancellation_reason}}.</em>
+                        </div>
+                    </div>
 
-            <div class="panel" resource="promotions" method="read" ng-show="model.subscription.promotion">
-                <div class="panel-heading">
-                    <span class="panel-title" translate>Promotion</span>
-                </div>
-                <div class="panel-body panel-tight">
-                    <div class="col-xs-12 col-sm-6 panel-tight-row">
-                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Promotion ID</label></div>
-                        <div class="col-xs-12 col-md-8 panel-tight-section"><div><a ng-href="#/promotions/{{model.subscription.promotion.promotion_id}}/edit">{{model.subscription.promotion.promotion_id}}</a></div></div>
+                    <div class="col-xs-12" style="padding-top: 5px" ng-show="item.cancel_at_current_period_end == false && item.cancelled == false">
+                        <div class="col-xs-12">
+                            <span class="btn btn-danger btn btn-xs btn-right" cancel-subscription-item subscription="model.subscription" item="item" resource="subscriptions" method="update" translate>Cancel Item</span>
+                        </div>
                     </div>
-                    <div class="col-xs-12 col-sm-6 panel-tight-row">
-                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Name</label></div>
-                        <div class="col-xs-12 col-md-8 panel-tight-section">{{model.subscription.promotion.name}}</div>
+                    <div class="col-xs-12" style="padding-top: 5px" ng-show="item.cancel_at_current_period_end">
+                        <div class="col-xs-12">
+                            <div class="alert alert-warning spacer-b5 text-center">
+                                <div translate>
+                                    This item is scheduled to be cancelled on <strong>{{model.subscription.date_current_period_end | date:'shortDate'}}.</strong>
+                                </div>
+                                <div class="spacer-t5"><button class="btn btn-xs btn-danger" ng-click="uncancelItem(item)" translate>Remove Cancellation</button></div>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
             </div>
 
@@ -200,11 +215,6 @@
                     <div class="col-xs-12 col col-sm-6 panel-tight-row">
                         <div class="col-xs-12 col-md-4 panel-tight-section"><label>Email</label></div>
                         <div class="col-xs-12 col-md-8 panel-tight-section"><a href="mailto:{{model.subscription.customer.email}}">{{model.subscription.customer.email}}</a></div>
-                    </div>
-
-                    <div class="col-xs-12 col col-sm-6 panel-tight-row">
-                        <div class="col-xs-12 col-md-4 panel-tight-section"><label>Payment Method</label></div>
-                        <div class="col-xs-12 col-md-8 panel-tight-section text-capitalize">{{model.subscription.payment_method | replace: '_':' ' }}</div>
                     </div>
 
                 </div>

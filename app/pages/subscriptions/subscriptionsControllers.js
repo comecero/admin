@@ -28,7 +28,7 @@ app.controller("SubscriptionsViewCtrl", ['$scope', '$routeParams', '$location', 
     $scope.resources.invoiceListUrl = $scope.url + "/invoices";
 
     // Load the subscription
-    ApiService.getItem($scope.url, { expand: "subscription_plan,customer.payment_methods,items.subscription_terms,promotion", hide: "product.images", formatted: true }, {formatted: true}).then(function (subscription) {
+    ApiService.getItem($scope.url, { expand: "subscription_plan,customer.payment_methods,items.subscription_terms", formatted: true }, {formatted: true}).then(function (subscription) {
         $scope.model.subscription = subscription;
     }, function (error) {
         $scope.exception.error = error;
@@ -39,8 +39,19 @@ app.controller("SubscriptionsViewCtrl", ['$scope', '$routeParams', '$location', 
 
         var data = { cancel_at_current_period_end: false };
 
-        ApiService.set(data, $scope.url, { expand: "subscription_plan,customer.cards,product", hide: "product.images" }).then(function (subscription) {
+        ApiService.set(data, $scope.url, { expand: "subscription_plan,customer.payment_methods,items.subscription_terms", formatted: true }).then(function (subscription) {
             $scope.model.subscription = subscription;
+
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
+    $scope.uncancelItem = function (item) {
+
+        ApiService.set(null, item.url + "/uncancel", { expand: "subscription.subscription_plan,subscription.customer.payment_methods,subscription.items.subscription_terms", formatted: true }).then(function (item) {
+            $scope.model.subscription = item.subscription;
 
         }, function (error) {
             $scope.exception.error = error;

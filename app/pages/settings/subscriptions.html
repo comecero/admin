@@ -122,6 +122,36 @@
                     </div>
                 </div>
             </div> 
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label class="radio-group-label" translate>Send Receipt on Renewal</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="receipt_on_renewal-1" class="radio" name="receipt_on_renewal" ng-model="settings.receipt_on_renewal" ng-value="true" required>
+                        <label for="receipt_on_renewal-1" class="radio-label">Yes</label>
+                        <input type="radio" id="receipt_on_renewal-2" class="radio" name="receipt_on_renewal" ng-model="settings.receipt_on_renewal" ng-value="false" required>
+                        <label for="receipt_on_renewal-2" class="radio-label">No</label>
+                    </div>
+                    <div>
+                        <p class="help-text" translate>Indicates if a receipt should be sent to the customer upon each subscription renewal.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label class="radio-group-label" translate>Fulfill Digital Items on Renewal</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="digital_delivery_on_renewal-1" class="radio" name="digital_delivery_on_renewal" ng-model="settings.digital_delivery_on_renewal" ng-value="true" required>
+                        <label for="digital_delivery_on_renewal-1" class="radio-label">Yes</label>
+                        <input type="radio" id="digital_delivery_on_renewal-2" class="radio" name="digital_delivery_on_renewal" ng-model="settings.digital_delivery_on_renewal" ng-value="false" required>
+                        <label for="digital_delivery_on_renewal-2" class="radio-label">No</label>
+                    </div>
+                    <div>
+                        <p class="help-text" translate>If a subscription contains a product with a license service or download, indicates if the digital items should be re-fulfilled on each renewal.</p>
+                    </div>
+                </div>
+            </div>
             
              <div class="col-sm-12">
                 <div class="form-group" show-errors>

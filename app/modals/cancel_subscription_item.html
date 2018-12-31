@@ -1,7 +1,7 @@
 ﻿<div class="modal-content">
     <div class="modal-header">
         <button type="button" class="close" ng-click="subscription_cancel.cancel()">×</button>
-        <h4 class="modal-title"><i class="fa fa-ban"></i> <span translate>Cancel Subscription</span></h4>
+        <h4 class="modal-title"><i class="fa fa-ban"></i> <span translate>Cancel Item</span></h4>
     </div>
     <form name="form">
         <div class="modal-body">
@@ -14,6 +14,15 @@
             </div>
 
             <div class="col-xs-12">
+                <div class="form-group">
+                    <label class="radio-group-label" translate>Item</label>
+                    <div>
+                        {{item.name}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
                 <div class="form-group" show-errors>
                     <label for="cancellation_reason" class="control-label" translate>Reason</label>
                     <div ng-if="cancellation_reasons.length > 0">
@@ -23,7 +32,7 @@
                     <p class="help-block hidden fadeInDown" translate>Please provide a reason</p>
                 </div>
             </div>
-            
+
             <div class="col-xs-12">
                 <div class="form-group">
                     <label class="radio-group-label" translate>When?</label>
@@ -46,7 +55,7 @@
             <span translate>Cancel</span>
         </button>
         <button type="button" class="btn btn-primary" ng-click="subscription_cancel.ok(form)">
-            <span translate>Cancel Subscription</span>
+            <span translate>Cancel Item</span>
         </button>
     </div>
 </div>

@@ -1,5 +1,13 @@
 ﻿# Admin Change Log #
 
+<a name="1.4.2"></a>
+# 1.4.2
+
+- Bug fix showing items tab by default for refund and captures
+- Add option to allow public access to test orders
+
+- Allow
+
 <a name="1.4.1"></a>
 # 1.4.1
 

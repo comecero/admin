@@ -1,4 +1,4 @@
-﻿    <div class="modal-content">
+﻿<div class="modal-content">
     <div class="modal-header">
         <button type="button" class="close" ng-click="shipItems.cancel()">×</button>
         <h4 class="modal-title" id="myModalLabel"><i class="fa fa-truck"></i> <span translate>Ship Items</span></h4>
@@ -13,7 +13,6 @@
 
             <div class="row" ng-repeat="shipment in shipItems.shipments" ng-if="!shipItems.isFulfilled(shipment)">
                 <ng-form name="items" novalidate>
-
                     <div class="col-sm-12">
                         <div class="form-group no-margin-hr" ng-class="{ 'has-error': items.quantity.$invalid && (items.quantity.$dirty || form.$submitted) }">
                             <label class="control-label">{{shipment.name}}</label>
@@ -28,7 +27,6 @@
                             <p class="help-block col-sm-3 fadeInDown" ng-show="items.quantity.$invalid && (items.quantity.$dirty || form.$submitted)" translate>Please enter a valid quantity</p>
                         </div>
                     </div>
-
                 </ng-form>
             </div>
 

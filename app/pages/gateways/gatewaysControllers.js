@@ -46,42 +46,28 @@ app.controller("GatewaysListCtrl", ['$scope', '$routeParams', '$location', '$q',
 
     $scope.setActive = function (active) {
 
+        $scope.exception = {};
+
         // Find the checked items
         var items = _.where($scope.gateways.gatewayList.data, { checked: true });
 
-        // Keep track of the items that succeed and fail
-        $scope.successItems = [];
-        $scope.failItems = [];
+        var max = 15;
+        if (items.length > max) {
+            $scope.exception = { error: { message: "You can select a maximum of " + max + " items to bulk update." } };
+            return;
+        }
 
-        // Loop through the checked ones and update.
-        var defer = $q.defer();
-        var promises = [];
-
-        _.each(items, function (gateway) {
-            // We slim the request by trimming the resource since we're only modifying a couple properties.
-            promises.push(ApiService.set({ gateway_id: gateway.gateway_id, active: active }, gateway.url).then(function (data) {
-                gateway.active = data.active;
-                $scope.successItems.push(gateway);
-            }, function (error) {
-                $scope.failItems.push(gateway);
-                GrowlsService.addGrowl({ id: "active_change_failure", "name": gateway.name, type: "danger" });
-            }));
+        var chain = $q.when();
+        _.each(items, function (item) {
+            chain = chain.then(function () {
+                return ApiService.set({ active: active }, item.url).then(function (data) {
+                    item.active = data.active;
+                }, function (error) {
+                    GrowlsService.addGrowl({ id: "active_change_failure", "name": item.name, type: "danger" });
+                });
+            });
         });
 
-        $q.all(promises).then(complete);
-
-        function complete() {
-
-            if ($scope.successItems.length > 0) {
-                if (active == true) {
-                    GrowlsService.addGrowl({ id: "activate_success", count: $scope.successItems.length });
-
-                } else {
-                    GrowlsService.addGrowl({ id: "inactivate_success", count: $scope.successItems.length });
-        }
-    }
-
-}
     }
 
     $scope.setParam = function (param, value) {
@@ -212,7 +198,7 @@ app.controller("GatewaysSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
         $scope.add = true;
 
         // Set defaults
-        $scope.gateway = { active: false, payment_method_type: "credit_card", currencies: [], card_types: [], fields: {} };
+        $scope.gateway = { active: false, currencies: [], card_types: [], fields: {}, weight: 1 };
 
         // Get the gateway options object
         ApiService.getItem(ApiService.buildUrl("/gateways/options")).then(function (gatewayOptions) {
@@ -285,9 +271,7 @@ app.controller("GatewaysSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
             return;
         }
 
-        ApiService.set($scope.gateway, $scope.url, { show: "gateway_id,name" })
-        .then(
-        function (gateway) {
+        ApiService.set($scope.gateway, $scope.url, { show: "gateway_id,name" }).then(function (gateway) {
             GrowlsService.addGrowl({ id: "edit_success", name: gateway.name, type: "success", url: "#/gateways/" + gateway.gateway_id + "/edit" });
 
             // Refresh the account meta since a gateway currency may have changed
@@ -304,7 +288,7 @@ app.controller("GatewaysSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
     $scope.loadGatewayConfig = function (provider_id) {
 
         $scope.gateway_config = _.findWhere($scope.gateway_configs, { provider_id: $scope.gateway.provider_id });
-        
+
         if ($scope.gateway_config.payment_method_types.length == 1) {
             $scope.gateway.payment_method_type = $scope.gateway_config.payment_method_types[0];
         }

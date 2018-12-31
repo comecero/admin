@@ -23,6 +23,10 @@ app.controller("PricingSettingsCtrl", ['$scope', '$routeParams', '$location', 'G
             rule.markup_percentage_value = utils.decimalToPercent(rule.markup_percentage);
         });
 
+        _.each(settings.reseller_currency_markup_rules, function (rule) {
+            rule.markup_percentage_value = utils.decimalToPercent(rule.markup_percentage);
+        });
+
         $scope.settings = settings;
 
     }, function (error) {
@@ -95,6 +99,10 @@ app.controller("PricingSettingsCtrl", ['$scope', '$routeParams', '$location', 'G
         });
 
         _.each(settingsCopy.currency_markup_rules, function (rule) {
+            rule.markup_percentage = rule.markup_percentage_value / 100;
+        });
+
+        _.each(settingsCopy.reseller_currency_markup_rules, function (rule) {
             rule.markup_percentage = rule.markup_percentage_value / 100;
         });
 

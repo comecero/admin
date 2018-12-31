@@ -1146,10 +1146,7 @@ app.directive('refund', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
                 });
 
                 // Determine the active tab
-                scope.refundTabs = [
-                  { active: true },
-                  { active: false }
-                ];
+                scope.activeTab = 0;
                 scope.showItemsTab = true;
 
                 // We will derive our refund items from the order items.
@@ -1167,10 +1164,7 @@ app.directive('refund', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
                     scope.refund.items.push(item);
 
                     if (scope.refund.items.length == 0) {
-                        scope.refundTabs = [
-                          { active: false },
-                          { active: true }
-                        ];
+                        scope.activeTab = 1;
                         scope.showItemsTab = false;
                     };
 
@@ -1440,10 +1434,7 @@ app.directive('refund', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
                 });
 
                 if (itemLessThan == false) {
-                    scope.refundTabs = [
-                      { active: false },
-                      { active: true }
-                    ];
+                    scope.activeTab = 1;
                     scope.showItemsTab = false;
                 }
 
@@ -2058,6 +2049,11 @@ app.directive('cancelSubscription', ['ApiService', 'ConfirmService', 'GrowlsServ
                     // Clear any previous errors
                     scope.modalError = null;
 
+                    if (form.$invalid) {
+                        scope.modalError = { message: "Please select a reason" };
+                        return;
+                    }
+
                     var confirm = { id: "cancel_subscription" };
                     confirm.onConfirm = function () {
                         execute();
@@ -2077,13 +2073,123 @@ app.directive('cancelSubscription', ['ApiService', 'ConfirmService', 'GrowlsServ
                         request.status = "cancelled";
                     }
 
+                    request.cancellation_reason = scope.subscription_cancel.request.cancellation_reason;
+
                     // Cancel the subscription
-                    ApiService.set(request, scope.subscription.url, { expand: "subscription_plan,customer,product" })
+                    ApiService.set(request, scope.subscription.url, { expand: "subscription_plan,customer.payment_methods,items.subscription_terms", formatted: true })
                     .then(
                     function (subscription) {
                         scope.subscription = subscription;
                         subscriptionModal.dismiss();
                         GrowlsService.addGrowl({ id: "subscription_cancel_success", type: "success" });
+                    },
+                    function (error) {
+                        window.scrollTo(0, 0);
+                        scope.modalError = error;
+                    });
+                }
+
+                scope.subscription_cancel.cancel = function () {
+                    subscriptionModal.dismiss();
+                };
+
+            });
+        }
+    };
+}]);
+
+
+app.directive('cancelSubscriptionItem', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibModal', function (ApiService, ConfirmService, GrowlsService, $uibModal) {
+    return {
+        restrict: 'A',
+        scope: {
+            subscription: '=?',
+            item: '=?'
+        },
+        link: function (scope, elem, attrs, ctrl) {
+
+            // Hide by default
+            elem.hide();
+
+            // Watch to see if you should show or hide the button
+            scope.$watch('item', function () {
+                if (scope.item) {
+                    if (scope.item.cancelled == false && scope.item.cancel_at_current_period_end == false) {
+                        elem.show();
+                    } else {
+                        elem.hide();
+                    }
+                }
+            }, true);
+
+            elem.click(function () {
+
+                // Set defaults
+                scope.subscription_cancel = {};
+                scope.subscription_cancel.request = {};
+                scope.subscription_cancel.request.cancel_at_current_period_end = true;
+                scope.subscription_cancel.request.cancellation_reason = null;
+                scope.cancellation_reasons = [];
+
+                // Get the subscription cancellation reasons
+                ApiService.getItem(ApiService.buildUrl("/subscriptions/options")).then(function (data) {
+                    scope.cancellation_reasons = data.cancellation_reasons;
+                },
+                function (error) {
+                    window.scrollTo(0, 0);
+                    scope.modalError = error;
+                });
+
+                var subscriptionModal = $uibModal.open({
+                    size: "lg",
+                    templateUrl: "app/modals/cancel_subscription_item.html",
+                    scope: scope
+                });
+
+                // Handle when the modal is closed or dismissed
+                subscriptionModal.result.then(function (result) {
+                    // Clear out any error messasges
+                    scope.modalError = null;
+                }, function () {
+                    scope.modalError = null;
+                });
+
+                scope.subscription_cancel.ok = function (form) {
+
+                    // Clear any previous errors
+                    scope.modalError = null;
+
+                    if (form.$invalid) {
+                        scope.modalError = { message: "Please select a reason" };
+                        return;
+                    }
+
+                    var confirm = { id: "cancel_subscription_item" };
+                    confirm.onConfirm = function () {
+                        execute();
+                    }
+
+                    ConfirmService.showConfirm(scope, confirm);
+
+                };
+
+                var execute = function () {
+
+                    // If cancel at period end is false, set the status to cancelled.
+                    var request = {};
+                    if (scope.subscription_cancel.request.cancel_at_current_period_end == true) {
+                        request.cancel_at_current_period_end = true;
+                    } else {
+                        request.cancel_at_current_period_end = false;
+                    }
+
+                    request.cancellation_reason = scope.subscription_cancel.request.cancellation_reason;
+
+                    // Cancel the subscription item.
+                    ApiService.set(request, scope.item.url + "/cancel", { expand: "subscription.subscription_plan,subscription.customer.payment_methods,subscription.items.subscription_terms", formatted: true }).then(function (item) {
+                        scope.subscription = item.subscription;
+                        subscriptionModal.dismiss();
+                        GrowlsService.addGrowl({ id: "subscription_item_cancel_success", type: "success", name: item.name });
                     },
                     function (error) {
                         window.scrollTo(0, 0);
@@ -2141,6 +2247,7 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
             scope.userParams = {};
             scope.settings = {};
             var default_sort = null;
+            var default_desc = true;
 
             // Establish what you need in your response based on the object type. If not configured things will still work but your response payload will be much heavier than necessary.
             var baseParams = scope.params || {};
@@ -2152,9 +2259,9 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
                     default_sort = "date_created";
                 }
                 if (attrs.type == "subscription") {
-                    baseParams.show = "subscription_id,subscription_plan.name,subscription_plan.subscription_plan_id,reference_price,reference_currency,status,item.name,item.product.product_id,date_modified,in_grace_period;";
+                    baseParams.show = "subscription_id,subscription_plan.name,subscription_plan.subscription_plan_id,status,date_current_period_start,date_current_period_end,date_created,date_modified,date_ended,in_grace_period;";
                     baseParams.expand = "subscription_plan";
-                    default_sort = "date_modified";
+                    default_sort = "date_created";
                 }
                 if (attrs.type == "payment") {
                     baseParams.show = "payment_id,date_created,date_modified,status,success,total,currency";
@@ -2185,7 +2292,7 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
                     baseParams.show = "name,app_installation_id,alias,platform_hosted,date_created,image_url,short_description,info_url,launch_url,settings_fields,style_fields,version,is_default_version,updated_version_available,current_app_version,install_url,platform_hosted,location_url";
                     baseParams.expand = "images";
                     default_sort = "name";
-                    scope.userParams.desc = false;
+                    default_desc = false;
                 }
                 if (attrs.type == "notification") {
                     baseParams.show = "notification_id,date_created,type,status";
@@ -2273,7 +2380,12 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
                     }
                 }
 
-                if (scope.userParams.desc == null) {
+                if (scope.userParams.desc === null || scope.userParams.desc === undefined) {
+                    scope.userParams.desc = default_desc;
+                }
+
+                // If still null
+                if (scope.userParams.desc === null || scope.userParams.desc === undefined) {
                     scope.userParams.desc = true;
                 }
 
@@ -2322,6 +2434,29 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
 
                 // Set this param
                 scope.userParams[param] = value;
+
+                // Set defaults for unpopulated userParams
+                setDefaultParams();
+
+                // If embedded, don't mess with the parent's query string parameters.
+                if (attrs.embedded == false) {
+                    $location.search(scope.userParams);
+                } else {
+                    refresh(false);
+                }
+
+            }
+
+            scope.setParams = function (kvp) {
+
+                // Reset all userParams
+                resetParams();
+
+                for (var property in kvp) {
+                    if (kvp.hasOwnProperty(property)) {
+                        scope.userParams[property] = kvp[property];
+                    }
+                }
 
                 // Set defaults for unpopulated userParams
                 setDefaultParams();
