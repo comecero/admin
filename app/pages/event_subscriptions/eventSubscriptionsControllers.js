@@ -119,6 +119,7 @@ app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$locatio
     { name: "Order Licenses Assigned", code: "order:licenses_assigned" },
     { name: "Order Payment Completed", code: "order:payment_completed" },
     { name: "Order Fulfilled", code: "order:fulfilled" },
+    { name: "Payment Completed", code: "payment:completed" },
     { name: "Payment Created Success", code: "payment:created_success" },
     { name: "Payment Created Failure", code: "payment:created_failure" },
     { name: "Payment Captured Success", code: "payment:captured_success" },
