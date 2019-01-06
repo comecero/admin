@@ -2746,6 +2746,12 @@ p.no-info {
   text-align: center;
   margin: 30px 0 30px 0;
 }
+p.no-info-short {
+  color: #bab9b9;
+  font-size: 18px;
+  text-align: center;
+  margin: 10px 0 10px 0;
+}
 /* Classes to give sizes to icons */
 .fa-2 {
   font-size: 2em !important;
@@ -3229,4 +3235,7 @@ table.data th {
 }
 .strike {
   text-decoration: line-through;
+}
+.text-xl {
+  font-size: 24px;
 }

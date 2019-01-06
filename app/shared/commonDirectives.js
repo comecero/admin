@@ -1113,8 +1113,15 @@ app.directive('refund', ['ApiService', 'ConfirmService', 'HelperService', 'Growl
 
             elem.click(function () {
 
+                var currency = "";
+                if (scope.payment) {
+                    currency = scope.payment.currency;
+                } else if (scope.order) {
+                    currency = scope.order.currency;
+                }
+
                 // Set defaults
-                scope.refund = {};
+                scope.refund = { currency: currency };
                 scope.refund.disabled = false;
                 scope.refund.reason = null;
                 scope.refund.reasons = [];
@@ -2289,6 +2296,9 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
             var baseParams = scope.params || {};
 
             if (!scope.params) {
+
+                baseParams.formatted = true;
+
                 if (attrs.type == "order") {
                     baseParams.show = "date_created,order_id,fulfilled,total,payment_status,currency";
                     default_sort = "date_created";
@@ -2331,6 +2341,12 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
                 }
                 if (attrs.type == "notification") {
                     baseParams.show = "notification_id,date_created,type,status";
+                    baseParams.limit = 25;
+                    default_sort = "date_created";
+                }
+                if (attrs.type == "balance_transactions") {
+                    baseParams.show = "customer_balance_transaction_id,date_created,amount,memo,payment.payment_id,refund.refund_id,currency";
+                    baseParams.expand = "payment,refund";
                     baseParams.limit = 25;
                     default_sort = "date_created";
                 }

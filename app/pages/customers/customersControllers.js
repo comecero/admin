@@ -1,6 +1,4 @@
 
-//#region Customers
-
 app.controller("CustomersListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
 
     // Establish your scope containers
@@ -141,7 +139,7 @@ app.controller("CustomersViewCtrl", ['$scope', '$routeParams', '$location', 'Gro
     $scope.resources.invoiceListUrl = $scope.url + "/invoices";
 
     // Load the customer
-    ApiService.getItem($scope.url, { expand: "payment_methods" }).then(function (customer) {
+    ApiService.getItem($scope.url, { expand: "payment_methods,balance", formatted: true }).then(function (customer) {
 
         $scope.customer = customer;
         $scope.payment_methods = customer.payment_methods;
@@ -166,7 +164,22 @@ app.controller("CustomersViewCtrl", ['$scope', '$routeParams', '$location', 'Gro
 
 }]);
 
-//#endregion Customers
+app.controller("CustomersBalanceCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'GeographiesService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, GeographiesService) {
 
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/customers/" + $routeParams.id);
+    $scope.resources = { transactionListUrl: ApiService.buildUrl("/customers/" + $routeParams.id + "/balance/transactions") };
+
+    // Load the customer
+    ApiService.getItem($scope.url, { expand: "balance", formatted: true }).then(function (customer) {
+
+        $scope.customer = customer;
+
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+}]);
 
 

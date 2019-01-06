@@ -83,6 +83,15 @@
                 </div>
             </div>
 
+            <div class="panel" ng-if="cart.order">
+                <div class="panel-heading">
+                    <span class="panel-title" translate>Order</span>
+                </div>
+                <div class="panel-body">
+                    <div><span translate>Order ID:</span> <a ng-href="#/orders/{{cart.order_id}}">{{cart.order_id}}</a></div>
+                </div>
+            </div>
+
             <div meta-to-html="{{cart.meta}}"></div>
 
             <div class="col-xs-12 padding-l0 padding-r0">
