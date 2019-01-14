@@ -2640,7 +2640,7 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
                     default_sort = "date_created";
                 }
                 if (attrs.type == "balance_transactions") {
-                    baseParams.show = "customer_balance_transaction_id,date_created,amount,memo,payment.payment_id,refund.refund_id,currency";
+                    baseParams.show = "customer_balance_transaction_id,date_created,amount,current_balance,memo,payment.payment_id,refund.refund_id,currency";
                     baseParams.expand = "payment,refund";
                     baseParams.limit = 25;
                     default_sort = "date_created";

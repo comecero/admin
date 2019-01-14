@@ -1637,6 +1637,7 @@ app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$locatio
     { name: "Event Subscription Deleted", code: "event_subscription:deleted" },
     { name: "License Service Low Licenses", code: "license_service:low_licenses" },
     { name: "Invoice Created", code: "invoice:created" },
+    { name: "Invoice Published", code: "invoice:published" },
     { name: "Invoice Paid", code: "invoice:paid" },
     { name: "Invoice Payment Completed", code: "invoice:payment_completed" },
     { name: "Order Created", code: "order:created" },
