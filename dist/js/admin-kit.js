@@ -5907,8 +5907,8 @@ app.service("TimezonesService", [function () {
 
 }]);
 
-app.service("EventTypesService",
-    function() {
+
+app.service("EventTypesService", [function() {
       var getEventsTypes = function() {
         return [
             { name: "Account Modified", code: "account:modified" },
@@ -5946,7 +5946,9 @@ app.service("EventTypesService",
             { name: "Shipment Deleted", code: "shipment:deleted" },
             { name: "Subscription Created", code: "subscription:created" },
             { name: "Subscription Cancelled", code: "subscription:cancelled" },
+            { name: "Subscription Item Added", code: "subscription_item:added" },
             { name: "Subscription Item Cancelled", code: "subscription_item:cancelled" },
+            { name: "Subscription Item Modified", code: "subscription_item:modified" },
             { name: "Subscription Completed", code: "subscription:completed" },
             { name: "Subscription Converted", code: "subscription:converted" },
             { name: "Subscription Renewal Success", code: "subscription:renewal_success" },
@@ -5958,7 +5960,8 @@ app.service("EventTypesService",
         getEventsTypes: getEventsTypes
       }
     }
-);
+]);
+
 
 app.service("HelperService", ['SettingsService', function (SettingsService) {
 
