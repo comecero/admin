@@ -115,8 +115,11 @@ app.controller("EventTestTemplatesSetCtrl", ['$scope', '$rootScope', '$routePara
         // Load the service
         ApiService.getItem($scope.url).then(function (eventTestTemplate) {
             $scope.eventTestTemplate = eventTestTemplate;
-            var data = JSON.stringify($scope.eventTestTemplate.data, undefined, 2);
-            $scope.payloadJSON = data;
+            $scope.payloadJSON = null;
+            if (eventTestTemplate.payload && eventTestTemplate.payload != null) {
+              var payload = JSON.stringify(eventTestTemplate.payload, undefined, 2);
+              $scope.payloadJSON = payload;
+            }
             $scope.update = $rootScope.account.account_id == eventTestTemplate.account_id;
         }, function (error) {
             $scope.exception.error = error;
@@ -142,30 +145,14 @@ app.controller("EventTestTemplatesSetCtrl", ['$scope', '$rootScope', '$routePara
         $scope.exception.error = null;
 
         try {
-          var data = JSON.parse($scope.payloadJSON);
-          $scope.eventTestTemplate.data = data;
+          var payload = JSON.parse($scope.payloadJSON);
+          $scope.eventTestTemplate.payload = payload;
           $scope.form.$setValidity("payloadJSON", true);
         } catch(err) {
           $scope.form.$setValidity("payloadJSON", false);
           $scope.exception.error = "Event Test Template payload must be valid JSON.";
         }
     }
-
-    $scope.suggestEventResource = function() {
-      var suggest = $scope.eventTestTemplate.event_type.replace(/:.*/, '');
-      if (suggest[suggest.length-1] != 's') suggest += 's';
-      $scope.eventTestTemplate.event_resource = suggest;
-    };
-
-    $scope.suggestPayload = function() {
-        var template = $scope.eventTestTemplate;
-        if (!template.event_resource || !template.event_resource_id) return; // Don't suggest yet.
-        if ($scope.payloadJSON) return;  // Already filled. don't suggest anything.
-
-        var suggest = { object: template.event_resource.replace(/s$/,'') };
-        suggest[template.event_resource.replace(/s$/,'_id')] = template.event_resource_id;
-        $scope.payloadJSON = JSON.stringify(suggest, undefined, 2);
-    };
 
     $scope.done = function() {
         utils.redirect($location, "/event_test_templates");
@@ -250,8 +237,6 @@ app.controller("EventTestTemplatesSetCtrl", ['$scope', '$rootScope', '$routePara
         'name': 'Copy ' + $scope.eventTestTemplate.name,
         'event_type': $scope.eventTestTemplate.event_type,
         'event_expand': $scope.eventTestTemplate.event_expand,
-        'event_resource': $scope.eventTestTemplate.event_resource,
-        'event_resource_id': $scope.eventTestTemplate.event_resource_id,
         'payloadJSON': $scope.payloadJSON,
       };
       utils.redirect($location, "/event_test_templates/add");
