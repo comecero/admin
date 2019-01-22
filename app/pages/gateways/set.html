@@ -29,24 +29,30 @@
             </div>
 
             <div class="col-md-6 col-xs-12" ng-show="add && gateway_config.payment_method_types.length > 1">
-                <div class="form-group" show-errors>
-                    <label for="payment_method_type" class="control-label" translate>Payment Method</label>
-                    <select class="form-control text-capitalize" name="payment_method_type" ng-model="gateway.payment_method_type" ng-options="payment_method_type as (payment_method_type | replace: '_':' ' ) for payment_method_type in gateway_config.payment_method_types" required></select>
+                <div class="form-group">
+                    <label for="payment_method_types" class="control-label" translate>Payment Methods</label>
+                    <div class="checkbox-group inline">
+                        <div class="row"></div>
+                        <div ng-repeat="type in gateway_config.payment_method_types" class="col-xs-12 col-sm-12 col-md-6 spacer-b10">
+                            <input type="checkbox" name="type{{type}}" id="type{{type}}" class="checkbox"  ng-click="togglePaymentMethod(gateway, type)">
+                            <label for="type{{type}}" class="checkbox-label text-capitalize">{{type | replace: '_':' ' }}</label>
+                        </div>
+                    </div>
                     <p class="help-block hidden fadeInDown" translate>Please provide a payment method</p>
                 </div>
             </div>
 
             <div class="col-md-6 col-xs-12" ng-show="add && gateway_config.payment_method_types.length == 1">
                 <div class="form-group">
-                    <label for="payment_method_type" class="control-label" translate>Payment Method</label>
+                    <label for="payment_method_types" class="control-label" translate>Payment Methods</label>
                     <div class="text-capitalize">{{gateway_config.payment_method_types[0] | replace: '_':' ' }}</div>
                 </div>
             </div>
 
             <div class="col-md-6 col-xs-12" ng-show="update">
                 <div class="form-group">
-                    <label for="payment_method_type" class="control-label" translate>Payment Method</label>
-                    <div class="text-capitalize">{{gateway.payment_method_type | replace: '_':' ' }}</div>
+                    <label for="payment_method_types" class="control-label" translate>Payment Methods</label>
+                    <div class="text-capitalize">{{gateway.payment_method_types.join(', ') | replace: '_':' ' }}</div>
                 </div>
             </div>
 
@@ -61,7 +67,7 @@
                 </div>
             </div>
 
-            <div class="col-xs-12" ng-show="gateway.payment_method_type == 'credit_card'">
+            <div class="col-xs-12" ng-show="isPaymentMethodSelected(gateway,'credit_card')">
                 <div class="form-group">
                     <span ng-repeat="card_type in models.selectedCardTypes">
                         <span href="#" class="label label-success label-lg">{{card_type}}<i class="fa fa-times-circle pointer spacer-l20" ng-click="removeCardType(card_type)"></i></span>
