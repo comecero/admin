@@ -1947,8 +1947,11 @@ app.controller("EventTestTemplatesSetCtrl", ['$scope', '$rootScope', '$routePara
         // Load the service
         ApiService.getItem($scope.url).then(function (eventTestTemplate) {
             $scope.eventTestTemplate = eventTestTemplate;
-            var data = JSON.stringify($scope.eventTestTemplate.data, undefined, 2);
-            $scope.payloadJSON = data;
+            $scope.payloadJSON = null;
+            if (eventTestTemplate.payload && eventTestTemplate.payload != null) {
+              var payload = JSON.stringify(eventTestTemplate.payload, undefined, 2);
+              $scope.payloadJSON = payload;
+            }
             $scope.update = $rootScope.account.account_id == eventTestTemplate.account_id;
         }, function (error) {
             $scope.exception.error = error;
@@ -1974,30 +1977,14 @@ app.controller("EventTestTemplatesSetCtrl", ['$scope', '$rootScope', '$routePara
         $scope.exception.error = null;
 
         try {
-          var data = JSON.parse($scope.payloadJSON);
-          $scope.eventTestTemplate.data = data;
+          var payload = JSON.parse($scope.payloadJSON);
+          $scope.eventTestTemplate.payload = payload;
           $scope.form.$setValidity("payloadJSON", true);
         } catch(err) {
           $scope.form.$setValidity("payloadJSON", false);
           $scope.exception.error = "Event Test Template payload must be valid JSON.";
         }
     }
-
-    $scope.suggestEventResource = function() {
-      var suggest = $scope.eventTestTemplate.event_type.replace(/:.*/, '');
-      if (suggest[suggest.length-1] != 's') suggest += 's';
-      $scope.eventTestTemplate.event_resource = suggest;
-    };
-
-    $scope.suggestPayload = function() {
-        var template = $scope.eventTestTemplate;
-        if (!template.event_resource || !template.event_resource_id) return; // Don't suggest yet.
-        if ($scope.payloadJSON) return;  // Already filled. don't suggest anything.
-
-        var suggest = { object: template.event_resource.replace(/s$/,'') };
-        suggest[template.event_resource.replace(/s$/,'_id')] = template.event_resource_id;
-        $scope.payloadJSON = JSON.stringify(suggest, undefined, 2);
-    };
 
     $scope.done = function() {
         utils.redirect($location, "/event_test_templates");
@@ -2082,8 +2069,6 @@ app.controller("EventTestTemplatesSetCtrl", ['$scope', '$rootScope', '$routePara
         'name': 'Copy ' + $scope.eventTestTemplate.name,
         'event_type': $scope.eventTestTemplate.event_type,
         'event_expand': $scope.eventTestTemplate.event_expand,
-        'event_resource': $scope.eventTestTemplate.event_resource,
-        'event_resource_id': $scope.eventTestTemplate.event_resource_id,
         'payloadJSON': $scope.payloadJSON,
       };
       utils.redirect($location, "/event_test_templates/add");
@@ -2422,7 +2407,7 @@ app.controller("GatewaysListCtrl", ['$scope', '$routeParams', '$location', '$q',
 
     $scope.loadGateways = function () {
 
-        ApiService.getList(ApiService.buildUrl("/gateways?show=gateway_id,name,active,payment_method_type,date_created&sort_by=" + $scope.params.sort_by + "&desc=" + $scope.params.desc), $scope.params).then(function (result) {
+        ApiService.getList(ApiService.buildUrl("/gateways?show=gateway_id,name,active,payment_method_types,date_created&sort_by=" + $scope.params.sort_by + "&desc=" + $scope.params.desc), $scope.params).then(function (result) {
             $scope.gateways.gatewayList = result;
             $scope.gatewaysChecked = false;
 
@@ -2599,7 +2584,6 @@ app.controller("GatewaysSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
         ApiService.getItem(ApiService.buildUrl("/gateways/options")).then(function (gatewayOptions) {
 
             $scope.gateway_configs = gatewayOptions.gateway_configs;
-            //$scope.payment_method_types = _.uniq(_.pluck($scope.gateway_configs, "payment_method_type"));
             $scope.currencies = gatewayOptions.currencies;
             $scope.card_types = gatewayOptions.card_types;
 
@@ -2685,7 +2669,7 @@ app.controller("GatewaysSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
         $scope.gateway_config = _.findWhere($scope.gateway_configs, { provider_id: $scope.gateway.provider_id });
 
         if ($scope.gateway_config.payment_method_types.length == 1) {
-            $scope.gateway.payment_method_type = $scope.gateway_config.payment_method_types[0];
+            $scope.gateway.payment_method_types = angular.copy($scope.gateway_config.payment_method_types);
         }
 
         $scope.loadFields(provider_id);
@@ -2739,15 +2723,24 @@ app.controller("GatewaysSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
     }
 
     $scope.supportsCreditCard = function (gateway) {
+        return $scope.isPaymentMethodSelected(gateway, "credit_card");
+    }
 
-        if (gateway) {
-            if (gateway.payment_method_type == "credit_card") {
-                return true;
-            }
+    $scope.isPaymentMethodSelected = function (gateway, payment_method) {
+        if (gateway && angular.isArray(gateway.payment_method_types)) {
+            return gateway.payment_method_types.indexOf(payment_method) >= 0;
         }
-
         return false;
+    }
 
+    $scope.togglePaymentMethod = function (gateway, payment_method) {
+        if (!angular.isArray(gateway.payment_method_types)) gateway.payment_method_types = [];
+        var idx = gateway.payment_method_types.indexOf(payment_method);
+        if (idx >= 0) {
+            gateway.payment_method_types.splice(idx, 1);
+        } else {
+            gateway.payment_method_types.push(payment_method);
+        }
     }
 
     $scope.confirmDelete = function () {

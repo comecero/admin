@@ -44,20 +44,9 @@
                 <div class="form-group" show-errors>
                     <label for="event_expand" class="control-label" translate>Event Expand</label>
                     <input type="text" class="form-control" name="event_expand " ng-model="eventTestTemplate.event_expand">
-                </div>
-            </div>
-
-            <div class="col-xs-12">
-                <div class="form-group" show-errors>
-                    <label for="event_resource" class="control-label" translate>Resource</label>
-                    <input type="text" class="form-control" name="event_resource " ng-model="eventTestTemplate.event_resource" ng-blur="suggestPayload();" required>
-                </div>
-            </div>
-
-            <div class="col-xs-12">
-                <div class="form-group" show-errors>
-                    <label for="event_resource_id" class="control-label" translate>Resource ID</label>
-                    <input type="text" class="form-control" name="event_resource_id" ng-model="eventTestTemplate.event_resource_id" ng-blur="suggestPayload();" required>
+                    <div>
+                        <p class="help-text" translate>Expanded fields must be objects in the payload you provide below.</p>
+                    </div>
                 </div>
             </div>
 
