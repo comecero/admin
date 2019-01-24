@@ -2047,7 +2047,7 @@ app.directive('capture', ['ApiService', 'ConfirmService', 'GrowlsService', '$uib
 
                     _.each(items, function (item) {
                         if (item.quantity) {
-                            total += Math.round(parseFloat((item.price * parseInt(item.quantity)) * (1 + item.tax_rate)) * 100) / 100;
+                            total += Math.round(parseFloat((item.price * parseFloat(item.quantity)) * (1 + item.tax_rate)) * 100) / 100;
                         }
                     });
 
@@ -2067,7 +2067,7 @@ app.directive('capture', ['ApiService', 'ConfirmService', 'GrowlsService', '$uib
                     if (items != null) {
                         _.each(items, function (item) {
                             if (item.quantity) {
-                                total = total + parseInt(item.quantity);
+                                total = total + parseFloat(item.quantity);
                             }
                         });
                     }
