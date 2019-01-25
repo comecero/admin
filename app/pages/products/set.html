@@ -260,7 +260,6 @@
                                 <p><span translate>Billing Period</span>: <strong>{{data.subscription_plan.billing_interval}} {{data.subscription_plan.billing_interval_unit}}(s)</strong></p>
                                 <p><span translate>Trial Period</span>: <strong ng-if="data.subscription_plan.trial_interval">{{data.subscription_plan.trial_interval}} {{data.subscription_plan.trial_interval_unit}}(s)</strong><strong ng-if="!data.subscription_plan.trial_interval" translate>None</strong></p>
                                 <p><span translate>Total Billings</span>: <strong ng-if="data.subscription_plan.end_at_billing_count">{{data.subscription_plan.end_at_billing_count}}</strong><strong ng-if="!data.subscription_plan.end_at_billing_count" translate>Unlimited</strong></p>
-                                <p><span translate>Fulfill on Renewal</span>: <strong ng-if="data.subscription_plan.fulfill_on_renewal" translate>Yes</strong><strong ng-if="!data.subscription_plan.fulfill_on_renewal" translate>No</strong></p>
                                 <p><span translate>Created</span>: <strong>{{data.subscription_plan.date_created | date:'mediumDate'}} {{data.subscription_plan.date_created | date:'shortTime'}}</strong></p>
                                 <p ng-if="data.subscription_plan.description"><span translate>Description</span>: <em>{{data.subscription_plan.description}}</em></p>
                                 <p class="text-right">
