@@ -3345,7 +3345,7 @@ app.directive('fileSelect', ['ApiService', 'ConfirmService', 'GrowlsService', '$
 
                     // Make a copy so you can modify what you send without changing the model in the UI
                     var file = angular.copy(scope.fileSelect.file);
-                    file.url = scope.options.url;
+                    file.file_url = scope.options.url;
                     file.http_authorization_username = scope.options.http_authorization_username;
                     file.http_authorization_password = scope.options.http_authorization_password;
 

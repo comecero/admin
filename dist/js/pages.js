@@ -5215,6 +5215,11 @@ app.controller("CouponSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
             }
 
             if ($scope.promotion.config.type === 'product' && $scope.promotion.config.product_ids) {
+
+                // Remove any wildcard
+                $scope.promotion.config.product_ids = _.reject($scope.promotion.config.product_ids, function (product_id) { return product_id == "*" });
+
+                // Map the product.
                 $scope.promotion.config.product_ids = _.map($scope.promotion.config.product_ids, function (product) {
                     return { 'product_id': product };
                 });
@@ -5282,8 +5287,12 @@ app.controller("CouponSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
             $scope.promotion.config.code = undefined;
         }
 
-        if ($scope.promotion.config.type === 'product' && $scope.promotion.config.product_ids && $scope.promotion.config.product_ids.length) {
-            $scope.promotion.config.product_ids = _.pluck($scope.promotion.config.product_ids, 'product_id');
+        if ($scope.promotion.config.type === 'product') {
+            if ($scope.promotion.config.product_ids && $scope.promotion.config.product_ids.length) {
+                $scope.promotion.config.product_ids = _.pluck($scope.promotion.config.product_ids, 'product_id');
+            } else {
+                $scope.promotion.config.product_ids = ["*"];
+            }
         }
 
         $scope.promotion.type = 'coupon';
@@ -5330,8 +5339,12 @@ app.controller("CouponSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
             $scope.promotion.config.code = undefined;
         }
 
-        if ($scope.promotion.config.type === 'product' && $scope.promotion.config.product_ids && $scope.promotion.config.product_ids.length) {
-            $scope.promotion.config.product_ids = _.pluck($scope.promotion.config.product_ids, 'product_id');
+        if ($scope.promotion.config.type === 'product') {
+            if ($scope.promotion.config.product_ids && $scope.promotion.config.product_ids.length) {
+                $scope.promotion.config.product_ids = _.pluck($scope.promotion.config.product_ids, 'product_id');
+            } else {
+                $scope.promotion.config.product_ids = ["*"];
+            }
         }
 
         ApiService.set($scope.promotion, $scope.url, { show: "promotion_id,name" }).then(function (promotion) {
