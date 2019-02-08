@@ -275,62 +275,6 @@ app.service("TimezonesService", [function () {
 
 }]);
 
-
-app.service("EventTypesService", [function() {
-      var getEventsTypes = function() {
-        return [
-            { name: "Account Modified", code: "account:modified" },
-            { name: "Cart Payment Completed", code: "cart:payment_completed" },
-            { name: "Gateway Created", code: "gateway:created" },
-            { name: "Gateway Modified", code: "gateway:modified" },
-            { name: "Event Subscription Created", code: "event_subscription:created" },
-            { name: "Event Subscription Modified", code: "event_subscription:modified" },
-            { name: "Event Subscription Deleted", code: "event_subscription:deleted" },
-            { name: "License Service Low Licenses", code: "license_service:low_licenses" },
-            { name: "Invoice Created", code: "invoice:created" },
-            { name: "Invoice Published", code: "invoice:published" },
-            { name: "Invoice Paid", code: "invoice:paid" },
-            { name: "Invoice Payment Completed", code: "invoice:payment_completed" },
-            { name: "Order Created", code: "order:created" },
-            { name: "Order Licenses Assigned", code: "order:licenses_assigned" },
-            { name: "Order Payment Completed", code: "order:payment_completed" },
-            { name: "Order Fulfilled", code: "order:fulfilled" },
-            { name: "Payment Completed", code: "payment:completed" },
-            { name: "Payment Created Success", code: "payment:created_success" },
-            { name: "Payment Created Failure", code: "payment:created_failure" },
-            { name: "Payment Captured Success", code: "payment:captured_success" },
-            { name: "Payment Captured Failure", code: "payment:captured_failure" },
-            { name: "Payment Voided", code: "payment:voided" },
-            { name: "Product Created", code: "product:created" },
-            { name: "Product Modified", code: "product:modified" },
-            { name: "Product Deleted", code: "product:deleted" },
-            { name: "Refund Created Success", code: "refund:created_success" },
-            { name: "Refund Created Failure", code: "refund:created_failure" },
-            { name: "Refund Deleted", code: "refund:deleted" },
-            { name: "User Created", code: "user:created" },
-            { name: "User Modified", code: "user:modified" },
-            { name: "Shipment Created", code: "shipment:created" },
-            { name: "Shipment Modified", code: "shipment:modified" },
-            { name: "Shipment Deleted", code: "shipment:deleted" },
-            { name: "Subscription Created", code: "subscription:created" },
-            { name: "Subscription Cancelled", code: "subscription:cancelled" },
-            { name: "Subscription Item Added", code: "subscription_item:added" },
-            { name: "Subscription Item Cancelled", code: "subscription_item:cancelled" },
-            { name: "Subscription Item Modified", code: "subscription_item:modified" },
-            { name: "Subscription Completed", code: "subscription:completed" },
-            { name: "Subscription Converted", code: "subscription:converted" },
-            { name: "Subscription Renewal Success", code: "subscription:renewal_success" },
-            { name: "Subscription Renewal Failure", code: "subscription:renewal_failure" }
-        ];
-      };
-
-      return {
-        getEventsTypes: getEventsTypes
-      }
-    }
-]);
-
-
 app.service("HelperService", ['SettingsService', function (SettingsService) {
 
     // Return public API.
