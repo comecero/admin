@@ -3239,3 +3239,6 @@ table.data th {
 .text-xl {
   font-size: 24px;
 }
+ul.product-group {
+  margin-bottom: 0;
+}

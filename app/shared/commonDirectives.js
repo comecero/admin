@@ -3581,7 +3581,8 @@ app.directive('productsSelect', ['ApiService', 'ConfirmService', 'GrowlsService'
                 scope.productsSelect.limit = attrs.limit || 15;
 
                 scope.productsSelect.params = {};
-                scope.productsSelect.params.show = "product_id,name,date_created,date_modified,price,currency";
+                scope.productsSelect.params.show = "product_id,name,date_created,date_modified,price,currency,subscription_plan.billing_interval_description,subscription_plan.trial_interval_description";
+                scope.productsSelect.params.expand = "subscription_plan";
                 scope.productsSelect.params.limit = 10; // The number of products to show per page.
                 scope.productsSelect.params.sort_by = "name";
                 scope.productsSelect.params.desc = false;
@@ -3677,6 +3678,17 @@ app.directive('productsSelect', ['ApiService', 'ConfirmService', 'GrowlsService'
                     } else {
                         loadProducts(scope.productList.previous_page_url);
                     }
+                }
+
+                scope.productsSelect.getSubscriptionInfo = function (product) {
+                    if (product.subscription_plan) {
+                        var description = product.subscription_plan.billing_interval_description;
+                        if (product.subscription_plan.trial_interval_description) {
+                            description += " (with trial)";
+                        }
+                        return description;
+                    }
+                    return null;
                 }
 
             });
@@ -3857,7 +3869,6 @@ app.directive('productGroup', ['ApiService', 'ConfirmService', 'GrowlsService', 
             products: '=?'
         },
         link: function (scope, elem, attrs, ctrl) {
-
 
             scope.limit = attrs.limit || 15;
 

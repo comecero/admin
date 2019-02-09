@@ -168,7 +168,7 @@ app.controller("ProductsSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
         $scope.url = ApiService.buildUrl("/products/" + $routeParams.id)
 
         // Load the product
-        ApiService.getItem($scope.url, { expand: "file,images,subscription_plan,license_service" }).then(function (product) {
+        ApiService.getItem($scope.url, { expand: "file,images,subscription_plan,license_service,subscription_change_products,subscription_term_change_products" }).then(function (product) {
             $scope.product = product;
 
             // If weight is null, set defaults
@@ -222,6 +222,8 @@ app.controller("ProductsSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
         $scope.product.prices.push({ price: "", currency: "" });
         $scope.product.volume_prices = [];
         $scope.product.volume_prices.push({ low: "", prices: [{ price: "", currency: "" }] });
+        $scope.product.subscription_change_products = { data: [] };
+        $scope.product.subscription_term_change_products = { data: [] };
 
     }
 
@@ -287,6 +289,18 @@ app.controller("ProductsSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
 
         if ($scope.data.license_service != null) {
             $scope.product.license_service_id = $scope.data.license_service.license_service_id;
+        }
+
+        if ($scope.product.subscription_change_products.data) {
+            $scope.product.subscription_change_product_ids = _.pluck($scope.product.subscription_change_products.data, "product_id");
+        } else {
+            $scope.product.subscription_change_product_ids = [];
+        }
+
+        if ($scope.product.subscription_term_change_products.data) {
+            $scope.product.subscription_term_change_product_ids = _.pluck($scope.product.subscription_term_change_products.data, "product_id");
+        } else {
+            $scope.product.subscription_term_change_product_ids = [];
         }
 
         cleanVolumePrices();

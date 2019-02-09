@@ -64,7 +64,10 @@
 
                 <div class="col-xs-12 col-sm-6 col-md-4">
                     <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Name</label></div>
-                    <div class="col-xs-7 col-sm-12 col-md-12 value"><span><a>{{product.name}}</a></span></div>
+                    <div class="col-xs-7 col-sm-12 col-md-12 value">
+                        <span><a>{{product.name}}</a></span>
+                        <div class="text-xs" ng-show="product.subscription_plan"><em>Subscription Plan: {{productsSelect.getSubscriptionInfo(product)}}</em></div>
+                    </div>
                 </div>
 
                 <div class="col-xs-12 col-sm-6 col-md-3">

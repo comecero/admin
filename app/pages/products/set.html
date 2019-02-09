@@ -272,11 +272,29 @@
                 </div>
             </div>
 
-            <div class="col-xs-12">
-                <div class="form-group" show-errors>
-                    <label for="video_url" class="control-label" translate>Video URL</label>
-                    <input type="text" class="form-control" name="video_url" ng-model="product.video_url" is-valid-url allow-empty-value="true">
-                    <p class="help-block hidden fadeInDown" translate>Please provide a valid URL</p>
+            <div class="col-xs-12" ng-show="data.subscription_plan.subscription_plan_id">
+                <div class="form-group">
+                    <label class="control-label clear" translate>Subscription Upgrades & Downgrades</label>
+                    <div ng-show="!product.subscription_change_products.data.length && !product.subscription_change_product_ids">
+                        <a class="btn btn-info" products-select products="product.subscription_change_products.data" translate>Add Products</a>
+                    </div>
+                    <div ng-show="product.subscription_change_products.data.length > 0">
+                        <product-group products="product.subscription_change_products.data"></product-group>
+                    </div>
+                    <p class="help-text" translate>Select which products this product can be upgraded or downgraded to during an active subscription. These are usually variations of this product, such as lite, standard and pro versions. The products you select must contain the same subscription plan.</p>
+                </div>
+            </div>
+
+            <div class="col-xs-12" ng-show="data.subscription_plan.subscription_plan_id">
+                <div class="form-group">
+                    <label class="control-label clear" translate>Subscription Term Changes</label>
+                    <div ng-show="!product.subscription_term_change_products.data.length && !product.subscription_term_change_product_ids">
+                        <a class="btn btn-info" products-select products="product.subscription_term_change_products.data" translate>Add Products</a>
+                    </div>
+                    <div ng-show="product.subscription_term_change_products.data.length > 0">
+                        <product-group products="product.subscription_term_change_products.data"></product-group>
+                    </div>
+                    <p class="help-text" translate>Select the other versions of this product that contain different subscription billing terms. For example, if this product is offered as a monthly, quarterly and annual subscription. The products you select must contain different subscription plans.</p>
                 </div>
             </div>
 
