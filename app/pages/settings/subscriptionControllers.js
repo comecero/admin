@@ -5,6 +5,9 @@ app.controller("SubscriptionsSettingsCtrl", ['$scope', '$routeParams', '$locatio
     // Set the url for interacting with this item
     $scope.url = ApiService.buildUrl("/settings/subscription");
 
+    $scope.immediate_upgrades = {};
+    $scope.immediate_downgrades = {};
+
     // Load the settings
     ApiService.getItem($scope.url).then(function (settings) {
 
@@ -13,6 +16,9 @@ app.controller("SubscriptionsSettingsCtrl", ['$scope', '$routeParams', '$locatio
         // Make a copy of the original for comparision
         $scope.settings_orig = angular.copy($scope.settings);
         $scope.cancellation_reasons = utils.arrayToString(settings.cancellation_reasons);
+
+        $scope.immediate_upgrades = loadFields(settings.immediate_upgrade_product_types, $scope.immediate_upgrades);
+        $scope.immediate_downgrades = loadFields(settings.immediate_downgrade_product_types, $scope.immediate_downgrades);
 
     }, function (error) {
         $scope.exception.error = error;
@@ -50,6 +56,9 @@ app.controller("SubscriptionsSettingsCtrl", ['$scope', '$routeParams', '$locatio
             $scope.settings.cancellation_reasons = utils.stringToArray($scope.cancellation_reasons);
         }
 
+        $scope.settings.immediate_upgrade_product_types = loadList($scope.immediate_upgrades);
+        $scope.settings.immediate_downgrade_product_types = loadList($scope.immediate_downgrades);
+
         ApiService.set($scope.settings, $scope.url)
         .then(
         function (settings) {
@@ -59,6 +68,25 @@ app.controller("SubscriptionsSettingsCtrl", ['$scope', '$routeParams', '$locatio
             window.scrollTo(0, 0);
             $scope.exception.error = error;
         });
+    }
+
+    function loadFields(fields, obj) {
+        _.each(fields, function (item) {
+            obj[item] = true;
+        });
+        return obj;
+    }
+
+    function loadList(obj) {
+        var list = [];
+        for (var property in obj) {
+            if (obj.hasOwnProperty(property)) {
+                if (obj[property] == true) {
+                    list.push(property);
+                }
+            }
+        }
+        return list;
     }
 
 }]);
