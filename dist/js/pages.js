@@ -4670,13 +4670,13 @@ app.controller("ProductsSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
         if ($scope.product.subscription_change_products.data) {
             $scope.product.subscription_change_product_ids = _.pluck($scope.product.subscription_change_products.data, "product_id");
         } else {
-            $scope.product.subscription_change_product_ids = [];
+            $scope.product.subscription_change_product_ids = null;
         }
 
         if ($scope.product.subscription_term_change_products.data) {
             $scope.product.subscription_term_change_product_ids = _.pluck($scope.product.subscription_term_change_products.data, "product_id");
         } else {
-            $scope.product.subscription_term_change_product_ids = [];
+            $scope.product.subscription_term_change_product_ids = null;
         }
 
         cleanVolumePrices();
