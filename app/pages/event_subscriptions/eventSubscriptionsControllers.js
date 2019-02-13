@@ -134,6 +134,18 @@ app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$locatio
                     }
                 }
             }
+            // Load tests
+            var testUrl = ApiService.buildUrl("/event_test_templates");
+            var eventExpand = eventSubscription.expand ? eventSubscription.expand : '';
+            var testQueryParams = {event_type: eventSubscription.event_type, show: 'event_test_template_id,name', event_expand: eventExpand};
+            ApiService.getItem(testUrl, testQueryParams).then(
+              function(testTemplates) {
+                if (testTemplates.data && testTemplates.data.length) $scope.eventTestTemplates = testTemplates.data;
+              },
+              function(error) {
+                console.log(error);
+              }
+            );
 
         }, function (error) {
             $scope.exception.error = error;
@@ -274,6 +286,19 @@ app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$locatio
         });
     }
 
+    $scope.runTest = function(test) {
+        $scope.testResult = null;
+        $scope.testRunning = true;
+        ApiService.set({}, $scope.eventSubscription.url + '/test/' + test.event_test_template_id).then(
+        function (testResult) {
+            $scope.testRunning = false;
+            $scope.testResult = JSON.stringify(testResult, undefined, 2);
+        },
+        function (testResult) {
+            $scope.testRunning = false;
+            $scope.testResult = JSON.stringify(testResult, undefined, 2);
+        });
+    };
 }]);
 
 //#endregion eventSubscription
