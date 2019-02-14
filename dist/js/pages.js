@@ -463,6 +463,65 @@ app.controller("AppsSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSer
 
 
 
+app.controller("AppPackagesCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'CurrenciesService', 'TimezonesService', 'HelperService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, CurrenciesService, TimezonesService, HelperService) {
+
+    $scope.exception = {};
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/app_packages/" + $routeParams.id);
+
+    // Load the app package
+    ApiService.getItem($scope.url).then(function (app_package) {
+        $scope.app_package = app_package;
+
+        // Make a copy of the original for comparision
+        $scope.app_package_orig = angular.copy($scope.app_package);
+
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+    var prepareSubmit = function () {
+
+        // Clear any previous errors
+        $scope.exception.error = null;
+
+    }
+
+    $scope.update = function () {
+
+        prepareSubmit();
+
+        if ($scope.form.$invalid) {
+            window.scrollTo(0, 0);
+            return;
+        }
+
+        ApiService.multipartForm($scope.app_package, null, $scope.url).then(function (settings) {
+            GrowlsService.addGrowl({ id: "edit_success", name: "App Package " + $routeParams.id, type: "success", url: "#/app_packages/" + $routeParams.id + "/edit" });
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception.error = error;
+        });
+    }
+
+    $scope.download = function () {
+        ApiService.set(null, $scope.url + "/download").then(function (download) {
+            window.location = download.link;
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception.error = error;
+        });
+    }
+
+}]);
+
+
+
+
 
 //#region App_Installations
 
@@ -703,65 +762,6 @@ app.controller("AppInstallationsStyleCtrl", ['$scope', '$routeParams', '$locatio
 }]);
 
 //#endregion AppInstallations
-app.controller("AppPackagesCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'CurrenciesService', 'TimezonesService', 'HelperService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, CurrenciesService, TimezonesService, HelperService) {
-
-    $scope.exception = {};
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/app_packages/" + $routeParams.id);
-
-    // Load the app package
-    ApiService.getItem($scope.url).then(function (app_package) {
-        $scope.app_package = app_package;
-
-        // Make a copy of the original for comparision
-        $scope.app_package_orig = angular.copy($scope.app_package);
-
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-    var prepareSubmit = function () {
-
-        // Clear any previous errors
-        $scope.exception.error = null;
-
-    }
-
-    $scope.update = function () {
-
-        prepareSubmit();
-
-        if ($scope.form.$invalid) {
-            window.scrollTo(0, 0);
-            return;
-        }
-
-        ApiService.multipartForm($scope.app_package, null, $scope.url).then(function (settings) {
-            GrowlsService.addGrowl({ id: "edit_success", name: "App Package " + $routeParams.id, type: "success", url: "#/app_packages/" + $routeParams.id + "/edit" });
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception.error = error;
-        });
-    }
-
-    $scope.download = function () {
-        ApiService.set(null, $scope.url + "/download").then(function (download) {
-            window.location = download.link;
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception.error = error;
-        });
-    }
-
-}]);
-
-
-
-
 
 //#region Auths
 
@@ -4154,7 +4154,7 @@ app.controller("OrdersViewCtrl", ['$scope', '$routeParams', 'ApiService', 'Confi
     $scope.resources.notificationListUrl = $scope.url + "/notifications";
 
     // Load the order
-    var params = { expand: "customer,payments.response_data,payments.payment_method,refunds,items.product,items.subscription,items.download.file,items.license.license_service,shipments", hide: "items.product.images,items.license.license_service.configuration", formatted: true };
+    var params = { expand: "customer,payments.response_data,payments.payment_method,refunds,items.product,items.subscription,items.download.file,items.license.license_service,shipments,subscription", hide: "items.product.images,items.license.license_service.configuration", formatted: true };
     ApiService.getItem($scope.url, params).then(function (order) {
         $scope.order = order;
         $scope.payment = order.payments.data[0];
@@ -4717,21 +4717,30 @@ app.controller("ProductsSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
 
         // The timeout prevents the form from showing as invalid after cleaning volume prices
         setTimeout(function () {
+
             if ($scope.form.$invalid) {
-                $scope.exception = { error: { message: gettextCatalog.getString("Please review and correct the fields highlighted below.") } };
+                $scope.$apply(function () {
+                    $scope.exception = { error: { message: gettextCatalog.getString("Please review and correct the fields highlighted below.") } };
+                });
+
+                // Roll these back to what they were before before prepareSubmit().
+                $scope.product.subscription_change_product_ids = null;
+                $scope.product.subscription_term_change_product_ids = null;
+
                 window.scrollTo(0, 0);
                 return;
             }
-        }, 1);
 
-        ApiService.set($scope.product, ApiService.buildUrl("/products"), { show: "product_id,name" }).then(function (product) {
-            GrowlsService.addGrowl({ id: "add_success", name: product.name, type: "success", product_id: product.product_id, url: "#/products/" + product.product_id + "/edit" });
-            utils.redirect($location, "/products");
-        },
-        function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
+            ApiService.set($scope.product, ApiService.buildUrl("/products"), { show: "product_id,name" }).then(function (product) {
+                GrowlsService.addGrowl({ id: "add_success", name: product.name, type: "success", product_id: product.product_id, url: "#/products/" + product.product_id + "/edit" });
+                utils.redirect($location, "/products");
+            },
+            function (error) {
+                $scope.exception.error = error;
+                window.scrollTo(0, 0);
+            });
+
+        }, 1);
     }
 
     $scope.updateProduct = function () {
@@ -4741,20 +4750,28 @@ app.controller("ProductsSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
         // The timeout prevents the form from showing as invalid after cleaning volume prices
         setTimeout(function () {
             if ($scope.form.$invalid) {
-                $scope.exception = { error: { message: gettextCatalog.getString("Please review and correct the fields highlighted below.") } };
+                $scope.$apply(function () {
+                    $scope.exception = { error: { message: gettextCatalog.getString("Please review and correct the fields highlighted below.") } };
+                });
+
+                // Roll these back to what they were before before prepareSubmit().
+                $scope.product.subscription_change_product_ids = null;
+                $scope.product.subscription_term_change_product_ids = null;
+
                 window.scrollTo(0, 0);
                 return;
             }
-        }, 1);
 
-        ApiService.set($scope.product, $scope.url, { show: "product_id,name" }).then(function (product) {
-            GrowlsService.addGrowl({ id: "edit_success", name: product.name, type: "success", url: "#/products/" + product.product_id + "/edit" });
-            utils.redirect($location, "/products");
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception.error = error;
-        });
+            ApiService.set($scope.product, $scope.url, { show: "product_id,name" }).then(function (product) {
+                GrowlsService.addGrowl({ id: "edit_success", name: product.name, type: "success", url: "#/products/" + product.product_id + "/edit" });
+                utils.redirect($location, "/products");
+            },
+            function (error) {
+                window.scrollTo(0, 0);
+                $scope.exception.error = error;
+            });
+
+        }, 1);
     }
 
     function cleanVolumePrices() {
