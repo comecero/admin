@@ -3242,3 +3242,7 @@ table.data th {
 ul.product-group {
   margin-bottom: 0;
 }
+.faux-link {
+  cursor: pointer;
+  color: #3498db;
+}

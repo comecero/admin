@@ -59,6 +59,17 @@ app.controller("SubscriptionsViewCtrl", ['$scope', '$routeParams', '$location', 
         });
     }
 
+    $scope.showHistory = function () {
+
+        ApiService.getItem($scope.model.subscription.history, { formatted: true }).then(function (history) {
+            $scope.model.history = history;
+
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
 }]);
 
 //#endregion Subscriptions
