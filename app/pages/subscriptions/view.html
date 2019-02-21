@@ -151,7 +151,28 @@
                                 <tr class="no-border" ng-if="!isEditing(item)">
                                     <td colspan="5"><p ng-class="{strike: item.cancelled}" class="help-text">{{item.subscription_terms.description}}</p></td>
                                 </tr>
-                                <tr class="no-border" ng-if="!isEditing(item) && !item.cancelled">
+                                <tr class="no-border" ng-if="!isEditing(item) && !item.cancelled && !item.cancel_at_current_period_end && !model.subscription.cancel_at_current_period_end && item.change_summary">
+                                    <td colspan="5">
+                                        <div class="well well-sm" style="margin-top:0;">
+                                            <p><i>The following is scheduled to change at the end of the current period:</i></p>
+                                            <ul>
+                                                <li ng-repeat="change in item.change_summary">{{change.name}}: From {{change.from}} to {{change.to}}</li>
+                                            </ul>
+                                            <p class="spacer-t10 text-center"><button class="btn btn-danger btn-sm" ng-click="confirmRemoveChanges(item)" translate>Remove Changes</button></p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="no-border" ng-if="!isEditing(item) && item.cancel_at_current_period_end && !model.subscription.cancel_at_current_period_end">
+                                    <td colspan="5">
+                                        <div class="alert alert-warning spacer-b5 text-center">
+                                            <div translate>
+                                                This item is scheduled to be cancelled on <strong>{{model.subscription.date_current_period_end | date:'shortDate'}}.</strong>
+                                            </div>
+                                            <div class="spacer-t10"><button class="btn btn-danger" ng-click="uncancelItem(item)" translate>Remove Item Cancellation</button></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="no-border" ng-if="!isEditing(item) && !item.cancelled && !item.cancel_at_current_period_end">
                                     <td class="text-right" colspan="5">
                                         <span class="btn btn-danger btn btn-xs btn-right btn-xs-margin-left" cancel-subscription-item subscription="model.subscription" item="item" resource="subscriptions" method="update" translate>Cancel Item</span>
                                         <span class="btn btn-info btn btn-xs btn-right btn-xs-margin-left" ng-click="setEdit(item)" translate>Edit Item</span>
@@ -176,7 +197,12 @@
                                 <tr class="no-border" ng-if="isEditing(item) && selected.reference_discount">
                                     <td colspan="5">
                                         <label class="radio-group-label" translate>How many times should the discount be applied?</label>
-                                        <input type="text" class="form-control text-right" ng-model="selected.discount_apply_count" style="max-width: 65px;" />
+                                        <div class="radio-group inline">
+                                            <input type="radio" id="apply_unlimited-1" class="radio" name="apply_unlimited" ng-model="model.apply_unlimited" ng-value="true" ng-click="model.apply_unlimited = true" required>
+                                            <label for="apply_unlimited-1" class="radio-label">Unlimited</label>
+                                            <input type="radio" id="apply_unlimited-2" class="radio" name="apply_unlimited" ng-model="model.apply_unlimited" ng-value="false" ng-click="model.apply_unlimited = false" required>
+                                            <label for="apply_unlimited-2" class="radio-label"><input type="text" class="form-control text-right" ng-model="selected.discount_apply_count" style="max-width: 65px; display: inline" /> times</label>
+                                        </div>
                                     </td>
                                 </tr>
                                 <tr class="no-border" ng-if="isEditing(item)">

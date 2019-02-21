@@ -234,6 +234,7 @@ app.service("ApiService", ['$http', '$q', '$rootScope', function ($http, $q, $ro
             if (response.data.error.status == 403) {
                 error.code = "error";
                 error.message = "It appears that you don't have permissions to access page or function you have requested. If you feel this is incorrect, please contact an account administrator.";
+                error.message += " " + response.data.error.message;
                 error.status = response.status;
                 return ($q.reject(error));
             }
