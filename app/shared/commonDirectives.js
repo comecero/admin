@@ -2104,20 +2104,17 @@ app.directive('cancelSubscription', ['ApiService', 'ConfirmService', 'GrowlsServ
 
                 var execute = function () {
 
-                    // If cancel at period end is false, set the status to cancelled.
                     var request = {};
                     if (scope.subscription_cancel.request.cancel_at_current_period_end == true) {
                         request.cancel_at_current_period_end = true;
                     } else {
-                        request.status = "cancelled";
+                        request.cancel_at_current_period_end = false;
                     }
 
                     request.cancellation_reason = scope.subscription_cancel.request.cancellation_reason;
 
                     // Cancel the subscription
-                    ApiService.set(request, scope.subscription.url, { expand: "subscription_plan,customer.payment_methods,items.subscription_terms", formatted: true })
-                    .then(
-                    function (subscription) {
+                    ApiService.set(request, scope.subscription.url + "/cancel", { expand: "subscription_plan,customer.payment_methods,items.subscription_terms", formatted: true }).then(function (subscription) {
                         scope.subscription = subscription;
                         subscriptionModal.dismiss();
                         GrowlsService.addGrowl({ id: "subscription_cancel_success", type: "success" });
