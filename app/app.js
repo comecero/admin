@@ -52,8 +52,11 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     $routeProvider.when("/event_subscriptions/add", { templateUrl: "app/pages/event_subscriptions/set.html", reloadOnSearch: true });
     $routeProvider.when("/event_subscriptions/:id/edit", { templateUrl: "app/pages/event_subscriptions/set.html", reloadOnSearch: true });
 
-    $routeProvider.when("/templates/:id/edit", { templateUrl: "app/pages/templates/set.html", reloadOnSearch: true });
-    
+    // Event Test Templates
+    $routeProvider.when("/event_test_templates", { templateUrl: "app/pages/event_test_templates/list.html", reloadOnSearch: false });
+    $routeProvider.when("/event_test_templates/add", { templateUrl: "app/pages/event_test_templates/set.html", reloadOnSearch: true });
+    $routeProvider.when("/event_test_templates/:id/edit", { templateUrl: "app/pages/event_test_templates/set.html", reloadOnSearch: true });
+
      // Notification Subscriptions
     $routeProvider.when("/notification_subscriptions", { templateUrl: "app/pages/notification_subscriptions/list.html", reloadOnSearch: false });
     $routeProvider.when("/notification_subscriptions/add", { templateUrl: "app/pages/notification_subscriptions/set.html", reloadOnSearch: true });
