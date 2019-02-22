@@ -108,6 +108,23 @@
                 </div>
             </div>
 
+            <div class="panel">
+                <div class="panel-heading">
+                    <span class="panel-title" translate>Customer Account Balance</span>
+                    <div class="panel-heading-controls" ng-show="customer.balance.date_last_transaction">
+                        <a ng-href="#/customers/{{customer.customer_id}}/balance" class="btn btn-sm btn-success btn btn-info spacer-t5" translate>Details</a>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div ng-show="customer.balance.date_last_transaction" class="text-xl text-bold" ng-class="{'text-success': customer.balance.amount > 0, 'text-danger': customer.balance.amount < 0}">{{customer.balance.formatted.amount}} {{customer.balance.currency}}</div>
+
+                    <div class="col-sm-12" ng-show="!customer.balance.date_last_transaction">
+                        <p class="no-info-short" translate>The customer has no balance</p>
+                    </div>
+
+                </div>
+            </div>
+
             <div meta-to-html="{{customer.meta}}" panel-title="Meta Data"></div>
 
         </div>

@@ -276,13 +276,16 @@
             <span ng-if="growl.id == 'shipment_failure'" translate>We were unable to record the shipment: {{growl.description}}.</span>
 
             <span ng-if="growl.id == 'payment_capture_scheduled'" translate>All items in the order are now fulfilled and the payment will be automatically captured in a few moments.</span>
-            <span ng-if="growl.id == 'payment_capture_success'" translate>You have successfully captured the payment.</span>
+            <span ng-if="growl.id == 'payment_capture_success'" translate>You have successfully captured <a href="{{growl.url}}">payment {{growl.payment_id}}</a>.</span>
+            <span ng-if="growl.id == 'payment_capture_failure'" translate>An attempt to capture <a href="{{growl.url}}">payment {{growl.payment_id}}</a> was unsuccessful. You can try again to capture the payment.</span>
             <span ng-if="growl.id == 'payment_created_success'" translate>You have successfully processed payment <a href="{{growl.url}}">{{growl.payment_id}}</a> in the amount of {{growl.amount}} {{growl.currency}}.</span>
 
             <span ng-if="growl.id == 'refund_success'" translate>You have successfully <a href="{{growl.url}}">processed a refund</a> in the amount of {{growl.amount}}.</span>
+            <span ng-if="growl.id == 'refund_failure'" translate>An attempt to process a refund in the amount of {{growl.amount}} was unsuccessful. See the <a href="{{growl.url}}">failed refund</a> for more details.</span>
             <span ng-if="growl.id == 'chargeback_success'" translate>You have successfully <a href="{{growl.url}}">recorded a chargeback</a> in the amount of {{growl.amount}}.</span>
 
-            <span ng-if="growl.id == 'void_success'" translate>You have successfully cancelled the payment.</span>
+            <span ng-if="growl.id == 'void_success'" translate>You have successfully cancelled <a href="{{growl.url}}">payment {{growl.payment_id}}</a>.</span>
+            <span ng-if="growl.id == 'void_failure'" translate>An attempt to cancel <a href="{{growl.url}}">payment {{growl.payment_id}}</a> was unsuccessful. You can try again to cancel the payment.</span>
 
             <span ng-if="growl.id == 'subscription_cancel_success'" translate>You have successfully cancelled the subscription.</span>
             <span ng-if="growl.id == 'subscription_item_cancel_success'" translate>You have successfully cancelled {{growl.name}}.</span>
@@ -304,6 +307,7 @@
 
             <!-- Generic -->
             <span ng-if="growl.id == 'edit_success_no_link'" translate>Your changes have been saved.</span>
+            <span ng-if="growl.id == 'action_success'" translate>Your request has been processed sucessfully.</span>
             <span ng-if="growl.id == 'add_success'" translate>You have successfully created <a href="{{growl.url}}">{{growl.name}}</a>.</span>
             <span ng-if="growl.id == 'edit_success'" translate>Your changes to <a href="{{growl.url}}">{{growl.name}}</a> have been saved.</span>
             <span ng-if="growl.id == 'delete_success'" translate>You have successfully deleted {{growl.name}}.</span>

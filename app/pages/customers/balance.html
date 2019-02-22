@@ -1,0 +1,32 @@
+﻿<div ng-controller="CustomersBalanceCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1>Customer Balance</h1>
+    </div>
+
+    <div class="panel light-shadow">
+
+        <div class="panel-heading">
+            <span class="panel-title text-bg text-bold">{{customer.customer_id}}</span>
+        </div>
+        <div class="panel-body">
+            <span class="text-xl text-bold pull-left" translate>Balance</span><span class="text-xl text-bold pull-right" ng-class="{'text-success': customer.balance.amount > 0, 'text-danger': customer.balance.amount < 0}">{{customer.balance.formatted.amount}} {{customer.balance.currency}}</span>
+        </div>
+
+        <div class="panel-body" style="padding-top: 0">
+            <div customer-edit="customer" error="exception.error"></div>
+
+            <div class="panel panel-body light-shadow">
+                <div object-list type="balance_transactions" url="{{resources.transactionListUrl}}" template-url="app/templates/balanceTransactionList.html" embedded="true" page="cursor" limit="25" search="false" page="cursor" error="exception.error"></div>
+            </div>
+
+        </div>
+
+
+    </div>

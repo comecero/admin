@@ -135,6 +135,7 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     // Customers
     $routeProvider.when("/customers", { templateUrl: "app/pages/customers/list.html", reloadOnSearch: false });
     $routeProvider.when("/customers/:id", { templateUrl: "app/pages/customers/view.html", reloadOnSearch: true });
+    $routeProvider.when("/customers/:id/balance", { templateUrl: "app/pages/customers/balance.html", reloadOnSearch: true });
 
     // Auths
     $routeProvider.when("/auths", { templateUrl: "app/pages/auths/list.html", reloadOnSearch: false });
@@ -220,7 +221,6 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
                 }
 
                 if (response.data.error.status === 403) {
-                    response.data.error.message = "You do not have permission to perform the requested action. Please contact an account administrator for assistance.";
                     return ($q.reject(response));
                 }
 

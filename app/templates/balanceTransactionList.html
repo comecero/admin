@@ -1,0 +1,77 @@
+﻿<div class="gridtable">
+
+    <div class="gridtable-header hidden-xs hidden-sm">
+        <div class="col-md-2"><label ng-click="sort('date_created', !userParams.desc)" class="pointer text-primary" translate>Date</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="getSortValue() == 'date_created' && userParams.desc == true"></i><i class="icon fa fa-caret-up" ng-if="getSortValue() == 'date_created' && userParams.desc == false"></i></div>
+        <div class="col-md-3"><label>Reference Transaction</label></div>
+        <div class="col-md-3"><label translate>Memo</label></div>
+        <div class="col-md-2 text-right"><label translate>Amount ({{list.data[0].currency}})</label></div>
+        <div class="col-md-2 text-right"><label translate>Balance ({{list.data[0].currency}})</label></div>
+    </div>
+
+    <div class="col-xs-12 hidden-md hidden-lg padding-l0">
+        <div class="btn-group" uib-dropdown>
+            <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Sort</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+            <ul class="dropdown-menu">
+                <li class="dropdown-header" translate>Date Created</li>
+                <li ng-click="sort('date_created', false)" ng-class="{'selected-li': getSortValue() == 'date_created' && userParams.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                <li ng-click="sort('date_created', true)" ng-class="{'selected-li': getSortValue() == 'date_created' && userParams.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row spacer-b10 hidden-md hidden-lg"></div> <!--Needed to have the buttons clear-->
+
+    <div class="gridtable-row" ng-repeat="transaction in list.data">
+
+        <div class="col-xs-12 col-sm-6 col-md-2">
+            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label translate>Date</label></div>
+            <div class="col-xs-7 col-sm-12 col-md-12 value"><span>{{transaction.date_created | date:'short'}}</span></div>
+        </div>
+
+        <div class="row hidden-md hidden-lg"></div>
+
+        <div class="col-xs-12 col-sm-6 col-md-3">
+            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Reference Transaction</label></div>
+            <div class="col-xs-7 col-sm-12 col-md-12 value">
+                <span ng-if="transaction.payment.payment_id" class="text-sm"><a ng-href="#/payments/{{transaction.payment.payment_id}}">{{transaction.payment.payment_id}}</a></span>
+                <span ng-if="transaction.refund.refund_id" class="text-sm"><a ng-href="#/refunds/{{transaction.refund.refund_id}}">{{transaction.refund.refund_id}}</a></span>
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-3">
+            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Memo</label></div>
+            <div class="col-xs-7 col-sm-12 col-md-12 value"><span class="text-sm">{{transaction.memo}}</span></div>
+        </div>
+
+        <div class="row hidden-md hidden-lg"></div>
+
+        <div class="col-xs-12 col-sm-6 col-md-2">
+            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label translate>Amount</label></div>
+            <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value">
+                <span class="text-bold" ng-class="{'text-success': transaction.amount > 0, 'text-danger': transaction.amount < 0}">{{transaction.formatted.amount}}</span>
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-2">
+            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label translate>Balance</label></div>
+            <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg value">
+                <span class="text-bold" ng-class="{'text-success': transaction.current_balance > 0, 'text-danger': transaction.current_balance < 0}">{{transaction.formatted.current_balance}}</span>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Show pagination if there is at least one page -->
+<div class="col-sm-12" ng-if="list.data.length > 0 && settings.page == 'cursor'">
+    <ul class="pager">
+        <li class="previous" ng-click="movePage('-', list.previous_page_before_item)" ng-if="list.previous_page_before_item"><a><i class="fa fa-chevron-circle-left"></i>&nbsp;<span translate>Back</span></a></li>
+        <li class="next" ng-click="movePage('+', list.next_page_after_item)" ng-if="list.next_page_after_item"><a><span translate>Next</span>&nbsp;<i class="fa fa-chevron-circle-right"></i></a></li>
+    </ul>
+</div>
+
+<!-- Show a "not found" message if no payments were found  -->
+<div class="col-sm-12" ng-if="list.data.length == 0">
+    <p class="no-info" translate>No payments found</p>
+</div>

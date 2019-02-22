@@ -14,8 +14,10 @@
         <p ng-if="confirm.id == 'void_payment'" translate>Are you sure you want to cancel this payment? This cannot be undone.</p>
         <p ng-if="confirm.id == 'cancel_subscription'" translate>Are you sure you want to cancel this subscription?</p>
         <p ng-if="confirm.id == 'cancel_subscription_item'" translate>Are you sure you want to cancel this subscription item?</p>
+        <p ng-if="confirm.id == 'remove_changes'" translate>Are you sure you want to remove these changes?</p>
         <p ng-if="confirm.id == 'app_uninstall'" translate>Are you sure you want to uninstall this app? Any app related settings you have configured will be lost.</p>
         <p ng-if="confirm.id == 'set_default_app_version'"><span translate>Are you sure you want to set this as the default app version? You should make certain you have tested this version before setting it as default.</span> <a href="#" target="_blank" translate>More Info</a>.</p>
+        <p ng-if="confirm.id == 'fast_forward'" translate>Fast forwarding a subscription brings the subscription to the end of the current period, which is useful for testing the subscription lifecycle.<br /><br />After you fast forward, the subscription will take the next scheduled action within 1-2 minutes.</p>
     </div>
 
     <div class="row"></div>
@@ -104,6 +106,20 @@
         </button>
         <button type="button" ng-if="confirm.id == 'set_default_app_version'" id="modal-confirm-accept" class="btn btn-default" ng-click="confirm.ok()">
             <span translate>Set Default</span>
+        </button>
+
+        <button type="button" ng-if="confirm.id == 'fast_forward'" class="btn btn-primary" ng-click="confirm.cancel()">
+            <span translate>Cancel</span>
+        </button>
+        <button type="button" ng-if="confirm.id == 'fast_forward'" id="modal-confirm-accept" class="btn btn-default" ng-click="confirm.ok()">
+            <span translate>Fast Forward</span>
+        </button>
+
+        <button type="button" ng-if="confirm.id == 'remove_changes'" class="btn btn-primary" ng-click="confirm.cancel()">
+            <span translate>Cancel</span>
+        </button>
+        <button type="button" ng-if="confirm.id == 'remove_changes'" id="modal-confirm-accept" class="btn btn-default" ng-click="confirm.ok()">
+            <span translate>Remove Changes</span>
         </button>
 
     </div>

@@ -17,6 +17,8 @@ app.controller("PaymentsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'Con
     $scope.fee_currency = null;
     $scope.currencyType = "transaction";
     $scope.resources = {};
+    $scope.data = { refunds: [] };
+    $scope.refundParams = { show: "refund_id,date_created,date_modified,status,success,total,subtotal,currency,shipping,tax" };
 
     $scope.prefs = {}
     $scope.prefs.loadRefundDetails = false;
@@ -29,7 +31,7 @@ app.controller("PaymentsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'Con
     $scope.refundListUrl = $scope.url + "/refunds";
 
     // Load the payment
-    var params = { expand: "customer,payment_method,response_data,gateway,fees,commissions,order,refunds.items" };
+    var params = { expand: "customer,payment_method,response_data,gateway,fees,commissions,order,invoice,refunds.items" };
     ApiService.getItem($scope.url, params).then(function (payment) {
         $scope.payment = payment;
 
@@ -162,6 +164,3 @@ app.controller("PaymentsAddCtrl", ['$scope', '$location', '$routeParams', 'ApiSe
 }]);
 
 //#endregion Payments
-
-
-

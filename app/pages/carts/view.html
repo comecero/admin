@@ -83,12 +83,16 @@
                 </div>
             </div>
 
-            <div meta-to-html="{{cart.meta}}"></div>
-
-            <div class="col-xs-12 padding-l0 padding-r0">
-                <span class="btn btn-danger btn spacer-t5" void payment="successful_payment" error="exception.error" ng-if="!cart.hideCapture" translate>Cancel Payment</span>
-                <span class="btn btn-success btn spacer-t5" capture payment="successful_payment" items="cart.items" shipping-item="cart.shipping_item" error="exception.error" ng-show="!cart.hideCapture" translate>Capture Payment</span>
+            <div class="panel" ng-if="cart.order">
+                <div class="panel-heading">
+                    <span class="panel-title" translate>Order</span>
+                </div>
+                <div class="panel-body">
+                    <div><span translate>Order ID:</span> <a ng-href="#/orders/{{cart.order_id}}">{{cart.order_id}}</a></div>
+                </div>
             </div>
+
+            <div meta-to-html="{{cart.meta}}"></div>
 
         </div>
     </div>

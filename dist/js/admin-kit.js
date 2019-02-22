@@ -234,6 +234,7 @@ app.service("ApiService", ['$http', '$q', '$rootScope', function ($http, $q, $ro
             if (response.data.error.status == 403) {
                 error.code = "error";
                 error.message = "It appears that you don't have permissions to access page or function you have requested. If you feel this is incorrect, please contact an account administrator.";
+                error.message += " " + response.data.error.message;
                 error.status = response.status;
                 return ($q.reject(error));
             }
@@ -1389,49 +1390,57 @@ app.directive('permissions', ['ApiService', function (ApiService) {
 }]);
 
 
-app.directive('refund', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibModal', function (ApiService, ConfirmService, GrowlsService, $uibModal) {
+app.directive('refund', ['ApiService', 'ConfirmService', 'HelperService', 'GrowlsService', '$uibModal', function (ApiService, ConfirmService, HelperService, GrowlsService, $uibModal) {
     return {
         restrict: 'A',
         scope: {
             payment: '=?',
+            order: '=?',
+            refunds: '=?',
             items: '=?',
             shippingItem: '=?',
-            gatewayAccountId: '=?'
         },
         link: function (scope, elem, attrs, ctrl) {
 
-            // Hide by default
-            elem.hide();
-
-            // Watch to see if you should show or hide the button
-            scope.$watch('payment.status', function () {
-                if (scope.payment) {
-                    if (scope.payment.status == "completed" && scope.payment.total > 0) {
-                        elem.show();
-                    } else {
-                        elem.hide();
-                    }
-                }
-            }, true);
+            // Shared scope. Note that you should provide payment or order, but not both.
+            // payment: The payment you are refunding.
+            // order: The order you are refunding.
+            // refunds: The refunds previously processed for this payment or order.
 
             elem.click(function () {
 
+                var currency = "";
+                if (scope.payment) {
+                    currency = scope.payment.currency;
+                } else if (scope.order) {
+                    currency = scope.order.currency;
+                }
+
                 // Set defaults
-                scope.refund = {};
-                scope.refund.currency = scope.payment.currency;
+                scope.refund = { currency: currency };
                 scope.refund.disabled = false;
                 scope.refund.reason = null;
                 scope.refund.reasons = [];
                 
                 scope.refund.show_chargeback = false;
-                if (scope.gatewayAccountId != "platform" || localStorage.getItem("token").substring(0, 6) == "admin.") {
+                if (HelperService.isAgent || HelperService.isAdmin) {
                     scope.refund.show_chargeback = true;
                 }
 
+                // Establish some variables, depending on the resource provided.
+                scope.resource = { total: 0, shipping: 0, tax: 0, url: "" };
+
+                if (scope.payment) {
+                    scope.resource = { total: scope.payment.total, shipping: scope.payment.shipping, tax: scope.payment.tax, url: scope.payment.url };
+                }
+
+                if (scope.order) {
+                    url = scope.order.url;
+                    scope.resource = { total: scope.order.total, shipping: scope.order.shipping, tax: scope.order.tax, url: scope.order.url };
+                }
+
                 // Get the refund and chargeback reasons
-                ApiService.getItem(ApiService.buildUrl("/refunds/options"))
-                .then(
-                function (data) {
+                ApiService.getItem(ApiService.buildUrl("/refunds/options")).then(function (data) {
                     scope.refund.reasons = data.refund_reasons;
                     scope.refund.chargeback_reasons = data.chargeback_reasons;
                 },
@@ -1559,38 +1568,48 @@ app.directive('refund', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
                     data.is_chargeback = scope.refund.is_chargeback;
 
                     // Process the refund
-                    ApiService.set(data, scope.payment.url + "/refunds", { expand: "fees,items" }).then(function (refund) {
-                        // Update the payment properties from the new refund and return.
-                        scope.payment.refunds.data.push(refund);
+                    ApiService.set(data, scope.resource.url + "/refunds", { expand: "fees,items,refunds.fees,refunds.items" }).then(function (response) {
+
+                        var newRefunds = [];
+
+                        // Handle if multiple refunds were returned.
+                        if (response.refunds) {
+                            _.each(response.refunds, function (refund) {
+                                newRefunds.push(refund);
+                            });
+                        } else {
+                            newRefunds.push(response);
+                        }
+
+                        // We concat to prevent multiple "on change" events from being fired with the "refresh-on-change" attribute from objectList.
+                        scope.refunds = scope.refunds.concat(newRefunds);
 
                         // If the entire amount has been refunded, change the status on payment to refunded.
-                        if (utils.roundCurrency(scope.refund.getUnrefundedTotal()) <= 0 && refund.status == "completed") {
-                            scope.payment.status = 'refunded';
+                        if (utils.roundCurrency(scope.refund.getUnrefundedTotal()) <= 0) {
+                            if (scope.order)
+                                scope.order.payment_status = "refunded";
+                            if (scope.payment)
+                                scope.payment.status = "refunded";
                         }
 
-                        if (refund.is_chargeback == false) {
-                            GrowlsService.addGrowl({ id: "refund_success", type: "success", amount: refund.total.toFixed(2) + " " + refund.currency, url: "/#/refunds/" + refund.refund_id });
-                        } else {
-                            GrowlsService.addGrowl({ id: "chargeback_success", type: "success", amount: refund.total.toFixed(2) + " " + refund.currency, url: "/#/refunds/" + refund.refund_id });
-                        }
+                        _.each(newRefunds, function (refund) {
+                            if (refund.success == false) {
+                                GrowlsService.addGrowl({ id: "refund_failure", amount: refund.total.toFixed(2) + " " + refund.currency, type: "warning", url: "/#/refunds/" + refund.refund_id });
+                            } else {
+                                if (refund.is_chargeback == false) {
+                                    GrowlsService.addGrowl({ id: "refund_success", type: "success", amount: refund.total.toFixed(2) + " " + refund.currency, url: "/#/refunds/" + refund.refund_id });
+                                } else {
+                                    GrowlsService.addGrowl({ id: "chargeback_success", type: "success", amount: refund.total.toFixed(2) + " " + refund.currency, url: "/#/refunds/" + refund.refund_id });
+                                }
+                            }
+                        });
+
                         refundModal.close();
                     },
                     function (error) {
-                        // if the error status is 422, the payment was previously refunded. Get the refunded payment to return it.
-                        if (error.status == 422) {
-                            ApiService.getItem(scope.payment.url).then(function (payment) {
-                                scope.payment = payment;
-                                refundModal.close();
-                            }, function (error) {
-                                // You had a problem getting the payment, just show the error on the modal.
-                                window.scrollTo(0, 0);
-                                scope.modalError = error;
-                            });
-                        } else {
-                            // Otherwise, return an error.
-                            window.scrollTo(0, 0);
-                            scope.modalError = error;
-                        }
+                        // Otherwise, return an error.
+                        window.scrollTo(0, 0);
+                        scope.modalError = error;
                     });
                 }
 
@@ -1620,7 +1639,7 @@ app.directive('refund', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
 
                     _.each(items, function (item) {
                         if (item.quantity) {
-                            total += Math.round(parseFloat((item.price * parseInt(item.quantity)) * (1 + item.tax_rate)) * 100) / 100;
+                            total += (parseFloat((item.price * parseFloat(item.quantity)) * (1 + item.tax_rate)) * 100) / 100;
                         }
                     });
 
@@ -1658,23 +1677,23 @@ app.directive('refund', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
 
                 scope.refund.getAmountShipping = function (refund_total) {
                     // The shipping that will be refunded will be multiplied by the percentage of the total that refund total represents. Note this is for display only as the actual amounts are calculated on the server.
-                    if (refund_total == scope.payment.total) {
-                        return scope.payment.shipping;
+                    if (refund_total == scope.resource.total) {
+                        return scope.resource.shipping;
                     }
 
-                    var refund_percentage = refund_total / scope.payment.total;
-                    return Math.round((scope.payment.shipping * refund_percentage) * 100) / 100;
+                    var refund_percentage = refund_total / scope.resource.total;
+                    return Math.round((scope.resource.shipping * refund_percentage) * 100) / 100;
 
                 }
 
                 scope.refund.getAmountTax = function (refund_total) {
                     // The tax that will be refunded will be multiplied by the percentage of the total that refund total represents. Note this is for display only as the actual amounts are calculated on the server.
-                    if (refund_total == scope.payment.total) {
-                        return scope.payment.tax;
+                    if (refund_total == scope.resource.total) {
+                        return scope.resource.tax;
                     }
 
-                    var refund_percentage = refund_total / scope.payment.total;
-                    return Math.round((scope.payment.tax * refund_percentage) * 100) / 100;
+                    var refund_percentage = refund_total / scope.resource.total;
+                    return Math.round((scope.resource.tax * refund_percentage) * 100) / 100;
 
                 }
 
@@ -1692,10 +1711,10 @@ app.directive('refund', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
                 scope.refund.getUnrefundedTotal = function () {
 
                     // Narrow to refunds that are completed or pending
-                    var successful_refunds = _.filter(scope.payment.refunds.data, function (item) { return _.contains(['completed', 'pending'], item.status) });
+                    var successful_refunds = _.filter(scope.refunds, function (item) { return _.contains(['completed', 'pending'], item.status) });
 
                     var refundTotal = utils.sumProperties(successful_refunds, "total");
-                    return utils.roundCurrency(scope.payment.total - refundTotal);
+                    return utils.roundCurrency(scope.resource.total - refundTotal);
                 }
 
                 scope.refund.getUnrefundedQuantity = function (item) {
@@ -1704,7 +1723,7 @@ app.directive('refund', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
                     var refundQuantity = 0;
 
                     // Narrow to refunds that are completed or pending
-                    var successful_refunds = _.filter(scope.payment.refunds.data, function (item) { return _.contains(['completed', 'pending'], item.status) });
+                    var successful_refunds = _.filter(scope.refunds, function (item) { return _.contains(['completed', 'pending'], item.status) });
 
                     _.each(successful_refunds, function (refund) {
                         if (refund.items != null) {
@@ -1744,47 +1763,59 @@ app.directive('void', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibMod
         restrict: 'A',
         scope: {
             payment: '=?',
+            order: '=?',
             error: '=?'
         },
         link: function (scope, elem, attrs, ctrl) {
 
-            // Hide by default
-            elem.hide();
-
-            // Watch to see if you should show or hide the button
-            scope.$watch('payment.status', function () {
-                if (scope.payment) {
-                    if (scope.payment.status == "pending" && scope.payment.payment_method.type == "credit_card") {
-                        elem.show();
-                    } else {
-                        elem.hide();
-                    }
-                }
-            }, true);
+            // Shared scope. Note that you should provide payment or order, but not both.
+            // payment: The payment you are cancelling.
+            // order: The order you are cancelling.
 
             elem.click(function () {
 
                 var execute = function () {
 
+                    var cancelUrl = "";
+                    if (scope.order) {
+                        cancelUrl = scope.order.url + "/void";
+                    } else {
+                        cancelUrl = scope.payment.url + "/void";
+                    }
+
                     // Void the payment
-                    ApiService.set(null, scope.payment.url + "/void")
-                    .then(
-                    function (refund) {
+                    ApiService.set(null, cancelUrl).then(function (response) {
 
-                        // Update the payment properties from the new refund and return.
-                        scope.payment.status = "cancelled";
+                        var newCancels = [];
 
-                        GrowlsService.addGrowl({ id: "void_success", type: "success" });
+                        // Handle if multiple refunds were returned.
+                        if (response.payments) {
+                            _.each(response.payments, function (payment) {
+                                newCancels.push(payment);
+                            });
+                        } else {
+                            newCancels.push(response);
+                        }
+
+                        // Set the payment status
+                        if (scope.payment) {
+                            scope.payment.status = "cancelled";
+                        }
+
+
+                        _.each(newCancels, function (payment) {
+                            if (payment.status == "pending") {
+                                GrowlsService.addGrowl({ id: "void_failure", type: "warning", url: "/#/payments/" + payment.payment_id, payment_id: payment.payment_id });
+                            } else {
+                                GrowlsService.addGrowl({ id: "void_success", type: "success", url: "/#/payments/" + payment.payment_id, payment_id: payment.payment_id });
+                            }
+                        });
+
                     },
                     function (error) {
-                        // if the error status is 422, the payment was previously voided. Just set the status and return.
-                        if (error.status == 422) {
-                            scope.payment.status = "cancelled";
-                        } else {
-                            // Otherwise, return an error.
-                            window.scrollTo(0, 0);
-                            scope.error = error;
-                        }
+                        // Otherwise, return an error.
+                        window.scrollTo(0, 0);
+                        scope.error = error;
                     });
                 }
 
@@ -1806,40 +1837,34 @@ app.directive('capture', ['ApiService', 'ConfirmService', 'GrowlsService', '$uib
         restrict: 'A',
         scope: {
             payment: '=?',
-            items: '=?',
+            order: '=?',
             shippingItem: '=?'
         },
         link: function (scope, elem, attrs, ctrl) {
 
-            // Hide by default
-            elem.hide();
-
-            // Watch to see if you should show or hide the button
-            scope.$watch('payment.status', function () {
-                if (scope.payment) {
-                    if (scope.payment.status == "pending" && (scope.payment.payment_method.type == "credit_card" || scope.payment.payment_method.type == "paypal" || scope.payment.payment_method.type == "amazon_pay")) {
-                        elem.show();
-                    } else {
-                        elem.hide();
-                    }
-                }
-            }, true);
-
+            // Shared scope. Note that you should provide payment or order, but not both.
+            // payment: The payment you are refunding.
+            // order: The order you are refunding.
+            // refunds: The refunds previously processed for this payment or order.
+            
             elem.click(function () {
 
                 // Set defaults
                 scope.capturePayment = {}
-                scope.capturePayment.currency = scope.payment.currency;
-                scope.capturePayment.original_total = scope.payment.total;
-                scope.capturePayment.original_tax = scope.payment.tax;
-                scope.capturePayment.original_shipping = scope.payment.shipping;
                 scope.capturePayment.disabled = false;
-                scope.capturePayment.shipping_quantity = null;
-
-                // We will derive our capture items from the order items.
                 scope.capturePayment.items = [];
-                if (scope.items) {
-                    _.each(scope.items, function (item, index) {
+
+                // Determine the active tab
+                scope.activeTab = 0;
+                scope.showItemsTab = true;
+
+                if (scope.order) {
+
+                    scope.capturePayment.original_total = scope.order.total;
+                    scope.capturePayment.original_tax = scope.order.tax;
+                    scope.capturePayment.original_shipping = scope.order.shipping;
+
+                    _.each(scope.order.items, function (item, index) {
                         var item = _.pick(item, "order_id", "item_id", "name", "description", "quantity", "price", "subtotal", "tax", "total", "tax_rate");
 
                         // Rename quantity so you can differentiate between ordered quantity and captured quantity
@@ -1849,25 +1874,19 @@ app.directive('capture', ['ApiService', 'ConfirmService', 'GrowlsService', '$uib
                         item.quantity = null;
 
                         scope.capturePayment.items.push(item);
-                    })
-                }
+                    });
 
-                if (scope.shippingItem) {
-                    scope.capturePayment.shipping_item = scope.shippingItem;
-                }
+                    if (scope.order.shipping_item) {
+                        scope.capturePayment.shipping_item = scope.order.shipping_item;
+                    }
 
-                // Determine which tabs is active and shown.
-                scope.showItemsTab = true;
-                if (scope.payment.order) {
-                    scope.capturePaymentTabs = [
-                      { active: true },
-                      { active: false }
-                    ];
                 } else {
-                    scope.capturePaymentTabs = [
-                      { active: false },
-                      { active: true }
-                    ];
+                    scope.capturePayment.original_total = scope.payment.total;
+                    scope.capturePayment.original_tax = scope.payment.tax;
+                    scope.capturePayment.original_shipping = scope.payment.shipping;
+
+                    // Determine the active tab
+                    scope.activeTab = 1;
                     scope.showItemsTab = false;
                 }
 
@@ -1903,11 +1922,11 @@ app.directive('capture', ['ApiService', 'ConfirmService', 'GrowlsService', '$uib
                         partialCapture = true;
                     }
 
-                    if (!scope.capturePayment.shipping_quantity && scope.shippingItem && !scope.capturePayment.total) {
+                    if (scope.order && !scope.capturePayment.shipping_quantity && scope.order.shipping_item && !scope.capturePayment.total) {
                         partialCapture = true;
                     }
 
-                    if (scope.capturePayment.total && parseFloat(scope.capturePayment.total) < scope.payment.total) {
+                    if (scope.capturePayment.total && parseFloat(scope.capturePayment.total) < scope.capturePayment.original_total) {
                         partialCapture = true;
                     }
 
@@ -1944,8 +1963,8 @@ app.directive('capture', ['ApiService', 'ConfirmService', 'GrowlsService', '$uib
                             }
                         });
 
-                        if (scope.capturePayment.shipping_quantity == 1) {
-                            data.shipping = scope.shippingItem.total;
+                        if (scope.order && scope.capturePayment.shipping_quantity == 1) {
+                            data.shipping = scope.order.shipping_item.total;;
                         }
 
                     } else {
@@ -1954,31 +1973,52 @@ app.directive('capture', ['ApiService', 'ConfirmService', 'GrowlsService', '$uib
                     }
 
                     // Capture the payment
+
+                    var captureUrl = "";
+                    if (scope.order) {
+                        captureUrl = scope.order.url + "/capture";
+                    } else {
+                        captureUrl = scope.payment.url + "/capture";
+                    }
+
                     var params = { expand: "customer,response_data,items.shipments,gateway,fees,commissions,order,refunds,payment_method" };
-                    ApiService.set(data, scope.payment.url + "/capture", params)
-                    .then(
-                    function (payment) {
+                    ApiService.set(data, captureUrl, params).then(function (response) {
 
-                        // Populate the updated payment.
-                        scope.payment = payment;
+                        var newCaptures = [];
 
-                        GrowlsService.addGrowl({ id: "payment_capture_success", type: "success" });
-                        capturePaymentModal.close(payment);
-                    },
-                    function (error) {
-                        // if the error status is 422, the payment was previously captured. Get the captured payment to return it.
-                        if (error.status == 422) {
-                            ApiService.getItem(scope.payment.url).then(function (payment) {
-                                capturePaymentModal.close(payment);
-                            }, function () {
-                                // You had a problem getting the payment. Return the original error.
-                                capturePaymentModal.close(error);
+                        // Handle if multiple refunds were returned.
+                        if (response.payments) {
+                            _.each(response.payments, function (payment) {
+                                newCaptures.push(payment);
                             });
                         } else {
+                            newCaptures.push(response);
+                        }
+
+                        // Set the payment status
+                        if (scope.order) {
+                            if (_.filter(newCaptures, function (payment) { return payment.status != "completed"; }).length == 0) {
+                                scope.order.payment_status = "completed";
+                            }
+                        } else {
+                            scope.payment.status = "completed";
+                        }
+
+                        _.each(newCaptures, function (payment) {
+                            if (payment.status == "pending") {
+                                GrowlsService.addGrowl({ id: "payment_capture_failure", type: "warning", url: "/#/payments/" + payment.payment_id, payment_id: payment.payment_id });
+                            } else {
+                                GrowlsService.addGrowl({ id: "payment_capture_success", type: "success", url: "/#/payments/" + payment.payment_id, payment_id: payment.payment_id });
+                            }
+                        });
+
+                        capturePaymentModal.close();
+
+                    },
+                    function (error) {
                             // Otherwise, return an error.
                             window.scrollTo(0, 0);
                             scope.modalError = error;
-                        }
                     });
                 }
 
@@ -1996,7 +2036,7 @@ app.directive('capture', ['ApiService', 'ConfirmService', 'GrowlsService', '$uib
 
                 scope.capturePayment.getShippingTotal = function (quantity) {
                     if (quantity) {
-                        return scope.shippingItem.total;
+                        return scope.order.shipping_item.total;
                     } else {
                         return 0;
                     }
@@ -2008,12 +2048,12 @@ app.directive('capture', ['ApiService', 'ConfirmService', 'GrowlsService', '$uib
 
                     _.each(items, function (item) {
                         if (item.quantity) {
-                            total += Math.round(parseFloat((item.price * parseInt(item.quantity)) * (1 + item.tax_rate)) * 100) / 100;
+                            total += Math.round(parseFloat((item.price * parseFloat(item.quantity)) * (1 + item.tax_rate)) * 100) / 100;
                         }
                     });
 
-                    if (shipping_quantity) {
-                        total += scope.shippingItem.total;
+                    if (scope.order && shipping_quantity) {
+                        total += scope.order.shipping_item.total;
                     }
 
                     if (total > 0) {
@@ -2028,7 +2068,7 @@ app.directive('capture', ['ApiService', 'ConfirmService', 'GrowlsService', '$uib
                     if (items != null) {
                         _.each(items, function (item) {
                             if (item.quantity) {
-                                total = total + parseInt(item.quantity);
+                                total = total + parseFloat(item.quantity);
                             }
                         });
                     }
@@ -2360,20 +2400,17 @@ app.directive('cancelSubscription', ['ApiService', 'ConfirmService', 'GrowlsServ
 
                 var execute = function () {
 
-                    // If cancel at period end is false, set the status to cancelled.
                     var request = {};
                     if (scope.subscription_cancel.request.cancel_at_current_period_end == true) {
                         request.cancel_at_current_period_end = true;
                     } else {
-                        request.status = "cancelled";
+                        request.cancel_at_current_period_end = false;
                     }
 
                     request.cancellation_reason = scope.subscription_cancel.request.cancellation_reason;
 
                     // Cancel the subscription
-                    ApiService.set(request, scope.subscription.url, { expand: "subscription_plan,customer.payment_methods,items.subscription_terms", formatted: true })
-                    .then(
-                    function (subscription) {
+                    ApiService.set(request, scope.subscription.url + "/cancel", { expand: "subscription_plan,customer.payment_methods,items.subscription_terms", formatted: true }).then(function (subscription) {
                         scope.subscription = subscription;
                         subscriptionModal.dismiss();
                         GrowlsService.addGrowl({ id: "subscription_cancel_success", type: "success" });
@@ -2511,7 +2548,9 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
         scope: {
             error: '=?',
             count: '=?',
+            data: '=?',
             refreshOnChange: '=?',
+            refreshOnChangeProperty: '=?',
             functions: '=?',
             refresh: '=?',
             meta: '=?',
@@ -2533,9 +2572,11 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
             // error: The parent page error object, so errors within the directive can be passed up and displayed.
             // count: Shares the result count back to the parent. Only supplies a value for offset-based paginated lists that return an item count in the payload header.
             // refresh-on-change: If other items on the page do functions that may cause the list to change (such as a processing a refund or shipping an item), place the collection of those items here and when it changes, it will trigger a refresh in the list.
+            // refresh-on-change-property: Similar to refresh-on-change, but watches a single data property rather than an array of data.
             // functions: If your list needs to call external functions, the functions can be passed in as properties of the functions object
             // meta: An object that can be used to pass external data into the list
             // refresh: A function that an external function can use to manually refresh the list
+            // data: An array that stores the list of returned objects so it can be accessed by the caller
 
             // Establish your scope containers
             scope.list = {};
@@ -2548,6 +2589,8 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
             var baseParams = scope.params || {};
 
             if (!scope.params) {
+
+                baseParams.formatted = true;
 
                 if (attrs.type == "order") {
                     baseParams.show = "date_created,order_id,fulfilled,total,payment_status,currency";
@@ -2594,6 +2637,12 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
                     baseParams.limit = 25;
                     default_sort = "date_created";
                 }
+                if (attrs.type == "balance_transactions") {
+                    baseParams.show = "customer_balance_transaction_id,date_created,amount,current_balance,memo,payment.payment_id,refund.refund_id,currency";
+                    baseParams.expand = "payment,refund";
+                    baseParams.limit = 25;
+                    default_sort = "date_created";
+                }
 
             }
 
@@ -2632,6 +2681,7 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
                 ApiService.getList(url, scope.userParams).then(function (result) {
                     scope.list = result;
                     scope.count = result.total_items;
+                    scope.data = result.data;
 
                     // If instructed, scroll to the top upon completion
                     if (scrollTop == true & attrs.embedded == false) {
@@ -2844,13 +2894,36 @@ app.directive('objectList', ['ApiService', '$location', function (ApiService, $l
             getList(true);
 
             var lastLength = null;
-            scope.$watchCollection('refreshOnChange', function () {
+
+            scope.$watch('refreshOnChangeProperty', function (newVal, oldVal) {
+                if (newVal && newVal != oldVal && oldVal != undefined) {
+                    refresh();
+                }
+            });
+
+            scope.$watchCollection('refreshOnChange', function (newVal, oldVal) {
 
                 // If an external source that is displaying this list triggers an action that will cause the values in the list to change (such as a refund processed or a shipment recorded),
                 // this function will notice the change and will trigger a list refresh. 
 
                 // We need to allow the collection to stabilize from initial load before we trigger a refresh. The initial changes will take the list from undefined to fully populated with the initial data
                 // and we don't want to trigger a refresh on all these initialization mutations.
+
+                if (!newVal || !oldVal) {
+                    return;
+                }
+
+                if (!Array.isArray(newVal) || !Array.isArray(oldVal)) {
+                    return;
+                }
+
+                if (newVal.length == 0) {
+                    return;
+                }
+
+                if (_.isEqual(newVal, oldVal)) {
+                    return;
+                }
 
                 if (scope.refreshOnChange != null) {
                     if (Array.isArray(scope.refreshOnChange) && lastLength == null) {
@@ -3270,7 +3343,7 @@ app.directive('fileSelect', ['ApiService', 'ConfirmService', 'GrowlsService', '$
 
                     // Make a copy so you can modify what you send without changing the model in the UI
                     var file = angular.copy(scope.fileSelect.file);
-                    file.url = scope.options.url;
+                    file.file_url = scope.options.url;
                     file.http_authorization_username = scope.options.http_authorization_username;
                     file.http_authorization_password = scope.options.http_authorization_password;
 
@@ -3801,7 +3874,8 @@ app.directive('productsSelect', ['ApiService', 'ConfirmService', 'GrowlsService'
                 scope.productsSelect.limit = attrs.limit || 15;
 
                 scope.productsSelect.params = {};
-                scope.productsSelect.params.show = "product_id,name,date_created,date_modified,price,currency";
+                scope.productsSelect.params.show = "product_id,name,date_created,date_modified,price,currency,subscription_plan.billing_interval_description,subscription_plan.trial_interval_description";
+                scope.productsSelect.params.expand = "subscription_plan";
                 scope.productsSelect.params.limit = 10; // The number of products to show per page.
                 scope.productsSelect.params.sort_by = "name";
                 scope.productsSelect.params.desc = false;
@@ -3897,6 +3971,17 @@ app.directive('productsSelect', ['ApiService', 'ConfirmService', 'GrowlsService'
                     } else {
                         loadProducts(scope.productList.previous_page_url);
                     }
+                }
+
+                scope.productsSelect.getSubscriptionInfo = function (product) {
+                    if (product.subscription_plan) {
+                        var description = product.subscription_plan.billing_interval_description;
+                        if (product.subscription_plan.trial_interval_description) {
+                            description += " (with trial)";
+                        }
+                        return description;
+                    }
+                    return null;
                 }
 
             });
@@ -4077,7 +4162,6 @@ app.directive('productGroup', ['ApiService', 'ConfirmService', 'GrowlsService', 
             products: '=?'
         },
         link: function (scope, elem, attrs, ctrl) {
-
 
             scope.limit = attrs.limit || 15;
 
@@ -5584,7 +5668,7 @@ app.service("GrowlsService", ['$rootScope', function ($rootScope) {
                 duration = 5;
                 break;
             case "warning":
-                duration = 10;
+                duration = 20;
                 break;
             case "danger":
                 duration = -1; // Until user dismisses it
@@ -5630,6 +5714,7 @@ app.service("SettingsService", ['$rootScope', "$q", "ApiService", function ($roo
         return ApiService.getItem(ApiService.buildUrl("/accounts/" + $rootScope.account.account_id + "/account_meta")).then(function (account) {
             $rootScope.account.alias = account.alias;
             localStorage.setItem("alias", account.alias);
+            localStorage.setItem("model", account.model);
             $rootScope.account.live = account.live;
             localStorage.setItem("live", account.live);
             $rootScope.account.reporting_currency_primary = account.reporting_currency_primary;
@@ -5833,11 +5918,68 @@ app.service("TimezonesService", [function () {
 }]);
 
 
-app.service("HelperService", [function () {
+app.service("EventTypesService", [function () {
+    var getEventsTypes = function () {
+        return [
+            { name: "Account Modified", code: "account:modified" },
+            { name: "Cart Payment Completed", code: "cart:payment_completed" },
+            { name: "Gateway Created", code: "gateway:created" },
+            { name: "Gateway Modified", code: "gateway:modified" },
+            { name: "Event Subscription Created", code: "event_subscription:created" },
+            { name: "Event Subscription Modified", code: "event_subscription:modified" },
+            { name: "Event Subscription Deleted", code: "event_subscription:deleted" },
+            { name: "License Service Low Licenses", code: "license_service:low_licenses" },
+            { name: "Invoice Created", code: "invoice:created" },
+            { name: "Invoice Published", code: "invoice:published" },
+            { name: "Invoice Paid", code: "invoice:paid" },
+            { name: "Invoice Payment Completed", code: "invoice:payment_completed" },
+            { name: "Order Created", code: "order:created" },
+            { name: "Order Licenses Assigned", code: "order:licenses_assigned" },
+            { name: "Order Payment Completed", code: "order:payment_completed" },
+            { name: "Order Fulfilled", code: "order:fulfilled" },
+            { name: "Payment Completed", code: "payment:completed" },
+            { name: "Payment Created Success", code: "payment:created_success" },
+            { name: "Payment Created Failure", code: "payment:created_failure" },
+            { name: "Payment Captured Success", code: "payment:captured_success" },
+            { name: "Payment Captured Failure", code: "payment:captured_failure" },
+            { name: "Payment Voided", code: "payment:voided" },
+            { name: "Product Created", code: "product:created" },
+            { name: "Product Modified", code: "product:modified" },
+            { name: "Product Deleted", code: "product:deleted" },
+            { name: "Refund Created Success", code: "refund:created_success" },
+            { name: "Refund Created Failure", code: "refund:created_failure" },
+            { name: "Refund Deleted", code: "refund:deleted" },
+            { name: "User Created", code: "user:created" },
+            { name: "User Modified", code: "user:modified" },
+            { name: "Shipment Created", code: "shipment:created" },
+            { name: "Shipment Modified", code: "shipment:modified" },
+            { name: "Shipment Deleted", code: "shipment:deleted" },
+            { name: "Subscription Created", code: "subscription:created" },
+            { name: "Subscription Cancelled", code: "subscription:cancelled" },
+            { name: "Subscription Item Added", code: "subscription_item:added" },
+            { name: "Subscription Item Cancelled", code: "subscription_item:cancelled" },
+            { name: "Subscription Item Modified", code: "subscription_item:modified" },
+            { name: "Subscription Completed", code: "subscription:completed" },
+            { name: "Subscription Converted", code: "subscription:converted" },
+            { name: "Subscription Renewal Success", code: "subscription:renewal_success" },
+            { name: "Subscription Renewal Failure", code: "subscription:renewal_failure" }
+        ];
+    };
+
+    return {
+        getEventsTypes: getEventsTypes
+    }
+}
+]);
+
+
+app.service("HelperService", ['SettingsService', function (SettingsService) {
 
     // Return public API.
     return ({
         isAdmin: isAdmin,
+        isReseller: isReseller,
+        isAgent: isAgent,
     });
 
     function isAdmin() {
@@ -5849,6 +5991,18 @@ app.service("HelperService", [function () {
             }
         }
         return false;
+    }
+
+    function isReseller() {
+        var model = localStorage.getItem("model");
+        if (model && model == "reseller") {
+            return true;
+        }
+        return false;
+    }
+
+    function isAgent() {
+        return !isReseller();
     }
 
 }]);

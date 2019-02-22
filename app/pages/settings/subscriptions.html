@@ -152,8 +152,97 @@
                     </div>
                 </div>
             </div>
-            
-             <div class="col-sm-12">
+
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="checkbox-group-label" translate>Immediate Subscription Upgrades</label>
+                    <div class="checkbox-group inline">
+                        <div class="row"></div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="immediate-type-digital" class="checkbox" name="immediate-type-digital" ng-model="immediate_upgrades.digital">
+                            <label for="field-name" class="checkbox-label">Digital Products</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="immediate-type-physical" class="checkbox" name="immediate-type-physical" ng-model="immediate_upgrades.physical">
+                            <label for="field-name" class="checkbox-label">Physical Products</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="immediate-type-service" class="checkbox" name="immediate-type-service" ng-model="immediate_upgrades.service">
+                            <label for="field-name" class="checkbox-label">Services</label>
+                        </div>
+                        <div class="row"></div>
+                        <div>
+                            <p class="help-text" translate>
+                                This setting allows you determine if an upgrade should be applied to a subscription immediately, based on the type of product. Changes not applied immediately are applied at the end of the current subscription billing period.
+                                Note that immediate upgrades will generate an immediate payment from the customer, so you should only configure immediate upgrades when the upgraded product can also be delivered immediately.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="checkbox-group-label" translate>Immediate Subscription Downgrades</label>
+                    <div class="checkbox-group inline">
+                        <div class="row"></div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="immediate-type-digital" class="checkbox" name="immediate-type-digital" ng-model="immediate_downgrades.digital">
+                            <label for="field-name" class="checkbox-label">Digital Products</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="immediate-type-physical" class="checkbox" name="immediate-type-physical" ng-model="immediate_downgrades.physical">
+                            <label for="field-name" class="checkbox-label">Physical Products</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="immediate-type-service" class="checkbox" name="immediate-type-service" ng-model="immediate_downgrades.service">
+                            <label for="field-name" class="checkbox-label">Services</label>
+                        </div>
+                        <div class="row"></div>
+                        <div>
+                            <p class="help-text" translate>
+                                This setting allows you determine if a downgrade should be applied to a subscription immediately, based on the type of product. Changes not applied immediately are applied at the end of the current subscription billing period.
+                                Note that immediate downgrades will usually generate an immediate refund to the customer. The amount of the refund will be based on the pro-rated, unused value of the product being removed by the downgrade.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-6">
+                <div class="form-group" show-errors>
+                    <label class="radio-group-label" translate>Allow Customer Downgrades</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="allow_customer_subscription_downgrade-1" class="radio" name="allow_customer_subscription_downgrade" ng-model="settings.allow_customer_subscription_downgrade" ng-value="true" required>
+                        <label for="allow_customer_subscription_downgrade-1" class="radio-label">Yes</label>
+                        <input type="radio" id="allow_customer_subscription_downgrade-2" class="radio" name="allow_customer_subscription_downgrade" ng-model="settings.allow_customer_subscription_downgrade" ng-value="false" required>
+                        <label for="allow_customer_subscription_downgrade-2" class="radio-label">No</label>
+                    </div>
+                    <div>
+                        <p class="help-text" translate>Indicates if you want to allow customers to submit downgrade requests on their own. If not enabled, downgrades can only be submitted by internal users.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-6">
+                <div class="form-group" show-errors>
+                    <label class="radio-group-label" translate>Use Customer Payment Currency</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="use_customer_payment_currency-1" class="radio" name="use_customer_payment_currency" ng-model="settings.use_customer_payment_currency" ng-value="true" required>
+                        <label for="use_customer_payment_currency-1" class="radio-label">Yes</label>
+                        <input type="radio" id="use_customer_payment_currency-2" class="radio" name="use_customer_payment_currency" ng-model="settings.use_customer_payment_currency" ng-value="false" required>
+                        <label for="use_customer_payment_currency-2" class="radio-label">No</label>
+                    </div>
+                    <div>
+                        <p class="help-text" translate>
+                            If a customer makes a payment in a currency that is not used in your product prices, this indicates which currency should be used to determine the price of the subscription item.
+                            If based on the customer payment currency, the amount you receive with each payment will vary based on exchange rates. Otherwise, the amount the customer pays will vary with each payment.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12">
                 <div class="form-group" show-errors>
                     <label for="cancellation_reasons" class="control-label" translate>Cancellation Reasons</label>
                     <textarea class="form-control" id="cancellation_reasons" name="cancellation_reasons" ng-model="cancellation_reasons" placeholder="{{ 'Enter one reason per line' | translate}}"></textarea>

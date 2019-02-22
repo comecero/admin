@@ -246,6 +246,10 @@
   margin-left: 15px;
   margin-top: 15px;
 }
+.btn-xs-margin-left {
+  margin-left: 5px;
+  margin-top: 5px;
+}
 .btn-app {
   border-radius: 3px;
   position: relative;
@@ -2746,6 +2750,12 @@ p.no-info {
   text-align: center;
   margin: 30px 0 30px 0;
 }
+p.no-info-short {
+  color: #bab9b9;
+  font-size: 18px;
+  text-align: center;
+  margin: 10px 0 10px 0;
+}
 /* Classes to give sizes to icons */
 .fa-2 {
   font-size: 2em !important;
@@ -2988,7 +2998,13 @@ p.no-info {
 .gridtable-row {
   border-bottom: 1px solid #f4f4f4;
 }
-.gridtable-row > div {
+/*.gridtable-row > div {
+    padding: 20px 0 20px 0;
+}*/
+.gridtable-row > div:not(.gridtable-wrapper) {
+  padding: 20px 0 20px 0;
+}
+.gridtable-wrapper > div {
   padding: 20px 0 20px 0;
 }
 .gridtable-row .form-group {
@@ -3227,6 +3243,18 @@ table.data th {
 table.data th {
   font-weight: bold;
 }
+.table tr.no-border > td {
+  border-top: 0;
+}
 .strike {
   text-decoration: line-through;
+}
+.text-xl {
+  font-size: 24px;
+}
+ul.product-group {
+  margin-bottom: 0;
+}
+tbody.highlight {
+  background-color: #f9f9f9;
 }

@@ -19,6 +19,7 @@
                 <span class="badge badge-warning" ng-if="payment.status == 'refunded'"><i class="fa fa-undo"></i>&nbsp;&nbsp;<span translate>Refunded</span></span>
                 <span class="badge badge-danger" ng-if="payment.status == 'failed'"><i class="fa fa-times-circle"></i>&nbsp;&nbsp;<span translate>Failed</span></span>
                 <span class="badge badge-primary" ng-if="payment.status == 'initiated'"><i class="fa fa-sign-in"></i>&nbsp;&nbsp;<span translate>Initiated</span></span>
+                <span class="badge badge-danger" ng-if="payment.status == 'cancelled'"><i class="fa fa-ban"></i>&nbsp;&nbsp;<span translate>Cancelled</span></span>
             </div>
         </div>
         <div class="panel-body">
@@ -27,9 +28,9 @@
                 <div class="panel-heading">
                     <span class="panel-title">Payment Details</span>
                     <div class="panel-heading-controls">
-                        <span class="btn btn-success btn btn-sm btn-danger" refund payment="payment" gateway-account-id="payment.gateway.account_id" fees="payment.fees.data" items="payment.order.items" shipping-item="payment.order.shipping_item" resource="refunds" method="create" translate>Process Refund</span>
-                        <span class="btn btn-danger btn btn-sm spacer-t5" void payment="payment" error="exception.error" translate>Cancel</span>
-                        <span class="btn btn-success btn btn-sm spacer-t5" capture payment="payment" items="payment.order.items" shipping-item="payment.order.shipping_item" error="exception.error" translate>Capture</span>
+                        <span class="btn btn-success btn btn-sm btn-danger" refund payment="payment" refunds="data.refunds" fees="payment.fees.data" resource="refunds" method="create" ng-show="payment.status == 'completed'" translate>Process Refund</span>
+                        <span class="btn btn-danger btn btn-sm spacer-t5" void payment="payment" error="exception.error" ng-show="payment.status == 'pending'" translate>Cancel</span>
+                        <span class="btn btn-success btn btn-sm spacer-t5" capture payment="payment" error="exception.error" ng-show="payment.status == 'pending'" translate>Capture</span>
                     </div>
                 </div>
 
@@ -122,14 +123,32 @@
 
             <ledger-breakdown currency-type="currencyType" transactions="payment" panel-title="{{'Payment Amounts' | translate}}"></ledger-breakdown>
 
-            <ledger-breakdown currency-type="currencyType" transactions="payment.refunds.data" include-status="completed,pending" panel-title="{{'Refund Amounts' | translate}}" load-details="prefs.loadRefundDetails" resource="refunds" method="read"></ledger-breakdown>
+            <ledger-breakdown currency-type="currencyType" transactions="data.refunds" include-status="completed,pending" panel-title="{{'Refund Amounts' | translate}}" load-details="prefs.loadRefundDetails" resource="refunds" method="read"></ledger-breakdown>
 
             <div class="panel" resource="refunds" method="read" ng-show="prefs.loadRefundDetails">
                 <div class="panel-heading">
                     <span class="panel-title" translate>Refund Details</span>
                 </div>
                 <div class="panel-body">
-                    <div object-list type="refund" url="{{refundListUrl}}" template-url="app/templates/refundList.html" embedded="true" page="offset" limit="5" search="false" error="exception.error" count="count.refunds" refresh-on-change="payment.refunds.data"></div>
+                    <div object-list type="refund" url="{{refundListUrl}}" template-url="app/templates/refundList.html" embedded="true" page="offset" limit="10" data="data.refunds" search="false" error="exception.error" count="count.refunds" refresh-on-change-property="payment.status" params="refundParams"></div>
+                </div>
+            </div>
+
+            <div class="panel" ng-if="payment.invoice.invoice_id">
+                <div class="panel-heading">
+                    <span class="panel-title" translate>Invoice</span>
+                </div>
+                <div class="panel-body">
+                    <div><span translate>Invoice ID:</span> <a ng-href="#/invoices/{{payment.invoice.invoice_id}}">{{payment.invoice.invoice_id}}</a></div>
+                </div>
+            </div>
+
+            <div class="panel" ng-if="payment.order && !payment.invoice">
+                <div class="panel-heading">
+                    <span class="panel-title" translate>Order</span>
+                </div>
+                <div class="panel-body">
+                        <div><span translate>Order ID:</span> <a ng-href="#/orders/{{payment.order.order_id}}">{{payment.order.order_id}}</a></div>
                 </div>
             </div>
 
@@ -143,7 +162,10 @@
                 <div class="panel-body panel-tight">
                     <div class="col-xs-12 col-sm-6 panel-tight-row">
                         <div class="col-xs-12 col-md-4 panel-tight-section"><label>Name</label></div>
-                        <div class="col-xs-12 col-md-8 panel-tight-section text-capitalize"><a href="#/gateways/{{payment.gateway.gateway_id}}/edit">{{payment.gateway.name}}</a></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section text-capitalize">
+                            <a href="#/gateways/{{payment.gateway.gateway_id}}/edit" ng-if="payment.gateway.gateway_id != 'customer_balance_gateway'">{{payment.gateway.name}}</a>
+                            <span ng-if="payment.gateway.gateway_id === 'customer_balance_gateway'">{{payment.gateway.name}}</span>
+                        </div>
                     </div>
 
                     <div class="col-xs-12 col-sm-6 panel-tight-row">
