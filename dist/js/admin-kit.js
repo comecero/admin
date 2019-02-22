@@ -234,6 +234,7 @@ app.service("ApiService", ['$http', '$q', '$rootScope', function ($http, $q, $ro
             if (response.data.error.status == 403) {
                 error.code = "error";
                 error.message = "It appears that you don't have permissions to access page or function you have requested. If you feel this is incorrect, please contact an account administrator.";
+                error.message += " " + response.data.error.message;
                 error.status = response.status;
                 return ($q.reject(error));
             }
@@ -2399,20 +2400,17 @@ app.directive('cancelSubscription', ['ApiService', 'ConfirmService', 'GrowlsServ
 
                 var execute = function () {
 
-                    // If cancel at period end is false, set the status to cancelled.
                     var request = {};
                     if (scope.subscription_cancel.request.cancel_at_current_period_end == true) {
                         request.cancel_at_current_period_end = true;
                     } else {
-                        request.status = "cancelled";
+                        request.cancel_at_current_period_end = false;
                     }
 
                     request.cancellation_reason = scope.subscription_cancel.request.cancellation_reason;
 
                     // Cancel the subscription
-                    ApiService.set(request, scope.subscription.url, { expand: "subscription_plan,customer.payment_methods,items.subscription_terms", formatted: true })
-                    .then(
-                    function (subscription) {
+                    ApiService.set(request, scope.subscription.url + "/cancel", { expand: "subscription_plan,customer.payment_methods,items.subscription_terms", formatted: true }).then(function (subscription) {
                         scope.subscription = subscription;
                         subscriptionModal.dismiss();
                         GrowlsService.addGrowl({ id: "subscription_cancel_success", type: "success" });
@@ -3876,7 +3874,8 @@ app.directive('productsSelect', ['ApiService', 'ConfirmService', 'GrowlsService'
                 scope.productsSelect.limit = attrs.limit || 15;
 
                 scope.productsSelect.params = {};
-                scope.productsSelect.params.show = "product_id,name,date_created,date_modified,price,currency";
+                scope.productsSelect.params.show = "product_id,name,date_created,date_modified,price,currency,subscription_plan.billing_interval_description,subscription_plan.trial_interval_description";
+                scope.productsSelect.params.expand = "subscription_plan";
                 scope.productsSelect.params.limit = 10; // The number of products to show per page.
                 scope.productsSelect.params.sort_by = "name";
                 scope.productsSelect.params.desc = false;
@@ -3972,6 +3971,17 @@ app.directive('productsSelect', ['ApiService', 'ConfirmService', 'GrowlsService'
                     } else {
                         loadProducts(scope.productList.previous_page_url);
                     }
+                }
+
+                scope.productsSelect.getSubscriptionInfo = function (product) {
+                    if (product.subscription_plan) {
+                        var description = product.subscription_plan.billing_interval_description;
+                        if (product.subscription_plan.trial_interval_description) {
+                            description += " (with trial)";
+                        }
+                        return description;
+                    }
+                    return null;
                 }
 
             });
@@ -4152,7 +4162,6 @@ app.directive('productGroup', ['ApiService', 'ConfirmService', 'GrowlsService', 
             products: '=?'
         },
         link: function (scope, elem, attrs, ctrl) {
-
 
             scope.limit = attrs.limit || 15;
 

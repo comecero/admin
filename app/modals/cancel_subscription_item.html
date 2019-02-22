@@ -23,7 +23,7 @@
             </div>
 
             <div class="col-xs-12">
-                <div class="form-group" show-errors>
+                <div class="form-group">
                     <label for="cancellation_reason" class="control-label" translate>Reason</label>
                     <div ng-if="cancellation_reasons.length > 0">
                         <select class="form-control" ng-model="subscription_cancel.request.cancellation_reason" name="cancellation_reason" ng-options="cancellation_reason for cancellation_reason in cancellation_reasons" required></select>

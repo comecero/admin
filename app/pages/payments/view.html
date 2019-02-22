@@ -162,7 +162,10 @@
                 <div class="panel-body panel-tight">
                     <div class="col-xs-12 col-sm-6 panel-tight-row">
                         <div class="col-xs-12 col-md-4 panel-tight-section"><label>Name</label></div>
-                        <div class="col-xs-12 col-md-8 panel-tight-section text-capitalize"><a href="#/gateways/{{payment.gateway.gateway_id}}/edit">{{payment.gateway.name}}</a></div>
+                        <div class="col-xs-12 col-md-8 panel-tight-section text-capitalize">
+                            <a href="#/gateways/{{payment.gateway.gateway_id}}/edit" ng-if="payment.gateway.gateway_id != 'customer_balance_gateway'">{{payment.gateway.name}}</a>
+                            <span ng-if="payment.gateway.gateway_id === 'customer_balance_gateway'">{{payment.gateway.name}}</span>
+                        </div>
                     </div>
 
                     <div class="col-xs-12 col-sm-6 panel-tight-row">

@@ -221,7 +221,6 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
                 }
 
                 if (response.data.error.status === 403) {
-                    response.data.error.message = "You do not have permission to perform the requested action. Please contact an account administrator for assistance.";
                     return ($q.reject(response));
                 }
 

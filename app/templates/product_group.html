@@ -1,4 +1,4 @@
-﻿<ul class="list-group">
+﻿<ul class="product-group list-group">
     <li class="list-group-item overflow-hidden">
         <i class="fa fa-minus-square pointer pull-right text-default" ng-show="showProducts" ng-click="showProducts = !showProducts" style="margin-top:3px"></i>
         <i class="fa fa-plus-square pointer pull-right text-default" ng-show="!showProducts" ng-click="showProducts = !showProducts" style="margin-top:3px"></i>
@@ -6,7 +6,7 @@
     </li>
     <li class="list-group-item overflow-hidden fadeIn animated" ng-show="showProducts">
         <div class="col-md-3 col-xs-12 spacer-b15" ng-repeat="product in products">
-            <div><a href="#/products/{{product.product_id}}/edit" target="_blank">{{product.product_id}}</a></div>
+            <div><a href="#/products/{{product.product_id}}/edit" target="_blank">{{product.name || product.product_id}}</a></div>
         </div>
         <div class="row spacer-b15"></div>
         <p class="text-right">

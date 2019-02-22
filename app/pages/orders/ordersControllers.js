@@ -27,7 +27,7 @@ app.controller("OrdersViewCtrl", ['$scope', '$routeParams', 'ApiService', 'Confi
     $scope.resources.notificationListUrl = $scope.url + "/notifications";
 
     // Load the order
-    var params = { expand: "customer,payments.response_data,payments.payment_method,refunds,items.product,items.subscription,items.download.file,items.license.license_service,shipments", hide: "items.product.images,items.license.license_service.configuration", formatted: true };
+    var params = { expand: "customer,payments.response_data,payments.payment_method,refunds,items.product,items.subscription,items.download.file,items.license.license_service,shipments,subscription", hide: "items.product.images,items.license.license_service.configuration", formatted: true };
     ApiService.getItem($scope.url, params).then(function (order) {
         $scope.order = order;
         $scope.payment = order.payments.data[0];
