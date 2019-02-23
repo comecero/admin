@@ -256,8 +256,7 @@ app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$locatio
         ApiService.set($scope.eventSubscription, $scope.url, { show: "event_subscription_id,name" })
         .then(
         function (eventSubscription) {
-            GrowlsService.addGrowl({ id: "edit_success", name: eventSubscription.event_subscription_id, type: "success", event_subscription_id: eventSubscription.event_subscription_id, url: "#/event_subscriptions/" + eventSubscription.event_subscription_id + "/edit" });
-            window.location = "#/event_subscriptions";
+            GrowlsService.addGrowl({ id: "edit_success_no_link", name: eventSubscription.event_subscription_id, type: "success", event_subscription_id: eventSubscription.event_subscription_id });
         },
         function (error) {
             window.scrollTo(0, 0);
@@ -289,14 +288,15 @@ app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$locatio
     $scope.runTest = function(test) {
         $scope.testResult = null;
         $scope.testRunning = true;
-        ApiService.set({}, $scope.eventSubscription.url + '/test/' + test.event_test_template_id).then(
-        function (testResult) {
+        ApiService.set({}, $scope.eventSubscription.url + '/test/' + test.event_test_template_id).then(function (testResult) {
             $scope.testRunning = false;
-            $scope.testResult = JSON.stringify(testResult, undefined, 2);
+            $scope.testResult = { success: true };
+            $scope.testResult.json = JSON.stringify(testResult, undefined, 2);
         },
         function (testResult) {
             $scope.testRunning = false;
-            $scope.testResult = JSON.stringify(testResult, undefined, 2);
+            $scope.testResult = { success: false };
+            $scope.testResult.json = JSON.stringify(testResult, undefined, 2);
         });
     };
 }]);

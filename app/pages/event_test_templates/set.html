@@ -7,25 +7,29 @@
     </div>
 
     <div class="page-header">
-        <h1 ng-if="add" translate>Add Event Test Template</h1>
-        <h1 ng-if="update" translate>Event Test Template {{eventTestTemplate.event_test_template_id}}</h1>
+        <h1 ng-if="add" translate>Add Test Template</h1>
+        <h1 ng-if="update" translate>Test Template {{eventTestTemplate.event_test_template_id}}</h1>
     </div>
     <form name="form" novalidate>
         <div class="panel panel-body light-shadow">
-            <div ng-if="add" class="col-xs-12">
-                <div class="form-group" show-errors>
-                    <label for="event_test_template_id" class="control-label" translate>ID</label>
-                    <input type="text" class="form-control" name="event_test_template_id" ng-model="eventTestTemplate.event_test_template_id">
-                    <div>
-                        <p class="help-text" translate>Optional identifier for this test template. Leave blank to autogenerate an ID.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-xs-12">
+            
+            <div class="col-xs-12 col-md-6">
                 <div class="form-group" show-errors>
                     <label for="name" class="control-label" translate>Name</label>
                     <input type="text" class="form-control" name="name" ng-model="eventTestTemplate.name" required>
+                    <div>
+                        <p class="help-text" translate>For your reference</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div ng-if="add" class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label for="event_test_template_id" class="control-label" translate>Test Template ID</label>
+                    <input type="text" class="form-control" name="event_test_template_id" ng-model="eventTestTemplate.event_test_template_id">
+                    <div>
+                        <p class="help-text" translate>Leave blank and we'll create one automatically</p>
+                    </div>
                 </div>
             </div>
 
@@ -61,7 +65,7 @@
             </div>
 
             <div class="form-group">
-                <button ng-if="add" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="addEventTestTemplate()" validate-on-submit translate>Add Event Test Template</button>
+                <button ng-if="add" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="addEventTestTemplate()" validate-on-submit translate>Add Test Template</button>
                 <button ng-if="update" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updateEventTestTemplate()" validate-on-submit translate>Save Changes</button>
                 <button ng-if="!add" type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="copy()" translate>Copy</button>
                 <button ng-if="update" type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="confirmCancel()" translate>Cancel</button>

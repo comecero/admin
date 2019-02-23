@@ -7,7 +7,7 @@
     </div>
 
     <div class="page-header">
-        <h1>Event Test Templates</h1>
+        <h1>Test Templates</h1>
         <a id="top" href="#/event_test_templates/add" class="btn btn-primary btn-right" translate resource="event_subscriptions" method="create"><span class="hidden-xs" translate>Add New</span><span class="hidden-sm hidden-md hidden-lg"><i class="fa fa-plus"></i></span></a>
     </div>
 
@@ -101,17 +101,17 @@
         </div>
 
         <!-- Show pagination if there is at least one page -->
-        <div class="col-sm-12" ng-if="eventSubscriptions.subscriptionList.data.length > 0">
+        <div class="col-sm-12" ng-if="eventTestTemplates.templatesList.data.length > 0">
             <ul class="pager">
-                <li class="previous" ng-click="movePage('-')" ng-show="eventSubscriptions.subscriptionList.previous_page_offset !== null"><a><i class="fa fa-chevron-circle-left"></i> <span translate>Back</span></a></li>
-                <li class="next" ng-click="movePage('+')" ng-show="eventSubscriptions.subscriptionList.next_page_offset !== null"><a><span translate>Next</span> <i class="fa fa-chevron-circle-right"></i></a></li>
+                <li class="previous" ng-click="movePage('-')" ng-show="eventTestTemplates.templatesList.previous_page_offset !== null"><a><i class="fa fa-chevron-circle-left"></i> <span translate>Back</span></a></li>
+                <li class="next" ng-click="movePage('+')" ng-show="eventTestTemplates.templatesList.next_page_offset !== null"><a><span translate>Next</span> <i class="fa fa-chevron-circle-right"></i></a></li>
             </ul>
-            <p class="text-right" ng-if="eventSubscriptions.subscriptionList">Showing page {{eventSubscriptions.subscriptionList.current_page}} of {{eventSubscriptions.subscriptionList.total_pages}}</p>
+            <p class="text-right" ng-if="eventTestTemplates.templatesList">Showing page {{eventTestTemplates.templatesList.current_page}} of {{eventTestTemplates.templatesList.total_pages}}</p>
         </div>
 
         <!-- Show a "not found" message if no eventSubscriptions were found  -->
-        <div class="col-sm-12" ng-if="eventSubscriptions.subscriptionList.data.length == 0">
-            <p class="no-info" translate>No Event Subscriptions found</p>
+        <div class="col-sm-12" ng-if="eventTestTemplates.templatesList.data.length == 0">
+            <p class="no-info" translate>No Event Test Templates found</p>
         </div>
     </div>
 
