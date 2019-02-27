@@ -133,6 +133,30 @@
 
             <div class="row"></div>
 
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="comments" class="control-label" translate>Sort Priority</label>
+                    <input type="tel" class="form-control" name="sort_priority" ng-model="promotion.config.sort_priority" placeholder="{{ 'Enter a number' | translate}}" is-valid-integer greater-than-or-equal="0" required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a sort priority for this promotion.</p>
+                    <div>
+                        <p class="help-text" translate>If multiple cross sells are available for a cart, the sort priority indicates the order in which they will be presented. A lower number puts an item closer to the top.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="comments" class="control-label" translate>Weight</label>
+                    <input type="tel" class="form-control" name="weight" ng-model="promotion.config.weight" placeholder="{{ 'Enter a number' | translate}}" is-valid-integer greater-than-or-equal="0" required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a weight for this promotion.</p>
+                    <div>
+                        <p class="help-text" translate>If you have multiple cross sells configured for the same product, the weight determines how likely this cross sell will be selected compared to others, allowing you to test different cross sell discounts.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
             <div class="col-md-6 col-xs-12" show-errors>
                 <label for="expires" class="control-label">Expires</label>
                 <div class="input-group dp">
@@ -141,17 +165,6 @@
                 </div>
                 <div>
                     <p class="help-text" translate>Supply a date if you want the promotion to automatically expire, otherwise leave blank.</p>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-xs-12">
-                <div class="form-group" show-errors>
-                    <label for="comments" class="control-label" translate>Weight</label>
-                    <input type="tel" class="form-control" name="discount_percent" ng-model="promotion.config.weight" placeholder="{{ 'Enter a number' | translate}}" is-valid-integer greater-than-or-equal="0" required>
-                    <p class="help-block hidden fadeInDown" translate>Please provide a weight for this promotion.</p>
-                    <div>
-                        <p class="help-text" translate>If you have multiple cross sells configured for the same product, the weight determines how likely this cross sell will be selected compared to others, allowing you to test different cross sell discounts.</p>
-                    </div>
                 </div>
             </div>
 
