@@ -111,7 +111,7 @@
 
         <!-- Show a "not found" message if no events were found  -->
         <div class="col-sm-12" ng-if="events.eventList.data.length == 0">
-            <p class="no-info" translate>No events found</p>
+            <p class="no-info" translate>No events found with status <span class="text-capitalize">'{{params.status}}'</span></p>
         </div>
 
     </div>

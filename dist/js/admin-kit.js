@@ -5508,7 +5508,6 @@ app.directive('creditCardImage', [function () {
     }
 }]);
 
-
 app.filter('bytesToMB', function () {
     return function (item) {
         return (item / 1000000).toFixed(2) + " MB";

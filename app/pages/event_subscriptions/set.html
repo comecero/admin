@@ -222,6 +222,22 @@
                 <button ng-if="add" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="addEventSubscription()" validate-on-submit translate>Add Event Subscription</button>
                 <button ng-if="update" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updateEventSubscription()" validate-on-submit translate>Save Changes</button>
                 <button ng-if="update" type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="confirmCancel()" translate>Cancel</button>
+
+                <div ng-if="eventTestTemplates" class="btn-group btn-right btn-margin-left" uib-dropdown>
+                    <button ng-disabled="form.$dirty || testRunning" type="button" class="btn btn-success dropdown-toggle" uib-dropdown-toggle>
+                        <span translate>Test</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="test in eventTestTemplates" ng-click="runTest(test);">
+                            <a><i class="text-primary"></i>&nbsp;&nbsp;<span>{{test.name}}</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div ng-show="testResult" class="col-xs-12">
+                <i class="fas fa-window-close text-danger" ng-show="!testResult.success"></i><i class="fas fa-check-square text-success" ng-show="testResult.success"></i> <label for="testResult" class="control-label" translate>Test Results</label>
+                <pre>{{testResult.json}}</pre>
+                <button class="btn btn-xs btn-default" ng-click="testResult = undefined;">Close Results</button>
             </div>
 
             <div class="row"></div>
@@ -229,7 +245,6 @@
             <div ng-if="update" class="panel-footer submenu" resource="products" method="delete">
                 <span class="delete" ng-click="confirmDelete()" translate>Delete this event subscription</span>
             </div>
-
         </div>
     </form>
 </div>

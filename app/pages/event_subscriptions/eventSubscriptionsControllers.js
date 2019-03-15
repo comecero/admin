@@ -134,6 +134,18 @@ app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$locatio
                     }
                 }
             }
+            // Load tests
+            var testUrl = ApiService.buildUrl("/event_test_templates");
+            var eventExpand = eventSubscription.expand ? eventSubscription.expand : '';
+            var testQueryParams = {event_type: eventSubscription.event_type, show: 'event_test_template_id,name', event_expand: eventExpand};
+            ApiService.getItem(testUrl, testQueryParams).then(
+              function(testTemplates) {
+                if (testTemplates.data && testTemplates.data.length) $scope.eventTestTemplates = testTemplates.data;
+              },
+              function(error) {
+                console.log(error);
+              }
+            );
 
         }, function (error) {
             $scope.exception.error = error;
@@ -244,8 +256,7 @@ app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$locatio
         ApiService.set($scope.eventSubscription, $scope.url, { show: "event_subscription_id,name" })
         .then(
         function (eventSubscription) {
-            GrowlsService.addGrowl({ id: "edit_success", name: eventSubscription.event_subscription_id, type: "success", event_subscription_id: eventSubscription.event_subscription_id, url: "#/event_subscriptions/" + eventSubscription.event_subscription_id + "/edit" });
-            window.location = "#/event_subscriptions";
+            GrowlsService.addGrowl({ id: "edit_success_no_link", name: eventSubscription.event_subscription_id, type: "success", event_subscription_id: eventSubscription.event_subscription_id });
         },
         function (error) {
             window.scrollTo(0, 0);
@@ -274,6 +285,20 @@ app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$locatio
         });
     }
 
+    $scope.runTest = function(test) {
+        $scope.testResult = null;
+        $scope.testRunning = true;
+        ApiService.set({}, $scope.eventSubscription.url + '/test/' + test.event_test_template_id).then(function (testResult) {
+            $scope.testRunning = false;
+            $scope.testResult = { success: true };
+            $scope.testResult.json = JSON.stringify(testResult, undefined, 2);
+        },
+        function (testResult) {
+            $scope.testRunning = false;
+            $scope.testResult = { success: false };
+            $scope.testResult.json = JSON.stringify(testResult, undefined, 2);
+        });
+    };
 }]);
 
 //#endregion eventSubscription
