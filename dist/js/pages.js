@@ -4527,7 +4527,7 @@ app.controller("PaymentsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'Con
     $scope.refundListUrl = $scope.url + "/refunds";
 
     // Load the payment
-    var params = { expand: "customer,payment_method,response_data,gateway,fees,commissions,order,invoice,refunds.items" };
+    var params = { expand: "customer,payment_method,response_data,gateway,fees,commissions,order,invoice,refunds.items,cart" };
     ApiService.getItem($scope.url, params).then(function (payment) {
         $scope.payment = payment;
 
