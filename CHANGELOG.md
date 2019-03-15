@@ -1,5 +1,10 @@
 ﻿# Admin Change Log #
 
+<a name="1.4.4"></a>
+# 1.4.4
+
+- Add support for event notification test templates
+
 <a name="1.4.3"></a>
 # 1.4.3
 

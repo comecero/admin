@@ -150,7 +150,9 @@ app.controller("EventTestTemplatesSetCtrl", ['$scope', '$rootScope', '$routePara
           $scope.form.$setValidity("payloadJSON", true);
         } catch(err) {
           $scope.form.$setValidity("payloadJSON", false);
-          $scope.exception.error = "Event Test Template payload must be valid JSON.";
+          $scope.exception.error = {
+            message: "Event Test Template payload must be valid JSON."
+          }
         }
     }
 

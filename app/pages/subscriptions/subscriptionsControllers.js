@@ -308,7 +308,7 @@ app.controller("SubscriptionsViewCtrl", ['$scope', '$routeParams', '$location', 
                 if (item.discount_apply_count != changeItem.discount_apply_count) {
                     var from = item.discount_apply_count || "unset";
                     var to = changeItem.discount_apply_count || "unlimited";
-                    pendingChanges.push({ name: "Times to apply the discount", from: from, to: changeItem.discount_apply_count });
+                    pendingChanges.push({ name: "Times to apply the discount", from: from, to: to });
                 }
             }
             if (pendingChanges.length > 0) {

@@ -1982,7 +1982,9 @@ app.controller("EventTestTemplatesSetCtrl", ['$scope', '$rootScope', '$routePara
           $scope.form.$setValidity("payloadJSON", true);
         } catch(err) {
           $scope.form.$setValidity("payloadJSON", false);
-          $scope.exception.error = "Event Test Template payload must be valid JSON.";
+          $scope.exception.error = {
+            message: "Event Test Template payload must be valid JSON."
+          }
         }
     }
 
@@ -4525,7 +4527,7 @@ app.controller("PaymentsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'Con
     $scope.refundListUrl = $scope.url + "/refunds";
 
     // Load the payment
-    var params = { expand: "customer,payment_method,response_data,gateway,fees,commissions,order,invoice,refunds.items" };
+    var params = { expand: "customer,payment_method,response_data,gateway,fees,commissions,order,invoice,refunds.items,cart" };
     ApiService.getItem($scope.url, params).then(function (payment) {
         $scope.payment = payment;
 
@@ -8203,7 +8205,7 @@ app.controller("SubscriptionsViewCtrl", ['$scope', '$routeParams', '$location', 
                 if (item.discount_apply_count != changeItem.discount_apply_count) {
                     var from = item.discount_apply_count || "unset";
                     var to = changeItem.discount_apply_count || "unlimited";
-                    pendingChanges.push({ name: "Times to apply the discount", from: from, to: changeItem.discount_apply_count });
+                    pendingChanges.push({ name: "Times to apply the discount", from: from, to: to });
                 }
             }
             if (pendingChanges.length > 0) {

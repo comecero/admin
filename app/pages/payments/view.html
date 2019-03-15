@@ -152,6 +152,15 @@
                 </div>
             </div>
 
+            <div class="panel" ng-if="payment.cart">
+                <div class="panel-heading">
+                    <span class="panel-title" translate>Cart</span>
+                </div>
+                <div class="panel-body">
+                    <div><span translate>Cart ID:</span> <a ng-href="#/carts/{{payment.cart.cart_id}}">{{payment.cart.cart_id}}</a></div>
+                </div>
+            </div>
+
             <div customer-edit="payment.customer" error="exception.error"></div>
 
             <div class="panel" resource="gateways" method="read">
