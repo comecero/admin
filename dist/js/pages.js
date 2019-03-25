@@ -572,13 +572,14 @@ app.controller("AppInstallationsSettingsCtrl", ['$scope', '$routeParams', '$loca
     $scope.selections = {};
 
     // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/app_installations/" + $routeParams.id)
+    $scope.url = ApiService.buildUrl("/app_installations/" + $routeParams.id);
+    var settingsUrl = ApiService.buildUrl("/settings/technical");
 
     // An object to hold checkboxes to monitor their state changes
     $scope.checkboxState = {};
 
     // Load the app_installation settings
-    ApiService.getItem($scope.url, { show: "app_installation_id,app_id,name,settings_fields.*,settings,alias,launch_url,location_url,allow_custom_javascript,custom_javascript" }).then(function (app_installation) {
+    ApiService.getItem($scope.url, { show: "app_installation_id,app_id,name,settings_fields.*,settings,alias,launch_url,location_url,allow_custom_javascript,custom_javascript,preferred_hostname" }).then(function (app_installation) {
 
         $scope.app_installation = app_installation;
 
@@ -590,13 +591,33 @@ app.controller("AppInstallationsSettingsCtrl", ['$scope', '$routeParams', '$loca
         // Make a copy of the original for comparision
         $scope.settings_orig = angular.copy($scope.app_installation.settings);
 
-        // Define the app host
-        $scope.app_host = utils.left(app_installation.location_url, app_installation.location_url.length - app_installation.alias.length - 1);
+        // Load the technical settings
+        ApiService.getItem(settingsUrl, { show: "app_hosts" }).then(function (settings) {
+
+            // Define the app host
+            $scope.app_host = utils.left(app_installation.location_url, app_installation.location_url.length - app_installation.alias.length - 2).replace("https://", "");
+
+            $scope.settings = settings;
+
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
 
     }, function (error) {
         $scope.exception.error = error;
         window.scrollTo(0, 0);
     });
+
+    $scope.getLocationUrl = function () {
+        if ($scope.app_installation) {
+            var hostname = $scope.app_host;
+            if ($scope.app_installation.preferred_hostname) {
+                hostname = $scope.app_installation.preferred_hostname;
+            }
+            return "https://" + hostname + "/" + $scope.app_installation.alias;
+        }
+    }
 
     $scope.confirmCancel = function () {
         if (angular.equals($scope.app_installation.config, $scope.config_orig)) {
