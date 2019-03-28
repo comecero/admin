@@ -2410,7 +2410,7 @@ app.directive('cancelSubscription', ['ApiService', 'ConfirmService', 'GrowlsServ
                     request.cancellation_reason = scope.subscription_cancel.request.cancellation_reason;
 
                     // Cancel the subscription
-                    ApiService.set(request, scope.subscription.url + "/cancel", { expand: "subscription_plan,customer.payment_methods,items.subscription_terms", formatted: true }).then(function (subscription) {
+                    ApiService.set(request, scope.subscription.url + "/cancel", { expand: "subscription_plan,customer.payment_methods,items.subscription_terms,items.subscription_plan,items.product", formatted: true }).then(function (subscription) {
                         scope.subscription = subscription;
                         subscriptionModal.dismiss();
                         GrowlsService.addGrowl({ id: "subscription_cancel_success", type: "success" });
@@ -2518,7 +2518,7 @@ app.directive('cancelSubscriptionItem', ['ApiService', 'ConfirmService', 'Growls
                     request.cancellation_reason = scope.subscription_cancel.request.cancellation_reason;
 
                     // Cancel the subscription item.
-                    ApiService.set(request, scope.item.url + "/cancel", { expand: "subscription.subscription_plan,subscription.customer.payment_methods,subscription.items.subscription_terms", formatted: true }).then(function (item) {
+                    ApiService.set(request, scope.item.url + "/cancel", { expand: "subscription.subscription_plan,subscription.customer.payment_methods,subscription.items.subscription_terms,subscription.items.subscription_plan,subscription.items.product", formatted: true }).then(function (item) {
                         scope.subscription = item.subscription;
                         subscriptionModal.dismiss();
                         GrowlsService.addGrowl({ id: "subscription_item_cancel_success", type: "success", name: item.name });
