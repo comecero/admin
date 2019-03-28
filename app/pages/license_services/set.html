@@ -167,6 +167,16 @@
                     </div>
                 </div>
 
+                <div class="col-xs-12">
+                    <div class="form-group" show-errors>
+                        <label for="expand" class="control-label" translate>Expand</label>
+                        <input type="text" class="form-control" name="expand" ng-model="license_service.expand">
+                        <div>
+                            <p class="help-text" translate>A comma-separated list of resources you wish to expand within the order resource. You can supply a comma separated list of child resources you wish to expand within your event data. For example, if you indicate to expand 'cart,payments', your event data will include the order with the cart and payments resources expanded. <a href="https://docs.comecero.com/basic-concepts/#expanding-objects" target="_blank">Read more here</a>. For performance, you should only expand resources you intend to use. Note: The customer resource will always be expanded, even if you don't indicate to expand it.</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <div class="col-xs-12">
