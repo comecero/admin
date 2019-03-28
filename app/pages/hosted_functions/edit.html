@@ -127,7 +127,7 @@
 
             <div class="col-xs-12" style="margin-top:-5px; margin-bottom:35px;">
                 <a class="btn btn-sm btn-info" ng-click="addVariable()" translate>Add environment variable</a>
-                <p class="help-text" translate>Environment variables allow you to pass settings to your function at runtime, making it easier to use the same source code in live and test scenarios. Values provided are encrypted at rest.    </p>
+                <p class="help-text" translate>Environment variables allow you to pass settings to your function at runtime, making it easier to use the same source code in live and test scenarios. Values provided are encrypted at rest.</p>
             </div>
 
             <div class="col-xs-12">
@@ -135,7 +135,7 @@
                     <label for="description" class="control-label" translate>Description</label>
                     <textarea class="form-control" name="description" ng-model="hostedFunction.description" placeholder="{{ 'Optional' | translate}}"></textarea>
                 </div>
-                <p class="maxlength-message" max-length="1000" item="form.description"></p>
+                <p class="maxlength-message" max-length="250" item="form.description"></p>
             </div>
 
             <div class="form-group">
