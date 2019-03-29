@@ -96,10 +96,11 @@ app.controller("TemplatesListCtrl", ['$scope', '$routeParams', '$location', '$q'
 
 }]);
 
-app.controller("TemplatesSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService) {
+app.controller("TemplatesSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', 'HelperService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService, HelperService) {
 
     $scope.template = {};
     $scope.exception = {};
+    $scope.helperService = HelperService;
 
     if ($routeParams.id != null) {
 
