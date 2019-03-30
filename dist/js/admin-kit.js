@@ -4254,7 +4254,7 @@ app.directive('fields', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
 
             scope.pushToProperty = function (property, value) {
 
-                property = stripSearch(property);
+                stripSearch(property);
 
                 // If it doesn't exist, add it. If it exists, remove it.
                 if (scope.isInProperty(property, value) == false) {
@@ -4271,7 +4271,7 @@ app.directive('fields', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
 
             scope.isInProperty = function (property, value) {
 
-                property = stripSearch(property);
+                stripSearch(property);
 
                 if (scope.selections == null) {
                     return false;
