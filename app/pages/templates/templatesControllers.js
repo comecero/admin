@@ -96,10 +96,11 @@ app.controller("TemplatesListCtrl", ['$scope', '$routeParams', '$location', '$q'
 
 }]);
 
-app.controller("TemplatesSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService) {
+app.controller("TemplatesSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', 'HelperService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService, HelperService) {
 
     $scope.template = {};
     $scope.exception = {};
+    $scope.helperService = HelperService;
 
     if ($routeParams.id != null) {
 
@@ -178,9 +179,7 @@ app.controller("TemplatesSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
             return;
         }
 
-        ApiService.set($scope.template, $scope.url, { show: "template_id,name" })
-        .then(
-        function (template) {
+        ApiService.set($scope.template, $scope.url, { show: "template_id,name" }).then(function (template) {
             GrowlsService.addGrowl({ id: "edit_success", name: template.template_id, type: "success", template_id: template.template_id, url: "#/templates/" + template.template_id + "/edit" });
             window.location = "#/templates";
         },
