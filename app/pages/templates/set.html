@@ -6,13 +6,19 @@
         <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
     </div>
 
-    <div class="page-header"> 
+    <div class="page-header">
         <h1 ng-if="add" translate>Add a Template</h1>
         <h1 ng-if="update" translate>Template: {{template.template_id}}</h1>
     </div>
     <form name="form" novalidate>
         <div class="panel panel-body light-shadow">
-            
+            <div class="col-xs-12" ng-show="helperService.isAdmin() && add">
+                <div class="form-group" show-errors>
+                    <label for="comments" class="control-label" translate>Template ID</label>
+                    <input type="text" class="form-control" name="comments" ng-model="template.template_id">
+                </div>
+            </div>
+
             <div class="col-xs-12">
                 <div class="form-group" show-errors>
                     <label for="comments" class="control-label" translate>Description</label>
@@ -33,7 +39,7 @@
                 </div>
             </div>
             <div class="col-xs-12">
-                 <div class="form-group" show-errors >
+                <div class="form-group" show-errors>
                     <label for="expand" class="control-label" translate>Expand</label>
                     <input type="text" class="form-control" name="expand" ng-model="template.expand">
                     <div>
@@ -42,7 +48,7 @@
                 </div>
             </div>
             <div class="col-xs-12">
-                 <div class="form-group" show-errors >
+                <div class="form-group" show-errors>
                     <label for="show" class="control-label" translate>Show</label>
                     <input type="text" class="form-control" name="show" ng-model="template.show">
                     <div>
@@ -51,7 +57,7 @@
                 </div>
             </div>
             <div class="col-xs-12">
-                 <div class="form-group" show-errors >
+                <div class="form-group" show-errors>
                     <label for="hide" class="control-label" translate>Hide</label>
                     <input type="text" class="form-control" name="hide" ng-model="template.hide">
                     <div>
@@ -60,7 +66,7 @@
                 </div>
             </div>
             <div class="col-xs-12">
-                 <div class="form-group" show-errors >
+                <div class="form-group" show-errors>
                     <label for="wrapper_template" class="control-label" translate>Wrapper Template ID</label>
                     <input type="text" class="form-control" name="wrapper_template" ng-model="template.wrapper_template_id">
                     <div>
@@ -68,7 +74,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="form-group">
                 <button ng-if="add" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="addTemplate()" validate-on-submit translate>Add the Template</button>
                 <button ng-if="update" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updateTemplate()" validate-on-submit translate>Save Changes</button>

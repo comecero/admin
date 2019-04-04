@@ -118,7 +118,7 @@
                     <input type="text" class="form-control" name="subscription_invoice_payment_delay" ng-model="settings.subscription_invoice_payment_delay" is-valid-integer required>
                     <p class="help-block hidden fadeInDown" translate>Please provide a valid number</p>
                     <div>
-                        <p class="help-text" translate>When a subscription is renewed, an invoice is generated and automatically paid by the customer's default payment method. Specify the time, in hours, between invoice creation and automatic payment. A delay will allow you to make adjustments to the invoice, if necessary, to the invoice before payment. Enter 0 for immediate payment.</p>
+                        <p class="help-text" translate>When a subscription is renewed, an invoice is generated and automatically paid by the customer's default payment method. Specify the time, in hours, between invoice creation and automatic payment. A delay will allow you to make adjustments, if necessary, to the invoice before payment. Enter 0 for immediate payment.</p>
                     </div>
                 </div>
             </div> 
@@ -225,6 +225,21 @@
             </div>
 
             <div class="col-xs-12 col-sm-6">
+                <div class="form-group" show-errors>
+                    <label class="radio-group-label" translate>Allow Customer Subscription Cancellations</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="allow_customer_subscription_cancel-1" class="radio" name="allow_customer_subscription_cancel" ng-model="settings.allow_customer_subscription_cancel" ng-value="true" required>
+                        <label for="allow_customer_subscription_cancel-1" class="radio-label">Yes</label>
+                        <input type="radio" id="allow_customer_subscription_cancel-2" class="radio" name="allow_customer_subscription_cancel" ng-model="settings.allow_customer_subscription_cancel" ng-value="false" required>
+                        <label for="allow_customer_subscription_cancel-2" class="radio-label">No</label>
+                    </div>
+                    <div>
+                        <p class="help-text" translate>Indicates if you want to allow customers to cancel subscriptions on their own. If not enabled, cancellations can only be submitted by internal users.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
                 <div class="form-group" show-errors>
                     <label class="radio-group-label" translate>Use Customer Payment Currency</label>
                     <div class="radio-group inline">

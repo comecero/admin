@@ -1,5 +1,14 @@
 ﻿# Admin Change Log #
 
+<a name="1.4.5"></a>
+# 1.4.5
+
+- Add support for expand in license requests
+- Add support for preferred hostname for apps under app settings
+- Add support to indicate if customers are allowed to self-cancel subscriptions
+- Bug fix editing subscription items after a subscription cancellation has been scheduled
+- Other small bug fixes and typo corrections
+
 <a name="1.4.4"></a>
 # 1.4.4
 

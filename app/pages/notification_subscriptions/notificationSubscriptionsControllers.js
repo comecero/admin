@@ -162,9 +162,7 @@ app.controller("NotificationSubscriptionsSetCtrl", ['$scope', '$routeParams', '$
             $scope.notificationSubscription.template_id = $scope.notificationSubscription.template.template_id;
         }
 
-        ApiService.set($scope.notificationSubscription, ApiService.buildUrl("/notification_subscriptions"), { show: "notification_subscription_id,name" })
-        .then(
-        function (notificationSubscription) {
+        ApiService.set($scope.notificationSubscription, ApiService.buildUrl("/notification_subscriptions"), { show: "notification_subscription_id,name" }).then(function (notificationSubscription) {
             GrowlsService.addGrowl({ id: "add_success", name: notificationSubscription.notification_subscription_id, type: "success", notification_subscription_id: notificationSubscription.notification_subscription_id, url: "#/notification_subscriptions/" + notificationSubscription.notification_subscription_id + "/edit" });
             window.location = "#/notification_subscriptions";
         },
@@ -211,6 +209,7 @@ app.controller("NotificationSubscriptionsSetCtrl", ['$scope', '$routeParams', '$
     
     $scope.removeTemplate = function(){
         $scope.notificationSubscription.template = null;
+        $scope.notificationSubscription.template_id = null;
         $scope.showTemplate = false;
     }
 

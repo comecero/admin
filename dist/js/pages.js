@@ -572,13 +572,14 @@ app.controller("AppInstallationsSettingsCtrl", ['$scope', '$routeParams', '$loca
     $scope.selections = {};
 
     // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/app_installations/" + $routeParams.id)
+    $scope.url = ApiService.buildUrl("/app_installations/" + $routeParams.id);
+    var settingsUrl = ApiService.buildUrl("/settings/technical");
 
     // An object to hold checkboxes to monitor their state changes
     $scope.checkboxState = {};
 
     // Load the app_installation settings
-    ApiService.getItem($scope.url, { show: "app_installation_id,app_id,name,settings_fields.*,settings,alias,launch_url,location_url,allow_custom_javascript,custom_javascript" }).then(function (app_installation) {
+    ApiService.getItem($scope.url, { show: "app_installation_id,app_id,name,settings_fields.*,settings,alias,launch_url,location_url,allow_custom_javascript,custom_javascript,preferred_hostname" }).then(function (app_installation) {
 
         $scope.app_installation = app_installation;
 
@@ -590,13 +591,33 @@ app.controller("AppInstallationsSettingsCtrl", ['$scope', '$routeParams', '$loca
         // Make a copy of the original for comparision
         $scope.settings_orig = angular.copy($scope.app_installation.settings);
 
-        // Define the app host
-        $scope.app_host = utils.left(app_installation.location_url, app_installation.location_url.length - app_installation.alias.length - 1);
+        // Load the technical settings
+        ApiService.getItem(settingsUrl, { show: "app_hosts" }).then(function (settings) {
+
+            // Define the app host
+            $scope.app_host = utils.left(app_installation.location_url, app_installation.location_url.length - app_installation.alias.length - 2).replace("https://", "");
+
+            $scope.settings = settings;
+
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
 
     }, function (error) {
         $scope.exception.error = error;
         window.scrollTo(0, 0);
     });
+
+    $scope.getLocationUrl = function () {
+        if ($scope.app_installation) {
+            var hostname = $scope.app_host;
+            if ($scope.app_installation.preferred_hostname) {
+                hostname = $scope.app_installation.preferred_hostname;
+            }
+            return "https://" + hostname + "/" + $scope.app_installation.alias;
+        }
+    }
 
     $scope.confirmCancel = function () {
         if (angular.equals($scope.app_installation.config, $scope.config_orig)) {
@@ -1830,259 +1851,6 @@ app.controller("EventSubscriptionsSetCtrl", ['$scope', '$routeParams', '$locatio
 
 
 
-
-//#region EventTestTemplates
-
-app.controller("EventTestTemplatesListCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService',
-  function ($scope, $routeParams, $location, GrowlsService, ApiService) {
-    // Establish your scope containers
-    $scope.eventTestTemplates = {};
-
-    $scope.nav = {};
-    $scope.exception = {};
-
-    // Establish your settings from query string parameters
-    $scope.parseParams = function () {
-        $scope.params = ($location.search())
-
-        // Convert any string true/false to bool
-        utils.stringsToBool($scope.params);
-
-        if ($scope.params.sort_by == null) {
-            $scope.params.sort_by = "name";
-        }
-
-        if ($scope.params.desc == null) {
-            $scope.params.desc = false;
-        }
-
-    }
-
-    $scope.loadEventTestTemplates = function () {
-
-        ApiService.getList(ApiService.buildUrl("/event_test_templates"), $scope.params).then(function (result) {
-            $scope.eventTestTemplates.templatesList = result;
-            $scope.eventTestTemplatesChecked = false;
-
-            // If instructed, scroll to the top upon completion
-            if ($scope.nav.scrollTop == true) {
-                window.scrollTo(0, 0);
-            }
-            $scope.nav.scrollTop = null;
-
-        },
-        function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    }
-
-
-    $scope.setParam = function (param, value) {
-        $scope.params[param] = value;
-        $scope.params.before_item = null;
-        $scope.params.after_item = null;
-        $scope.nav.scrollTop = true;
-        $location.search($scope.params);
-    }
-
-    $scope.search = function () {
-        if ($scope.params.q != null) {
-
-            // Reset the view to the first page
-            $scope.params.offset = null;
-            $scope.nav.scrollTop = true;
-
-            // If empty, reset to null
-            if ($scope.params.q == "") {
-                $scope.params.q = null;
-            }
-
-            $location.search($scope.params);
-        }
-    }
-
-    $scope.movePage = function (direction) {
-        if (direction == "+") {
-            $scope.params.offset = $scope.eventTestTemplates.templatesList.next_page_offset;
-        } else {
-            $scope.params.offset = $scope.eventTestTemplates.templatesList.previous_page_offset;
-        }
-        $scope.nav.scrollTop = true;
-        $location.search($scope.params);
-    }
-
-    $scope.sort = function (sort_by, desc) {
-        $scope.params.sort_by = sort_by;
-        $scope.params.desc = desc;
-        $location.search($scope.params);
-    }
-
-    $scope.$on('$routeUpdate', function (e) {
-        $scope.parseParams();
-        $scope.loadEventTestTemplates();
-    });
-
-    // Initial load
-    $scope.parseParams();
-    $scope.loadEventTestTemplates();
-
-}]);
-
-app.controller("EventTestTemplatesSetCtrl", ['$scope', '$rootScope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'EventTypesService',
-  function ($scope, $rootScope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, EventTypesService) {
-    $scope.eventTestTemplate = {};
-    $scope.event_types = EventTypesService.getEventsTypes();
-    $scope.exception = {};
-    $scope.update = false;
-    $scope.add = false;
-
-    if ($routeParams.id != null) {
-
-        // Indicate this is an edit
-
-        // Set the url for interacting with this item
-        $scope.url = ApiService.buildUrl("/event_test_templates/" + $routeParams.id)
-
-        // Load the service
-        ApiService.getItem($scope.url).then(function (eventTestTemplate) {
-            $scope.eventTestTemplate = eventTestTemplate;
-            $scope.payloadJSON = null;
-            if (eventTestTemplate.payload && eventTestTemplate.payload != null) {
-              var payload = JSON.stringify(eventTestTemplate.payload, undefined, 2);
-              $scope.payloadJSON = payload;
-            }
-            $scope.update = $rootScope.account.account_id == eventTestTemplate.account_id;
-        }, function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    } else {
-        $scope.eventTestTemplate = {'resource_id': 'example'};
-        if ($rootScope.copyEventTestTemplate) {
-          $scope.eventTestTemplate = $rootScope.copyEventTestTemplate
-          $scope.payloadJSON = $rootScope.copyEventTestTemplate.payloadJSON;
-          delete $scope.copyEventTestTemplate.payloadJSON;
-          delete $rootScope.copyEventTestTemplate;
-        }
-
-        // Indicate this is an add
-        $scope.update = false;
-        $scope.add = true;
-    }
-
-    var prepareSubmit = function () {
-
-        // Clear any previous errors
-        $scope.exception.error = null;
-
-        try {
-          var payload = JSON.parse($scope.payloadJSON);
-          $scope.eventTestTemplate.payload = payload;
-          $scope.form.$setValidity("payloadJSON", true);
-        } catch(err) {
-          $scope.form.$setValidity("payloadJSON", false);
-          $scope.exception.error = {
-            message: "Event Test Template payload must be valid JSON."
-          }
-        }
-    }
-
-    $scope.done = function() {
-        utils.redirect($location, "/event_test_templates");
-    };
-
-    $scope.confirmCancel = function () {
-        var confirm = { id: "changes_lost" };
-        confirm.onConfirm = function () {
-            utils.redirect($location, "/event_test_templates");
-        }
-        if ($scope.form.$pristine) {
-          confirm.onConfirm();
-        } else {
-          ConfirmService.showConfirm($scope, confirm);
-        }
-    }
-
-    $scope.addEventTestTemplate = function () {
-
-        prepareSubmit();
-
-        if ($scope.form.$invalid) {
-            window.scrollTo(0, 0);
-            return;
-        }
-
-        ApiService.set($scope.eventTestTemplate, ApiService.buildUrl("/event_test_templates"), { show: "event_test_template_id,name" }).then(
-        function (eventTestTemplate) {
-            GrowlsService.addGrowl({ id: "add_success", name: eventTestTemplate.event_test_template_id, type: "success", event_test_template_id: eventTestTemplate.event_test_template_id, url: "#/event_test_templates/" + eventTestTemplate.event_test_template_id + "/edit" });
-            window.location = "#/event_test_templates";
-        },
-        function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    }
-
-    $scope.updateEventTestTemplate = function () {
-
-        prepareSubmit();
-
-        if ($scope.form.$invalid) {
-            window.scrollTo(0, 0);
-            return;
-        }
-
-        ApiService.set($scope.eventTestTemplate, $scope.url, { show: "event_test_template_id,name" })
-        .then(
-        function (eventTestTemplate) {
-            GrowlsService.addGrowl({ id: "edit_success", name: eventTestTemplate.event_test_template_id, type: "success", event_test_template_id: eventTestTemplate.event_test_template_id, url: "#/event_test_templates/" + eventTestTemplate.event_test_template_id + "/edit" });
-            window.location = "#/event_test_templates";
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception.error = error;
-        });
-    }
-
-    $scope.confirmDelete = function () {
-        var confirm = { id: "delete" };
-        confirm.onConfirm = function () {
-            $scope.delete();
-        }
-        ConfirmService.showConfirm($scope, confirm);
-    }
-
-    $scope.delete = function () {
-
-        ApiService.remove($scope.eventTestTemplate.url).then(
-        function (eventTestTemplate) {
-            GrowlsService.addGrowl({ id: "delete_success", name: $scope.eventTestTemplate.event_test_template_id, type: "success" });
-            utils.redirect($location, "/event_test_templates");
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception.error = error;
-        });
-    }
-
-    $scope.copy = function() {
-      $rootScope.copyEventTestTemplate = {
-        'name': 'Copy ' + $scope.eventTestTemplate.name,
-        'event_type': $scope.eventTestTemplate.event_type,
-        'event_expand': $scope.eventTestTemplate.event_expand,
-        'payloadJSON': $scope.payloadJSON,
-      };
-      utils.redirect($location, "/event_test_templates/add");
-    }
-
-}]);
-
-//#endregion EventTestTemplates
-
-
-
-
 app.controller("FilesListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
 
     // Establish your scope containers
@@ -2379,6 +2147,259 @@ app.controller("FilesEditCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
     }
 
 }]);
+
+
+//#region EventTestTemplates
+
+app.controller("EventTestTemplatesListCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService',
+  function ($scope, $routeParams, $location, GrowlsService, ApiService) {
+    // Establish your scope containers
+    $scope.eventTestTemplates = {};
+
+    $scope.nav = {};
+    $scope.exception = {};
+
+    // Establish your settings from query string parameters
+    $scope.parseParams = function () {
+        $scope.params = ($location.search())
+
+        // Convert any string true/false to bool
+        utils.stringsToBool($scope.params);
+
+        if ($scope.params.sort_by == null) {
+            $scope.params.sort_by = "name";
+        }
+
+        if ($scope.params.desc == null) {
+            $scope.params.desc = false;
+        }
+
+    }
+
+    $scope.loadEventTestTemplates = function () {
+
+        ApiService.getList(ApiService.buildUrl("/event_test_templates"), $scope.params).then(function (result) {
+            $scope.eventTestTemplates.templatesList = result;
+            $scope.eventTestTemplatesChecked = false;
+
+            // If instructed, scroll to the top upon completion
+            if ($scope.nav.scrollTop == true) {
+                window.scrollTo(0, 0);
+            }
+            $scope.nav.scrollTop = null;
+
+        },
+        function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
+
+    $scope.setParam = function (param, value) {
+        $scope.params[param] = value;
+        $scope.params.before_item = null;
+        $scope.params.after_item = null;
+        $scope.nav.scrollTop = true;
+        $location.search($scope.params);
+    }
+
+    $scope.search = function () {
+        if ($scope.params.q != null) {
+
+            // Reset the view to the first page
+            $scope.params.offset = null;
+            $scope.nav.scrollTop = true;
+
+            // If empty, reset to null
+            if ($scope.params.q == "") {
+                $scope.params.q = null;
+            }
+
+            $location.search($scope.params);
+        }
+    }
+
+    $scope.movePage = function (direction) {
+        if (direction == "+") {
+            $scope.params.offset = $scope.eventTestTemplates.templatesList.next_page_offset;
+        } else {
+            $scope.params.offset = $scope.eventTestTemplates.templatesList.previous_page_offset;
+        }
+        $scope.nav.scrollTop = true;
+        $location.search($scope.params);
+    }
+
+    $scope.sort = function (sort_by, desc) {
+        $scope.params.sort_by = sort_by;
+        $scope.params.desc = desc;
+        $location.search($scope.params);
+    }
+
+    $scope.$on('$routeUpdate', function (e) {
+        $scope.parseParams();
+        $scope.loadEventTestTemplates();
+    });
+
+    // Initial load
+    $scope.parseParams();
+    $scope.loadEventTestTemplates();
+
+}]);
+
+app.controller("EventTestTemplatesSetCtrl", ['$scope', '$rootScope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'EventTypesService',
+  function ($scope, $rootScope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, EventTypesService) {
+    $scope.eventTestTemplate = {};
+    $scope.event_types = EventTypesService.getEventsTypes();
+    $scope.exception = {};
+    $scope.update = false;
+    $scope.add = false;
+
+    if ($routeParams.id != null) {
+
+        // Indicate this is an edit
+
+        // Set the url for interacting with this item
+        $scope.url = ApiService.buildUrl("/event_test_templates/" + $routeParams.id)
+
+        // Load the service
+        ApiService.getItem($scope.url).then(function (eventTestTemplate) {
+            $scope.eventTestTemplate = eventTestTemplate;
+            $scope.payloadJSON = null;
+            if (eventTestTemplate.payload && eventTestTemplate.payload != null) {
+              var payload = JSON.stringify(eventTestTemplate.payload, undefined, 2);
+              $scope.payloadJSON = payload;
+            }
+            $scope.update = $rootScope.account.account_id == eventTestTemplate.account_id;
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    } else {
+        $scope.eventTestTemplate = {'resource_id': 'example'};
+        if ($rootScope.copyEventTestTemplate) {
+          $scope.eventTestTemplate = $rootScope.copyEventTestTemplate
+          $scope.payloadJSON = $rootScope.copyEventTestTemplate.payloadJSON;
+          delete $scope.copyEventTestTemplate.payloadJSON;
+          delete $rootScope.copyEventTestTemplate;
+        }
+
+        // Indicate this is an add
+        $scope.update = false;
+        $scope.add = true;
+    }
+
+    var prepareSubmit = function () {
+
+        // Clear any previous errors
+        $scope.exception.error = null;
+
+        try {
+          var payload = JSON.parse($scope.payloadJSON);
+          $scope.eventTestTemplate.payload = payload;
+          $scope.form.$setValidity("payloadJSON", true);
+        } catch(err) {
+          $scope.form.$setValidity("payloadJSON", false);
+          $scope.exception.error = {
+            message: "Event Test Template payload must be valid JSON."
+          }
+        }
+    }
+
+    $scope.done = function() {
+        utils.redirect($location, "/event_test_templates");
+    };
+
+    $scope.confirmCancel = function () {
+        var confirm = { id: "changes_lost" };
+        confirm.onConfirm = function () {
+            utils.redirect($location, "/event_test_templates");
+        }
+        if ($scope.form.$pristine) {
+          confirm.onConfirm();
+        } else {
+          ConfirmService.showConfirm($scope, confirm);
+        }
+    }
+
+    $scope.addEventTestTemplate = function () {
+
+        prepareSubmit();
+
+        if ($scope.form.$invalid) {
+            window.scrollTo(0, 0);
+            return;
+        }
+
+        ApiService.set($scope.eventTestTemplate, ApiService.buildUrl("/event_test_templates"), { show: "event_test_template_id,name" }).then(
+        function (eventTestTemplate) {
+            GrowlsService.addGrowl({ id: "add_success", name: eventTestTemplate.event_test_template_id, type: "success", event_test_template_id: eventTestTemplate.event_test_template_id, url: "#/event_test_templates/" + eventTestTemplate.event_test_template_id + "/edit" });
+            window.location = "#/event_test_templates";
+        },
+        function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
+    $scope.updateEventTestTemplate = function () {
+
+        prepareSubmit();
+
+        if ($scope.form.$invalid) {
+            window.scrollTo(0, 0);
+            return;
+        }
+
+        ApiService.set($scope.eventTestTemplate, $scope.url, { show: "event_test_template_id,name" })
+        .then(
+        function (eventTestTemplate) {
+            GrowlsService.addGrowl({ id: "edit_success", name: eventTestTemplate.event_test_template_id, type: "success", event_test_template_id: eventTestTemplate.event_test_template_id, url: "#/event_test_templates/" + eventTestTemplate.event_test_template_id + "/edit" });
+            window.location = "#/event_test_templates";
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception.error = error;
+        });
+    }
+
+    $scope.confirmDelete = function () {
+        var confirm = { id: "delete" };
+        confirm.onConfirm = function () {
+            $scope.delete();
+        }
+        ConfirmService.showConfirm($scope, confirm);
+    }
+
+    $scope.delete = function () {
+
+        ApiService.remove($scope.eventTestTemplate.url).then(
+        function (eventTestTemplate) {
+            GrowlsService.addGrowl({ id: "delete_success", name: $scope.eventTestTemplate.event_test_template_id, type: "success" });
+            utils.redirect($location, "/event_test_templates");
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception.error = error;
+        });
+    }
+
+    $scope.copy = function() {
+      $rootScope.copyEventTestTemplate = {
+        'name': 'Copy ' + $scope.eventTestTemplate.name,
+        'event_type': $scope.eventTestTemplate.event_type,
+        'event_expand': $scope.eventTestTemplate.event_expand,
+        'payloadJSON': $scope.payloadJSON,
+      };
+      utils.redirect($location, "/event_test_templates/add");
+    }
+
+}]);
+
+//#endregion EventTestTemplates
+
+
+
 
 
 //#region Gateways
@@ -4355,9 +4376,7 @@ app.controller("NotificationSubscriptionsSetCtrl", ['$scope', '$routeParams', '$
             $scope.notificationSubscription.template_id = $scope.notificationSubscription.template.template_id;
         }
 
-        ApiService.set($scope.notificationSubscription, ApiService.buildUrl("/notification_subscriptions"), { show: "notification_subscription_id,name" })
-        .then(
-        function (notificationSubscription) {
+        ApiService.set($scope.notificationSubscription, ApiService.buildUrl("/notification_subscriptions"), { show: "notification_subscription_id,name" }).then(function (notificationSubscription) {
             GrowlsService.addGrowl({ id: "add_success", name: notificationSubscription.notification_subscription_id, type: "success", notification_subscription_id: notificationSubscription.notification_subscription_id, url: "#/notification_subscriptions/" + notificationSubscription.notification_subscription_id + "/edit" });
             window.location = "#/notification_subscriptions";
         },
@@ -4404,6 +4423,7 @@ app.controller("NotificationSubscriptionsSetCtrl", ['$scope', '$routeParams', '$
     
     $scope.removeTemplate = function(){
         $scope.notificationSubscription.template = null;
+        $scope.notificationSubscription.template_id = null;
         $scope.showTemplate = false;
     }
 
@@ -7332,151 +7352,6 @@ app.controller("TechnicalSettingsCtrl", ['$scope', '$routeParams', '$location', 
 
 
 
-//#region Shipments
-
-app.controller("ShipmentsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
-
-    // Establish your scope containers
-    $scope.shipments = {};
-    $scope.nav = {};
-    $scope.exception = {};
-
-    // Establish your settings from query string parameters
-    $scope.parseParams = function () {
-        $scope.params = ($location.search())
-
-        // Convert any string true/false to bool
-        utils.stringsToBool($scope.params);
-
-        if ($scope.params.sort_by == null) {
-            $scope.params.sort_by = "date_shipped";
-        }
-
-        if ($scope.params.desc == null) {
-            $scope.params.desc = true;
-        }
-
-    }
-
-    $scope.loadShipments = function () {
-
-        ApiService.getList(ApiService.buildUrl("/shipments"), $scope.params).then(function (result) {
-            $scope.shipments.shipmentList = result;
-            $scope.shipmentsChecked = false;
-
-            // If instructed, scroll to the top upon completion
-            if ($scope.nav.scrollTop == true) {
-                window.scrollTo(0, 0);
-            }
-            $scope.nav.scrollTop = null;
-
-        },
-        function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    }
-
-
-    $scope.setParam = function (param, value) {
-        $scope.params[param] = value;
-        $scope.params.before_item = null;
-        $scope.params.after_item = null;
-        $scope.nav.scrollTop = true;
-        $location.search($scope.params);
-    }
-
-    $scope.search = function () {
-        if ($scope.params.q != null) {
-
-            // Reset the view to the first page
-            $scope.params.offset = null;
-            $scope.nav.scrollTop = true;
-
-            // If empty, reset to null
-            if ($scope.params.q == "") {
-                $scope.params.q = null;
-            }
-
-            $location.search($scope.params);
-        }
-    }
-
-    $scope.movePage = function (direction) {
-        if (direction == "+") {
-            $scope.params.offset = $scope.shipments.shipmentList.next_page_offset;
-        } else {
-            $scope.params.offset = $scope.shipments.shipmentList.previous_page_offset;
-        }
-        $scope.nav.scrollTop = true;
-        $location.search($scope.params);
-    }
-
-    $scope.sort = function (sort_by, desc) {
-        $scope.params.sort_by = sort_by;
-        $scope.params.desc = desc;
-        $location.search($scope.params);
-    }
-
-    $scope.$on('$routeUpdate', function (e) {
-        $scope.parseParams();
-        $scope.loadShipments();
-    });
-
-    // Initial load
-    $scope.parseParams();
-    $scope.loadShipments();
-
-}]);
-
-app.controller("ShipmentsViewCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService) {
-
-    $scope.shipment = {};
-    $scope.exception = {};
-    $scope.count = {};
-    $scope.resources = {};
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/shipments/" + $routeParams.id)
-    $scope.resources.notificationListUrl = $scope.url + "/notifications";
-
-    // Load the service
-    ApiService.getItem($scope.url, { expand: "order.customer" }).then(function (shipment) {
-        $scope.shipment = shipment;
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-    $scope.confirmDelete = function () {
-        var confirm = { id: "delete" };
-        confirm.onConfirm = function () {
-            $scope.delete();
-        }
-        ConfirmService.showConfirm($scope, confirm);
-    }
-
-    $scope.delete = function () {
-
-        ApiService.remove($scope.shipment.url).then(
-        function (eventSubscription) {
-            GrowlsService.addGrowl({ id: "delete_success", name: $scope.shipment.shipment_id, type: "success" });
-            utils.redirect($location, "/shipments");
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception.error = error;
-        });
-    }
-
-}]);
-
-//#endregion Products
-
-
-
-
-
 //#region ShippingMethods
 
 app.controller("ShippingMethodsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
@@ -7881,6 +7756,151 @@ app.controller("ShippingMethodsSetCtrl", ['$scope', '$routeParams', '$location',
         function (shippingMethod) {
             GrowlsService.addGrowl({ id: "delete_success", name: $scope.shippingMethod.shipping_method_id, type: "success" });
             utils.redirect($location, "/shipping_methods");
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception.error = error;
+        });
+    }
+
+}]);
+
+//#endregion Products
+
+
+
+
+
+//#region Shipments
+
+app.controller("ShipmentsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
+
+    // Establish your scope containers
+    $scope.shipments = {};
+    $scope.nav = {};
+    $scope.exception = {};
+
+    // Establish your settings from query string parameters
+    $scope.parseParams = function () {
+        $scope.params = ($location.search())
+
+        // Convert any string true/false to bool
+        utils.stringsToBool($scope.params);
+
+        if ($scope.params.sort_by == null) {
+            $scope.params.sort_by = "date_shipped";
+        }
+
+        if ($scope.params.desc == null) {
+            $scope.params.desc = true;
+        }
+
+    }
+
+    $scope.loadShipments = function () {
+
+        ApiService.getList(ApiService.buildUrl("/shipments"), $scope.params).then(function (result) {
+            $scope.shipments.shipmentList = result;
+            $scope.shipmentsChecked = false;
+
+            // If instructed, scroll to the top upon completion
+            if ($scope.nav.scrollTop == true) {
+                window.scrollTo(0, 0);
+            }
+            $scope.nav.scrollTop = null;
+
+        },
+        function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
+
+    $scope.setParam = function (param, value) {
+        $scope.params[param] = value;
+        $scope.params.before_item = null;
+        $scope.params.after_item = null;
+        $scope.nav.scrollTop = true;
+        $location.search($scope.params);
+    }
+
+    $scope.search = function () {
+        if ($scope.params.q != null) {
+
+            // Reset the view to the first page
+            $scope.params.offset = null;
+            $scope.nav.scrollTop = true;
+
+            // If empty, reset to null
+            if ($scope.params.q == "") {
+                $scope.params.q = null;
+            }
+
+            $location.search($scope.params);
+        }
+    }
+
+    $scope.movePage = function (direction) {
+        if (direction == "+") {
+            $scope.params.offset = $scope.shipments.shipmentList.next_page_offset;
+        } else {
+            $scope.params.offset = $scope.shipments.shipmentList.previous_page_offset;
+        }
+        $scope.nav.scrollTop = true;
+        $location.search($scope.params);
+    }
+
+    $scope.sort = function (sort_by, desc) {
+        $scope.params.sort_by = sort_by;
+        $scope.params.desc = desc;
+        $location.search($scope.params);
+    }
+
+    $scope.$on('$routeUpdate', function (e) {
+        $scope.parseParams();
+        $scope.loadShipments();
+    });
+
+    // Initial load
+    $scope.parseParams();
+    $scope.loadShipments();
+
+}]);
+
+app.controller("ShipmentsViewCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService) {
+
+    $scope.shipment = {};
+    $scope.exception = {};
+    $scope.count = {};
+    $scope.resources = {};
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/shipments/" + $routeParams.id)
+    $scope.resources.notificationListUrl = $scope.url + "/notifications";
+
+    // Load the service
+    ApiService.getItem($scope.url, { expand: "order.customer" }).then(function (shipment) {
+        $scope.shipment = shipment;
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+    $scope.confirmDelete = function () {
+        var confirm = { id: "delete" };
+        confirm.onConfirm = function () {
+            $scope.delete();
+        }
+        ConfirmService.showConfirm($scope, confirm);
+    }
+
+    $scope.delete = function () {
+
+        ApiService.remove($scope.shipment.url).then(
+        function (eventSubscription) {
+            GrowlsService.addGrowl({ id: "delete_success", name: $scope.shipment.shipment_id, type: "success" });
+            utils.redirect($location, "/shipments");
         },
         function (error) {
             window.scrollTo(0, 0);
@@ -8582,10 +8602,11 @@ app.controller("TemplatesListCtrl", ['$scope', '$routeParams', '$location', '$q'
 
 }]);
 
-app.controller("TemplatesSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService) {
+app.controller("TemplatesSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', 'HelperService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService, HelperService) {
 
     $scope.template = {};
     $scope.exception = {};
+    $scope.helperService = HelperService;
 
     if ($routeParams.id != null) {
 
@@ -8664,9 +8685,7 @@ app.controller("TemplatesSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
             return;
         }
 
-        ApiService.set($scope.template, $scope.url, { show: "template_id,name" })
-        .then(
-        function (template) {
+        ApiService.set($scope.template, $scope.url, { show: "template_id,name" }).then(function (template) {
             GrowlsService.addGrowl({ id: "edit_success", name: template.template_id, type: "success", template_id: template.template_id, url: "#/templates/" + template.template_id + "/edit" });
             window.location = "#/templates";
         },
