@@ -32,6 +32,8 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     $routeProvider.when("/promotions/coupon/:id/edit", { templateUrl: "app/pages/promotions/coupon.html", reloadOnSearch: true });
     $routeProvider.when("/promotions/cross-sell/add", { templateUrl: "app/pages/promotions/crossSell.html", reloadOnSearch: true });
     $routeProvider.when("/promotions/cross-sell/:id/edit", { templateUrl: "app/pages/promotions/crossSell.html", reloadOnSearch: true });
+    $routeProvider.when("/promotions/up-sell/add", { templateUrl: "app/pages/promotions/upSell.html", reloadOnSearch: true });
+    $routeProvider.when("/promotions/up-sell/:id/edit", { templateUrl: "app/pages/promotions/upSell.html", reloadOnSearch: true });
 
     // Gateways
     $routeProvider.when("/gateways", { templateUrl: "app/pages/gateways/list.html", reloadOnSearch: false });

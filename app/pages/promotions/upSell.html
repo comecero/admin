@@ -1,0 +1,196 @@
+<div ng-controller="UpSellSetCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <h1 ng-if="add" translate>Add an Up Sell</h1>
+        <h1 ng-if="update" translate>Up Sell: {{promotion.name}}</h1>
+    </div>
+    <form name="form" novalidate>
+        <div class="panel panel-body light-shadow">
+
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="comments" class="control-label" translate>Name</label>
+                    <input type="text" class="form-control" name="name" ng-model="promotion.name" required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a name for this promotion.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" ng-show="!add">
+                <div class="form-group">
+                    <label class="control-label" translate>Promotion ID</label>
+                    <div>{{promotion.promotion_id}}</div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xs-12" ng-show="!add">
+                <div class="form-group">
+                    <label class="control-label" translate>Number of Uses</label>
+                    <div>{{promotion.use_count}}</div>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label class="control-label" translate>Which product do you want to offer as an up sell in the cart?</label>
+                    <div ng-show="!options.product.length">
+                        <a class="btn btn-info" products-select products="options.product" limit="1" translate>Select Product</a>
+                    </div>
+                    <div ng-show="options.product.length > 0">
+                        <a class="highlight-value" ng-href="{{'/#/products/' + options.product[0].product_id + '/edit'}}" target="_blank">{{options.product[0].name}}</a> {{options.product[0].product_id}}
+                        <p><button class="btn btn-xs btn-default" ng-click="options.product = null" translate>Change Product</button></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label class="radio-group-label" translate>Which product in the cart triggers this up sell?</label>
+                    <div ng-show="!options.offer_with_product.length">
+                        <a class="btn btn-info" products-select products="options.offer_with_product" limit="1" translate>Select Product</a>
+                    </div>
+                    <div ng-show="options.offer_with_product.length > 0">
+                        <product-group products="options.offer_with_product" limit="1"></product-group>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12" show-errors>
+                <div class="form-group">
+                    <label class="radio-group-label" translate>Discount Type</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="discount_type-1" class="radio" name="discount_type" ng-model="options.discount_type" value="percentage" required>
+                        <label for="discount_type-1" class="radio-label">Percentage</label>
+                        <input type="radio" id="discount_type-2" class="radio" name="discount_type" ng-model="options.discount_type" value="amounts" required>
+                        <label for="discount_type-2" class="radio-label">Amount</label>
+                        <input type="radio" id="discount_type-3" class="radio" name="discount_type" ng-model="options.discount_type" value="none" required>
+                        <label for="discount_type-3" class="radio-label">No Discount</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12" ng-show="options.discount_type == 'percentage'">
+                <div class="form-group" show-errors>
+                    <label for="discount_percent" class="control-label" translate>Discount Percentage</label>
+                    <input type="tel" class="form-control" name="discount_percent" ng-model="promotion.config._discount_percent" placeholder="{{ 'Enter a percentage value' | translate}}" is-valid-number less-than-or-equal="100" greater-than="0" allow-empty-value="true" ng-required="options.discount_type == 'percentage'">
+                    <p class="help-block hidden fadeInDown" translate>Please provide a discount percentage greater than 0 and less than or equal to 100.</p>
+                    <div>
+                        <p class="help-text" translate>The percentage discount to apply. For example, for a 20% discount, enter '20'.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-if="options.discount_type == 'amounts'">
+                <div prices="promotion.config.discount_amount" currencies="currencies" label="amount"></div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="col-md-6 col-xs-12" show-errors>
+                <div class="form-group">
+                    <label class="radio-group-label" translate>Apply to recurring subscription payments?</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="apply_to_recurring-1" class="radio" name="apply_to_recurring" ng-model="promotion.apply_to_recurring" ng-value="true" required>
+                        <label for="apply_to_recurring-1" class="radio-label">Yes</label>
+                        <input type="radio" id="apply_to_recurring-2" class="radio" name="apply_to_recurring" ng-model="promotion.apply_to_recurring" ng-value="false" required>
+                        <label for="apply_to_recurring-2" class="radio-label">No</label>
+                    </div>
+                    <div>
+                        <p class="help-text" translate>'No' discounts the initial payment only, 'Yes' discounts the initial payment and the number of recurring payments you specify.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" ng-show="promotion.apply_to_recurring">
+                <div class="form-group" show-errors>
+                    <label for="apply_to_recurring_count" class="control-label" translate>How many recurring payments?</label>
+                    <input type="tel" class="form-control" name="apply_to_recurring_count" ng-model="promotion.apply_to_recurring_count" placeholder="{{ 'Optional' | translate}}" is-valid-integer allow-empty-value="true">
+                    <div>
+                        <p class="help-text" translate>The number of recurring payments this promotion should apply to. If blank the promotion will apply to all recurring payments.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="comments" class="control-label" translate>Sort Priority</label>
+                    <input type="tel" class="form-control" name="sort_priority" ng-model="promotion.config.sort_priority" placeholder="{{ 'Enter a number' | translate}}" is-valid-integer greater-than-or-equal="0" required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a sort priority for this promotion.</p>
+                    <div>
+                        <p class="help-text" translate>If multiple up sells are available for a cart, the sort priority indicates the order in which they will be presented. A lower number puts an item closer to the top.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="comments" class="control-label" translate>Weight</label>
+                    <input type="tel" class="form-control" name="weight" ng-model="promotion.config.weight" placeholder="{{ 'Enter a number' | translate}}" is-valid-integer greater-than-or-equal="0" required>
+                    <p class="help-block hidden fadeInDown" translate>Please provide a weight for this promotion.</p>
+                    <div>
+                        <p class="help-text" translate>If you have multiple up sells configured for the same product, the weight determines how likely this up sell will be selected compared to others, allowing you to test different up sell discounts.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="col-md-6 col-xs-12" show-errors>
+                <label for="expires" class="control-label">Expires</label>
+                <div class="input-group dp">
+                    <input type="text" name="expires" class="form-control" uib-datepicker-popup="yyyy-MM-dd" ng-model="datepicker.expires" is-open="datepicker.status.expires.opened" datepicker-options="datepicker.options" ng-model-options="{timezone: 'utc'}" close-text="Close" />
+                    <span class="input-group-addon pointer" ng-click="datepicker.open($event, 'expires')"><i class="fa fa-calendar"></i></span>
+                </div>
+                <div>
+                    <p class="help-text" translate>Supply a date if you want the promotion to automatically expire, otherwise leave blank.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12" show-errors>
+                <div class="form-group">
+                    <label class="radio-group-label" translate>Set as Active?</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="active-1" class="radio" name="active" ng-model="promotion.active" ng-value="true" required>
+                        <label for="active-1" class="radio-label">Yes</label>
+                        <input type="radio" id="active-2" class="radio" name="active" ng-model="promotion.active" ng-value="false" required>
+                        <label for="active-2" class="radio-label">No</label>
+                    </div>
+                    <div>
+                        <p class="help-text" translate>By setting as inactive, this promotion will immediately be invalidated for all customers. You can enable and disable at any time.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="form-group" show-errors>
+                    <label for="comments" class="control-label" translate>Comments</label>
+                    <textarea type="text" class="form-control" name="comments" ng-model="promotion.comments"></textarea>
+                    <div>
+                        <p class="help-text" translate>Comments and notes about this promotion for your reference</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <button ng-if="add" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="addPromotion()" validate-on-submit translate>Add the Promotion</button>
+                <button ng-if="update" type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="updatePromotion()" validate-on-submit translate>Save Changes</button>
+                <button ng-if="update" type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="confirmCancel()" translate>Cancel</button>
+            </div>
+
+            <div class="row"></div>
+
+            <div ng-if="update" class="panel-footer submenu" resource="products" method="delete">
+                <span class="delete" ng-click="confirmDelete()" ng-if="!product.deleted" translate>Delete this promotion</span>
+            </div>
+
+        </div>
+    </form>
+</div>
