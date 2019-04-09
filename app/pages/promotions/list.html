@@ -34,7 +34,17 @@
             <div class="gridtable-header hidden-xs hidden-sm">
                 <div class="col-md-3"><label ng-click="sort('name', !params.desc)" class="pointer text-primary" translate>Name</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="params.sort_by == 'name' && params.desc == true"></i><i class="icon fa fa-caret-up" ng-if="params.sort_by == 'name' && params.desc == false"></i></div>
                 <div class="col-md-3"><label>ID</label></div>
-                <div class="col-md-2"><label>Type</label></div>
+                <div class="col-md-2 btn-header">
+                    <div class="btn-group" uib-dropdown>
+                        <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Type</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                        <ul class="dropdown-menu">
+                            <li ng-click="setParam('type', null)" ng-class="{ 'selected-li': params.type == null }"><a><span translate>Show All</span></a></li>
+                            <li ng-click="setParam('type', 'coupon')" ng-class="{ 'selected-li': params.type == 'coupon' }"><a><span translate>Coupon</span></a></li>
+                            <li ng-click="setParam('type', 'cross_sell')" ng-class="{'selected-li': params.type == 'cross_sell' }"><a><span translate>Cross Sell</span></a></li>
+                            <li ng-click="setParam('type', 'up_sell')" ng-class="{'selected-li': params.type == 'up_sell' }"><a><span translate>Up Sell</span></a></li>
+                        </ul>
+                    </div>
+                </div>
                 <div class="col-md-2 btn-header">
                     <div class="btn-group" uib-dropdown>
                         <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Status</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
@@ -53,10 +63,15 @@
                 <div class="btn-group" uib-dropdown>
                     <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Filter</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
                     <ul class="dropdown-menu">
+                        <li class="dropdown-header">Type</li>
+                        <li ng-click="setParam('type', null)" ng-class="{ 'selected-li': params.type == null }"><a><span translate>Show All</span></a></li>
+                        <li ng-click="setParam('type', 'coupon')" ng-class="{ 'selected-li': params.type == 'coupon' }"><a><span translate>Coupon</span></a></li>
+                        <li ng-click="setParam('type', 'cross_sell')" ng-class="{'selected-li': params.type == 'cross_sell' }"><a><span translate>Cross Sell</span></a></li>
+                        <li ng-click="setParam('type', 'up_sell')" ng-class="{'selected-li': params.type == 'up_sell' }"><a><span translate>Up Sell</span></a></li>
                         <li class="dropdown-header">Status</li>
-                        <li ng-click="setParam('active', null)" ng-class="{ 'selected-li': params.active == null }"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
-                        <li ng-click="setParam('active', true)" ng-class="{ 'selected-li': params.active == true }"><a><i class="dropdown-icon fa fa-check-circle text-success"></i>&nbsp;&nbsp;<span translate>Active</span></a></li>
-                        <li ng-click="setParam('active', false)" ng-class="{'selected-li': params.active == false }"><a><i class="dropdown-icon fa fa-minus-circle text-warning"></i>&nbsp;&nbsp;<span translate>Inactive</span></a></li>
+                        <li ng-click="setParam('type', null)" ng-class="{ 'selected-li': params.type == null }"><a><i class="dropdown-icon fa fa-chevron-circle-right text-primary"></i>&nbsp;&nbsp;<span translate>Show All</span></a></li>
+                        <li ng-click="setParam('type', true)" ng-class="{ 'selected-li': params.type == true }"><a><i class="dropdown-icon fa fa-check-circle text-success"></i>&nbsp;&nbsp;<span translate>Active</span></a></li>
+                        <li ng-click="setParam('type', false)" ng-class="{'selected-li': params.type == false }"><a><i class="dropdown-icon fa fa-minus-circle text-warning"></i>&nbsp;&nbsp;<span translate>Inactive</span></a></li>
                     </ul>
                 </div>
 
