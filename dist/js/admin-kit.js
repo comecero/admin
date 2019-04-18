@@ -3873,8 +3873,6 @@ app.directive('productsSelect', ['ApiService', 'ConfirmService', 'GrowlsService'
                 // Specify the max number of products that can be selected / uploaded. 15 if not supplied.
                 scope.productsSelect.limit = attrs.limit || 15;
 
-                console.log(scope.productsSelect.limit);
-
                 scope.productsSelect.params = {};
                 scope.productsSelect.params.show = "product_id,name,date_created,date_modified,price,currency,subscription_plan.billing_interval_description,subscription_plan.trial_interval_description";
                 scope.productsSelect.params.expand = "subscription_plan";

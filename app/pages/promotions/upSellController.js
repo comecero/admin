@@ -46,7 +46,7 @@ app.controller("UpSellSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
                 $scope.datepicker.expires = new Date(promotion.expires);
             }
 
-            $scope.promotion.config.discount_amount = $scope.promotion.config.discount_amount || [];
+            $scope.promotion.config.discount_amount = $scope.promotion.config.discount_amount || [{ price: null, currency: null }];
             if ($scope.promotion.config.discount_percent) {
                 $scope.promotion.config._discount_percent = utils.decimalToPercent($scope.promotion.config.discount_percent);
             }
