@@ -1,0 +1,179 @@
+﻿<div ng-controller="AppInstallationsManageCtrl" class="content container">
+
+    <div class="callout callout-danger" ng-if="exception.error">
+        <h4 translate>Oops! We had a problem.</h4>
+        <p>{{exception.error.message}}</p>
+        <span class="error-code" ng-if="exception.error.reference">Error code: {{exception.error.reference}}</span>
+    </div>
+
+    <div class="page-header">
+        <img ng-src="{{default.image_url}}" ng-if="default.image_url" class="thumbnail inline" style="max-height: 35px; margin-bottom: 0;" /> {{default.name}}
+        <a id="top" ng-href="{{functions.getLaunchUrl(default)}}" target="_blank" class="btn btn-success btn-right"><span class="hidden-xs" translate>Launch</span></a>
+    </div>
+
+    <div class="panel panel-body light-shadow">
+        <p><i>{{default.short_description}}</i></p>
+
+        <div class="col-xs-12" style="padding:5px;" resource="app_installations" method="update" ng-show="default.updated_version_available">
+            <div class="alert alert-success spacer-b5 text-center">
+                <strong>New Version Available.</strong> A new version of this app is available. <a ng-href="{{functions.getInstallUrl(default)}}" target="_blank">Install now</a>.
+                <p class="help-block" style="color: #fff" translate>Installing the new version will not make it available for use. After installation, you can configure and test the new version and start using it when ready.</p>
+            </div>
+        </div>
+
+        <div class="col-xs-12" style="padding:5px;" resource="app_installations" method="update" ng-show="default.version && !default.latest_installed_is_default">
+            <div class="alert alert-purple spacer-b5 text-center">
+                <strong>You are not using the newest installed version of this app.</strong> <a ng-click="functions.confirmSetDefaultVersion(latest)" target="_blank">Start using version {{default.latest_installed_version}}</a>.
+                <p class="help-block" style="color: #fff" translate>Before you start using a new version, you should test the new version to review any potential changes to the design, features and functionality.</p>
+            </div>
+        </div>
+
+        <div class="row"></div>
+
+        <div class="panel">
+            <div class="panel-heading">
+                <span class="panel-title" translate>Details</span>
+                <div class="panel-heading-controls" ng-show="!default.platform_hosted">
+                    <button class="btn btn-xs btn-danger" ng-click="functions.confirmUninstall(default)"><i class="dropdown-icon fa fa-trash"></i>&nbsp;&nbsp;Uninstall</button>
+                </div>
+            </div>
+            <div class="panel-body">
+
+                <div class="col-xs-12 col-md-6" ng-show="default.platform_hosted">
+                    <label class="control-label">Version Currently In Use</label>
+                    <div class="text-sm"><span class="badge badge-info text-bold">{{default.version}}</span></div>
+                </div>
+
+                <div class="col-xs-12 col-md-6">
+                    <label class="control-label">App ID</label>
+                    <div class="text-sm">{{default.app_id}}</div>
+                </div>
+
+                <div class="row spacer-b30"></div>
+
+                <div class="col-xs-12" ng-show="default.info_url">
+                    <label class="control-label">Need Help Using this App?</label>
+                    <div><a ng-href="{{functions.getInfoUrl(default, meta.test)}}" target="_blank" class="btn btn-sm btn-blue spacer-t5">Getting Started</a></div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="panel" ng-show="default.platform_hosted && (default.settings_fields || default.style_fields)">
+            <div class="panel-heading">
+                <span class="panel-title" translate>Customize</span>
+            </div>
+            <div class="panel-body">
+                <div class="col-xs-12 col-md-6" ng-show="default.settings_fields">
+                    <label class="control-label"><a href="#/app_installations/{{default.app_installation_id}}/settings"><i class="dropdown-icon fa fa-sliders"></i>&nbsp;&nbsp;Settings</a></label>
+                    <p class="help-block">Set preferences and configure features</p>
+                </div>
+
+                <div class="col-xs-12 col-md-6" ng-show="default.style_fields">
+                    <label class="control-label"><a href="#/app_installations/{{default.app_installation_id}}/style"><i class="dropdown-icon fa fa-paint-brush"></i>&nbsp;&nbsp;Style</a></label>
+                    <p class="help-block">Set design, logo and colors</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel" ng-show="default.platform_hosted">
+            <div class="panel-heading">
+                <span class="panel-title" translate>Location</span>
+                <div class="panel-heading-controls">
+                    <button class="btn btn-xs btn-info" ng-click="editLocation = true">Change Location</button>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-xs-12">
+                    <label class="control-label">URL</label>
+                    <div class="text-bg text-bold"><a ng-href="{{default.location_url}}" target="_blank">{{default.location_url}}</a></div>
+                    <p class="help-block" translate>Refer to the Getting Started section for details on how to link to and use this app.</p>
+                </div>
+
+                <div class="col-xs-12 spacer-t20" ng-show="editLocation">
+                    <div class="input-group">
+                        <div class="input-group-btn" uib-dropdown>
+                            <button type="button" class="btn btn-default dropdown-toggle" style="height:42px;" uib-dropdown-toggle><span class="caret"></span> <span ng-if="!default.preferred_hostname">https:// (Account Default Hostname) /</span><span ng-if="default.preferred_hostname">https://{{default.preferred_hostname}}/</span></button>
+                            <ul class="dropdown-menu">
+                                <li ng-click="default.preferred_hostname = null"><a>Account Default Hostname</a></li>
+                                <li ng-repeat="host in settings.app_hosts" ng-click="default.preferred_hostname = host"><a>{{host}}</a></li>
+                            </ul>
+                        </div>
+                        <input type="text" class="form-control" ng-model="default.alias">
+                    </div>
+                    <p class="help-block" translate>This app will always be available at all the hostnames assigned to your account, however, it is possible to assign a preferred hostname to be used when generating links to this app. If you use the Account Default Hostname, the first hostname defined under Settings> Technical will be used.</p>
+                    <p class="help-block" translate>If you change the location, make sure you update any places that link to the app to prevent "page not found" errors.</p>
+
+                    <div>
+                        <button type="submit" class="btn btn-primary btn-right btn-margin-left" ng-click="functions.setLocation()" translate>Save</button>
+                        <button type="submit" class="btn btn-default btn-right btn-margin-left" ng-click="editLocation = false" translate>Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel" ng-show="default.platform_hosted">
+            <div class="panel-heading">
+                <span class="panel-title" translate>Installed Versions</span>
+            </div>
+            <div class="panel-body">
+                <div class="gridtable">
+
+                    <div class="gridtable-header hidden-xs hidden-sm">
+                        <div class="col-md-2"><label>Version</label></div>
+                        <div class="col-md-2"><label ng-click="sort('date_created', !userParams.desc)" class="pointer text-primary" translate>Installed</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="userParams.sort_by == 'date_created' && userParams.desc == true"></i><i class="icon fa fa-caret-up" ng-if="userParams.sort_by == 'date_created' && userParams.desc == false"></i></div>
+                        <div class="col-md-8 text-right"><label>&nbsp;</label></div>
+
+                    </div>
+
+                    <div class="col-xs-12 hidden-md hidden-lg padding-l0">
+                        <div class="btn-group" uib-dropdown>
+                            <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Sort</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                            <ul class="dropdown-menu">
+                                <li class="dropdown-header">Date Installed</li>
+                                <li ng-click="sort('date_created', false)" ng-class="{'selected-li': userParams.sort_by == 'date_created' && userParams.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
+                                <li ng-click="sort('date_created', true)" ng-class="{'selected-li': userParams.sort_by == 'date_created' && userParams.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="row spacer-b10 hidden-md hidden-lg"></div> <!--Needed to have the buttons clear-->
+
+                    <div class="gridtable-row" ng-repeat="app_installation in list.data">
+
+                        <div class="col-xs-12 col-sm-6 col-md-2">
+                            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Version</label></div>
+                            <div class="col-xs-7 col-sm-12 col-md-12 value">{{app_installation.version}}&nbsp;&nbsp;<i class="fa fa-check-circle text-success" title="This is the version you are using" ng-show="app_installation.is_default_version"></i></div>
+                        </div>
+
+                        <div class="col-xs-12 col-sm-6 col-md-2">
+                            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Installed</label></div>
+                            <div class="col-xs-7 col-sm-12 col-md-12 value"><span>{{app_installation.date_created | date:'shortDate'}}</span></div>
+                        </div>
+
+                        <div class="col-xs-12 col-sm-6 col-md-8">
+                            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>&nbsp;</label></div>
+                            <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg padding-r20 padding-l0 navbar-right">
+                                <a ng-show="app_installation.info_url" ng-href="{{functions.getInfoUrl(app_installation, meta.test)}}" target="_blank" class="btn btn-xs btn-blue spacer-t5">Getting Started</a>
+                                <div class="btn-group" uib-dropdown>
+                                    <button type="button" class="btn btn-xs btn-default btn-header dropdown-toggle spacer-t5" uib-dropdown-toggle><span translate>Manage</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                                    <ul class="dropdown-menu">
+                                        <li ng-show="app_installation.platform_hosted && app_installation.settings_fields"><a ng-href="#/app_installations/{{app_installation.app_installation_id}}/settings"><i class="dropdown-icon fa fa-cogs text-default"></i>&nbsp;&nbsp;<span translate>Settings</span></a></li>
+                                        <li ng-show="app_installation.platform_hosted && app_installation.style_fields"><a ng-href="#/app_installations/{{app_installation.app_installation_id}}/style"><i class="dropdown-icon fa fa-paint-brush text-default"></i>&nbsp;&nbsp;<span translate>Style</span></a></ling-show="app_installation.platform_hosted">
+                                        <li ng-show="app_installation.is_default_version === false" ng-click="functions.confirmSetDefaultVersion(app_installation)"><a><i class="dropdown-icon fa fa-arrow-up text-success"></i>&nbsp;&nbsp;<span class="text-success" translate>Use This Version</span></a></li>
+                                        <li ng-click="functions.confirmUninstall(app_installation)"><a><i class="dropdown-icon fa fa-trash text-danger"></i>&nbsp;&nbsp;<span class="text-danger" translate>Uninstall</span></a></li>
+                                    </ul>
+                                </div>
+                                <a ng-href="{{functions.getLaunchUrl(app_installation)}}" target="_blank" class="btn btn-xs btn-success spacer-t5">Launch</a>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

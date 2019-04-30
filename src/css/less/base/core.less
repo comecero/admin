@@ -147,12 +147,16 @@ h6,
   font-family: 'Source Sans Pro', sans-serif;
 }
 /* General Links */
-a {
+a, .faux-link {
   color: @link-color;
+  cursor: pointer;
 }
 a:hover,
 a:active,
-a:focus {
+a:focus, 
+.faux-link:hover,
+.faux-link:active,
+.faux-link:focus {
   outline: none;
   text-decoration: none;
   color: @link-hover-color;

@@ -7,54 +7,19 @@ app.controller("AppInstallationsListCtrl", ['$scope', '$routeParams', '$location
     $scope.exception = {};
     $scope.resources = {};
     $scope.resources.appInstallationListUrl = ApiService.buildUrl("/app_installations");
+    $scope.params = { is_default_version: true };
     $scope.meta = {};
+
+    // Determine which type of apps you should display
+    var path = $location.path();
+    $scope.params.type = "storefront";
+    if (path != "/storefront") {
+        $scope.params.type = "admin";
+    }
 
     $scope.meta.test = localStorage.getItem("test");
 
     $scope.functions = {};
-
-    $scope.functions.uninstall = function (app_installation_id, app_name) {
-
-        var url = ApiService.buildUrl("/app_installations/" + app_installation_id);
-
-        ApiService.remove(url)
-        .then(
-        function () {
-            GrowlsService.addGrowl({ id: "uninstall_success", name: app_name, type: "success" });
-            $scope.functions.refresh();
-        },
-        function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    }
-
-    $scope.functions.confirmUninstall = function (app_installation_id, app_name) {
-        var confirm = { id: "app_uninstall" };
-        confirm.onConfirm = function () {
-            $scope.functions.uninstall(app_installation_id, app_name);
-        }
-        ConfirmService.showConfirm($scope, confirm);
-    }
-
-    $scope.functions.setDefaultVersion = function (app_installation_id, version) {
-
-        var url = ApiService.buildUrl("/app_installations/" + app_installation_id);
-
-        var data = { is_default_version: true };
-
-        ApiService.set(data, url, { show: "name" })
-        .then(
-        function (response) {
-            GrowlsService.addGrowl({ id: "set_default_app_version", name: response.name, type: "success" });
-            $scope.functions.refresh();
-        },
-        function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-
-    }
 
     $scope.functions.confirmSetDefaultVersion = function (app_installation_id) {
         var confirm = { id: "set_default_app_version" };
@@ -66,7 +31,129 @@ app.controller("AppInstallationsListCtrl", ['$scope', '$routeParams', '$location
 
     $scope.functions.getLaunchUrl = function (app_installation) {
         if (app_installation) {
-            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
+            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&from_admin=true&redirect_uri=";
+            var redirect = app_installation.launch_url;
+            if (app_installation.version)
+                redirect += "&target_version=" + app_installation.version;
+            url += encodeURIComponent(redirect);
+            return url;
+        }
+    }
+
+    $scope.functions.getInfoUrl = function (app_installation, test) {
+
+        // If client side and the info URL is within the app, run the info URL through the app launcher to inject an API token for use within the info pages.
+        if (app_installation.platform_hosted && app_installation.info_url) {
+            if (utils.left(app_installation.info_url, app_installation.location_url.length) == app_installation.location_url) {
+                // The info URL is within the app. Set the redirect URI as a relative path.
+                var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
+                return url + "&redirect_uri=" + encodeURIComponent(app_installation.info_url);
+            }
+        }
+        return app_installation.info_url;
+    }
+
+}]);
+
+app.controller("AppInstallationsManageCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService, ConfirmService) {
+
+    // Establish your scope containers
+    $scope.exception = {};
+    $scope.resources = {};
+    $scope.resources.appInstallationListUrl = ApiService.buildUrl("/app_installations");
+    $scope.params = { app_id: $routeParams.id, sort_by: "version_date", desc: true };
+    $scope.meta = {};
+    $scope.default = {};
+
+    $scope.meta.test = localStorage.getItem("test");
+
+    $scope.functions = {};
+
+    $scope.functions.refresh = function () {
+
+        ApiService.getList($scope.resources.appInstallationListUrl, $scope.params).then(function (result) {
+            $scope.list = result;
+            $scope.count = result.total_items;
+            $scope.data = result.data;
+
+            if (result.total_items) {
+                $scope.latest = result.data[0];
+
+                // Get the default version if platform hosted, otherwise just get the first in the list.
+                $scope.default = _.find(result.data, function (app) { return app.is_default_version == true }) || result.data[0];
+
+                // Load the technical settings
+                var settingsUrl = ApiService.buildUrl("/settings/technical");
+                ApiService.getItem(settingsUrl, { show: "app_hosts" }).then(function (settings) {
+
+                    $scope.settings = settings;
+
+                }, function (error) {
+                    $scope.exception.error = error;
+                    window.scrollTo(0, 0);
+                });
+
+            } else {
+                $scope.exception.error = { message: "The app you are looking for is not installed in your account." };
+            }
+
+        },
+        function (error) {
+            $scope.error = error;
+        });
+
+    }
+
+    $scope.functions.uninstall = function (app_installation) {
+
+        var url = ApiService.buildUrl("/app_installations/" + app_installation.app_installation_id);
+
+        ApiService.remove(url).then(function () {
+            GrowlsService.addGrowl({ id: "uninstall_success", name: app_installation.name, version: app_installation.version, type: "success" });
+            $scope.functions.refresh();
+        },
+        function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
+    $scope.functions.confirmUninstall = function (app_installation) {
+        var confirm = { id: "app_uninstall", name: app_installation.name, version: app_installation.version, platform_hosted: app_installation.platform_hosted };
+        confirm.onConfirm = function () {
+            $scope.functions.uninstall(app_installation);
+        }
+        ConfirmService.showConfirm($scope, confirm);
+    }
+
+    $scope.functions.setDefaultVersion = function (appInstallation) {
+
+        var url = ApiService.buildUrl("/app_installations/" + appInstallation.app_installation_id);
+
+        var data = { is_default_version: true };
+
+        ApiService.set(data, url, { show: "name" }).then(function (response) {
+            GrowlsService.addGrowl({ id: "set_default_app_version", name: response.name, type: "success" });
+            $scope.functions.refresh();
+        },
+        function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+
+    }
+
+    $scope.functions.confirmSetDefaultVersion = function (appInstallation) {
+        var confirm = { id: "set_default_app_version", version: appInstallation.version, name: appInstallation.name };
+        confirm.onConfirm = function () {
+            $scope.functions.setDefaultVersion(appInstallation);
+        }
+        ConfirmService.showConfirm($scope, confirm);
+    }
+
+    $scope.functions.getLaunchUrl = function (app_installation) {
+        if (app_installation) {
+            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&from_admin=true&redirect_uri=";
             var redirect = app_installation.launch_url;
             if (app_installation.version)
                 redirect += "&target_version=" + app_installation.version;
@@ -99,6 +186,23 @@ app.controller("AppInstallationsListCtrl", ['$scope', '$routeParams', '$location
         return app_installation.info_url;
     }
 
+    $scope.functions.setLocation = function () {
+        var url = ApiService.buildUrl("/app_installations/" + $scope.default.app_installation_id);
+        var data = { preferred_hostname: $scope.default.preferred_hostname, alias: $scope.default.alias };
+        ApiService.set(data, url).then(function (response) {
+            GrowlsService.addGrowl({ id: "edit_success_no_link", type: "success" });
+            $scope.default = response;
+            $scope.editLocation = false;
+        },
+        function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
+    // Do the initial load
+    $scope.functions.refresh();
+
 }]);
 
 app.controller("AppInstallationsSettingsCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
@@ -126,33 +230,10 @@ app.controller("AppInstallationsSettingsCtrl", ['$scope', '$routeParams', '$loca
         // Make a copy of the original for comparision
         $scope.settings_orig = angular.copy($scope.app_installation.settings);
 
-        // Load the technical settings
-        ApiService.getItem(settingsUrl, { show: "app_hosts" }).then(function (settings) {
-
-            // Define the app host
-            $scope.app_host = utils.left(app_installation.location_url, app_installation.location_url.length - app_installation.alias.length - 2).replace("https://", "");
-
-            $scope.settings = settings;
-
-        }, function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-
     }, function (error) {
         $scope.exception.error = error;
         window.scrollTo(0, 0);
     });
-
-    $scope.getLocationUrl = function () {
-        if ($scope.app_installation) {
-            var hostname = $scope.app_host;
-            if ($scope.app_installation.preferred_hostname) {
-                hostname = $scope.app_installation.preferred_hostname;
-            }
-            return "https://" + hostname + "/" + $scope.app_installation.alias;
-        }
-    }
 
     $scope.confirmCancel = function () {
         if (angular.equals($scope.app_installation.config, $scope.config_orig)) {
