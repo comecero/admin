@@ -121,6 +121,7 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
 
     // App Installations
     $routeProvider.when("/app_installations", { templateUrl: "app/pages/app_installations/list.html", reloadOnSearch: false });
+    $routeProvider.when("/app_installations/manage/:id", { templateUrl: "app/pages/app_installations/manage.html", reloadOnSearch: true });
     $routeProvider.when("/app_installations/:id", { templateUrl: "app/pages/app_installations/view.html", reloadOnSearch: true });
     $routeProvider.when("/app_installations/:id/settings", { templateUrl: "app/pages/app_installations/settings.html", reloadOnSearch: true });
     $routeProvider.when("/app_installations/:id/style", { templateUrl: "app/pages/app_installations/style.html", reloadOnSearch: true });

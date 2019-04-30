@@ -51,6 +51,11 @@
   background-color: #5bc0de;
   color: #fff;
 }
+.alert-purple {
+  border-color: #78658b;
+  background-color: #857198;
+  color: #fff;
+}
 /* You can use animations from animate.css directly by applying the classes 'animate' and the animation you want to apply, but you'll get the default speed and it's verbose */
 /* This page allows you to define classes so that animations can be applied in a single class and the timing of the animation can be customized */
 .fadeInDown {
@@ -491,12 +496,17 @@ h6,
   font-family: 'Source Sans Pro', sans-serif;
 }
 /* General Links */
-a {
+a,
+.faux-link {
   color: #3498db;
+  cursor: pointer;
 }
 a:hover,
 a:active,
-a:focus {
+a:focus,
+.faux-link:hover,
+.faux-link:active,
+.faux-link:focus {
   outline: none;
   text-decoration: none;
   color: #75b9e7;
@@ -2795,7 +2805,8 @@ p.no-info-short {
   background-color: #5bc0de;
   color: #ffffff;
 }
-.bg-purple {
+.bg-purple,
+.alert-purple {
   background-color: #857198;
   color: #ffffff;
 }
@@ -3254,4 +3265,7 @@ ul.product-group {
 }
 tbody.highlight {
   background-color: #f9f9f9;
+}
+.thumbnail.inline {
+  display: inline;
 }
