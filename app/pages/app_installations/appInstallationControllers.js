@@ -10,48 +10,16 @@ app.controller("AppInstallationsListCtrl", ['$scope', '$routeParams', '$location
     $scope.params = { is_default_version: true };
     $scope.meta = {};
 
+    // Determine which type of apps you should display
+    var path = $location.path();
+    $scope.params.type = "storefront";
+    if (path != "/storefront") {
+        $scope.params.type = "admin";
+    }
+
     $scope.meta.test = localStorage.getItem("test");
 
     $scope.functions = {};
-
-    $scope.functions.uninstall = function (app_installation_id, app_name, version) {
-
-        var url = ApiService.buildUrl("/app_installations/" + app_installation_id);
-
-        ApiService.remove(url).then(function () {
-            GrowlsService.addGrowl({ id: "uninstall_success", name: app_name, version: version, type: "success" });
-            $scope.functions.refresh();
-        },
-        function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    }
-
-    $scope.functions.confirmUninstall = function (app_installation_id, app_name, version) {
-        var confirm = { id: "app_uninstall", name: app_installation.name, version: app_installation.version, platform_hosted: app_installation.platform_hosted };
-        confirm.onConfirm = function () {
-            $scope.functions.uninstall(app_installation_id, app_name, version);
-        }
-        ConfirmService.showConfirm($scope, confirm);
-    }
-
-    $scope.functions.setDefaultVersion = function (app_installation_id, version) {
-
-        var url = ApiService.buildUrl("/app_installations/" + app_installation_id);
-
-        var data = { is_default_version: true };
-
-        ApiService.set(data, url, { show: "name" }).then(function (response) {
-            GrowlsService.addGrowl({ id: "set_default_app_version", name: response.name, type: "success" });
-            $scope.functions.refresh();
-        },
-        function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-
-    }
 
     $scope.functions.confirmSetDefaultVersion = function (app_installation_id) {
         var confirm = { id: "set_default_app_version" };
@@ -63,21 +31,10 @@ app.controller("AppInstallationsListCtrl", ['$scope', '$routeParams', '$location
 
     $scope.functions.getLaunchUrl = function (app_installation) {
         if (app_installation) {
-            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
+            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&from_admin=true&redirect_uri=";
             var redirect = app_installation.launch_url;
             if (app_installation.version)
                 redirect += "&target_version=" + app_installation.version;
-            url += encodeURIComponent(redirect);
-            return url;
-        }
-    }
-
-    $scope.functions.getInstallUrl = function (app_installation) {
-        if (app_installation) {
-            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
-            var redirect = app_installation.install_url;
-            if (app_installation.updated_version_available)
-                redirect += "&target_version=" + app_installation.current_app_version;
             url += encodeURIComponent(redirect);
             return url;
         }
@@ -196,7 +153,7 @@ app.controller("AppInstallationsManageCtrl", ['$scope', '$routeParams', '$locati
 
     $scope.functions.getLaunchUrl = function (app_installation) {
         if (app_installation) {
-            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
+            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&from_admin=true&redirect_uri=";
             var redirect = app_installation.launch_url;
             if (app_installation.version)
                 redirect += "&target_version=" + app_installation.version;

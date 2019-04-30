@@ -54,6 +54,97 @@
 
             <div class="row"></div>
 
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="checkbox-group-label" translate>Required Customer Fields</label>
+                    <div class="checkbox-group inline">
+                        <div class="row"></div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-name" class="checkbox" name="field-name" ng-model="required_fields.name" ng-change="toggleCustomerRequiredField('name')">
+                            <label for="field-name" class="checkbox-label">Name</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-company_name" class="checkbox" name="field-company_name" ng-model="required_fields.company_name" ng-change="toggleCustomerRequiredField('company_name')">
+                            <label for="field-company_name" class="checkbox-label">Company Name</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-phone" class="checkbox" name="field-phone" ng-model="required_fields.phone" ng-change="toggleCustomerRequiredField('phone')">
+                            <label for="field-phone" class="checkbox-label">Phone</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-postal_code" class="checkbox" name="field-postal_code" ng-model="required_fields.postal_code" ng-change="toggleCustomerRequiredField('postal_code')">
+                            <label for="field-postal_code" class="checkbox-label">Postal / Zip Code</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-country" class="checkbox" name="field-country" ng-model="required_fields.country" ng-change="toggleCustomerRequiredField('country')">
+                            <label for="field-country" class="checkbox-label">Country</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-full_address" class="checkbox" name="field-full_address" ng-model="required_fields.full_address" ng-change="toggleCustomerRequiredField('full_address')">
+                            <label for="field-full_address" class="checkbox-label">Full Address</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-email" class="checkbox" name="field-email" checked disabled>
+                            <label for="field-email" class="checkbox-label">Email</label>
+                        </div>
+
+                        <div class="row"></div>
+
+                        <div>
+                            <p class="help-text" translate>
+                                Allows you to mark customer fields that are required to be provided before a payment can be processed for a cart or invoice.<br /><br />
+                                Note that regardless of the settings above, for carts and invoices that contain physical products, the customer name and address will always be required. If you enable <a href="#/settings/tax">sales tax or VAT rules</a>, the customer country (and postal / zip code depending on the country) will always be required.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="checkbox-group-label" translate>Customer Optional Fields</label>
+                    <div class="checkbox-group inline">
+                        <div class="row"></div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-optional-name" class="checkbox" name="field-optional-name" ng-model="optional_fields.name" ng-change="toggleCustomerOptionalField('name')">
+                            <label for="field-optional-name" class="checkbox-label">Name</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-optional-company_name" class="checkbox" name="field-optional-company_name" ng-model="optional_fields.company_name" ng-change="toggleCustomerOptionalField('company_name')">
+                            <label for="field-optional-company_name" class="checkbox-label">Company Name</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-optional-phone" class="checkbox" name="field-optional-phone" ng-model="optional_fields.phone" ng-change="toggleCustomerOptionalField('phone')">
+                            <label for="field-optional-phone" class="checkbox-label">Phone</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-optional-postal_code" class="checkbox" name="field-optional-postal_code" ng-model="optional_fields.postal_code" ng-change="toggleCustomerOptionalField('postal_code')">
+                            <label for="field-optional-postal_code" class="checkbox-label">Postal / Zip Code</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-optional-country" class="checkbox" name="field-optional-country" ng-model="optional_fields.country" ng-change="toggleCustomerOptionalField('country')">
+                            <label for="field-optional-country" class="checkbox-label">Country</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-optional-full_address" class="checkbox" name="field-optional-full_address" ng-model="optional_fields.full_address" ng-change="toggleCustomerOptionalField('full_address')">
+                            <label for="field-optional-full_address" class="checkbox-label">Full Address</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
+                            <input type="checkbox" id="field-optional-credentials" class="checkbox" name="field-optional-credentials" ng-model="optional_fields.credentials" ng-change="toggleCustomerOptionalField('credentials')">
+                            <label for="field-optional-credentials" class="checkbox-label">Credentials</label>
+                        </div>
+
+                        <div class="row"></div>
+
+                        <div>
+                            <p class="help-text" translate>
+                                Allows you to mark customer fields that are not required but should be presented to a customer to provide in a cart or invoice. This allows you to request data from a customer without requiring them to provide it to complete a payment.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="col-xs-12 col-md-6">
                 <div class="form-group" show-errors>
                     <label class="radio-group-label" translate>Allow Saved Credit Cards</label>
@@ -170,97 +261,6 @@
             </div>
 
             <div class="row"></div>
-
-            <div class="col-sm-12">
-                <div class="form-group">
-                    <label class="checkbox-group-label" translate>Required Customer Fields</label>
-                    <div class="checkbox-group inline">
-                        <div class="row"></div>
-                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
-                            <input type="checkbox" id="field-name" class="checkbox" name="field-name" ng-model="required_fields.name" ng-change="toggleCustomerRequiredField('name')">
-                            <label for="field-name" class="checkbox-label">Name</label>
-                        </div>
-                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
-                            <input type="checkbox" id="field-company_name" class="checkbox" name="field-company_name" ng-model="required_fields.company_name" ng-change="toggleCustomerRequiredField('company_name')">
-                            <label for="field-company_name" class="checkbox-label">Company Name</label>
-                        </div>
-                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
-                            <input type="checkbox" id="field-phone" class="checkbox" name="field-phone" ng-model="required_fields.phone" ng-change="toggleCustomerRequiredField('phone')">
-                            <label for="field-phone" class="checkbox-label">Phone</label>
-                        </div>
-                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
-                            <input type="checkbox" id="field-postal_code" class="checkbox" name="field-postal_code" ng-model="required_fields.postal_code" ng-change="toggleCustomerRequiredField('postal_code')">
-                            <label for="field-postal_code" class="checkbox-label">Postal / Zip Code</label>
-                        </div>
-                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
-                            <input type="checkbox" id="field-country" class="checkbox" name="field-country" ng-model="required_fields.country" ng-change="toggleCustomerRequiredField('country')">
-                            <label for="field-country" class="checkbox-label">Country</label>
-                        </div>
-                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
-                            <input type="checkbox" id="field-full_address" class="checkbox" name="field-full_address" ng-model="required_fields.full_address" ng-change="toggleCustomerRequiredField('full_address')">
-                            <label for="field-full_address" class="checkbox-label">Full Address</label>
-                        </div>
-                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
-                            <input type="checkbox" id="field-email" class="checkbox" name="field-email" checked disabled>
-                            <label for="field-email" class="checkbox-label">Email</label>
-                        </div>
-
-                        <div class="row"></div>
-
-                        <div>
-                            <p class="help-text" translate>
-                                Allows you to mark customer fields that are required to be provided before a payment can be processed for a cart or invoice.<br /><br />
-                                Note that regardless of the settings above, for carts and invoices that contain physical products, the customer name and address will always be required. If you enable <a href="#/settings/tax">sales tax or VAT rules</a>, the customer country (and postal / zip code depending on the country) will always be required.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-sm-12">
-                <div class="form-group">
-                    <label class="checkbox-group-label" translate>Customer Optional Fields</label>
-                    <div class="checkbox-group inline">
-                        <div class="row"></div>
-                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
-                            <input type="checkbox" id="field-optional-name" class="checkbox" name="field-optional-name" ng-model="optional_fields.name" ng-change="toggleCustomerOptionalField('name')">
-                            <label for="field-optional-name" class="checkbox-label">Name</label>
-                        </div>
-                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
-                            <input type="checkbox" id="field-optional-company_name" class="checkbox" name="field-optional-company_name" ng-model="optional_fields.company_name" ng-change="toggleCustomerOptionalField('company_name')">
-                            <label for="field-optional-company_name" class="checkbox-label">Company Name</label>
-                        </div>
-                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
-                            <input type="checkbox" id="field-optional-phone" class="checkbox" name="field-optional-phone" ng-model="optional_fields.phone" ng-change="toggleCustomerOptionalField('phone')">
-                            <label for="field-optional-phone" class="checkbox-label">Phone</label>
-                        </div>
-                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
-                            <input type="checkbox" id="field-optional-postal_code" class="checkbox" name="field-optional-postal_code" ng-model="optional_fields.postal_code" ng-change="toggleCustomerOptionalField('postal_code')">
-                            <label for="field-optional-postal_code" class="checkbox-label">Postal / Zip Code</label>
-                        </div>
-                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
-                            <input type="checkbox" id="field-optional-country" class="checkbox" name="field-optional-country" ng-model="optional_fields.country" ng-change="toggleCustomerOptionalField('country')">
-                            <label for="field-optional-country" class="checkbox-label">Country</label>
-                        </div>
-                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
-                            <input type="checkbox" id="field-optional-full_address" class="checkbox" name="field-optional-full_address" ng-model="optional_fields.full_address" ng-change="toggleCustomerOptionalField('full_address')">
-                            <label for="field-optional-full_address" class="checkbox-label">Full Address</label>
-                        </div>
-                        <div class="col-xs-12 col-sm-6 col-md-3 spacer-b10">
-                            <input type="checkbox" id="field-optional-credentials" class="checkbox" name="field-optional-credentials" ng-model="optional_fields.credentials" ng-change="toggleCustomerOptionalField('credentials')">
-                            <label for="field-optional-credentials" class="checkbox-label">Credentials</label>
-                        </div>
-
-                        <div class="row"></div>
-
-                        <div>
-                            <p class="help-text" translate>
-                                Allows you to mark customer fields that are not required but should be presented to a customer to provide in a cart or invoice. This allows you to request data from a customer without requiring them to provide it to complete a payment.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <div class="col-sm-12">
                 <div class="form-group" show-errors>

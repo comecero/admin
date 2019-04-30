@@ -120,7 +120,8 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     $routeProvider.when("/apps/:id/edit", { templateUrl: "app/pages/apps/set.html", reloadOnSearch: true });
 
     // App Installations
-    $routeProvider.when("/app_installations", { templateUrl: "app/pages/app_installations/list.html", reloadOnSearch: false });
+    $routeProvider.when("/storefront", { templateUrl: "app/pages/app_installations/storefrontList.html", reloadOnSearch: false });
+    $routeProvider.when("/app_installations", { templateUrl: "app/pages/app_installations/adminList.html", reloadOnSearch: false });
     $routeProvider.when("/app_installations/manage/:id", { templateUrl: "app/pages/app_installations/manage.html", reloadOnSearch: true });
     $routeProvider.when("/app_installations/:id", { templateUrl: "app/pages/app_installations/view.html", reloadOnSearch: true });
     $routeProvider.when("/app_installations/:id/settings", { templateUrl: "app/pages/app_installations/settings.html", reloadOnSearch: true });

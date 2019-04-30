@@ -1,15 +1,4 @@
-﻿<div class="col-sm-12 text-right spacer-b40" ng-if="settings.search">
-    <form class="form-inline">
-        <div class="form-group has-feedback">
-            <input type="text" class="form-control" ng-model="userParams.q" ng-change="search(userParams.q)" ng-model-options="{ updateOn: 'default blur', debounce: { default: 750, blur: 0 } }" select-on-click placeholder="{{ 'Search' | translate }}...">
-            <span class="fa fa-search form-control-feedback"></span>
-        </div>
-    </form>
-</div>
-
-<div class="row"></div>
-
-<div ng-repeat="app in list.data">
+﻿<div ng-repeat="app in list.data">
     <div class="col-md-6">
         <div class="panel">
             <div class="panel-heading">
@@ -21,8 +10,12 @@
             <div class="panel-body">
                 <p style="min-height: 40px; overflow: hidden"><i>{{app.short_description}}</i> <span ng-show="app.description && !showDescription"><i class="faux-link" ng-click="showDescription = true">More</i></span></p>
                 <p ng-show="showDescription">{{app.description}} <i class="faux-link" ng-click="showDescription = false">Less</i></p>
-                <p class="spacer-b20"><span translate>Installed</span>: {{app.date_created | date:'shortDate'}}</p>
-
+                <p class="help-block text-success spacer-b20" ng-show="app.updated_version_available">
+                    <i class="fas fa-info-circle"></i> <strong>New Version Available.</strong> Click 'Manage' to install and configure the new version
+                </p>
+                <p class="help-block text-info spacer-b20" ng-show="app.platform_hosted && !app.latest_installed_is_default">
+                    <i class="fas fa-info-circle"></i> There is a newer installed version of this app that you are not using. Click 'Manage' to configure and start using the newer version.
+                </p>
                 <a ng-href="{{functions.getInfoUrl(app, meta.test)}}" target="_blank" class="btn btn-xs btn-blue" ng-show="app.info_url">Getting Started</a>
                 <div class="btn-group" uib-dropdown ng-show="app.settings_fields || app.style_fields">
                     <button type="button" class="btn btn-xs btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Customize</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
@@ -31,9 +24,8 @@
                         <li ng-show="app.style_fields"><a ng-href="#/app_installations/{{app.app_installation_id}}/style"><i class="dropdown-icon fa fa-paint-brush text-default"></i>&nbsp;&nbsp;<span translate>Style</span></a></li>
                     </ul>
                 </div>
-
                 <a ng-href="#/app_installations/manage/{{app.app_id}}" class="btn btn-xs btn-default" translate>Manage</a>
-                <button class="btn btn-xs btn-success pull-right" translate>Launch</button>
+                <a class="btn btn-xs btn-success pull-right" ng-href="{{functions.getLaunchUrl(app)}}" target="_blank" translate>Launch</a>
             </div>
         </div>
     </div>

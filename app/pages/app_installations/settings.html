@@ -29,33 +29,6 @@
                 </div>
             </div>
 
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label class="control-label">App Location</label>
-                    <div class="row"></div>
-                    <span class="text-success text-bg text-bold">{{getLocationUrl()}}</span>
-                    <p class="help-block" translate>You can customize the location URL below</p>
-                </div>
-            </div>
-
-            <div class="row"></div>
-
-            <div class="col-xs-12">
-                <div class="input-group">
-                    <div class="input-group-btn" uib-dropdown>
-                        <button type="button" class="btn btn-default dropdown-toggle" style="height:42px;" uib-dropdown-toggle><span class="caret"></span> <span ng-if="!app_installation.preferred_hostname">https:// (Account Default Hostname) /</span><span ng-if="app_installation.preferred_hostname">https://{{app_installation.preferred_hostname}}/</span></button>
-                        <ul class="dropdown-menu">
-                            <li ng-click="app_installation.preferred_hostname = null"><a>Account Default Hostname</a></li>
-                            <li ng-repeat="host in settings.app_hosts" ng-click="app_installation.preferred_hostname = host"><a>{{host}}</a></li>
-                        </ul>
-                    </div>
-                    <input type="text" class="form-control" ng-model="app_installation.alias">
-                </div>
-                <p class="help-block" translate>Changes to this setting take 1-2 minutes to take effect</p>
-            </div>
-
-            <div class="row spacer-b15"></div>
-
             <fields fieldlist="app_installation.settings_fields" selections="selections"></fields>
 
             <div class="col-xs-12" ng-show="app_installation.allow_custom_javascript">
