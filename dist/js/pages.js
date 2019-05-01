@@ -486,20 +486,19 @@ app.controller("AppInstallationsListCtrl", ['$scope', '$routeParams', '$location
 
     $scope.functions = {};
 
-    $scope.functions.confirmSetDefaultVersion = function (app_installation_id) {
-        var confirm = { id: "set_default_app_version" };
-        confirm.onConfirm = function () {
-            $scope.functions.setDefaultVersion(app_installation_id);
-        }
-        ConfirmService.showConfirm($scope, confirm);
-    }
-
     $scope.functions.getLaunchUrl = function (app_installation) {
         if (app_installation) {
-            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&from_admin=true&redirect_uri=";
+            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
             var redirect = app_installation.launch_url;
+
+            // If a target version is supplied, add it as a parameter
             if (app_installation.version)
                 redirect += "&target_version=" + app_installation.version;
+
+            // Platform hosted apps use caching for performance, put a flag that this request was made from an admin launch to bust the cache for certain settings and style files, to make testing easier.
+            if (app_installation.platform_hosted)
+                redirect += "&from_admin=" + true;
+
             url += encodeURIComponent(redirect);
             return url;
         }
@@ -510,9 +509,8 @@ app.controller("AppInstallationsListCtrl", ['$scope', '$routeParams', '$location
         // If client side and the info URL is within the app, run the info URL through the app launcher to inject an API token for use within the info pages.
         if (app_installation.platform_hosted && app_installation.info_url) {
             if (utils.left(app_installation.info_url, app_installation.location_url.length) == app_installation.location_url) {
-                // The info URL is within the app. Set the redirect URI as a relative path.
-                var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
-                return url + "&redirect_uri=" + encodeURIComponent(app_installation.info_url);
+                // The info URL is within the app. Run through launch with a redirect URI of the app's info URL
+                return $scope.functions.getLaunchUrl(app_installation) + encodeURIComponent("&redirect_uri=" + encodeURIComponent(app_installation.info_url));
             }
         }
         return app_installation.info_url;
@@ -616,17 +614,6 @@ app.controller("AppInstallationsManageCtrl", ['$scope', '$routeParams', '$locati
         ConfirmService.showConfirm($scope, confirm);
     }
 
-    $scope.functions.getLaunchUrl = function (app_installation) {
-        if (app_installation) {
-            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&from_admin=true&redirect_uri=";
-            var redirect = app_installation.launch_url;
-            if (app_installation.version)
-                redirect += "&target_version=" + app_installation.version;
-            url += encodeURIComponent(redirect);
-            return url;
-        }
-    }
-
     $scope.functions.getInstallUrl = function (app_installation) {
         if (app_installation) {
             var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
@@ -638,14 +625,31 @@ app.controller("AppInstallationsManageCtrl", ['$scope', '$routeParams', '$locati
         }
     }
 
+    $scope.functions.getLaunchUrl = function (app_installation) {
+        if (app_installation) {
+            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
+            var redirect = app_installation.launch_url;
+
+            // If a target version is supplied, add it as a parameter
+            if (app_installation.version)
+                redirect += "&target_version=" + app_installation.version;
+
+            // Platform hosted apps use caching for performance, put a flag that this request was made from an admin launch to bust the cache for certain settings and style files, to make testing easier.
+            if (app_installation.platform_hosted)
+                redirect += "&from_admin=" + true;
+
+            url += encodeURIComponent(redirect);
+            return url;
+        }
+    }
+
     $scope.functions.getInfoUrl = function (app_installation, test) {
 
         // If client side and the info URL is within the app, run the info URL through the app launcher to inject an API token for use within the info pages.
         if (app_installation.platform_hosted && app_installation.info_url) {
             if (utils.left(app_installation.info_url, app_installation.location_url.length) == app_installation.location_url) {
-                // The info URL is within the app. Set the redirect URI as a relative path.
-                var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
-                return url + "&redirect_uri=" + encodeURIComponent(app_installation.info_url);
+                // The info URL is within the app. Run through launch with a redirect URI of the app's info URL
+                return $scope.functions.getLaunchUrl(app_installation) + encodeURIComponent("&redirect_uri=" + encodeURIComponent(app_installation.info_url));
             }
         }
         return app_installation.info_url;
