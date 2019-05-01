@@ -11,10 +11,10 @@
                 <p style="min-height: 40px; overflow: hidden"><i>{{app.short_description}}</i> <span ng-show="app.description && !showDescription"><i class="faux-link" ng-click="showDescription = true">More</i></span></p>
                 <p ng-show="showDescription">{{app.description}} <i class="faux-link" ng-click="showDescription = false">Less</i></p>
                 <p class="help-block text-success spacer-b20" ng-show="app.updated_version_available">
-                    <i class="fas fa-info-circle"></i> <strong>New Version Available.</strong> Click 'Manage' to install and configure the new version.
+                    <i class="fas fa-info-circle"></i> <strong>New Version Available.</strong> Visit 'Manage' to install and configure the new version.
                 </p>
                 <p class="help-block text-info spacer-b20" ng-show="app.platform_hosted && !app.latest_installed_is_default">
-                    <i class="fas fa-info-circle"></i> There is a newer installed version of this app that you are not using. Click 'Manage' to configure and use the newer version.
+                    <i class="fas fa-info-circle"></i> There is a newer installed version of this app that you are not using. Visit 'Manage' to configure and use the newer version.
                 </p>
                 <a ng-href="{{functions.getInfoUrl(app, meta.test)}}" target="_blank" class="btn btn-xs btn-blue" ng-show="app.info_url">Getting Started</a>
                 <div class="btn-group" uib-dropdown ng-show="app.settings_fields || app.style_fields">
