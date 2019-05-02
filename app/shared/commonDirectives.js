@@ -3891,6 +3891,7 @@ app.directive('fields', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
         scope: {
             fieldlist: '=?',
             selections: '=?',
+            parentResource: '=?',
             error: '='
         },
         link: function (scope, elem, attrs, ctrl) {
@@ -4010,6 +4011,26 @@ app.directive('fields', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
 
                 return false;
 
+            }
+
+            scope.showRequiredIf = function(field, parentResource) {
+                if (!field.required_if) return true;
+                if (!parentResource) return false;
+                for (var key in field.required_if) {
+                    var requiredValues = field.required_if[key];
+                    var setValues = parentResource[key];
+                    if (!setValues) continue;
+                    if (angular.isArray(setValues)) {
+                        for (var i in setValues) {
+                            if (requiredValues.indexOf(setValues[i]) >= 0)
+                                return true;
+                        }
+                    } else if (angular.isString(setValues)) {
+                      if (requiredValues.indexOf(setValues) >= 0)
+                          return true;
+                    }
+                }
+                return false;
             }
 
             // Read note at the top of this directive about the purpose of strip search.

@@ -1,7 +1,7 @@
 ﻿<!-- NOTE THAT INPUT text, tel, and password FIELD NAMES HAVE A -search SUFFIX BY DESIGN. CHECK THE DIRECTIVE FOR MORE INFO AND BAKGROUND -->
 <form name="form" novalidate>
 
-    <div ng-repeat="item in fieldlist">
+    <div ng-repeat="item in fieldlist" ng-show="showRequiredIf(item, parentResource)">
 
         <div class="section-header" ng-if="isNewSection(item, $index)">{{item.section}}</div>
 
