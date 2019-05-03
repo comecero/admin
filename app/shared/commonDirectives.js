@@ -559,6 +559,28 @@ app.directive('resource', function () {
     };
 });
 
+app.directive('base64Field', [function() {
+    return {
+        restrict: 'A',
+        scope: {
+            modelValue: '=ngModel'
+        },
+        link: function (scope, elem, attrs) {
+            elem[0].addEventListener('change', function(evt) {
+                console.log(scope);
+                var files = evt.target.files;
+                if (!files || !files[0]) return;
+                var reader = new FileReader();
+                reader.onloadend = function(e) {
+                    scope.$apply(function() {
+                        scope.modelValue = btoa(reader.result);
+                    });
+                }
+                reader.readAsBinaryString(files[0]);
+            }, false);
+        }
+    };
+}]);
 
 app.directive('dropzone', ['ApiService', function (ApiService) {
 
@@ -4013,7 +4035,7 @@ app.directive('fields', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
 
             }
 
-            scope.showRequiredIf = function(field, parentResource) {
+            scope.isRequiredIf = function(field, parentResource) {
                 if (!field.required_if) return true;
                 if (!parentResource) return false;
                 for (var key in field.required_if) {
