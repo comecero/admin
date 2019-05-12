@@ -54,6 +54,18 @@
                             <p class="help-text" translate>Sent to customers to provide a link to view and manage their account, past orders, subscriptions, etc.</p>
                         </div>
 
+                        <input type="radio" id="type-4" class="radio" name="type" ng-model="notificationSubscription.type" value="subscription:prebill_notification" required>
+                        <label for="type-4" class="radio-label text-capitalize">Subscription Prebill Notification</label>
+                        <div>
+                            <p class="help-text" translate>Send subscription prebill notifications to customers</p>
+                        </div>
+
+                        <input type="radio" id="type-4" class="radio" name="type" ng-model="notificationSubscription.type" value="subscription:cancel_confirmation" required>
+                        <label for="type-4" class="radio-label text-capitalize">Subscription Cancel Confirmation</label>
+                        <div>
+                            <p class="help-text" translate>Send subscription cancel notifications to customers</p>
+                        </div>
+
                         <p class="help-block hidden fadeInDown" translate>Please provide subscription type.</p>
                     </div>
                 </div>
