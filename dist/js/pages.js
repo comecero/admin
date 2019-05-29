@@ -509,7 +509,7 @@ app.controller("AppInstallationsListCtrl", ['$scope', '$routeParams', '$location
         // If client side and the info URL is within the app, run the info URL through the app launcher to inject an API token for use within the info pages.
         if (app_installation.platform_hosted && app_installation.info_url) {
             if (utils.left(app_installation.info_url, app_installation.location_url.length) == app_installation.location_url) {
-                // The info URL is within the app. Run through launch with a redirect URI of the app's info URL
+                // The info URL is within the app. Run through launch with a redirect URI of the app's info URL. The final URL will be double encoded as it's unwrapped twice.
                 return $scope.functions.getLaunchUrl(app_installation) + encodeURIComponent("&redirect_uri=" + encodeURIComponent(app_installation.info_url));
             }
         }
@@ -648,7 +648,7 @@ app.controller("AppInstallationsManageCtrl", ['$scope', '$routeParams', '$locati
         // If client side and the info URL is within the app, run the info URL through the app launcher to inject an API token for use within the info pages.
         if (app_installation.platform_hosted && app_installation.info_url) {
             if (utils.left(app_installation.info_url, app_installation.location_url.length) == app_installation.location_url) {
-                // The info URL is within the app. Run through launch with a redirect URI of the app's info URL
+                // The info URL is within the app. Run through launch with a redirect URI of the app's info URL. The final URL will be double encoded as it's unwrapped twice.
                 return $scope.functions.getLaunchUrl(app_installation) + encodeURIComponent("&redirect_uri=" + encodeURIComponent(app_installation.info_url));
             }
         }
@@ -687,7 +687,7 @@ app.controller("AppInstallationsSettingsCtrl", ['$scope', '$routeParams', '$loca
     $scope.checkboxState = {};
 
     // Load the app_installation settings
-    ApiService.getItem($scope.url, { show: "app_installation_id,app_id,name,settings_fields.*,settings,alias,launch_url,location_url,allow_custom_javascript,custom_javascript,preferred_hostname" }).then(function (app_installation) {
+    ApiService.getItem($scope.url, { show: "app_installation_id,app_id,name,settings_fields.*,settings,alias,launch_url,location_url,allow_custom_javascript,custom_javascript,preferred_hostname,type" }).then(function (app_installation) {
 
         $scope.app_installation = app_installation;
 
@@ -706,11 +706,11 @@ app.controller("AppInstallationsSettingsCtrl", ['$scope', '$routeParams', '$loca
 
     $scope.confirmCancel = function () {
         if (angular.equals($scope.app_installation.config, $scope.config_orig)) {
-            utils.redirect($location, "/app_installations");
+            utils.redirect($location, getRedirectUrl($scope.app_installation));
         } else {
             var confirm = { id: "changes_lost" };
             confirm.onConfirm = function () {
-                utils.redirect($location, "/app_installations");
+                utils.redirect($location, getRedirectUrl($scope.app_installation));
             }
             ConfirmService.showConfirm($scope, confirm);
         }
@@ -730,7 +730,7 @@ app.controller("AppInstallationsSettingsCtrl", ['$scope', '$routeParams', '$loca
             GrowlsService.addGrowl({ id: "edit_success", name: $scope.app_installation.name, type: "success", url: "#/app_installations/" + $scope.app_installation.app_installation_id + "/settings" });
 
             if (!apply) {
-                utils.redirect($location, "/app_installations");
+                utils.redirect($location, getRedirectUrl($scope.app_installation));
             }
 
         },
@@ -738,6 +738,17 @@ app.controller("AppInstallationsSettingsCtrl", ['$scope', '$routeParams', '$loca
             window.scrollTo(0, 0);
             $scope.exception.error = error;
         });
+    }
+
+    function getRedirectUrl(app_installation) {
+
+        var listUrl = "/app_installations";
+        if ($scope.app_installation.type == "storefront") {
+            listUrl = "/storefront";
+        }
+
+        return listUrl;
+
     }
 
 }]);
@@ -754,7 +765,7 @@ app.controller("AppInstallationsStyleCtrl", ['$scope', '$routeParams', '$locatio
     $scope.checkboxState = {};
 
     // Load the app_installation style
-    ApiService.getItem($scope.url, { show: "app_installation_id,app_id,name,style_fields.*,style,allow_custom_css,custom_css" }).then(function (app_installation) {
+    ApiService.getItem($scope.url, { show: "app_installation_id,app_id,name,style_fields.*,style,allow_custom_css,custom_css,type" }).then(function (app_installation) {
 
         $scope.app_installation = app_installation;
 
@@ -773,11 +784,11 @@ app.controller("AppInstallationsStyleCtrl", ['$scope', '$routeParams', '$locatio
 
     $scope.confirmCancel = function () {
         if (angular.equals($scope.app_installation.style, $scope.style_orig)) {
-            utils.redirect($location, "/app_installations");
+            utils.redirect($location, getRedirectUrl($scope.app_installation));
         } else {
             var confirm = { id: "changes_lost" };
             confirm.onConfirm = function () {
-                utils.redirect($location, "/app_installations");
+                utils.redirect($location, getRedirectUrl($scope.app_installation));
             }
             ConfirmService.showConfirm($scope, confirm);
         }
@@ -797,13 +808,24 @@ app.controller("AppInstallationsStyleCtrl", ['$scope', '$routeParams', '$locatio
             GrowlsService.addGrowl({ id: "edit_success", name: $scope.app_installation.name, type: "success", url: "#/app_installations/" + $scope.app_installation.app_installation_id + "/style" });
 
             if (!apply) {
-                utils.redirect($location, "/app_installations");
+                utils.redirect($location, getRedirectUrl($scope.app_installation));
             }
         },
         function (error) {
             window.scrollTo(0, 0);
             $scope.exception.error = error;
         });
+    }
+
+    function getRedirectUrl(app_installation) {
+
+        var listUrl = "/app_installations";
+        if ($scope.app_installation.type == "storefront") {
+            listUrl = "/storefront";
+        }
+
+        return listUrl;
+
     }
 
 }]);
@@ -3464,6 +3486,171 @@ app.controller("ImagesViewCtrl", ['$scope', '$routeParams', '$location', 'Growls
 
 }]);
 
+
+//#region LicenseRequests
+
+app.controller("LicenseRequestsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
+
+    // Establish your scope containers
+    $scope.licenseRequests = {};
+    $scope.nav = {};
+    $scope.exception = {};
+
+    // Establish your settings from query string parameters
+    $scope.parseParams = function () {
+        $scope.params = ($location.search())
+
+        // Convert any string true/false to bool
+        utils.stringsToBool($scope.params);
+
+        if ($scope.params.status == null) {
+            $scope.params.status = "completed";
+        }
+
+        if ($scope.params.sort_by == null) {
+            $scope.params.sort_by = "date_created";
+        }
+
+        if ($scope.params.desc == null) {
+            $scope.params.desc = true;
+        }
+
+    }
+
+    $scope.loadLicenseRequests = function () {
+        
+        ApiService.getList(ApiService.buildUrl("/license_requests", { expand: "order", show: "license_request_id,status,date_created,order.order_id" }), $scope.params).then(function (result) {
+            $scope.licenseRequests.licenseRequestList = result;
+            $scope.licenseRequestsChecked = false;
+
+            // If instructed, scroll to the top upon completion
+            if ($scope.nav.scrollTop == true) {
+                window.scrollTo(0, 0);
+            }
+            $scope.nav.scrollTop = null;
+
+        },
+        function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    }
+
+    $scope.setParam = function (param, value) {
+        $scope.params[param] = value;
+        $scope.params.before_item = null;
+        $scope.params.after_item = null;
+        $scope.nav.scrollTop = true;
+        $location.search($scope.params);
+    }
+
+    $scope.search = function () {
+        if ($scope.params.q != null) {
+
+            // Reset the view to the first page
+            $scope.params.offset = null;
+            $scope.nav.scrollTop = true;
+
+            // If empty, reset to null
+            if ($scope.params.q == "") {
+                $scope.params.q = null;
+            }
+
+            $location.search($scope.params);
+        }
+    }
+
+    $scope.movePage = function (direction, value) {
+
+        if (direction == "+") {
+            $scope.params.after_item = value;
+            $scope.params.before_item = null;
+        } else {
+            $scope.params.after_item = null;
+            $scope.params.before_item = value;
+        }
+        $scope.nav.scrollTop = true;
+        $location.search($scope.params);
+    }
+
+    $scope.sort = function (sort_by, desc) {
+        $scope.params.sort_by = sort_by;
+        $scope.params.desc = desc;
+        $location.search($scope.params);
+    }
+
+    $scope.$on('$routeUpdate', function (e) {
+        $scope.parseParams();
+        $scope.loadLicenseRequests();
+    });
+
+    // Initial load
+    $scope.parseParams();
+    $scope.loadLicenseRequests();
+
+}]);
+
+app.controller("LicenseRequestViewCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService) {
+
+    $scope.licenseRequest = {};
+    $scope.exception = {};
+    $scope.options = {};
+
+    $scope.options.raw = true;
+    $scope.options.html = true;
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/license_requests/" + $routeParams.id)
+
+    // Load the service
+    var params = { expand: "license,license_service", debug: true };
+    ApiService.getItem($scope.url, params).then(function (licenseRequest) {
+
+        $scope.licenseRequest = licenseRequest;
+
+        if (licenseRequest.license) {
+
+            // If the license is provided, prepare it for presentation.
+            $scope.renderedLicenseText = licenseRequest.license.label + ":\n" + licenseRequest.license.text;
+            if (licenseRequest.license.instructions) {
+                $scope.renderedLicenseText += "\n\n" + licenseRequest.license.instructions;
+            }
+
+            $scope.renderedLicenseHtml = licenseRequest.license.label + "<br>" + licenseRequest.license.html;
+            if (licenseRequest.license.instructions) {
+                $scope.renderedLicenseHtml += "<br><br>" + licenseRequest.license.instructions;
+            }
+
+        }
+
+        // Pretty format the licenseRequest data
+        $scope.licenseRequest.order = JSON.stringify($scope.licenseRequest.order, null, 4)
+
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+    $scope.retry = function () {
+
+        // Clear any previous errors
+        $scope.exception = {};
+
+        ApiService.set(null, $scope.licenseRequest.url + "/retry").then(function (evnt) {
+            GrowlsService.addGrowl({ id: "license_request_resend", type: "success" });
+        }, function (error) {
+            $scope.exception.error = error;
+            window.scrollTo(0, 0);
+        });
+    };
+
+}]);
+
+//#endregion Products
+
+
+
+
 app.controller("InvoicesListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
 
     // Establish your scope containers
@@ -3821,171 +4008,6 @@ app.controller("InvoicesSetCtrl", ['$scope', '$routeParams', '$location', 'ApiSe
     }
 
 }]);
-
-
-
-
-
-//#region LicenseRequests
-
-app.controller("LicenseRequestsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
-
-    // Establish your scope containers
-    $scope.licenseRequests = {};
-    $scope.nav = {};
-    $scope.exception = {};
-
-    // Establish your settings from query string parameters
-    $scope.parseParams = function () {
-        $scope.params = ($location.search())
-
-        // Convert any string true/false to bool
-        utils.stringsToBool($scope.params);
-
-        if ($scope.params.status == null) {
-            $scope.params.status = "completed";
-        }
-
-        if ($scope.params.sort_by == null) {
-            $scope.params.sort_by = "date_created";
-        }
-
-        if ($scope.params.desc == null) {
-            $scope.params.desc = true;
-        }
-
-    }
-
-    $scope.loadLicenseRequests = function () {
-        
-        ApiService.getList(ApiService.buildUrl("/license_requests", { expand: "order", show: "license_request_id,status,date_created,order.order_id" }), $scope.params).then(function (result) {
-            $scope.licenseRequests.licenseRequestList = result;
-            $scope.licenseRequestsChecked = false;
-
-            // If instructed, scroll to the top upon completion
-            if ($scope.nav.scrollTop == true) {
-                window.scrollTo(0, 0);
-            }
-            $scope.nav.scrollTop = null;
-
-        },
-        function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    }
-
-    $scope.setParam = function (param, value) {
-        $scope.params[param] = value;
-        $scope.params.before_item = null;
-        $scope.params.after_item = null;
-        $scope.nav.scrollTop = true;
-        $location.search($scope.params);
-    }
-
-    $scope.search = function () {
-        if ($scope.params.q != null) {
-
-            // Reset the view to the first page
-            $scope.params.offset = null;
-            $scope.nav.scrollTop = true;
-
-            // If empty, reset to null
-            if ($scope.params.q == "") {
-                $scope.params.q = null;
-            }
-
-            $location.search($scope.params);
-        }
-    }
-
-    $scope.movePage = function (direction, value) {
-
-        if (direction == "+") {
-            $scope.params.after_item = value;
-            $scope.params.before_item = null;
-        } else {
-            $scope.params.after_item = null;
-            $scope.params.before_item = value;
-        }
-        $scope.nav.scrollTop = true;
-        $location.search($scope.params);
-    }
-
-    $scope.sort = function (sort_by, desc) {
-        $scope.params.sort_by = sort_by;
-        $scope.params.desc = desc;
-        $location.search($scope.params);
-    }
-
-    $scope.$on('$routeUpdate', function (e) {
-        $scope.parseParams();
-        $scope.loadLicenseRequests();
-    });
-
-    // Initial load
-    $scope.parseParams();
-    $scope.loadLicenseRequests();
-
-}]);
-
-app.controller("LicenseRequestViewCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService) {
-
-    $scope.licenseRequest = {};
-    $scope.exception = {};
-    $scope.options = {};
-
-    $scope.options.raw = true;
-    $scope.options.html = true;
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/license_requests/" + $routeParams.id)
-
-    // Load the service
-    var params = { expand: "license,license_service", debug: true };
-    ApiService.getItem($scope.url, params).then(function (licenseRequest) {
-
-        $scope.licenseRequest = licenseRequest;
-
-        if (licenseRequest.license) {
-
-            // If the license is provided, prepare it for presentation.
-            $scope.renderedLicenseText = licenseRequest.license.label + ":\n" + licenseRequest.license.text;
-            if (licenseRequest.license.instructions) {
-                $scope.renderedLicenseText += "\n\n" + licenseRequest.license.instructions;
-            }
-
-            $scope.renderedLicenseHtml = licenseRequest.license.label + "<br>" + licenseRequest.license.html;
-            if (licenseRequest.license.instructions) {
-                $scope.renderedLicenseHtml += "<br><br>" + licenseRequest.license.instructions;
-            }
-
-        }
-
-        // Pretty format the licenseRequest data
-        $scope.licenseRequest.order = JSON.stringify($scope.licenseRequest.order, null, 4)
-
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-    $scope.retry = function () {
-
-        // Clear any previous errors
-        $scope.exception = {};
-
-        ApiService.set(null, $scope.licenseRequest.url + "/retry").then(function (evnt) {
-            GrowlsService.addGrowl({ id: "license_request_resend", type: "success" });
-        }, function (error) {
-            $scope.exception.error = error;
-            window.scrollTo(0, 0);
-        });
-    };
-
-}]);
-
-//#endregion Products
 
 
 

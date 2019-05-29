@@ -222,7 +222,7 @@ app.controller("AppInstallationsSettingsCtrl", ['$scope', '$routeParams', '$loca
     $scope.checkboxState = {};
 
     // Load the app_installation settings
-    ApiService.getItem($scope.url, { show: "app_installation_id,app_id,name,settings_fields.*,settings,alias,launch_url,location_url,allow_custom_javascript,custom_javascript,preferred_hostname" }).then(function (app_installation) {
+    ApiService.getItem($scope.url, { show: "app_installation_id,app_id,name,settings_fields.*,settings,alias,launch_url,location_url,allow_custom_javascript,custom_javascript,preferred_hostname,type" }).then(function (app_installation) {
 
         $scope.app_installation = app_installation;
 
@@ -241,11 +241,11 @@ app.controller("AppInstallationsSettingsCtrl", ['$scope', '$routeParams', '$loca
 
     $scope.confirmCancel = function () {
         if (angular.equals($scope.app_installation.config, $scope.config_orig)) {
-            utils.redirect($location, "/app_installations");
+            utils.redirect($location, getRedirectUrl($scope.app_installation));
         } else {
             var confirm = { id: "changes_lost" };
             confirm.onConfirm = function () {
-                utils.redirect($location, "/app_installations");
+                utils.redirect($location, getRedirectUrl($scope.app_installation));
             }
             ConfirmService.showConfirm($scope, confirm);
         }
@@ -265,7 +265,7 @@ app.controller("AppInstallationsSettingsCtrl", ['$scope', '$routeParams', '$loca
             GrowlsService.addGrowl({ id: "edit_success", name: $scope.app_installation.name, type: "success", url: "#/app_installations/" + $scope.app_installation.app_installation_id + "/settings" });
 
             if (!apply) {
-                utils.redirect($location, "/app_installations");
+                utils.redirect($location, getRedirectUrl($scope.app_installation));
             }
 
         },
@@ -273,6 +273,17 @@ app.controller("AppInstallationsSettingsCtrl", ['$scope', '$routeParams', '$loca
             window.scrollTo(0, 0);
             $scope.exception.error = error;
         });
+    }
+
+    function getRedirectUrl(app_installation) {
+
+        var listUrl = "/app_installations";
+        if ($scope.app_installation.type == "storefront") {
+            listUrl = "/storefront";
+        }
+
+        return listUrl;
+
     }
 
 }]);
@@ -289,7 +300,7 @@ app.controller("AppInstallationsStyleCtrl", ['$scope', '$routeParams', '$locatio
     $scope.checkboxState = {};
 
     // Load the app_installation style
-    ApiService.getItem($scope.url, { show: "app_installation_id,app_id,name,style_fields.*,style,allow_custom_css,custom_css" }).then(function (app_installation) {
+    ApiService.getItem($scope.url, { show: "app_installation_id,app_id,name,style_fields.*,style,allow_custom_css,custom_css,type" }).then(function (app_installation) {
 
         $scope.app_installation = app_installation;
 
@@ -308,11 +319,11 @@ app.controller("AppInstallationsStyleCtrl", ['$scope', '$routeParams', '$locatio
 
     $scope.confirmCancel = function () {
         if (angular.equals($scope.app_installation.style, $scope.style_orig)) {
-            utils.redirect($location, "/app_installations");
+            utils.redirect($location, getRedirectUrl($scope.app_installation));
         } else {
             var confirm = { id: "changes_lost" };
             confirm.onConfirm = function () {
-                utils.redirect($location, "/app_installations");
+                utils.redirect($location, getRedirectUrl($scope.app_installation));
             }
             ConfirmService.showConfirm($scope, confirm);
         }
@@ -332,13 +343,24 @@ app.controller("AppInstallationsStyleCtrl", ['$scope', '$routeParams', '$locatio
             GrowlsService.addGrowl({ id: "edit_success", name: $scope.app_installation.name, type: "success", url: "#/app_installations/" + $scope.app_installation.app_installation_id + "/style" });
 
             if (!apply) {
-                utils.redirect($location, "/app_installations");
+                utils.redirect($location, getRedirectUrl($scope.app_installation));
             }
         },
         function (error) {
             window.scrollTo(0, 0);
             $scope.exception.error = error;
         });
+    }
+
+    function getRedirectUrl(app_installation) {
+
+        var listUrl = "/app_installations";
+        if ($scope.app_installation.type == "storefront") {
+            listUrl = "/storefront";
+        }
+
+        return listUrl;
+
     }
 
 }]);
