@@ -15,8 +15,9 @@
         <p ng-if="confirm.id == 'cancel_subscription'" translate>Are you sure you want to cancel this subscription?</p>
         <p ng-if="confirm.id == 'cancel_subscription_item'" translate>Are you sure you want to cancel this subscription item?</p>
         <p ng-if="confirm.id == 'remove_changes'" translate>Are you sure you want to remove these changes?</p>
-        <p ng-if="confirm.id == 'app_uninstall'" translate>Are you sure you want to uninstall this app? Any app related settings you have configured will be lost.</p>
-        <p ng-if="confirm.id == 'set_default_app_version'"><span translate>Are you sure you want to set this as the default app version? You should make certain you have tested this version before setting it as default.</span> <a href="#" target="_blank" translate>More Info</a>.</p>
+        <p ng-if="confirm.id == 'app_uninstall' && confirm.platform_hosted" translate>Are you sure you want to uninstall version {{confirm.version}} of {{confirm.name}}? Any app related settings you have configured for this version will be lost.</p>
+        <p ng-if="confirm.id == 'app_uninstall' && !confirm.platform_hosted" translate>Are you sure you want to uninstall this app? Any app related settings you have configured for this app may be lost.</p>
+        <p ng-if="confirm.id == 'set_default_app_version'"><span translate>Are you sure you want to start using version {{confirm.version}} of {{confirm.name}}? Before proceeding, you should test the new version to review any potential changes to the design, features and functionality.</span></p>
         <p ng-if="confirm.id == 'fast_forward'" translate>Fast forwarding a subscription brings the subscription to the end of the current period, which is useful for testing the subscription lifecycle.<br /><br />After you fast forward, the subscription will take the next scheduled action within 1-2 minutes.</p>
     </div>
 
@@ -105,7 +106,7 @@
             <span translate>Cancel</span>
         </button>
         <button type="button" ng-if="confirm.id == 'set_default_app_version'" id="modal-confirm-accept" class="btn btn-default" ng-click="confirm.ok()">
-            <span translate>Set Default</span>
+            <span translate>Use This Version</span>
         </button>
 
         <button type="button" ng-if="confirm.id == 'fast_forward'" class="btn btn-primary" ng-click="confirm.cancel()">

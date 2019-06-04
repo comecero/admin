@@ -1,94 +1,35 @@
-﻿<div class="col-sm-12 text-right spacer-b40" ng-if="settings.search">
-    <form class="form-inline">
-        <div class="form-group has-feedback">
-            <input type="text" class="form-control" ng-model="userParams.q" ng-change="search(userParams.q)" ng-model-options="{ updateOn: 'default blur', debounce: { default: 750, blur: 0 } }" select-on-click placeholder="{{ 'Search' | translate }}...">
-            <span class="fa fa-search form-control-feedback"></span>
-        </div>
-    </form>
-</div>
-
-<div class="gridtable">
-
-    <div class="gridtable-header hidden-xs hidden-sm">
-
-        <div class="col-md-1"><label>&nbsp;</label></div>
-        <div class="col-md-2"><label ng-click="sort('name', !userParams.desc)" class="pointer text-primary" translate>Name</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="userParams.sort_by == 'name' && userParams.desc == true"></i><i class="icon fa fa-caret-up" ng-if="userParams.sort_by == 'name' && userParams.desc == false"></i></div>
-        <div class="col-md-2"><label>Version</label></div>
-        <div class="col-md-3"><label>Description</label></div>
-        <div class="col-md-2"><label ng-click="sort('date_created', !userParams.desc)" class="pointer text-primary" translate>Installed</label>&nbsp;<i class="icon fa fa-caret-down" ng-if="userParams.sort_by == 'date_created' && userParams.desc == true"></i><i class="icon fa fa-caret-up" ng-if="userParams.sort_by == 'date_created' && userParams.desc == false"></i></div>
-        <div class="col-md-2 text-right"><label>Actions</label></div>
-
-    </div>
-
-    <div class="col-xs-12 hidden-md hidden-lg padding-l0">
-
-        <div class="btn-group" uib-dropdown>
-            <button type="button" class="btn btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Sort</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
-            <ul class="dropdown-menu">
-                <li class="dropdown-header">Name</li>
-                <li ng-click="sort('name', false)" ng-class="{'selected-li': userParams.sort_by == 'name' && userParams.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
-                <li ng-click="sort('name', true)" ng-class="{'selected-li': userParams.sort_by == 'name' && userParams.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
-                <li class="dropdown-header">Date Installed</li>
-                <li ng-click="sort('date_created', false)" ng-class="{'selected-li': userParams.sort_by == 'date_created' && userParams.desc == false}"><a><i class="dropdown-icon fa fa-sort-amount-asc text-default"></i>&nbsp;&nbsp;<span translate>Ascending</span></a></li>
-                <li ng-click="sort('date_created', true)" ng-class="{'selected-li': userParams.sort_by == 'date_created' && userParams.desc == true}"><a><i class="dropdown-icon fa fa-sort-amount-desc text-default"></i>&nbsp;&nbsp;<span translate>Descending</span></a></li>
-            </ul>
-        </div>
-
-    </div>
-
-    <div class="row spacer-b10 hidden-md hidden-lg"></div> <!--Needed to have the buttons clear-->
-    
-    <div class="gridtable-row" ng-repeat="app_installation in list.data">
-
-        <div class="col-xs-12 col-sm-12 col-md-1">
-            <div class="col-xs-12 value"><a ng-href="{{functions.getLaunchUrl(app_installation)}}" target="_blank"><img ng-src="{{app_installation.image_url}}" class="thumbnail" style="width:40px; margin-bottom:0"></a></div>
-        </div>
-
-        <div class="col-xs-12 col-sm-6 col-md-2">
-            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Name</label></div>
-            <div class="col-xs-7 col-sm-12 col-md-12 value"><a ng-href="{{functions.getLaunchUrl(app_installation)}}" target="_blank">{{app_installation.name}}</a></div>
-        </div>
-
-        <div class="col-xs-12 col-sm-6 col-md-2">
-            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Version</label></div>
-            <div class="col-xs-7 col-sm-12 col-md-12 value">{{app_installation.version}}&nbsp;&nbsp;<i class="fa fa-check-circle text-success" title="Default version" ng-show="app_installation.is_default_version"></i></div>
-        </div>
-
-        <div class="col-xs-12 col-sm-6 col-md-3">
-            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Description</label></div>
-            <div class="col-xs-7 col-sm-12 col-md-12 value"><span class="text-sm">{{app_installation.short_description}}</span></div>
-        </div>
-
-        <div class="col-xs-12 col-sm-6 col-md-2">
-            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Installed</label></div>
-            <div class="col-xs-7 col-sm-12 col-md-12 value"><span>{{app_installation.date_created | date:'shortDate'}}</span></div>
-        </div>
-
-        <div class="col-xs-12 col-sm-6 col-md-2">
-            <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Actions</label></div>
-            <div class="col-xs-7 col-sm-12 col-md-12 text-right-md text-right-lg padding-r20 padding-l0 navbar-right">
-                <div class="btn-group" uib-dropdown>
-                    <a ng-href="{{functions.getLaunchUrl(app_installation)}}" target="_blank" class="btn btn-sm btn-success">Launch</a>
-                    <button type="button" class="btn btn-sm btn-success dropdown-toggle" uib-dropdown-toggle><i class="fa fa-caret-down"></i></button>
-                    <ul class="dropdown-menu">
-                        <li ng-show="app_installation.info_url"><a ng-href="{{functions.getInfoUrl(app_installation, meta.test)}}" target="_blank"><i class="dropdown-icon fa fa-wrench"></i>&nbsp;&nbsp;<span translate>Help & Support</span></a></li>
-                        <li ng-show="app_installation.platform_hosted" resource="app_installations" method="update"><a href="#/app_installations/{{app_installation.app_installation_id}}/settings"><i class="dropdown-icon fa fa-sliders"></i>&nbsp;&nbsp;<span translate>Settings</span></a></li>
-                        <li ng-show="app_installation.platform_hosted && app_installation.style_fields" resource="app_installations" method="update"><a href="#/app_installations/{{app_installation.app_installation_id}}/style"><i class="dropdown-icon fa fa-paint-brush"></i>&nbsp;&nbsp;<span translate>Style</span></a></li>
-                        <li ng-show="app_installation.is_default_version === false" resource="app_installations" method="update" ng-click="functions.confirmSetDefaultVersion(app_installation.app_installation_id)"><a><i class="dropdown-icon fa fa-arrow-up"></i>&nbsp;&nbsp;<span translate>Set As Default Version</span></a></li>
-                        <li resource="app_installations" method="delete" ng-click="functions.confirmUninstall(app_installation.app_installation_id, app_installation.name)"><a><i class="dropdown-icon fa fa-trash text-danger"></i>&nbsp;&nbsp;<span class="text-danger" translate>Uninstall</span></a></li>
-                    </ul>
+﻿<div ng-repeat="app in list.data">
+    <div class="col-md-6">
+        <div class="panel">
+            <div class="panel-heading">
+                <span class="panel-title"><img ng-src="{{app.image_url}}" class="thumbnail inline" style="width:30px; margin-bottom:0"><strong class="padding-l5">{{app.name}}</strong></span>
+                <div class="panel-heading-controls">
+                    <span class="badge badge-info">{{app.version}}</span>
                 </div>
             </div>
-        </div>
-
-        <div class="col-xs-12" style="padding:5px;" resource="app_installations" method="update" ng-show="app_installation.updated_version_available && app_installation.is_default_version">
-            <div class="alert alert-success spacer-b5">
-                <strong>New Version Available.</strong> A new version of this app is available. <a ng-href="{{functions.getInstallUrl(app_installation)}}" target="_blank">Install now</a>.
+            <div class="panel-body">
+                <p style="min-height: 40px; overflow: hidden"><i>{{app.short_description}}</i> <span ng-show="app.description && !showDescription"><i class="faux-link" ng-click="showDescription = true">More</i></span></p>
+                <p ng-show="showDescription">{{app.description}} <i class="faux-link" ng-click="showDescription = false">Less</i></p>
+                <p class="help-block text-success spacer-b20" ng-show="app.updated_version_available">
+                    <i class="fas fa-info-circle"></i> <strong>New Version Available.</strong> Visit 'Manage' to install and configure the new version.
+                </p>
+                <p class="help-block text-info spacer-b20" ng-show="app.platform_hosted && !app.latest_installed_is_default">
+                    <i class="fas fa-info-circle"></i> There is a newer installed version of this app that you are not using. Visit 'Manage' to configure and use the newer version.
+                </p>
+                <a ng-href="{{functions.getInfoUrl(app, meta.test)}}" target="_blank" class="btn btn-xs btn-blue" ng-show="app.info_url">Getting Started</a>
+                <div class="btn-group" uib-dropdown ng-show="app.settings_fields || app.style_fields">
+                    <button type="button" class="btn btn-xs btn-default btn-header dropdown-toggle" uib-dropdown-toggle><span translate>Customize</span>&nbsp;&nbsp;<i class="fa fa-caret-down"></i></button>
+                    <ul class="dropdown-menu">
+                        <li ng-show="app.settings_fields"><a ng-href="#/app_installations/{{app.app_installation_id}}/settings"><i class="dropdown-icon fa fa-cogs text-default"></i>&nbsp;&nbsp;<span translate>Settings</span></a></li>
+                        <li ng-show="app.style_fields"><a ng-href="#/app_installations/{{app.app_installation_id}}/style"><i class="dropdown-icon fa fa-paint-brush text-default"></i>&nbsp;&nbsp;<span translate>Style</span></a></li>
+                    </ul>
+                </div>
+                <a ng-href="#/app_installations/manage/{{app.app_id}}" class="btn btn-xs btn-default" translate>Manage</a>
+                <a class="btn btn-xs btn-success pull-right" ng-href="{{functions.getLaunchUrl(app)}}" target="_blank" translate>Launch</a>
             </div>
         </div>
-
     </div>
-
+    <div class="row" ng-if="!(($index + 1) % 2)"></div>
 </div>
 
 <!-- Show pagination if there is at least one page -->

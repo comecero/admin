@@ -1,4 +1,4 @@
-<div ng-controller="CrossSellSetCtrl" class="content container">
+<div ng-controller="UpSellSetCtrl" class="content container">
 
     <div class="callout callout-danger" ng-if="exception.error">
         <h4 translate>Oops! We had a problem.</h4>
@@ -7,8 +7,8 @@
     </div>
 
     <div class="page-header">
-        <h1 ng-if="add" translate>Add a Cross Sell</h1>
-        <h1 ng-if="update" translate>Cross Sell: {{promotion.name}}</h1>
+        <h1 ng-if="add" translate>Add an Up Sell</h1>
+        <h1 ng-if="update" translate>Up Sell: {{promotion.name}}</h1>
     </div>
     <form name="form" novalidate>
         <div class="panel panel-body light-shadow">
@@ -38,7 +38,7 @@
 
             <div class="col-xs-12">
                 <div class="form-group">
-                    <label class="control-label" translate>Which product do you want to offer as a cross sell in the cart?</label>
+                    <label class="control-label" translate>Which product do you want to offer as an up sell in the cart?</label>
                     <div ng-show="!options.product.length">
                         <a class="btn btn-info" products-select products="options.product" limit="1" translate>Select Product</a>
                     </div>
@@ -51,26 +51,12 @@
 
             <div class="col-xs-12">
                 <div class="form-group">
-                    <label class="radio-group-label" translate>Which products in the cart trigger this cross sell?</label>
-                    <div class="radio-group">
-                        <input type="radio" id="qualifies-1" class="radio" name="qualifies" ng-model="options.qualifies" value="any" required>
-                        <label for="qualifies-1" class="radio-label">Any product</label>
-                        <p class="help-text" translate>Any product in the cart can trigger this cross sell</p>
-                        <input type="radio" id="qualifies-2" class="radio" name="qualifies" ng-model="options.qualifies" value="selected" required>
-                        <label for="qualifies-2" class="radio-label">Selected products only</label>
-                        <p class="help-text" translate>Only if one of the selected products is in the cart can this cross sell be offered</p>
+                    <label class="radio-group-label" translate>Which product in the cart triggers this up sell?</label>
+                    <div ng-show="!options.offer_with_product.length">
+                        <a class="btn btn-info" products-select products="options.offer_with_product" limit="1" translate>Select Product</a>
                     </div>
-                    <p class="help-block hidden fadeInDown" translate>Please make a selection</p>
-                </div>
-
-                <div ng-show="options.qualifies == 'selected'" style="margin-top: -20px;">
-                    <div class="form-group">
-                        <div ng-show="!options.offer_with_products.length">
-                            <a class="btn btn-info" products-select products="options.offer_with_products" translate>Select Products</a>
-                        </div>
-                        <div ng-show="options.offer_with_products.length > 0">
-                            <product-group products="options.offer_with_products"></product-group>
-                        </div>
+                    <div ng-show="options.offer_with_product.length > 0">
+                        <product-group products="options.offer_with_product" limit="1"></product-group>
                     </div>
                 </div>
             </div>
@@ -139,7 +125,7 @@
                     <input type="tel" class="form-control" name="sort_priority" ng-model="promotion.config.sort_priority" placeholder="{{ 'Enter a number' | translate}}" is-valid-integer greater-than-or-equal="0" required>
                     <p class="help-block hidden fadeInDown" translate>Please provide a sort priority for this promotion.</p>
                     <div>
-                        <p class="help-text" translate>If multiple cross sells are available for a cart, the sort priority indicates the order in which they will be presented. A lower number puts an item closer to the top.</p>
+                        <p class="help-text" translate>If multiple up sells are available for a cart, the sort priority indicates the order in which they will be presented. A lower number puts an item closer to the top.</p>
                     </div>
                 </div>
             </div>
@@ -150,7 +136,7 @@
                     <input type="tel" class="form-control" name="weight" ng-model="promotion.config.weight" placeholder="{{ 'Enter a number' | translate}}" is-valid-integer greater-than-or-equal="0" required>
                     <p class="help-block hidden fadeInDown" translate>Please provide a weight for this promotion.</p>
                     <div>
-                        <p class="help-text" translate>If you have multiple cross sells configured for the same product, the weight determines how likely this cross sell will be selected compared to others, allowing you to test different cross sell discounts.</p>
+                        <p class="help-text" translate>If you have multiple up sells configured for the same product, the weight determines how likely this up sell will be selected compared to others, allowing you to test different up sell discounts.</p>
                     </div>
                 </div>
             </div>

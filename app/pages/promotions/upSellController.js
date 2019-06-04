@@ -1,4 +1,4 @@
-app.controller("CrossSellSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', 'gettextCatalog', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService, gettextCatalog) {
+app.controller("UpSellSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', 'gettextCatalog', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService, gettextCatalog) {
 
     $scope.promotion = { apply_to_recurring: false, active: false };
     $scope.promotion.config = { discount_amount: [{ price: null, currency: null }], apply_to_recurring_count: null, weight: 1, sort_priority: 1 };
@@ -46,21 +46,12 @@ app.controller("CrossSellSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
                 $scope.datepicker.expires = new Date(promotion.expires);
             }
 
-            $scope.promotion.config.discount_amount = $scope.promotion.config.discount_amount || [{price: null, currency: null}];
+            $scope.promotion.config.discount_amount = $scope.promotion.config.discount_amount || [{ price: null, currency: null }];
             if ($scope.promotion.config.discount_percent) {
                 $scope.promotion.config._discount_percent = utils.decimalToPercent($scope.promotion.config.discount_percent);
             }
 
-            $scope.options.offer_with_products = _.map($scope.promotion.config.offer_with_product_ids, function (product) {
-                return { 'product_id': product };
-            });
-
-            if ($scope.promotion.config.offer_with_product_ids.indexOf("*") > -1) {
-                $scope.options.offer_with_products = null;
-                $scope.options.qualifies = "any";
-            } else {
-                $scope.options.qualifies = "selected";
-            }
+            $scope.options.offer_with_product = [{ 'product_id': promotion.config.offer_with_product_id }];
 
             // Get the product from the product_id
             ApiService.getItem(ApiService.buildUrl("/products/" + promotion.config.product_id), { show: "name,product_id" }).then(function (product) {
@@ -131,22 +122,11 @@ app.controller("CrossSellSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
         }
 
         $scope.promotion.config.product_id = $scope.options.product[0].product_id;
-
-        if ($scope.options.qualifies == "selected") {
-            $scope.promotion.config.offer_with_product_ids = _.pluck($scope.options.offer_with_products, 'product_id');
-
-            // Remove product_id from offer_with_product_ids.
-            $scope.promotion.config.offer_with_product_ids = _.reject($scope.promotion.config.offer_with_product_ids, function (i) { return i == $scope.promotion.config.product_id });
-        }
-
-        if ($scope.options.qualifies == "any") {
-            $scope.promotion.config.offer_with_product_ids = ["*"];
-        }
-
-        $scope.promotion.type = 'cross_sell';
+        $scope.promotion.config.offer_with_product_id = $scope.options.offer_with_product[0].product_id;
+        $scope.promotion.type = 'up_sell';
 
         ApiService.set($scope.promotion, ApiService.buildUrl("/promotions"), { show: "promotion_id,name" }).then(function (promotion) {
-            GrowlsService.addGrowl({ id: "add_success", name: promotion.name, type: "success", promotion_id: promotion.promotion_id, url: "#/promotions/cross-sell/" + promotion.promotion_id + "/edit" });
+            GrowlsService.addGrowl({ id: "add_success", name: promotion.name, type: "success", promotion_id: promotion.promotion_id, url: "#/promotions/up-sell/" + promotion.promotion_id + "/edit" });
             window.location = "#/promotions";
         },
         function (error) {
@@ -179,20 +159,10 @@ app.controller("CrossSellSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
         }
 
         $scope.promotion.config.product_id = $scope.options.product[0].product_id;
-
-        if ($scope.options.qualifies === "selected") {
-            $scope.promotion.config.offer_with_product_ids = _.pluck($scope.options.offer_with_products, 'product_id');
-
-            // Remove product_id from offer_with_product_ids.
-            $scope.promotion.config.offer_with_product_ids = _.reject($scope.promotion.config.offer_with_product_ids, function (i) { return i == $scope.promotion.config.product_id });
-        }
-
-        if ($scope.options.qualifies == "any") {
-            $scope.promotion.config.offer_with_product_ids = ["*"];
-        }
+        $scope.promotion.config.offer_with_product_id = $scope.options.offer_with_product[0].product_id;
 
         ApiService.set($scope.promotion, $scope.url, { show: "promotion_id,name" }).then(function (promotion) {
-            GrowlsService.addGrowl({ id: "edit_success", name: promotion.name, type: "success", promotion_id: promotion.promotion_id, url: "#/promotions/cross-sell/" + promotion.promotion_id + "/edit" });
+            GrowlsService.addGrowl({ id: "edit_success", name: promotion.name, type: "success", promotion_id: promotion.promotion_id, url: "#/promotions/up-sell/" + promotion.promotion_id + "/edit" });
             window.location = "#/promotions";
         },
         function (error) {
@@ -230,13 +200,13 @@ app.controller("CrossSellSetCtrl", ['$scope', '$routeParams', '$location', 'Grow
         }
 
         if (!$scope.options.product || !$scope.options.product.length) {
-            $scope.exception = { error: { message: gettextCatalog.getString("You must select the product to offer as a cross sell.") } };
+            $scope.exception = { error: { message: gettextCatalog.getString("You must select the product to offer as a up sell.") } };
             window.scrollTo(0, 0);
             return false;
         }
 
-        if ($scope.options.qualifies == "selected" && (!$scope.options.offer_with_products || !$scope.options.offer_with_products.length)) {
-            $scope.exception = { error: { message: gettextCatalog.getString("You must select the products that will trigger this cross sell, or select 'Any product'.") } };
+        if (!$scope.options.offer_with_product.length) {
+            $scope.exception = { error: { message: gettextCatalog.getString("You must select the product that will trigger this up sell.") } };
             window.scrollTo(0, 0);
             return false;
         }

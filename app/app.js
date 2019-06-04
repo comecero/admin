@@ -32,6 +32,8 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     $routeProvider.when("/promotions/coupon/:id/edit", { templateUrl: "app/pages/promotions/coupon.html", reloadOnSearch: true });
     $routeProvider.when("/promotions/cross-sell/add", { templateUrl: "app/pages/promotions/crossSell.html", reloadOnSearch: true });
     $routeProvider.when("/promotions/cross-sell/:id/edit", { templateUrl: "app/pages/promotions/crossSell.html", reloadOnSearch: true });
+    $routeProvider.when("/promotions/up-sell/add", { templateUrl: "app/pages/promotions/upSell.html", reloadOnSearch: true });
+    $routeProvider.when("/promotions/up-sell/:id/edit", { templateUrl: "app/pages/promotions/upSell.html", reloadOnSearch: true });
 
     // Gateways
     $routeProvider.when("/gateways", { templateUrl: "app/pages/gateways/list.html", reloadOnSearch: false });
@@ -118,7 +120,9 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', '$provide', 
     $routeProvider.when("/apps/:id/edit", { templateUrl: "app/pages/apps/set.html", reloadOnSearch: true });
 
     // App Installations
-    $routeProvider.when("/app_installations", { templateUrl: "app/pages/app_installations/list.html", reloadOnSearch: false });
+    $routeProvider.when("/storefront", { templateUrl: "app/pages/app_installations/storefrontList.html", reloadOnSearch: false });
+    $routeProvider.when("/app_installations", { templateUrl: "app/pages/app_installations/adminList.html", reloadOnSearch: false });
+    $routeProvider.when("/app_installations/manage/:id", { templateUrl: "app/pages/app_installations/manage.html", reloadOnSearch: true });
     $routeProvider.when("/app_installations/:id", { templateUrl: "app/pages/app_installations/view.html", reloadOnSearch: true });
     $routeProvider.when("/app_installations/:id/settings", { templateUrl: "app/pages/app_installations/settings.html", reloadOnSearch: true });
     $routeProvider.when("/app_installations/:id/style", { templateUrl: "app/pages/app_installations/style.html", reloadOnSearch: true });
