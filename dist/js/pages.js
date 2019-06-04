@@ -463,6 +463,65 @@ app.controller("AppsSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSer
 
 
 
+app.controller("AppPackagesCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'CurrenciesService', 'TimezonesService', 'HelperService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, CurrenciesService, TimezonesService, HelperService) {
+
+    $scope.exception = {};
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/app_packages/" + $routeParams.id);
+
+    // Load the app package
+    ApiService.getItem($scope.url).then(function (app_package) {
+        $scope.app_package = app_package;
+
+        // Make a copy of the original for comparision
+        $scope.app_package_orig = angular.copy($scope.app_package);
+
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+    var prepareSubmit = function () {
+
+        // Clear any previous errors
+        $scope.exception.error = null;
+
+    }
+
+    $scope.update = function () {
+
+        prepareSubmit();
+
+        if ($scope.form.$invalid) {
+            window.scrollTo(0, 0);
+            return;
+        }
+
+        ApiService.multipartForm($scope.app_package, null, $scope.url).then(function (settings) {
+            GrowlsService.addGrowl({ id: "edit_success", name: "App Package " + $routeParams.id, type: "success", url: "#/app_packages/" + $routeParams.id + "/edit" });
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception.error = error;
+        });
+    }
+
+    $scope.download = function () {
+        ApiService.set(null, $scope.url + "/download").then(function (download) {
+            window.location = download.link;
+        },
+        function (error) {
+            window.scrollTo(0, 0);
+            $scope.exception.error = error;
+        });
+    }
+
+}]);
+
+
+
+
 
 //#region App_Installations
 
@@ -486,20 +545,19 @@ app.controller("AppInstallationsListCtrl", ['$scope', '$routeParams', '$location
 
     $scope.functions = {};
 
-    $scope.functions.confirmSetDefaultVersion = function (app_installation_id) {
-        var confirm = { id: "set_default_app_version" };
-        confirm.onConfirm = function () {
-            $scope.functions.setDefaultVersion(app_installation_id);
-        }
-        ConfirmService.showConfirm($scope, confirm);
-    }
-
     $scope.functions.getLaunchUrl = function (app_installation) {
         if (app_installation) {
-            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&from_admin=true&redirect_uri=";
+            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
             var redirect = app_installation.launch_url;
+
+            // If a target version is supplied, add it as a parameter
             if (app_installation.version)
                 redirect += "&target_version=" + app_installation.version;
+
+            // Platform hosted apps use caching for performance, put a flag that this request was made from an admin launch to bust the cache for certain settings and style files, to make testing easier.
+            if (app_installation.platform_hosted)
+                redirect += "&from_admin=" + true;
+
             url += encodeURIComponent(redirect);
             return url;
         }
@@ -510,9 +568,8 @@ app.controller("AppInstallationsListCtrl", ['$scope', '$routeParams', '$location
         // If client side and the info URL is within the app, run the info URL through the app launcher to inject an API token for use within the info pages.
         if (app_installation.platform_hosted && app_installation.info_url) {
             if (utils.left(app_installation.info_url, app_installation.location_url.length) == app_installation.location_url) {
-                // The info URL is within the app. Set the redirect URI as a relative path.
-                var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
-                return url + "&redirect_uri=" + encodeURIComponent(app_installation.info_url);
+                // The info URL is within the app. Run through launch with a redirect URI of the app's info URL. The final URL will be double encoded as it's unwrapped twice.
+                return $scope.functions.getLaunchUrl(app_installation) + encodeURIComponent("&redirect_uri=" + encodeURIComponent(app_installation.info_url));
             }
         }
         return app_installation.info_url;
@@ -616,17 +673,6 @@ app.controller("AppInstallationsManageCtrl", ['$scope', '$routeParams', '$locati
         ConfirmService.showConfirm($scope, confirm);
     }
 
-    $scope.functions.getLaunchUrl = function (app_installation) {
-        if (app_installation) {
-            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&from_admin=true&redirect_uri=";
-            var redirect = app_installation.launch_url;
-            if (app_installation.version)
-                redirect += "&target_version=" + app_installation.version;
-            url += encodeURIComponent(redirect);
-            return url;
-        }
-    }
-
     $scope.functions.getInstallUrl = function (app_installation) {
         if (app_installation) {
             var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
@@ -638,14 +684,31 @@ app.controller("AppInstallationsManageCtrl", ['$scope', '$routeParams', '$locati
         }
     }
 
+    $scope.functions.getLaunchUrl = function (app_installation) {
+        if (app_installation) {
+            var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
+            var redirect = app_installation.launch_url;
+
+            // If a target version is supplied, add it as a parameter
+            if (app_installation.version)
+                redirect += "&target_version=" + app_installation.version;
+
+            // Platform hosted apps use caching for performance, put a flag that this request was made from an admin launch to bust the cache for certain settings and style files, to make testing easier.
+            if (app_installation.platform_hosted)
+                redirect += "&from_admin=" + true;
+
+            url += encodeURIComponent(redirect);
+            return url;
+        }
+    }
+
     $scope.functions.getInfoUrl = function (app_installation, test) {
 
         // If client side and the info URL is within the app, run the info URL through the app launcher to inject an API token for use within the info pages.
         if (app_installation.platform_hosted && app_installation.info_url) {
             if (utils.left(app_installation.info_url, app_installation.location_url.length) == app_installation.location_url) {
-                // The info URL is within the app. Set the redirect URI as a relative path.
-                var url = localStorage.getItem("oauth_callback_url") + "#access_token=" + localStorage.getItem("token") + "&redirect_uri=";
-                return url + "&redirect_uri=" + encodeURIComponent(app_installation.info_url);
+                // The info URL is within the app. Run through launch with a redirect URI of the app's info URL. The final URL will be double encoded as it's unwrapped twice.
+                return $scope.functions.getLaunchUrl(app_installation) + encodeURIComponent("&redirect_uri=" + encodeURIComponent(app_installation.info_url));
             }
         }
         return app_installation.info_url;
@@ -683,7 +746,7 @@ app.controller("AppInstallationsSettingsCtrl", ['$scope', '$routeParams', '$loca
     $scope.checkboxState = {};
 
     // Load the app_installation settings
-    ApiService.getItem($scope.url, { show: "app_installation_id,app_id,name,settings_fields.*,settings,alias,launch_url,location_url,allow_custom_javascript,custom_javascript,preferred_hostname" }).then(function (app_installation) {
+    ApiService.getItem($scope.url, { show: "app_installation_id,app_id,name,settings_fields.*,settings,alias,launch_url,location_url,allow_custom_javascript,custom_javascript,preferred_hostname,type" }).then(function (app_installation) {
 
         $scope.app_installation = app_installation;
 
@@ -702,11 +765,11 @@ app.controller("AppInstallationsSettingsCtrl", ['$scope', '$routeParams', '$loca
 
     $scope.confirmCancel = function () {
         if (angular.equals($scope.app_installation.config, $scope.config_orig)) {
-            utils.redirect($location, "/app_installations");
+            utils.redirect($location, getRedirectUrl($scope.app_installation));
         } else {
             var confirm = { id: "changes_lost" };
             confirm.onConfirm = function () {
-                utils.redirect($location, "/app_installations");
+                utils.redirect($location, getRedirectUrl($scope.app_installation));
             }
             ConfirmService.showConfirm($scope, confirm);
         }
@@ -726,7 +789,7 @@ app.controller("AppInstallationsSettingsCtrl", ['$scope', '$routeParams', '$loca
             GrowlsService.addGrowl({ id: "edit_success", name: $scope.app_installation.name, type: "success", url: "#/app_installations/" + $scope.app_installation.app_installation_id + "/settings" });
 
             if (!apply) {
-                utils.redirect($location, "/app_installations");
+                utils.redirect($location, getRedirectUrl($scope.app_installation));
             }
 
         },
@@ -734,6 +797,17 @@ app.controller("AppInstallationsSettingsCtrl", ['$scope', '$routeParams', '$loca
             window.scrollTo(0, 0);
             $scope.exception.error = error;
         });
+    }
+
+    function getRedirectUrl(app_installation) {
+
+        var listUrl = "/app_installations";
+        if ($scope.app_installation.type == "storefront") {
+            listUrl = "/storefront";
+        }
+
+        return listUrl;
+
     }
 
 }]);
@@ -750,7 +824,7 @@ app.controller("AppInstallationsStyleCtrl", ['$scope', '$routeParams', '$locatio
     $scope.checkboxState = {};
 
     // Load the app_installation style
-    ApiService.getItem($scope.url, { show: "app_installation_id,app_id,name,style_fields.*,style,allow_custom_css,custom_css" }).then(function (app_installation) {
+    ApiService.getItem($scope.url, { show: "app_installation_id,app_id,name,style_fields.*,style,allow_custom_css,custom_css,type" }).then(function (app_installation) {
 
         $scope.app_installation = app_installation;
 
@@ -769,11 +843,11 @@ app.controller("AppInstallationsStyleCtrl", ['$scope', '$routeParams', '$locatio
 
     $scope.confirmCancel = function () {
         if (angular.equals($scope.app_installation.style, $scope.style_orig)) {
-            utils.redirect($location, "/app_installations");
+            utils.redirect($location, getRedirectUrl($scope.app_installation));
         } else {
             var confirm = { id: "changes_lost" };
             confirm.onConfirm = function () {
-                utils.redirect($location, "/app_installations");
+                utils.redirect($location, getRedirectUrl($scope.app_installation));
             }
             ConfirmService.showConfirm($scope, confirm);
         }
@@ -793,7 +867,7 @@ app.controller("AppInstallationsStyleCtrl", ['$scope', '$routeParams', '$locatio
             GrowlsService.addGrowl({ id: "edit_success", name: $scope.app_installation.name, type: "success", url: "#/app_installations/" + $scope.app_installation.app_installation_id + "/style" });
 
             if (!apply) {
-                utils.redirect($location, "/app_installations");
+                utils.redirect($location, getRedirectUrl($scope.app_installation));
             }
         },
         function (error) {
@@ -802,68 +876,20 @@ app.controller("AppInstallationsStyleCtrl", ['$scope', '$routeParams', '$locatio
         });
     }
 
+    function getRedirectUrl(app_installation) {
+
+        var listUrl = "/app_installations";
+        if ($scope.app_installation.type == "storefront") {
+            listUrl = "/storefront";
+        }
+
+        return listUrl;
+
+    }
+
 }]);
 
 //#endregion AppInstallations
-app.controller("AppPackagesCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'CurrenciesService', 'TimezonesService', 'HelperService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, CurrenciesService, TimezonesService, HelperService) {
-
-    $scope.exception = {};
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/app_packages/" + $routeParams.id);
-
-    // Load the app package
-    ApiService.getItem($scope.url).then(function (app_package) {
-        $scope.app_package = app_package;
-
-        // Make a copy of the original for comparision
-        $scope.app_package_orig = angular.copy($scope.app_package);
-
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-    var prepareSubmit = function () {
-
-        // Clear any previous errors
-        $scope.exception.error = null;
-
-    }
-
-    $scope.update = function () {
-
-        prepareSubmit();
-
-        if ($scope.form.$invalid) {
-            window.scrollTo(0, 0);
-            return;
-        }
-
-        ApiService.multipartForm($scope.app_package, null, $scope.url).then(function (settings) {
-            GrowlsService.addGrowl({ id: "edit_success", name: "App Package " + $routeParams.id, type: "success", url: "#/app_packages/" + $routeParams.id + "/edit" });
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception.error = error;
-        });
-    }
-
-    $scope.download = function () {
-        ApiService.set(null, $scope.url + "/download").then(function (download) {
-            window.location = download.link;
-        },
-        function (error) {
-            window.scrollTo(0, 0);
-            $scope.exception.error = error;
-        });
-    }
-
-}]);
-
-
-
-
 
 //#region Auths
 
@@ -5553,7 +5579,7 @@ app.controller("CouponSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
 app.controller("CrossSellSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', 'gettextCatalog', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService, gettextCatalog) {
 
     $scope.promotion = { apply_to_recurring: false, active: false };
-    $scope.promotion.config = { discount_amount: [{ price: null, currency: null }], apply_to_recurring_count: null, weight: 1    };
+    $scope.promotion.config = { discount_amount: [{ price: null, currency: null }], apply_to_recurring_count: null, weight: 1, sort_priority: 1 };
     $scope.exception = {};
     $scope.options = {};
 
@@ -5905,7 +5931,7 @@ app.controller("PromotionsListCtrl", ['$scope', '$routeParams', '$location', '$q
 app.controller("UpSellSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', 'gettextCatalog', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService, gettextCatalog) {
 
     $scope.promotion = { apply_to_recurring: false, active: false };
-    $scope.promotion.config = { discount_amount: [{ price: null, currency: null }], apply_to_recurring_count: null, weight: 1    };
+    $scope.promotion.config = { discount_amount: [{ price: null, currency: null }], apply_to_recurring_count: null, weight: 1, sort_priority: 1 };
     $scope.exception = {};
     $scope.options = {};
 

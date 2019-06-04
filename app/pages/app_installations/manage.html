@@ -46,7 +46,8 @@
 
                 <div class="col-xs-12 col-md-6">
                     <label class="control-label">App ID</label>
-                    <div class="text-sm">{{default.app_id}}</div>
+                    <div class="text-sm" ng-if="!default.self_published">{{default.app_id}}</div>
+                    <div class="text-sm" ng-if="default.self_published"><a ng-href="#/apps/{{default.app_id}}/edit">{{default.app_id}}</a></div>
                 </div>
 
                 <div class="row spacer-b30"></div>

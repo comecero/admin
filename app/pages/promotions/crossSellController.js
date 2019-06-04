@@ -1,7 +1,7 @@
 app.controller("CrossSellSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', 'gettextCatalog', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService, gettextCatalog) {
 
     $scope.promotion = { apply_to_recurring: false, active: false };
-    $scope.promotion.config = { discount_amount: [{ price: null, currency: null }], apply_to_recurring_count: null, weight: 1    };
+    $scope.promotion.config = { discount_amount: [{ price: null, currency: null }], apply_to_recurring_count: null, weight: 1, sort_priority: 1 };
     $scope.exception = {};
     $scope.options = {};
 
