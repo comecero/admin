@@ -855,6 +855,21 @@ app.directive('resource', function () {
     };
 });
 
+
+app.directive('accountModel', ['HelperService', function (HelperService) {
+    return {
+        restrict: 'A',
+        link: function (scope, elem, attrs) {
+
+            if (localStorage.getItem("model") != attrs.accountModel && HelperService.isAdmin() == false) {
+                elem[0].remove();
+            }
+
+        }
+    };
+}]);
+
+
 app.directive('base64Field', [function() {
     return {
         restrict: 'A',
@@ -877,6 +892,7 @@ app.directive('base64Field', [function() {
         }
     };
 }]);
+
 
 app.directive('dropzone', ['ApiService', function (ApiService) {
 
@@ -5997,9 +6013,14 @@ app.service("EventTypesService", [function () {
             { name: "Shipment Modified", code: "shipment:modified" },
             { name: "Shipment Deleted", code: "shipment:deleted" },
             { name: "Subscription Created", code: "subscription:created" },
+            { name: "Subscription Modified", code: "subscription:modified" },
             { name: "Subscription Cancelled", code: "subscription:cancelled" },
+            { name: "Subscription Cancellation Scheduled", code: "subscription:cancellation_scheduled" },
+            { name: "Subscription Cancellation Unscheduled", code: "subscription:cancellation_unscheduled" },
             { name: "Subscription Item Added", code: "subscription_item:added" },
             { name: "Subscription Item Cancelled", code: "subscription_item:cancelled" },
+            { name: "Subscription Item Cancellation Scheduled", code: "subscription_item:cancellation_scheduled" },
+            { name: "Subscription Item Cancellation Unscheduled", code: "subscription_item:cancellation_unscheduled" },
             { name: "Subscription Item Modified", code: "subscription_item:modified" },
             { name: "Subscription Completed", code: "subscription:completed" },
             { name: "Subscription Converted", code: "subscription:converted" },

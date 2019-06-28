@@ -1,10 +1,18 @@
 ﻿# Admin Change Log #
 
+<a name="1.5.1"></a>
+# 1.5.1
+
+- Add support for subscription cancellation and pre-bill email notifications
+- Add message to point to storefront from apps
+- Update link to Online Storefront on Getting Started page
+
 <a name="1.5.0"></a>
 # 1.5.0
 
 - Add support for adding up sell promotions
 - Allow filtering lists of promotions by promotion type
+- Refactor UI of app installations
 - Minor bug fixes
 
 <a name="1.4.5"></a>

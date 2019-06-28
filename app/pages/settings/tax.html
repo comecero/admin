@@ -51,95 +51,98 @@
             </div>
             
             <div class="row"></div>
-            
-            <div class="col-xs-12">
-                <div class="form-group spacer-b10">
-                    <a class="btn btn-primary" ng-click="addNewRule()" translate>Add a new tax rate</a>
+
+            <div account-model="agent">
+
+                <div class="col-xs-12">
+                    <div class="form-group spacer-b10">
+                        <a class="btn btn-primary" ng-click="addNewRule()" translate>Add a new tax rate</a>
+                    </div>
                 </div>
-            </div>
 
-            <div class="col-xs-12">
-                <hr />
-            </div>
-            
-            <div class="col-xs-12" ng-repeat="rule in settings.rules">
-
-                <ng-form name="rules">
-                    <div class="col-xs-12">
-                        <div class="form-group" show-errors>
-                            <label for="country" class="control-label" translate>Country</label>
-                            <input type="text" class="form-control" name="country" ng-model="rule.country" uib-typeahead="country as country.name for country in ruleCountries | filter:$viewValue | limitTo:12" typeahead-input-formatter="$model.name" typeahead-editable="false" typeahead-select-on-blur="true" typeahead-on-select="onRuleCountrySelect($item, $model, $label, $event, rule)" required>
-                            <p class="help-block hidden fadeInDown" translate>Please select a country from the list</p>
-                            <div>
-                                <p class="help-text" translate>Note that you can select 'European Union' for all EU countries.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-md-6">
-                        <div class="form-group" show-errors ng-if="rule.country.code == 'US' || rule.country.code == 'CA'">
-                            <label for="state_prov" class="control-label" translate>State / Province</label>
-                            <input type="text" class="form-control" name="state_prov" ng-model="rule.state_prov" required>
-                            <p class="help-block hidden fadeInDown" translate>Please provide a valid state or province.</p>
-                            <div>
-                                <p class="help-text" translate>Enter the two-character abbreviation</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-md-6" ng-show="rule.country.code == 'US'">
-                        <div class="form-group" show-errors>
-                            <label for="location_postal_code" class="control-label" translate>Origin Zip Code</label>
-                            <input type="text" class="form-control" name="location_postal_code" ng-model="rule.location_postal_code">
-                            <div>
-                                <p class="help-text" translate>Enter the zip code of your business location in this state. Leave blank if you do not have a business location in this state. This helps us determine the appropriate rate in cases where tax is based on the product's origin.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row"></div>
-                    <div class="col-xs-12 col-md-6">
-                        <div class="form-group">
-                            <label class="radio-group-label" translate>Tax Rate</label>
-                            <div class="radio-group ">
-                                <div ng-show="rule.country.code == 'US' || rule.country.code == 'CA' || rule.country.code == 'EU' || geo.isEuCountry(rule.country.code)">
-                                    <input type="radio" id="manual_rate-1" class="radio" name="manual_rate_{{$index}}" ng-model="rule.manual_rate" ng-value="false" required>
-                                    <label for="manual_rate-1" class="radio-label" translate>Automatically determine rate</label>
-                                </div>
-                                <input type="radio" id="manual_rate-2" class="radio" name="manual_rat_{{$index}}e" ng-model="rule.manual_rate" ng-value="true" required>
-                                <label for="manual_rate-2" class="radio-label" translate>Use a rate I specify</label>
-                            </div>
-                            <div>
-                                <p class="help-text" ng-show="rule.country.code == 'US' || rule.country.code == 'CA' || rule.country.code == 'EU' || geo.isEuCountry(rule.country.code)" translate>Selecting to automatically determine the rate will give you the most accurate tax rates based on your location, the customer's location and the type of products purchased.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-md-6" ng-if="rule.manual_rate">
-                        <div class="form-group" show-errors>
-                            <label for="rate" class="control-label required" translate>Enter Tax Rate</label>
-                            <input type="text" class="form-control" name="rate" ng-model="rule.rate" is-valid-number ng-required="rule.manual_rate" placeholder="">
-                            <p class="help-block hidden fadeInDown" translate>Please provide a valid rate.</p>
-                            <div>
-                                <p class="help-text" translate>Enter your tax rate as a decimal. For example, if the tax rate is 9.5%, you should enter 0.095.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row"></div>
-
-                    <div class="text-right">
-                        <span class="delete" ng-click="$parent.confirmDelete(rule, $index)">Delete this rate</span>
-                    </div>
+                <div class="col-xs-12">
                     <hr />
+                </div>
 
-                    <div class="row"></div>
+                <div class="col-xs-12" ng-repeat="rule in settings.rules">
 
-                </ng-form>
+                    <ng-form name="rules">
+                        <div class="col-xs-12">
+                            <div class="form-group" show-errors>
+                                <label for="country" class="control-label" translate>Country</label>
+                                <input type="text" class="form-control" name="country" ng-model="rule.country" uib-typeahead="country as country.name for country in ruleCountries | filter:$viewValue | limitTo:12" typeahead-input-formatter="$model.name" typeahead-editable="false" typeahead-select-on-blur="true" typeahead-on-select="onRuleCountrySelect($item, $model, $label, $event, rule)" required>
+                                <p class="help-block hidden fadeInDown" translate>Please select a country from the list</p>
+                                <div>
+                                    <p class="help-text" translate>Note that you can select 'European Union' for all EU countries.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6">
+                            <div class="form-group" show-errors ng-if="rule.country.code == 'US' || rule.country.code == 'CA'">
+                                <label for="state_prov" class="control-label" translate>State / Province</label>
+                                <input type="text" class="form-control" name="state_prov" ng-model="rule.state_prov" required>
+                                <p class="help-block hidden fadeInDown" translate>Please provide a valid state or province.</p>
+                                <div>
+                                    <p class="help-text" translate>Enter the two-character abbreviation</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6" ng-show="rule.country.code == 'US'">
+                            <div class="form-group" show-errors>
+                                <label for="location_postal_code" class="control-label" translate>Origin Zip Code</label>
+                                <input type="text" class="form-control" name="location_postal_code" ng-model="rule.location_postal_code">
+                                <div>
+                                    <p class="help-text" translate>Enter the zip code of your business location in this state. Leave blank if you do not have a business location in this state. This helps us determine the appropriate rate in cases where tax is based on the product's origin.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row"></div>
+                        <div class="col-xs-12 col-md-6">
+                            <div class="form-group">
+                                <label class="radio-group-label" translate>Tax Rate</label>
+                                <div class="radio-group ">
+                                    <div ng-show="rule.country.code == 'US' || rule.country.code == 'CA' || rule.country.code == 'EU' || geo.isEuCountry(rule.country.code)">
+                                        <input type="radio" id="manual_rate-1" class="radio" name="manual_rate_{{$index}}" ng-model="rule.manual_rate" ng-value="false" required>
+                                        <label for="manual_rate-1" class="radio-label" translate>Automatically determine rate</label>
+                                    </div>
+                                    <input type="radio" id="manual_rate-2" class="radio" name="manual_rat_{{$index}}e" ng-model="rule.manual_rate" ng-value="true" required>
+                                    <label for="manual_rate-2" class="radio-label" translate>Use a rate I specify</label>
+                                </div>
+                                <div>
+                                    <p class="help-text" ng-show="rule.country.code == 'US' || rule.country.code == 'CA' || rule.country.code == 'EU' || geo.isEuCountry(rule.country.code)" translate>Selecting to automatically determine the rate will give you the most accurate tax rates based on your location, the customer's location and the type of products purchased.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6" ng-if="rule.manual_rate">
+                            <div class="form-group" show-errors>
+                                <label for="rate" class="control-label required" translate>Enter Tax Rate</label>
+                                <input type="text" class="form-control" name="rate" ng-model="rule.rate" is-valid-number ng-required="rule.manual_rate" placeholder="">
+                                <p class="help-block hidden fadeInDown" translate>Please provide a valid rate.</p>
+                                <div>
+                                    <p class="help-text" translate>Enter your tax rate as a decimal. For example, if the tax rate is 9.5%, you should enter 0.095.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row"></div>
 
-            </div>     
-            
+                        <div class="text-right">
+                            <span class="delete" ng-click="$parent.confirmDelete(rule, $index)">Delete this rate</span>
+                        </div>
+                        <hr />
 
-            <div class="row"></div>
-            
-             <!-- Show a "not found" message if no rules were found  -->
-            <div class="col-sm-12" ng-if="settings.rules.length == 0">
-                <p class="no-info" translate>No tax rates configured</p>
+                        <div class="row"></div>
+
+                    </ng-form>
+
+                </div>
+
+                <div class="row"></div>
+
+                <!-- Show a "not found" message if no rules were found  -->
+                <div class="col-sm-12" ng-if="settings.rules.length == 0">
+                    <p class="no-info" translate>No tax rates configured</p>
+                </div>
+
             </div>
 
             <div class="form-group">

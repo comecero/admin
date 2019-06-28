@@ -559,6 +559,21 @@ app.directive('resource', function () {
     };
 });
 
+
+app.directive('accountModel', ['HelperService', function (HelperService) {
+    return {
+        restrict: 'A',
+        link: function (scope, elem, attrs) {
+
+            if (localStorage.getItem("model") != attrs.accountModel && HelperService.isAdmin() == false) {
+                elem[0].remove();
+            }
+
+        }
+    };
+}]);
+
+
 app.directive('base64Field', [function() {
     return {
         restrict: 'A',
@@ -581,6 +596,7 @@ app.directive('base64Field', [function() {
         }
     };
 }]);
+
 
 app.directive('dropzone', ['ApiService', function (ApiService) {
 

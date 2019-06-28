@@ -13,7 +13,7 @@
     <form name="form" novalidate>
 
         <div class="panel panel-body light-shadow">
-            
+
             <div class="col-xs-12">
                 <div class="form-group spacer-b10">
                     <h4 class="inline">Currency Rounding Rules</h4>
@@ -24,15 +24,15 @@
             <div class="col-xs-12 spacer-b20 spacer-t20">
                 <p class="help-text" translate>Currency Rounding Rules allow you to automatically generate "friendly" price endings for your products (such as .95 and .99) in spite of exchange rate fluctuations.</p>
             </div>
-            
+
             <div class="col-xs-12" ng-repeat="rule in settings.currency_rounding_rules">
 
                 <ng-form name="rounding_rules">
-                   
+
                     <div class="col-xs-12">
                         <div class="form-group" show-errors>
                             <label for="currency" class="control-label required" translate>Currency</label>
-                            <select class="form-control" ng-model="rule.currency" name="currency" ng-options="currency.code as currency.name for currency in $parent.currencies" ></select>
+                            <select class="form-control" ng-model="rule.currency" name="currency" ng-options="currency.code as currency.name for currency in $parent.currencies"></select>
                             <p class="help-block hidden fadeInDown" translate>Please select a currency from the list</p>
                             <div>
                                 <p class="help-text" translate>The currency to which this rule will apply. Choose 'All other currencies' to create a default rule for all currencies which do not have a specific rule created.</p>
@@ -96,131 +96,130 @@
 
                 </ng-form>
 
-            </div>     
-            
-             <!-- Show a "not found" message if no rules were found  -->
+            </div>
+
+            <!-- Show a "not found" message if no rules were found  -->
             <div class="col-sm-12" ng-if="settings.currency_rounding_rules.length == 0">
                 <p class="no-info" translate>No rounding rules configured</p>
             </div>
 
             <div class="row spacer-b40"></div>
 
-<!--   Exchange Rate Adjustment Rules -->
-            <div class="col-xs-12">
-                <div class="form-group spacer-b10">
-                    <h4 class="inline">Exchange Rate Adjustment Rules</h4>
-                    <a class="btn btn-primary pull-right" ng-click="addNew('currency_markup_rules', {})" translate>Add</a>
+            <div account-model="agent">
+                <!--   Exchange Rate Adjustment Rules -->
+                <div class="col-xs-12">
+                    <div class="form-group spacer-b10">
+                        <h4 class="inline">Exchange Rate Adjustment Rules</h4>
+                        <a class="btn btn-primary pull-right" ng-click="addNew('currency_markup_rules', {})" translate>Add</a>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 spacer-b20 spacer-t20">
+                    <p class="help-text" translate>Exchange Rate Adjustment Rules allow you to adjust the real-time wholesale exchange rates that are used to calculate product prices in different currencies. This allows you to add additional margin to the amount you will receive in your local currency after currency conversion.</p>
+                </div>
+                <div class="col-xs-12" ng-repeat="rule in settings.currency_markup_rules">
+
+                    <ng-form name="markup_rules">
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group" show-errors>
+                                <label for="currency" class="control-label required" translate>Currency</label>
+                                <select class="form-control" ng-model="rule.currency" name="currency" ng-options="currency.code as currency.name for currency in $parent.currencies"></select>
+                                <p class="help-block hidden fadeInDown" translate>Please select a currency from the list</p>
+                                <div>
+                                    <p class="help-text" translate>The currency to which this rule will apply. Choose 'All other currencies' to create a default rule for all currencies which do not have a specific rule created.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group" show-errors>
+                                <label for="markup_percentage" class="control-label" translate>Adjustment Percentage</label>
+                                <input type="text" class="form-control" name="markup_percentage" ng-model="rule.markup_percentage_value" is-valid-number required>
+                                <p class="help-block hidden fadeInDown" translate>Please give minimum value for rounding.</p>
+                                <div>
+                                    <p class="help-text" translate>The percentage of adjustment you want to apply to wholesale exchange rates for this currency. For example, to add 3.5% to the wholesale exchange rate, enter '3.5'.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row"></div>
+
+                        <div class="text-right">
+                            <span class="delete" ng-click="$parent.confirmDelete('currency_markup_rules', rule, $index)">Delete this rule</span>
+                        </div>
+                        <hr />
+
+                        <div class="row"></div>
+
+                    </ng-form>
+                </div>
+
+                <div class="row"></div>
+
+                <!-- Show a "not found" message if no rules were found  -->
+                <div class="col-sm-12" ng-if="settings.currency_markup_rules.length == 0">
+                    <p class="no-info" translate>No adjustment rules configured</p>
                 </div>
             </div>
 
-            <div class="col-xs-12 spacer-b20 spacer-t20">
-                <p class="help-text" translate>Exchange Rate Adjustment Rules allow you to adjust the real-time wholesale exchange rates that are used to calculate product prices in different currencies. This allows you to add additional margin to the amount you will receive in your local currency after currency conversion.</p>
-            </div>
-
-            <div class="col-xs-12" ng-repeat="rule in settings.currency_markup_rules">
-
-                <ng-form name="markup_rules">
-                    <div class="col-md-6 col-xs-12">
-                        <div class="form-group" show-errors>
-                            <label for="currency" class="control-label required" translate>Currency</label>
-                            <select class="form-control" ng-model="rule.currency" name="currency" ng-options="currency.code as currency.name for currency in $parent.currencies"></select>
-                            <p class="help-block hidden fadeInDown" translate>Please select a currency from the list</p>
-                            <div>
-                                <p class="help-text" translate>The currency to which this rule will apply. Choose 'All other currencies' to create a default rule for all currencies which do not have a specific rule created.</p>
-                            </div>
-                        </div>
-                    </div>
-                   
-                    <div class="col-md-6 col-xs-12">
-                        <div class="form-group" show-errors>
-                            <label for="markup_percentage" class="control-label" translate>Adjustment Percentage</label>
-                            <input type="text" class="form-control" name="markup_percentage" ng-model="rule.markup_percentage_value" is-valid-number required>
-                            <p class="help-block hidden fadeInDown" translate>Please give minimum value for rounding.</p>
-                            <div>
-                                <p class="help-text" translate>The percentage of adjustment you want to apply to wholesale exchange rates for this currency. For example, to add 3.5% to the wholesale exchange rate, enter '3.5'.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row"></div>
-
-                    <div class="text-right">
-                        <span class="delete" ng-click="$parent.confirmDelete('currency_markup_rules', rule, $index)">Delete this rule</span>
-                    </div>
-                    <hr />
-
-                    <div class="row"></div>
-
-                </ng-form>
-
-            </div>
-
-
-            <div class="row"></div>
-
-            <!-- Show a "not found" message if no rules were found  -->
-            <div class="col-sm-12" ng-if="settings.currency_markup_rules.length == 0">
-                <p class="no-info" translate>No adjustment rules configured</p>
-            </div>
-
-<!--   Reseller Exchange Rate Adjustment Rules -->
+            <!--   Reseller Exchange Rate Adjustment Rules -->
             <div ng-if="settings.reseller_currency_markup_rules">
-              <div class="col-xs-12">
-                  <div class="form-group spacer-b10">
-                      <h4 class="inline">Reseller Exchange Rate Adjustment Rules</h4>
-                      <a class="btn btn-primary pull-right" ng-click="addNew('reseller_currency_markup_rules', {currency: null, markup_percentage_value: null})" translate>Add</a>
-                  </div>
-              </div>
+                <div class="col-xs-12">
+                    <div class="form-group spacer-b10">
+                        <h4 class="inline">Reseller Exchange Rate Adjustment Rules</h4>
+                        <a class="btn btn-primary pull-right" ng-click="addNew('reseller_currency_markup_rules', {currency: null, markup_percentage_value: null})" translate>Add</a>
+                    </div>
+                </div>
 
-              <div class="col-xs-12 spacer-b20 spacer-t20">
-                  <p class="help-text" translate>Exchange Rate Adjustment Rules allow you to adjust the real-time wholesale exchange rates that are used to calculate product prices in different currencies. This allows you to add additional margin to the amount you will receive in your local currency after currency conversion.</p>
-              </div>
+                <div class="col-xs-12 spacer-b20 spacer-t20">
+                    <p class="help-text" translate>Exchange Rate Adjustment Rules allow you to adjust the real-time wholesale exchange rates that are used to calculate product prices in different currencies. This allows you to add additional margin to the amount you will receive in your local currency after currency conversion.</p>
+                </div>
 
-              <div class="col-xs-12" ng-repeat="rule in settings.reseller_currency_markup_rules">
+                <div class="col-xs-12" ng-repeat="rule in settings.reseller_currency_markup_rules">
 
-                  <ng-form name="markup_rules">
-                      <div class="col-md-6 col-xs-12">
-                          <div class="form-group" show-errors>
-                              <label for="currency" class="control-label required" translate>Currency</label>
-                              <select class="form-control" ng-model="rule.currency" name="currency" ng-options="currency.code as currency.name for currency in $parent.currencies"></select>
-                              <p class="help-block hidden fadeInDown" translate>Please select a currency from the list</p>
-                              <div>
-                                  <p class="help-text" translate>The currency to which this rule will apply. Choose 'All other currencies' to create a default rule for all currencies which do not have a specific rule created.</p>
-                              </div>
-                          </div>
-                      </div>
+                    <ng-form name="markup_rules">
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group" show-errors>
+                                <label for="currency" class="control-label required" translate>Currency</label>
+                                <select class="form-control" ng-model="rule.currency" name="currency" ng-options="currency.code as currency.name for currency in $parent.currencies"></select>
+                                <p class="help-block hidden fadeInDown" translate>Please select a currency from the list</p>
+                                <div>
+                                    <p class="help-text" translate>The currency to which this rule will apply. Choose 'All other currencies' to create a default rule for all currencies which do not have a specific rule created.</p>
+                                </div>
+                            </div>
+                        </div>
 
-                      <div class="col-md-6 col-xs-12">
-                          <div class="form-group" show-errors>
-                              <label for="markup_percentage" class="control-label" translate>Adjustment Percentage</label>
-                              <input type="text" class="form-control" name="markup_percentage" ng-model="rule.markup_percentage_value" is-valid-number required>
-                              <p class="help-block hidden fadeInDown" translate>Please give minimum value for rounding.</p>
-                              <div>
-                                  <p class="help-text" translate>The percentage of adjustment you want to apply to wholesale exchange rates for this currency. For example, to add 3.5% to the wholesale exchange rate, enter '3.5'.</p>
-                              </div>
-                          </div>
-                      </div>
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group" show-errors>
+                                <label for="markup_percentage" class="control-label" translate>Adjustment Percentage</label>
+                                <input type="text" class="form-control" name="markup_percentage" ng-model="rule.markup_percentage_value" is-valid-number required>
+                                <p class="help-block hidden fadeInDown" translate>Please give minimum value for rounding.</p>
+                                <div>
+                                    <p class="help-text" translate>The percentage of adjustment you want to apply to wholesale exchange rates for this currency. For example, to add 3.5% to the wholesale exchange rate, enter '3.5'.</p>
+                                </div>
+                            </div>
+                        </div>
 
-                      <div class="row"></div>
+                        <div class="row"></div>
 
-                      <div class="text-right">
-                          <span class="delete" ng-click="$parent.confirmDelete('reseller_currency_markup_rules', rule, $index)">Delete this rule</span>
-                      </div>
-                      <hr />
+                        <div class="text-right">
+                            <span class="delete" ng-click="$parent.confirmDelete('reseller_currency_markup_rules', rule, $index)">Delete this rule</span>
+                        </div>
+                        <hr />
 
-                      <div class="row"></div>
+                        <div class="row"></div>
 
-                  </ng-form>
+                    </ng-form>
 
-              </div>
+                </div>
 
 
-              <div class="row"></div>
+                <div class="row"></div>
 
-              <!-- Show a "not found" message if no rules were found  -->
-              <div class="col-sm-12" ng-if="settings.reseller_currency_markup_rules.length == 0">
-                  <p class="no-info" translate>No adjustment rules configured</p>
-              </div>
+                <!-- Show a "not found" message if no rules were found  -->
+                <div class="col-sm-12" ng-if="settings.reseller_currency_markup_rules.length == 0">
+                    <p class="no-info" translate>No adjustment rules configured</p>
+                </div>
             </div>
 
             <div class="form-group">
