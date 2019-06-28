@@ -44,7 +44,7 @@
                     <input type="text" class="form-control" name="merchant_descriptor_contact" ng-model="settings.cart_app_id">
                     <p class="help-block hidden fadeInDown" translate>Please provide an app ID</p>
                     <div>
-                        <p class="help-text" translate>When you send a customer a link to a shopping cart, this defines the app the customer will be sent to. You can find the App ID under Apps, click on the arrow next to Launch, and go to Settings.</p>
+                        <p class="help-text" translate>When you send a customer a link to a shopping cart, this defines the app the customer will be sent to. You can find the App ID under Online Storefront, find the app you wish to use and click "Manage".</p>
                     </div>
                 </div>
             </div>
@@ -55,7 +55,18 @@
                     <input type="text" class="form-control" name="merchant_descriptor_contact" ng-model="settings.invoice_app_id">
                     <p class="help-block hidden fadeInDown" translate>Please provide an app ID</p>
                     <div>
-                        <p class="help-text" translate>When you send a customer a link to make an invoice payment, this defines the app the customer will be sent to. You can find the App ID under Apps, click on the arrow next to Launch, and go to Settings.</p>
+                        <p class="help-text" translate>When you send a customer a link to make an invoice payment, this defines the app the customer will be sent to. You can find the App ID under Online Storefront, find the app you wish to use and click "Manage"</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group" show-errors>
+                    <label for="customer_admin_app_id" class="control-label" translate>Default App for Customer Admin Links</label>
+                    <input type="text" class="form-control" name="customer_admin_app_id" ng-model="settings.customer_admin_app_id">
+                    <p class="help-block hidden fadeInDown" translate>Please provide an app ID</p>
+                    <div>
+                        <p class="help-text" translate>When you send a customer a link to customer admin, this defines the app the customer will be sent to. You can find the App ID under Online Storefront, find the app you wish to use and click "Manage"</p>
                     </div>
                 </div>
             </div>

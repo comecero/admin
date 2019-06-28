@@ -8,7 +8,7 @@
 
     <div class="page-header">
         <h1 ng-if="add" translate>Add a Notification Subscription</h1>
-        <h1 ng-if="update" class="text-capitalize" translate>Notification Subscription: {{notificationSubscription.type | replace: ':':' '}}</h1>
+        <h1 ng-if="update" class="text-capitalize" translate>{{notificationSubscription.type | replace: ':':' ' | replace: '_':' '}}</h1>
     </div>
     <form name="form" novalidate>
         <div class="panel panel-body light-shadow">
@@ -52,6 +52,18 @@
                         <label for="type-4" class="radio-label text-capitalize">Customer Link</label>
                         <div>
                             <p class="help-text" translate>Sent to customers to provide a link to view and manage their account, past orders, subscriptions, etc.</p>
+                        </div>
+
+                        <input type="radio" id="type-4" class="radio" name="type" ng-model="notificationSubscription.type" value="subscription:prebill_notification" required>
+                        <label for="type-4" class="radio-label text-capitalize">Subscription Prebill Notification</label>
+                        <div>
+                            <p class="help-text" translate>Send subscription prebill notifications to customers</p>
+                        </div>
+
+                        <input type="radio" id="type-4" class="radio" name="type" ng-model="notificationSubscription.type" value="subscription:cancel_confirmation" required>
+                        <label for="type-4" class="radio-label text-capitalize">Subscription Cancel Confirmation</label>
+                        <div>
+                            <p class="help-text" translate>Send subscription cancel notifications to customers</p>
                         </div>
 
                         <p class="help-block hidden fadeInDown" translate>Please provide subscription type.</p>
@@ -132,7 +144,7 @@
                         </ul>
                     </div>
                     <div>
-                        <p class="help-text" translate>Select a template to use for notifications. If a template is not supplied, a default template will be used.</p>
+                        <p class="help-text" translate>Optional. Select a custom template to use for notifications. If a template is not supplied, a default template will be used.</p>
                     </div>
                 </div>
             </div>

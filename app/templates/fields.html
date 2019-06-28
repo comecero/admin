@@ -1,13 +1,13 @@
 ﻿<!-- NOTE THAT INPUT text, tel, and password FIELD NAMES HAVE A -search SUFFIX BY DESIGN. CHECK THE DIRECTIVE FOR MORE INFO AND BAKGROUND -->
 <form name="form" novalidate>
 
-    <div ng-repeat="item in fieldlist">
+    <div ng-repeat="item in fieldlist" ng-show="isRequiredIf(item, parentResource)">
 
         <div class="section-header" ng-if="isNewSection(item, $index)">{{item.section}}</div>
 
         <div ng-if="item.type == 'string' && !item.options" class="col-xs-12">
             <div class="form-group">
-                <label class="control-label">{{item.label}}<span class="required" ng-show="item.required"></span></label>
+                <label class="control-label">{{item.label}}<span class="required" ng-show="item.required || isRequiredIf(item, parentResource)"></span></label>
                 <input type="text" class="form-control" name="{{item.name}}-search" ng-model="selections[item.name]">
                 <p class="help-block" ng-bind-html="item.description"></p>
             </div>
@@ -15,15 +15,24 @@
 
         <div ng-if="item.type == 'text' && !item.options" class="col-xs-12">
             <div class="form-group">
-                <label class="control-label">{{item.label}}<span class="required" ng-show="item.required"></span></label>
+                <label class="control-label">{{item.label}}<span class="required" ng-show="item.required || isRequiredIf(item, parentResource)"></span></label>
                 <textarea class="form-control" name="{{item.name}}-search" ng-model="selections[item.name]"></textarea>
+                <p class="help-block" ng-bind-html="item.description"></p>
+            </div>
+        </div>
+
+        <div ng-if="item.type == 'base64' && !item.options" class="col-xs-12">
+            <div class="form-group">
+                <label class="control-label">{{item.label}}<span class="required" ng-show="item.required || isRequiredIf(item, parentResource)"></span></label>
+                <input type="file" base64-field ng-model="selections[item.name]">
+                <textarea class="form-control" name="{{item.name}}" ng-model="selections[item.name]"></textarea>
                 <p class="help-block" ng-bind-html="item.description"></p>
             </div>
         </div>
 
         <div ng-if="item.type == 'integer' && !item.options" class="col-xs-12">
             <div class="form-group">
-                <label class="control-label">{{item.label}}<span class="required" ng-show="item.required"></span></label>
+                <label class="control-label">{{item.label}}<span class="required" ng-show="item.required || isRequiredIf(item, parentResource)"></span></label>
                 <input type="tel" class="form-control" name="{{item.name}}-search" ng-model="selections[item.name]">
                 <p class="help-block" ng-bind-html="item.description"></p>
             </div>
@@ -31,7 +40,7 @@
 
         <div ng-if="item.type == 'decimal' && !item.options" class="col-xs-12">
             <div class="form-group">
-                <label class="control-label">{{item.label}}<span class="required" ng-show="item.required"></span></label>
+                <label class="control-label">{{item.label}}<span class="required" ng-show="item.required || isRequiredIf(item, parentResource)"></span></label>
                 <input type="text" class="form-control" name="{{item.name}}-search" ng-model="selections[item.name]">
                 <p class="help-block" ng-bind-html="item.description"></p>
             </div>
@@ -39,7 +48,7 @@
 
         <div ng-if="item.type == 'color' && !item.options" class="has-feedback col-xs-12">
             <div class="form-group">
-                <label class="control-label">{{item.label}}<span class="required" ng-show="item.required"></span></label>
+                <label class="control-label">{{item.label}}<span class="required" ng-show="item.required || isRequiredIf(item, parentResource)"></span></label>
                 <div class="input-group">
                     <span style="min-width:40px" class="input-group-addon" ng-style="{'background-color': selections[item.name]}">&nbsp;</span>
                     <input type="text" colorpicker colorpicker-position="right" class="form-control" name="{{item.name}}-search" ng-model="selections[item.name]">
@@ -50,7 +59,7 @@
 
         <div ng-if="item.type == 'boolean' && !item.options" class="col-md-12">
             <div class="form-group">
-                <label class="radio-group-label" ng-required="item.required">{{item.label}}</label>
+                <label class="radio-group-label" ng-required="item.required || isRequiredIf(item, parentResource)">{{item.label}}</label>
                 <div class="radio-group inline">
                     <input type="radio" id="{{ item.name + '-1'}}" class="radio" name="{{item.name}}" ng-model="selections[item.name]" ng-value="true" ng-checked="{{selections[item.name]}}" required>
                     <label for="{{ item.name + '-1'}}" class="radio-label" translate>Yes</label>
@@ -76,7 +85,7 @@
 
         <div ng-if="item.options && item.type != 'array'" class="col-xs-12">
             <div class="form-group">
-                <label class="radio-group-label" ng-required="item.required">{{item.label}}</label>
+                <label class="radio-group-label" ng-required="item.required || isRequiredIf(item, parentResource)">{{item.label}}</label>
                 <select name="{{item.name}}" class="form-control" ng-model="selections[item.name]">
                     <option ng-repeat="option in item.options" value="{{option.value || option.display}}">{{option.display || option.value}}</option>
                 </select>
@@ -86,7 +95,7 @@
 
         <div ng-if="item.type == 'array'" class="col-xs-12">
             <div class="form-group">
-                <label class="checkbox-group-label" ng-required="item.required">{{item.label}}</label>
+                <label class="checkbox-group-label" ng-required="item.required || isRequiredIf(item, parentResource)">{{item.label}}</label>
                 <div class="checkbox-group inline">
                     <div ng-repeat="option in item.options" class="spacer-b10">
                         <input type="checkbox" id="{{ item.name + '-' + $index }}" class="checkbox" ng-click="pushToProperty(item.name, option.value)" ng-checked="isInProperty(item.name, option.value)">

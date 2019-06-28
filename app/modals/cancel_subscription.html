@@ -19,7 +19,7 @@
                     <div ng-if="cancellation_reasons.length > 0">
                         <select class="form-control" ng-model="subscription_cancel.request.cancellation_reason" name="cancellation_reason" ng-options="cancellation_reason for cancellation_reason in cancellation_reasons" required></select>
                     </div>
-                    <input ng-if="cancellation_reasons.length == 0" type="text" class="form-control" name="cancellation_reason" ng-model="subscription_cancel.request.cancellation_reason" placeholder="{{ 'Optional' | translate}}">
+                    <input ng-if="cancellation_reasons.length == 0" type="text" class="form-control" name="cancellation_reason" ng-model="subscription_cancel.request.cancellation_reason" placeholder="{{ 'Optional' | translate}}" maxlength="75">
                     <p class="help-block hidden fadeInDown" translate>Please provide a reason</p>
                 </div>
             </div>

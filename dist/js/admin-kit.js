@@ -856,6 +856,44 @@ app.directive('resource', function () {
 });
 
 
+app.directive('accountModel', ['HelperService', function (HelperService) {
+    return {
+        restrict: 'A',
+        link: function (scope, elem, attrs) {
+
+            if (localStorage.getItem("model") != attrs.accountModel && HelperService.isAdmin() == false) {
+                elem[0].remove();
+            }
+
+        }
+    };
+}]);
+
+
+app.directive('base64Field', [function() {
+    return {
+        restrict: 'A',
+        scope: {
+            modelValue: '=ngModel'
+        },
+        link: function (scope, elem, attrs) {
+            elem[0].addEventListener('change', function(evt) {
+                console.log(scope);
+                var files = evt.target.files;
+                if (!files || !files[0]) return;
+                var reader = new FileReader();
+                reader.onloadend = function(e) {
+                    scope.$apply(function() {
+                        scope.modelValue = btoa(reader.result);
+                    });
+                }
+                reader.readAsBinaryString(files[0]);
+            }, false);
+        }
+    };
+}]);
+
+
 app.directive('dropzone', ['ApiService', function (ApiService) {
 
     return function (scope, element, attrs) {
@@ -4187,6 +4225,7 @@ app.directive('fields', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
         scope: {
             fieldlist: '=?',
             selections: '=?',
+            parentResource: '=?',
             error: '='
         },
         link: function (scope, elem, attrs, ctrl) {
@@ -4306,6 +4345,26 @@ app.directive('fields', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
 
                 return false;
 
+            }
+
+            scope.isRequiredIf = function(field, parentResource) {
+                if (!field.required_if) return true;
+                if (!parentResource) return false;
+                for (var key in field.required_if) {
+                    var requiredValues = field.required_if[key];
+                    var setValues = parentResource[key];
+                    if (!setValues) continue;
+                    if (angular.isArray(setValues)) {
+                        for (var i in setValues) {
+                            if (requiredValues.indexOf(setValues[i]) >= 0)
+                                return true;
+                        }
+                    } else if (angular.isString(setValues)) {
+                      if (requiredValues.indexOf(setValues) >= 0)
+                          return true;
+                    }
+                }
+                return false;
             }
 
             // Read note at the top of this directive about the purpose of strip search.
@@ -5954,9 +6013,14 @@ app.service("EventTypesService", [function () {
             { name: "Shipment Modified", code: "shipment:modified" },
             { name: "Shipment Deleted", code: "shipment:deleted" },
             { name: "Subscription Created", code: "subscription:created" },
+            { name: "Subscription Modified", code: "subscription:modified" },
             { name: "Subscription Cancelled", code: "subscription:cancelled" },
+            { name: "Subscription Cancellation Scheduled", code: "subscription:cancellation_scheduled" },
+            { name: "Subscription Cancellation Unscheduled", code: "subscription:cancellation_unscheduled" },
             { name: "Subscription Item Added", code: "subscription_item:added" },
             { name: "Subscription Item Cancelled", code: "subscription_item:cancelled" },
+            { name: "Subscription Item Cancellation Scheduled", code: "subscription_item:cancellation_scheduled" },
+            { name: "Subscription Item Cancellation Unscheduled", code: "subscription_item:cancellation_unscheduled" },
             { name: "Subscription Item Modified", code: "subscription_item:modified" },
             { name: "Subscription Completed", code: "subscription:completed" },
             { name: "Subscription Converted", code: "subscription:converted" },
