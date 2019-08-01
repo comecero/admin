@@ -3842,6 +3842,10 @@ app.controller("InvoicesSetCtrl", ['$scope', '$routeParams', '$location', 'ApiSe
 
     }
 
+    $scope.functions.isEditable = function (payment_status) {
+        return (payment_status == "unpaid" || payment_status == "scheduled" || payment_status == "failed" || payment_status == "cancelled");
+    }
+
 }]);
 
 
