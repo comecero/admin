@@ -87,6 +87,7 @@ app.controller("CouponSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
         if ($scope.promotion.config.type != 'product') {
             $scope.promotion.apply_to_recurring = false;
             $scope.promotion.apply_to_recurring_count = null;
+            $scope.promotion.config.product_ids = null;
         }
 
     }
