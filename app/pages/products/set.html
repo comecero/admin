@@ -253,12 +253,12 @@
                         <a class="btn btn-info" ng-click="data.set_inventory_quantity = false; data.adjust_inventory_quantity = true; product.inventory.current = null" translate>Add or Remove Quantity</a>
                     </div>
                     <div class="form-group" show-errors ng-if="data.set_inventory_quantity">
-                        <label for="name" class="control-label" translate>Set Inventory Quantity</label>
-                        <input type="text" ng-value="product.inventory.quantity" class="form-control" style="max-width: 125px" name="name" ng-model="product.inventory.current" is-valid-integer allow-empty-value placeholder="">
+                        <label for="set_inventory_quantity" class="control-label" translate>Set Inventory Quantity</label>
+                        <input type="text" ng-value="product.inventory.quantity" class="form-control" style="max-width: 125px" name="set_inventory_quantity" ng-model="product.inventory.current" is-valid-integer allow-empty-value placeholder="">
                     </div>
                     <div class="form-group" show-errors ng-if="data.adjust_inventory_quantity">
-                        <label for="name" class="control-label" translate>Adjust Inventory Quantity</label>
-                        <input type="text" class="form-control" style="max-width: 125px" name="name" ng-model="product.inventory.adjust_quantity_by" is-valid-integer allow-empty-value placeholder="">
+                        <label for="adjust_inventory_quantity" class="control-label" translate>Adjust Inventory Quantity</label>
+                        <input type="text" class="form-control" style="max-width: 125px" name="adjust_inventory_quantity" ng-model="product.inventory.adjust_quantity_by" is-valid-integer allow-empty-value placeholder="">
                         <p class="help-text">Enter a positive number to increase or a negative number to decrease</p>
                     </div>
                     <div class="form-group">
