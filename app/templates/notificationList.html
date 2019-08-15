@@ -61,7 +61,7 @@
 
         <div class="col-xs-12 col-sm-6 col-md-4">
             <div class="col-xs-5 col-sm-12 hidden-md hidden-lg lbl"><label>Type</label></div>
-            <div class="col-xs-7 col-sm-12 col-md-12 value"><span class="text-capitalize">{{notification.type.replace(":", " ")}}</span></div>
+            <div class="col-xs-7 col-sm-12 col-md-12 value"><span class="text-capitalize">{{notification.type | replace: ':':' ' | replace: '_':' '}}</span></div>
         </div>
 
         <div class="col-xs-12 col-sm-6 col-md-3">

@@ -4446,6 +4446,7 @@ app.controller("NotificationSubscriptionsSetCtrl", ['$scope', '$routeParams', '$
         // Indicate this is an add
         $scope.update = false;
         $scope.add = true;
+        $scope.notificationSubscription.active = true;
 
     }
 
@@ -6167,59 +6168,6 @@ app.controller("UpSellSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
 
 
 
-
-//#region Refunds
-
-app.controller("RefundsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
-
-    // Establish your scope containers
-    $scope.exception = {};
-    $scope.resources = {};
-    $scope.resources.refundListUrl = ApiService.buildUrl("/refunds");
-
-}]);
-
-app.controller("RefundsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'ConfirmService', 'GrowlsService', function ($scope, $routeParams, ApiService, ConfirmService, GrowlsService) {
-
-    $scope.refund = {};
-    $scope.exception = {};
-    $scope.fee_currency = null;
-    $scope.items = [];
-    $scope.currencyType = "transaction";
-    $scope.resources = {};
-
-    $scope.prefs = {}
-    $scope.prefs.loadRefundDetails = false;
-
-    // Set the url for interacting with this item
-    $scope.url = ApiService.buildUrl("/refunds/" + $routeParams.id)
-    $scope.resources.notificationListUrl = $scope.url + "/notifications";
-
-    // Load the refund
-    var params = { expand: "payment,customer,payment_method,gateway,fees,commissions,order,refunds.items" };
-    ApiService.getItem($scope.url, params).then(function (refund) {
-        $scope.refund = refund;
-
-        if (refund.fees.data.length > 0) {
-            $scope.fee_currency = refund.fees.data[0].currency;
-        }
-
-        if (refund.order != null) {
-            $scope.items = refund.order.items;
-        }
-
-    }, function (error) {
-        $scope.exception.error = error;
-        window.scrollTo(0, 0);
-    });
-
-}]);
-
-//#endregion Refunds
-
-
-
-
 app.controller("ReportCommissionsController", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'TimezonesService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, TimezonesService) {
 
     $scope.exception = {};
@@ -6853,6 +6801,59 @@ app.controller("ReportSalesCtrl", ['$scope', '$routeParams', '$location', 'Growl
     $scope.run();
 
 }]);
+
+
+//#region Refunds
+
+app.controller("RefundsListCtrl", ['$scope', '$routeParams', '$location', '$q', 'GrowlsService', 'ApiService', function ($scope, $routeParams, $location, $q, GrowlsService, ApiService) {
+
+    // Establish your scope containers
+    $scope.exception = {};
+    $scope.resources = {};
+    $scope.resources.refundListUrl = ApiService.buildUrl("/refunds");
+
+}]);
+
+app.controller("RefundsViewCtrl", ['$scope', '$routeParams', 'ApiService', 'ConfirmService', 'GrowlsService', function ($scope, $routeParams, ApiService, ConfirmService, GrowlsService) {
+
+    $scope.refund = {};
+    $scope.exception = {};
+    $scope.fee_currency = null;
+    $scope.items = [];
+    $scope.currencyType = "transaction";
+    $scope.resources = {};
+
+    $scope.prefs = {}
+    $scope.prefs.loadRefundDetails = false;
+
+    // Set the url for interacting with this item
+    $scope.url = ApiService.buildUrl("/refunds/" + $routeParams.id)
+    $scope.resources.notificationListUrl = $scope.url + "/notifications";
+
+    // Load the refund
+    var params = { expand: "payment,customer,payment_method,gateway,fees,commissions,order,refunds.items" };
+    ApiService.getItem($scope.url, params).then(function (refund) {
+        $scope.refund = refund;
+
+        if (refund.fees.data.length > 0) {
+            $scope.fee_currency = refund.fees.data[0].currency;
+        }
+
+        if (refund.order != null) {
+            $scope.items = refund.order.items;
+        }
+
+    }, function (error) {
+        $scope.exception.error = error;
+        window.scrollTo(0, 0);
+    });
+
+}]);
+
+//#endregion Refunds
+
+
+
 
 app.controller("AnalyticsSettingsCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService) {
 
