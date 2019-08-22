@@ -229,6 +229,55 @@
                 </div>
             </div>
 
+            <div class="col-xs-12" show-errors>
+                <div class="form-group">
+                    <label class="radio-group-label" translate>Track Inventory?</label>
+                    <div class="radio-group inline">
+                        <input type="radio" id="track_inventory-1" class="radio" name="track_inventory" ng-model="data.track_inventory" ng-value="true" required>
+                        <label for="track_inventory-1" class="radio-label">Yes</label>
+                        <input type="radio" id="track_inventory-2" class="radio" name="track_inventory" ng-model="data.track_inventory" ng-value="false" required>
+                        <label for="track_inventory-2" class="radio-label">No</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12" ng-if="data.track_inventory">
+                <div class="form-group">
+                    <div ng-hide="!product.inventory.quantity">
+                        <div class="form-group">
+                            <label class="control-label">Quantity Available</label>
+                            <div ng-show="product.inventory.quantity !== null">{{product.inventory.quantity}}</div>
+                            <div ng-show="!product.inventory || product.inventory.quantity === null"><em>Not set</em></div>
+                        </div>
+                        <div class="form-group">
+                            <a class="btn btn-info" ng-click="data.set_inventory_quantity = true; data.adjust_inventory_quantity = false; product.inventory.adjust_quantity_by = null" translate>Set New Quantity</a>
+                            <a class="btn btn-info" ng-click="data.set_inventory_quantity = false; data.adjust_inventory_quantity = true; product.inventory.current = null" translate>Add or Remove Quantity</a>
+                        </div>
+                    </div>
+                    <div class="form-group" show-errors ng-if="data.set_inventory_quantity || !product.inventory.quantity">
+                        <label for="set_inventory_quantity" class="control-label" translate>Set Inventory Quantity</label>
+                        <input type="text" ng-value="product.inventory.quantity" class="form-control" style="max-width: 125px" name="set_inventory_quantity" ng-model="product.inventory.current" is-valid-integer allow-empty-value placeholder="">
+                    </div>
+                    <div class="form-group" show-errors ng-if="data.adjust_inventory_quantity">
+                        <label for="adjust_inventory_quantity" class="control-label" translate>Adjust Inventory Quantity</label>
+                        <input type="text" class="form-control" style="max-width: 125px" name="adjust_inventory_quantity" ng-model="product.inventory.adjust_quantity_by" is-valid-integer allow-empty-value placeholder="">
+                        <p class="help-text">Enter a positive number to increase or a negative number to decrease</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="radio-group-label" translate>Allow Oversells?</label>
+                        <div class="radio-group inline">
+                            <input type="radio" id="allow_oversells-1" class="radio" name="allow_oversells" ng-model="data.allow_oversells" ng-value="true" required>
+                            <label for="allow_oversells-1" class="radio-label">Yes</label>
+                            <input type="radio" id="allow_oversells-2" class="radio" name="allow_oversells" ng-model="data.allow_oversells" ng-value="false" required>
+                            <label for="allow_oversells-2" class="radio-label">No</label>
+                            <p class="help-text">If you don't allow oversells, customers will be prevented from buying more than the available inventory quantity.</p>
+                        </div>
+                    </div>
+                    <hr class="spacer-b0" />
+                    <div class="row"></div>
+                </div>
+            </div>
+
             <div class="col-xs-12">
                 <div class="form-group">
                     <label class="control-label clear" translate>Images</label>

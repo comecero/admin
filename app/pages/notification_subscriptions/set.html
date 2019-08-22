@@ -42,28 +42,34 @@
                         <div>
                             <p class="help-text" translate>Sent to customers to provide a link back to their cart.</p>
                         </div>
-                        <input type="radio" id="type-4" class="radio" name="type" ng-model="notificationSubscription.type" value="invoice:link" required>
-                        <label for="type-4" class="radio-label text-capitalize">Invoice Link</label>
+                        <input type="radio" id="type-5" class="radio" name="type" ng-model="notificationSubscription.type" value="invoice:link" required>
+                        <label for="type-5" class="radio-label text-capitalize">Invoice Link</label>
                         <div>
                             <p class="help-text" translate>Sent to customers to provide a link back to their invoice.</p>
                         </div>
 
-                        <input type="radio" id="type-4" class="radio" name="type" ng-model="notificationSubscription.type" value="customer:link" required>
-                        <label for="type-4" class="radio-label text-capitalize">Customer Link</label>
+                        <input type="radio" id="type-6" class="radio" name="type" ng-model="notificationSubscription.type" value="customer:link" required>
+                        <label for="type-6" class="radio-label text-capitalize">Customer Link</label>
                         <div>
                             <p class="help-text" translate>Sent to customers to provide a link to view and manage their account, past orders, subscriptions, etc.</p>
                         </div>
 
-                        <input type="radio" id="type-4" class="radio" name="type" ng-model="notificationSubscription.type" value="subscription:prebill_notification" required>
-                        <label for="type-4" class="radio-label text-capitalize">Subscription Prebill Notification</label>
+                        <input type="radio" id="type-7" class="radio" name="type" ng-model="notificationSubscription.type" value="subscription:prebill_notification" required>
+                        <label for="type-7" class="radio-label text-capitalize">Subscription Prebill Notification</label>
                         <div>
                             <p class="help-text" translate>Send subscription prebill notifications to customers</p>
                         </div>
 
-                        <input type="radio" id="type-4" class="radio" name="type" ng-model="notificationSubscription.type" value="subscription:cancel_confirmation" required>
-                        <label for="type-4" class="radio-label text-capitalize">Subscription Cancel Confirmation</label>
+                        <input type="radio" id="type-8" class="radio" name="type" ng-model="notificationSubscription.type" value="subscription:cancel_confirmation" required>
+                        <label for="type-8" class="radio-label text-capitalize">Subscription Cancel Confirmation</label>
                         <div>
                             <p class="help-text" translate>Send subscription cancel notifications to customers</p>
+                        </div>
+
+                        <input type="radio" id="type-9" class="radio" name="type" ng-model="notificationSubscription.type" value="subscription:payment_failure" required>
+                        <label for="type-9" class="radio-label text-capitalize">Subscription Payment Failure</label>
+                        <div>
+                            <p class="help-text" translate>Send a notification to a customer when a subscription payment fails</p>
                         </div>
 
                         <p class="help-block hidden fadeInDown" translate>Please provide subscription type.</p>

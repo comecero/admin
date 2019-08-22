@@ -74,11 +74,19 @@
             <div class="col-xs-12" ng-show="promotion.config.type === 'product'">
                 <div class="form-group">
                     <div ng-show="!promotion.config.product_ids.length">
-                        <a class="btn btn-info" products-select products="promotion.config.product_ids" translate>Select Products</a>
+                        <a class="btn btn-info" products-select products="promotion.config.product_ids" limit="25" translate>Select Products</a>
                         <p class="help-text" translate>If you do not select products that this promotion applies to, it will apply to all products.</p>
                     </div>
                     <div ng-show="promotion.config.product_ids.length > 0">
-                        <product-group products="promotion.config.product_ids"></product-group>
+                        <product-group products="promotion.config.product_ids" limit="25"></product-group>
+                    </div>
+                </div>
+                <div class="form-group" ng-show="promotion.config.product_ids.length > 0">
+                    <div class="radio-group">
+                        <input type="radio" id="exclude_product_ids-1" class="radio" name="exclude_product_ids" ng-model="promotion.config.exclude_product_ids" ng-value="false" required>
+                        <label for="exclude_product_ids-1" class="radio-label">The coupon should only apply to the products listed above</label>
+                        <input type="radio" id="exclude_product_ids-2" class="radio" name="exclude_product_ids" ng-model="promotion.config.exclude_product_ids" ng-value="true" required>
+                        <label for="exclude_product_ids-2" class="radio-label">The coupon should apply to all products <strong>except</strong> the products listed above</label>
                     </div>
                 </div>
             </div>

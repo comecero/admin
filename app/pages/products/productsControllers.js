@@ -157,6 +157,8 @@ app.controller("ProductsSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
     $scope.exception = {};
     $scope.data = {}
     $scope.data.offer_volume_discounts = false;
+    $scope.data.track_inventory = false;
+    $scope.data.allow_oversells = true;
 
     if ($routeParams.id != null) {
 
@@ -194,6 +196,11 @@ app.controller("ProductsSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
             $scope.data.offer_volume_discounts = product.volume_prices.length > 0;
             if (product.volume_prices.length == 0) {
                 $scope.product.volume_prices.push({ low: "", prices: [{ price: "", currency: "" }] });
+            }
+
+            if (product.inventory != null) {
+                $scope.data.track_inventory = true;
+                $scope.data.allow_oversells = product.inventory.allow_oversells;
             }
 
             // Make a copy of the original for comparision
@@ -301,6 +308,13 @@ app.controller("ProductsSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
             $scope.product.subscription_term_change_product_ids = _.pluck($scope.product.subscription_term_change_products.data, "product_id");
         } else {
             $scope.product.subscription_term_change_product_ids = null;
+        }
+
+        if ($scope.data.track_inventory == false) {
+            $scope.product.inventory = null;
+        } else {
+            $scope.product.inventory = $scope.product.inventory || {};
+            $scope.product.inventory.allow_oversells = $scope.data.allow_oversells;
         }
 
         cleanVolumePrices();
