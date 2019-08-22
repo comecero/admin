@@ -121,6 +121,7 @@ app.controller("NotificationSubscriptionsSetCtrl", ['$scope', '$routeParams', '$
         // Indicate this is an add
         $scope.update = false;
         $scope.add = true;
+        $scope.notificationSubscription.active = true;
 
     }
 

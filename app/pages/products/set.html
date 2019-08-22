@@ -243,22 +243,24 @@
 
             <div class="col-xs-12" ng-if="data.track_inventory">
                 <div class="form-group">
-                    <div class="form-group">
-                        <label class="control-label">Quantity Available</label>
-                        <div ng-show="product.inventory.quantity !== null">{{product.inventory.quantity}}</div>
-                        <div ng-show="product.inventory.quantity === null"><em>Not set</em></div>
+                    <div ng-hide="!product.inventory.quantity">
+                        <div class="form-group">
+                            <label class="control-label">Quantity Available</label>
+                            <div ng-show="product.inventory.quantity !== null">{{product.inventory.quantity}}</div>
+                            <div ng-show="!product.inventory || product.inventory.quantity === null"><em>Not set</em></div>
+                        </div>
+                        <div class="form-group">
+                            <a class="btn btn-info" ng-click="data.set_inventory_quantity = true; data.adjust_inventory_quantity = false; product.inventory.adjust_quantity_by = null" translate>Set New Quantity</a>
+                            <a class="btn btn-info" ng-click="data.set_inventory_quantity = false; data.adjust_inventory_quantity = true; product.inventory.current = null" translate>Add or Remove Quantity</a>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <a class="btn btn-info" ng-click="data.set_inventory_quantity = true; data.adjust_inventory_quantity = false; product.inventory.adjust_quantity_by = null" translate>Set New Quantity</a>
-                        <a class="btn btn-info" ng-click="data.set_inventory_quantity = false; data.adjust_inventory_quantity = true; product.inventory.current = null" translate>Add or Remove Quantity</a>
-                    </div>
-                    <div class="form-group" show-errors ng-if="data.set_inventory_quantity">
-                        <label for="name" class="control-label" translate>Set Inventory Quantity</label>
-                        <input type="text" ng-value="product.inventory.quantity" class="form-control" style="max-width: 125px" name="name" ng-model="product.inventory.current" is-valid-integer allow-empty-value placeholder="">
+                    <div class="form-group" show-errors ng-if="data.set_inventory_quantity || !product.inventory.quantity">
+                        <label for="set_inventory_quantity" class="control-label" translate>Set Inventory Quantity</label>
+                        <input type="text" ng-value="product.inventory.quantity" class="form-control" style="max-width: 125px" name="set_inventory_quantity" ng-model="product.inventory.current" is-valid-integer allow-empty-value placeholder="">
                     </div>
                     <div class="form-group" show-errors ng-if="data.adjust_inventory_quantity">
-                        <label for="name" class="control-label" translate>Adjust Inventory Quantity</label>
-                        <input type="text" class="form-control" style="max-width: 125px" name="name" ng-model="product.inventory.adjust_quantity_by" is-valid-integer allow-empty-value placeholder="">
+                        <label for="adjust_inventory_quantity" class="control-label" translate>Adjust Inventory Quantity</label>
+                        <input type="text" class="form-control" style="max-width: 125px" name="adjust_inventory_quantity" ng-model="product.inventory.adjust_quantity_by" is-valid-integer allow-empty-value placeholder="">
                         <p class="help-text">Enter a positive number to increase or a negative number to decrease</p>
                     </div>
                     <div class="form-group">
@@ -271,7 +273,7 @@
                             <p class="help-text">If you don't allow oversells, customers will be prevented from buying more than the available inventory quantity.</p>
                         </div>
                     </div>
-                    <hr />
+                    <hr class="spacer-b0" />
                     <div class="row"></div>
                 </div>
             </div>

@@ -81,6 +81,14 @@
                         <product-group products="promotion.config.product_ids" limit="25"></product-group>
                     </div>
                 </div>
+                <div class="form-group" ng-show="promotion.config.product_ids.length > 0">
+                    <div class="radio-group">
+                        <input type="radio" id="exclude_product_ids-1" class="radio" name="exclude_product_ids" ng-model="promotion.config.exclude_product_ids" ng-value="false" required>
+                        <label for="exclude_product_ids-1" class="radio-label">The coupon should only apply to the products listed above</label>
+                        <input type="radio" id="exclude_product_ids-2" class="radio" name="exclude_product_ids" ng-model="promotion.config.exclude_product_ids" ng-value="true" required>
+                        <label for="exclude_product_ids-2" class="radio-label">The coupon should apply to all products <strong>except</strong> the products listed above</label>
+                    </div>
+                </div>
             </div>
             <div class="col-xs-12" show-errors>
                 <div class="form-group">

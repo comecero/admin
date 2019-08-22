@@ -4446,6 +4446,7 @@ app.controller("NotificationSubscriptionsSetCtrl", ['$scope', '$routeParams', '$
         // Indicate this is an add
         $scope.update = false;
         $scope.add = true;
+        $scope.notificationSubscription.active = true;
 
     }
 
@@ -5341,7 +5342,7 @@ app.controller("ProfileUpdateCtrl", ['$scope', '$routeParams', '$location', 'Gro
 app.controller("CouponSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsService', 'ApiService', 'ConfirmService', 'SettingsService', 'gettextCatalog', function ($scope, $routeParams, $location, GrowlsService, ApiService, ConfirmService, SettingsService, gettextCatalog) {
 
     $scope.promotion = { apply_to_recurring: false, active: false };
-    $scope.promotion.config = { max_uses_per_customer: null, discount_amount: [{ price: null, currency: null }], apply_to_recurring_count: null };
+    $scope.promotion.config = { max_uses_per_customer: null, discount_amount: [{ price: null, currency: null }], apply_to_recurring_count: null, exclude_product_ids: false };
     $scope.exception = {};
     $scope.options = {};
     $scope.options.discount_type = "percentage";
@@ -5523,6 +5524,7 @@ app.controller("CouponSetCtrl", ['$scope', '$routeParams', '$location', 'GrowlsS
                 $scope.promotion.config.product_ids = _.pluck($scope.promotion.config.product_ids, 'product_id');
             } else {
                 $scope.promotion.config.product_ids = ["*"];
+                $scope.promotion.config.exclude_product_ids = false;
             }
         }
 
