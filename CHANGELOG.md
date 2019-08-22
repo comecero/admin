@@ -4,6 +4,7 @@
 # 1.5.2
 
 - Add support for inventory controls on products 
+- Add support for product exclusions on coupons
 
 <a name="1.5.1"></a>
 # 1.5.1
