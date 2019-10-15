@@ -1,5 +1,10 @@
 ﻿# Admin Change Log #
 
+<a name="1.5.3"></a>
+# 1.5.3
+
+- Add support to forbid customer subscription upgrades
+
 <a name="1.5.2"></a>
 # 1.5.2
 
