@@ -4347,7 +4347,7 @@ app.directive('fields', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
 
             }
 
-            scope.isRequiredIf = function(field, parentResource) {
+            scope.showIf = function(field, parentResource) {
                 if (!field.required_if) return true;
                 if (!parentResource) return false;
                 for (var key in field.required_if) {
@@ -4362,6 +4362,25 @@ app.directive('fields', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
                     } else if (angular.isString(setValues)) {
                       if (requiredValues.indexOf(setValues) >= 0)
                           return true;
+                    }
+                }
+                return false;
+            }
+
+            scope.isRequiredIf = function (field, parentResource) {
+                if (field.required) return true;
+                for (var key in field.required_if) {
+                    var requiredValues = field.required_if[key];
+                    var setValues = parentResource[key];
+                    if (!setValues) continue;
+                    if (angular.isArray(setValues)) {
+                        for (var i in setValues) {
+                            if (requiredValues.indexOf(setValues[i]) >= 0)
+                                return true;
+                        }
+                    } else if (angular.isString(setValues)) {
+                        if (requiredValues.indexOf(setValues) >= 0)
+                            return true;
                     }
                 }
                 return false;
