@@ -17,6 +17,7 @@
                 <span class="badge badge-success" ng-if="model.subscription.status == 'active'"><i class="fa fa-refresh"></i>&nbsp;<span translate>Active</span></span>
                 <span class="badge badge-pa-purple" ng-if="model.subscription.status == 'trial'"><i class="fa fa-history fa-flip-horizontal"></i>&nbsp;&nbsp;<span translate>Trial</span></span>
                 <span class="badge badge-warning" ng-if="model.subscription.status == 'completed'"><i class="fa fa-flag-checkered"></i>&nbsp;&nbsp;<span translate>Completed</span></span>
+                <span class="badge badge-danger" ng-if="model.subscription.status == 'processing'"><i class="fa fa-sync"></i>&nbsp;&nbsp;<span translate>Processing</span></span>
                 <span class="badge badge-danger" ng-if="model.subscription.status == 'cancelled'"><i class="fa fa-ban"></i>&nbsp;&nbsp;<span translate>Cancelled</span></span>
             </div>
         </div>
