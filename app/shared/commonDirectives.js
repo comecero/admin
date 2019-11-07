@@ -1165,7 +1165,7 @@ app.directive('refund', ['ApiService', 'ConfirmService', 'HelperService', 'Growl
                 scope.refund.reasons = [];
                 
                 scope.refund.show_chargeback = false;
-                if (HelperService.isAgent || HelperService.isAdmin) {
+                if (HelperService.isAgent() || HelperService.isAdmin()) {
                     scope.refund.show_chargeback = true;
                 }
 

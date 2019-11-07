@@ -129,3 +129,20 @@ app.filter('removeUnderscore', function () {
         }
     }
 });
+
+app.filter('paymentMethodType', function () {
+    return function (str) {
+        return utils.prettyPaymentMethodType(str);
+    }
+});
+
+app.filter('paymentMethodTypes', function () {
+    return function (str) {
+        if (str) {
+            var arr = str.split(",");
+            var out = [];
+            _.each(arr, function (s) { out.push(utils.prettyPaymentMethodType(s.trim())) });
+            return out.join(", ");
+        }
+    }
+});

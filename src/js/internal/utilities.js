@@ -667,6 +667,30 @@
 
     }
 
+    function prettyPaymentMethodType(paymentMethodType) {
+
+        if (paymentMethodType != null) {
+
+            // Replace underscore with space
+            paymentMethodType = utils.replaceAll(paymentMethodType, "_", " ");
+
+            // Apply title case
+            paymentMethodType = paymentMethodType.replace(/\w\S*/g, function (txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            });
+
+            if (paymentMethodType.toLowerCase() == "ach")
+                paymentMethodType = paymentMethodType.toUpperCase();
+
+            if (paymentMethodType.toLowerCase() == "paypal")
+                paymentMethodType = "PayPal";
+
+        }
+
+        return paymentMethodType;
+
+    }
+
     return {
         setCookie: setCookie,
         getCookie: getCookie,
@@ -712,7 +736,8 @@
         jsonToCsvDownload: jsonToCsvDownload,
         jsonToHtmlTable: jsonToHtmlTable,
         decimalToPercent: decimalToPercent,
-        percentToDecimal: percentToDecimal
+        percentToDecimal: percentToDecimal,
+        prettyPaymentMethodType: prettyPaymentMethodType
     };
 
 })();
