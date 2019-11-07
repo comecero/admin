@@ -25,6 +25,7 @@
                     <span class="badge badge-danger" ng-if="invoice.payment_status == 'failed'"><i class="fa fa-times-circle"></i>&nbsp;&nbsp;<span translate>Failed</span></span>
                     <span class="badge badge-danger" ng-if="invoice.payment_status == 'cancelled'"><i class="fa fa-ban"></i>&nbsp;&nbsp;<span translate>Cancelled</span></span>
                     <span class="badge badge-primary" ng-if="invoice.payment_status == 'initiated'"><i class="fa fa-sign-in"></i>&nbsp;&nbsp;<span translate>Initiated</span></span>
+                    <span class="badge badge-primary" ng-if="invoice.payment_status == 'processing'"><i class="fa fa-sync"></i>&nbsp;&nbsp;<span translate>Processing</span></span>
                     <span class="badge badge-warning" ng-if="invoice.payment_status == 'retry'"><i class="fa fa-undo fa-flip-horizontal"></i>&nbsp;&nbsp;<span translate>Retry</span></span>
                 </div>
             </div>

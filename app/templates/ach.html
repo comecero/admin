@@ -13,19 +13,37 @@
             <div ng-if="!edit">
                 <div ng-if="options.compressedView">
                     {{item.data.type}}<br>
-                    {{item.data.mask}}<br>
+                    {{item.data.account_number_mask}}<br>
                 </div>
                 <div ng-if="!options.compressedView">
                     <div class="row">
-                        <label class="col-md-4 control-label">Account Number</label>
-                        <div class="col-md-8">
-                            {{item.data.mask}}
+                        <label class="col-md-6 control-label">Account Number</label>
+                        <div class="col-md-6">
+                            {{item.data.account_number_mask}}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-md-6 control-label">Routing Number</label>
+                        <div class="col-md-6">
+                            {{item.data.routing_number_mask}}
                         </div>
                     </div>
                 </div>
             </div>
 
             <div ng-if="edit">
+                <div class="row form-group" ng-if="showItem('mask')">
+                    <label class="col-md-4 control-label" translate>Account Number</label>
+                    <div class="col-md-8">
+                        {{item.data.account_number_mask}}
+                    </div>
+                </div>
+                <div class="row form-group" ng-if="showItem('mask')">
+                    <label class="col-md-4 control-label" translate>Routing Number</label>
+                    <div class="col-md-8">
+                        {{item.data.routing_number_mask}}
+                    </div>
+                </div>
                 <div class="row form-group" ng-if="showItem('is_default')">
                     <label class="col-md-4 control-label" translate>Default Method?</label>
                     <div class="col-md-8">
