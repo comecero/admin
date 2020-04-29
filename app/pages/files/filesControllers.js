@@ -126,8 +126,14 @@ app.controller("FilesAddCtrl", ['$scope', '$routeParams', '$location', 'GrowlsSe
         // Make a copy so you can modify what you send without changing the model in the UI
         var file = angular.copy($scope.file);
         file.file_url = $scope.options.url;
-        file.http_authorization_username = $scope.options.http_authorization_username;
-        file.http_authorization_password = $scope.options.http_authorization_password;
+
+        if (file.http_authorization_username) {
+            file.http_authorization_username = $scope.options.http_authorization_username;
+        }
+
+        if (file.http_authorization_password) {
+            file.http_authorization_password = $scope.options.http_authorization_password;
+        }
 
         ApiService.multipartForm(file, null, ApiService.buildUrl("/files")).then(function (newFile) {
             GrowlsService.addGrowl({ id: "add_success", name: newFile.name, type: "success", file_id: newFile.file_id, url: "#/files/" + newFile.file_id + "/edit" });

@@ -1461,7 +1461,7 @@ app.directive('refund', ['ApiService', 'ConfirmService', 'HelperService', 'Growl
                 scope.refund.reasons = [];
                 
                 scope.refund.show_chargeback = false;
-                if (HelperService.isAgent || HelperService.isAdmin) {
+                if (HelperService.isAgent() || HelperService.isAdmin()) {
                     scope.refund.show_chargeback = true;
                 }
 
@@ -4347,7 +4347,7 @@ app.directive('fields', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
 
             }
 
-            scope.isRequiredIf = function(field, parentResource) {
+            scope.showIf = function(field, parentResource) {
                 if (!field.required_if) return true;
                 if (!parentResource) return false;
                 for (var key in field.required_if) {
@@ -4362,6 +4362,25 @@ app.directive('fields', ['ApiService', 'ConfirmService', 'GrowlsService', '$uibM
                     } else if (angular.isString(setValues)) {
                       if (requiredValues.indexOf(setValues) >= 0)
                           return true;
+                    }
+                }
+                return false;
+            }
+
+            scope.isRequiredIf = function (field, parentResource) {
+                if (field.required) return true;
+                for (var key in field.required_if) {
+                    var requiredValues = field.required_if[key];
+                    var setValues = parentResource[key];
+                    if (!setValues) continue;
+                    if (angular.isArray(setValues)) {
+                        for (var i in setValues) {
+                            if (requiredValues.indexOf(setValues[i]) >= 0)
+                                return true;
+                        }
+                    } else if (angular.isString(setValues)) {
+                        if (requiredValues.indexOf(setValues) >= 0)
+                            return true;
                     }
                 }
                 return false;
@@ -5695,6 +5714,23 @@ app.filter('removeUnderscore', function () {
     return function (str) {
         if (str != null) {
             return str.split("_").join(" ");
+        }
+    }
+});
+
+app.filter('paymentMethodType', function () {
+    return function (str) {
+        return utils.prettyPaymentMethodType(str);
+    }
+});
+
+app.filter('paymentMethodTypes', function () {
+    return function (str) {
+        if (str) {
+            var arr = str.split(",");
+            var out = [];
+            _.each(arr, function (s) { out.push(utils.prettyPaymentMethodType(s.trim())) });
+            return out.join(", ");
         }
     }
 });
@@ -15771,6 +15807,30 @@ var utils = (function () {
 
     }
 
+    function prettyPaymentMethodType(paymentMethodType) {
+
+        if (paymentMethodType != null) {
+
+            // Replace underscore with space
+            paymentMethodType = utils.replaceAll(paymentMethodType, "_", " ");
+
+            // Apply title case
+            paymentMethodType = paymentMethodType.replace(/\w\S*/g, function (txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            });
+
+            if (paymentMethodType.toLowerCase() == "ach")
+                paymentMethodType = paymentMethodType.toUpperCase();
+
+            if (paymentMethodType.toLowerCase() == "paypal")
+                paymentMethodType = "PayPal";
+
+        }
+
+        return paymentMethodType;
+
+    }
+
     return {
         setCookie: setCookie,
         getCookie: getCookie,
@@ -15816,7 +15876,8 @@ var utils = (function () {
         jsonToCsvDownload: jsonToCsvDownload,
         jsonToHtmlTable: jsonToHtmlTable,
         decimalToPercent: decimalToPercent,
-        percentToDecimal: percentToDecimal
+        percentToDecimal: percentToDecimal,
+        prettyPaymentMethodType: prettyPaymentMethodType
     };
 
 })();

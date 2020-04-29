@@ -19,6 +19,7 @@
                 <span class="badge badge-warning" ng-if="payment.status == 'refunded'"><i class="fa fa-undo"></i>&nbsp;&nbsp;<span translate>Refunded</span></span>
                 <span class="badge badge-danger" ng-if="payment.status == 'failed'"><i class="fa fa-times-circle"></i>&nbsp;&nbsp;<span translate>Failed</span></span>
                 <span class="badge badge-primary" ng-if="payment.status == 'initiated'"><i class="fa fa-sign-in"></i>&nbsp;&nbsp;<span translate>Initiated</span></span>
+                <span class="badge badge-primary" ng-if="payment.status == 'processing'"><i class="fa fa-sync"></i>&nbsp;&nbsp;<span translate>Processing</span></span>
                 <span class="badge badge-danger" ng-if="payment.status == 'cancelled'"><i class="fa fa-ban"></i>&nbsp;&nbsp;<span translate>Cancelled</span></span>
             </div>
         </div>

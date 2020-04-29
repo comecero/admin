@@ -1,0 +1,63 @@
+﻿<form name="formCard" novalidate>
+
+    <div class="panel">
+        <div class="panel-heading">
+            <span class="panel-title">{{panelTitle}}</span>
+            <div class="panel-heading-controls" ng-if="allowEdit">
+                <a class="btn btn-sm btn-info" ng-show="!edit" ng-click="openEdit()" translate>Edit</a>
+                <a class="btn btn-sm btn-default" ng-show="edit" ng-click="closeEdit()" translate>Cancel</a>
+                <a class="btn btn-sm btn-primary" ng-show="edit" ng-click="update(formCard)" translate>Save</a>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div ng-if="!edit">
+                <div ng-if="options.compressedView">
+                    {{item.data.type}}<br>
+                    {{item.data.account_number_mask}}<br>
+                </div>
+                <div ng-if="!options.compressedView">
+                    <div class="row">
+                        <label class="col-md-6 control-label">Account Number</label>
+                        <div class="col-md-6">
+                            {{item.data.account_number_mask}}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-md-6 control-label">Routing Number</label>
+                        <div class="col-md-6">
+                            {{item.data.routing_number_mask}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-if="edit">
+                <div class="row form-group" ng-if="showItem('mask')">
+                    <label class="col-md-4 control-label" translate>Account Number</label>
+                    <div class="col-md-8">
+                        {{item.data.account_number_mask}}
+                    </div>
+                </div>
+                <div class="row form-group" ng-if="showItem('mask')">
+                    <label class="col-md-4 control-label" translate>Routing Number</label>
+                    <div class="col-md-8">
+                        {{item.data.routing_number_mask}}
+                    </div>
+                </div>
+                <div class="row form-group" ng-if="showItem('is_default')">
+                    <label class="col-md-4 control-label" translate>Default Method?</label>
+                    <div class="col-md-8">
+                        <div class="checkbox-group inline">
+                            <input type="checkbox" id="is_default" class="checkbox" name="is_default" ng-model="item.is_default" ng-checked="item.is_default">
+                            <label for="is_default" class="checkbox-label"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer text-success" style="padding-left: 10px;" ng-if="!edit && item.is_default">
+            <i class="fa fa-check-square" aria-hidden="true"></i> Default Payment Method
+        </div>
+    </div>
+
+</form>
