@@ -1,5 +1,11 @@
 ﻿# Admin Change Log #
 
+<a name="1.5.3"></a>
+# 1.5.3
+
+- Add support to forbid customer subscription upgrades
+- Bug fix in displaying errors with extended fields in gateway configuration
+
 <a name="1.5.2"></a>
 # 1.5.2
 
