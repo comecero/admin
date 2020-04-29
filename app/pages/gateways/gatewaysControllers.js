@@ -242,13 +242,7 @@ app.controller("GatewaysSetCtrl", ['$scope', '$routeParams', '$location', 'Growl
 
         prepareSubmit();
 
-        if ($scope.form.$invalid) {
-            return;
-        }
-
-        ApiService.set($scope.gateway, ApiService.buildUrl("/gateways"), { show: "gateway_id,name" })
-        .then(
-        function (gateway) {
+        ApiService.set($scope.gateway, ApiService.buildUrl("/gateways"), { show: "gateway_id,name" }).then(function (gateway) {
             GrowlsService.addGrowl({ id: "add_success", name: gateway.name, type: "success", gateway_id: gateway.gateway_id, url: "#/gateways/" + gateway.gateway_id + "/edit" });
 
             // Refresh the account meta since a gateway currency may have changed
