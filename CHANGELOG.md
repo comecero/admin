@@ -1,5 +1,10 @@
 ﻿# Admin Change Log #
 
+<a name="1.5.4"></a>
+# 1.5.4
+
+- Increased coupon product limit from 25 to 50
+
 <a name="1.5.3"></a>
 # 1.5.3
 
@@ -9,7 +14,7 @@
 <a name="1.5.2"></a>
 # 1.5.2
 
-- Add support for inventory controls on products 
+- Add support for inventory controls on products
 - Add support for product exclusions on coupons
 
 <a name="1.5.1"></a>
